@@ -14,9 +14,16 @@ class Player(object):
         if type == PlayerType.Computer:
             self.difficulty = difficulty
 
-class Participant(Player):
+class Human(Player):
     def __init__(self, race):
         super().__init__(PlayerType.Participant, race)
+
+class Bot(Player):
+    def __init__(self, race, bot):
+        super().__init__(PlayerType.Participant, race)
+
+        # assert isinstance(bot, BotAI)
+        self.bot = bot
 
 class Computer(Player):
     def __init__(self, race, difficulty=Difficulty.Easy):

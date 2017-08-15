@@ -1,12 +1,20 @@
 from .paths import Paths
 
-def get():
+def get(name=None):
     maps = []
     for mapdir in (p for p in Paths.MAPS.iterdir() if p.is_dir()):
         for mapfile in (p for p in mapdir.iterdir() if p.is_file()):
             if mapfile.suffix == ".SC2Map":
                 maps.append(Map(mapfile))
-    return maps
+
+    if name is None:
+        return maps
+
+    for m in maps:
+        if m.matches(name):
+            return m
+
+    raise KeyError(f"Map '{name}' was not found")
 
 class Map(object):
     def __init__(self, path):
@@ -20,6 +28,9 @@ class Map(object):
     def data(self):
         with open(self.path, "rb") as f:
             return f.read()
+
+    def matches(self, name):
+        return self.name.replace(" ", "").lower() == name.replace(" ", "").lower()
 
     def __repr__(self):
         return f"Map({self.path})"
