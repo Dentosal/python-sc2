@@ -3,13 +3,12 @@ from setuptools import setup
 setup(
     name = "sc2",
     packages = ["sc2"],
-    version = "0.1.0alpha0",
+    version = "0.1.0alpha1",
     description = "A StarCraft II bot api library",
     license='MIT',
     author = "Hannes Karppila",
     author_email = "hannes.karppila@gmail.com",
     url = "https://github.com/Dentosal/python-sc2",
-    download_url = "https://github.com/Dentosal/python-sc2/archive/v0.1.0-alpha.tar.gz",
     keywords = ["StarCraft", "StarCraft 2", "StarCraft II", "AI", "Bot"],
     install_requires=["s2clientprotocol", "websockets", "portpicker", "vectors"],
     classifiers = [
