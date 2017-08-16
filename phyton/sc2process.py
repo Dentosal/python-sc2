@@ -66,11 +66,15 @@ class SC2Process(object):
 
         if self._process is not None:
             if self._process.poll() is None:
-                self._process.terminate()
-                time.sleep(0.25)
-                if self._process.poll() is None:
+                for _ in range(3):
+                    self._process.terminate()
+                    time.sleep(2)
+                    if self._process.poll() is not None:
+                        break
+                else:
                     self._process.kill()
                     self._process.wait()
+                    print("KILLED")
 
         if os.path.exists(self._tmp_dir):
             shutil.rmtree(self._tmp_dir)

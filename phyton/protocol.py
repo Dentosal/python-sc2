@@ -11,15 +11,26 @@ class Protocol(object):
         self._ws = ws
         self._status = None
 
-    async def _send_recv(self, req):
-        # print(">", repr(req))
-        await self._ws.send(req.SerializeToString())
+    async def _execute(self, **kwargs):
+        assert len(kwargs) == 1, "Only one request allowed"
+        request = sc_pb.Request(**kwargs)
+
+        # if len(repr(request)) < 200:
+        #     print(">", repr(request))
+        # else:
+        #     print(">", repr(request)[:200]+"...")
+
+        await self._ws.send(request.SerializeToString())
 
         response = sc_pb.Response()
         response_bytes = await self._ws.recv()
         response.ParseFromString(response_bytes)
 
-        # print("<", repr(response))
+        # if len(repr(response)) < 200:
+        #     print("<", repr(response))
+        # else:
+        #     print("<", repr(response)[:200])
+        #     print("...")
 
         self._status = Status(response.status)
 
@@ -31,34 +42,10 @@ class Protocol(object):
 
         return response
 
-
     async def ping(self):
-        result = await self._send_recv(sc_pb.Request(ping=sc_pb.RequestPing()))
+        result = await self._execute(ping=sc_pb.RequestPing())
         return result
 
     async def quit(self):
-        result = await self._send_recv(sc_pb.Request(quit=sc_pb.RequestQuit()))
+        result = await self._execute(quit=sc_pb.RequestQuit())
         return result
-
-    def _create_game_req(self, game_map, players):
-        req = sc_pb.RequestCreateGame(
-            local_map=sc_pb.LocalMap(
-                map_path=str(game_map.path)
-            )
-        )
-
-        for player in players:
-            p = req.player_setup.add()
-            p.type = player.type.value
-            p.race = player.race.value
-            if isinstance(player, Computer):
-                p.difficulty = player.difficulty.value
-
-        return sc_pb.Request(create_game=req)
-
-    def _join_game_req(self, race):
-        req = sc_pb.RequestJoinGame(
-            race=race.value,
-            options=sc_pb.InterfaceOptions(raw=True)
-        )
-        return sc_pb.Request(join_game=req)
