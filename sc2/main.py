@@ -51,9 +51,9 @@ def run_game(map_settings, players, observe=[], realtime=False):
                 gs = GameState(state.observation, game_data)
 
                 if bots:
-                    r = await client.actions(
-                        combine_actions(bots[0].ai.on_step(gs, iteration), game_data)
-                    )
+                    actions = bots[0].ai.on_step(gs, iteration)
+                    if actions:
+                        await client.actions(combine_actions(actions, game_data))
 
                 await client.step()
                 iteration += 1
