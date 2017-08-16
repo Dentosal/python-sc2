@@ -6,6 +6,8 @@ An easy-to-use library for wrting AI Bots for StarCraft II in Python 3. The ulti
 
 ## Installation
 
+You'll need Python 3.6 or newer.
+
 ```
 pip3 install --upgrade git+https://github.com/Dentosal/python-sc2
 ```
