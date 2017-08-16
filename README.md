@@ -1,4 +1,4 @@
-# A StarCraft II bot api client library for Python 3
+# A StarCraft II API Client for Python 3
 
 An easy-to-use library for wrting AI Bots for StarCraft II in Python 3. The ultimate goal is simplicity and ease of use, while still preserving all funcionality. A really simple worker rush bot should be no more than twenty lines of code, not two hundred. However, this library intends to provide both high and low level abstractions.
 
@@ -9,7 +9,7 @@ An easy-to-use library for wrting AI Bots for StarCraft II in Python 3. The ulti
 You'll need Python 3.6 or newer.
 
 ```
-pip3 install --upgrade git+https://github.com/Dentosal/python-sc2
+pip3 install --user --upgrade sc2
 ```
 
 You'll also need an StarCraft II executable. If you are running Windows or macOS, just install the normal SC2 from blizzard app. [The free starter edition works too.](https://us.battle.net/account/sc2/starter-edition/). Linux users must use the [Linux binary](https://github.com/Blizzard/s2client-proto#downloads).

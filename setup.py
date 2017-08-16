@@ -4,7 +4,7 @@ setup(
     name = "sc2",
     packages = ["sc2"],
     version = "0.1.0alpha1",
-    description = "A StarCraft II bot api library",
+    description = "A StarCraft II API Client for Python 3",
     license='MIT',
     author = "Hannes Karppila",
     author_email = "hannes.karppila@gmail.com",
