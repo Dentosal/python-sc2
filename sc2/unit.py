@@ -1,12 +1,15 @@
 from vectors import Vector
 
-from s2clientprotocol import sc2api_pb2 as sc_pb, raw_pb2 as raw_pb
+from s2clientprotocol import sc2api_pb2 as sc_pb, raw_pb2 as raw_pb, data_pb2 as data_pb
 
+from .util import name_matches
 from .data import Alliance, Attribute, DisplayType
+from . import action
 
 class Unit(object):
     def __init__(self, proto_data, type_data):
         assert isinstance(proto_data, raw_pb.Unit)
+        assert isinstance(type_data, data_pb.UnitTypeData)
         self._proto = proto_data
         self._type_data = type_data
 
@@ -39,7 +42,7 @@ class Unit(object):
         return self._proto.owner
 
     @property
-    def pos(self):
+    def position(self):
         return Vector(self._proto.pos.x, self._proto.pos.y, self._proto.pos.z)
 
     @property
@@ -106,3 +109,13 @@ class Unit(object):
     # @property
     # def orders(self):
     #     return self._proto.orders
+
+    @property
+    def name(self):
+        return self._type_data.name
+
+    def matches(self, name):
+        return name_matches(self.name, name)
+
+    def __call__(self, ability_name, *args, **kwargs):
+        return action.UnitCommand(ability_name, self, *args, **kwargs)

@@ -5,4 +5,3 @@ from . import maps
 from .data import Difficulty, Race
 from .bot_ai import BotAI
 from .main import run_game
-from .action import command

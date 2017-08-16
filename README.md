@@ -22,7 +22,7 @@ As promised, worker rush in less than twenty lines:
 
 ```python
 import sc2
-from sc2 import run_game, maps, Race, Difficulty, command
+from sc2 import run_game, maps, Race, Difficulty
 from sc2.player import Bot, Computer
 
 class WorkerRushBot(sc2.BotAI):
@@ -34,7 +34,7 @@ class WorkerRushBot(sc2.BotAI):
             return
         for unit in state.units:
             if unit.is_visible and unit.is_mine and not unit.is_structure:
-                yield command("Attack", self.enemy_start_locations[0], unit)
+                yield unit("Attack", self.enemy_start_locations[0])
 
 run_game(maps.get("Abyssal Reef LE"), [
     Bot(Race.Protoss, WorkerRushBot()),

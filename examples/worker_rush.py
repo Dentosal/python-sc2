@@ -12,7 +12,7 @@ class WorkerRushBot(sc2.BotAI):
             return
         for unit in state.units:
             if unit.is_visible and unit.is_mine and not unit.is_structure:
-                yield command("Attack", self.enemy_start_locations[0], unit)
+                yield unit("Attack", self.enemy_start_locations[0])
 
 sc2.run_game(sc2.maps.get("Abyssal Reef LE"), [
     Bot(Race.Protoss, WorkerRushBot()),
