@@ -2,14 +2,14 @@
 
 Phyton is an easy-to-use library for wrting AI Bots for StarCraft II in Python 3. The ultimate goal is simplicity and ease of use, while still preserving all funcionality. A really simple worker rush bot should be no more than twenty lines of code, not two hundred. This library covers only the scripted (raw) interface.
 
-As promised, a simple worker rush in less than twenty lines of code:
+As promised, worker rush in less than twenty lines:
 
 ```python
-import phyton
-from phyton import run_game, maps, Race, Difficulty, command
-from phyton.player import Bot, Computer
+import sc2
+from sc2 import run_game, maps, Race, Difficulty, command
+from sc2.player import Bot, Computer
 
-class WorkerRushBot(phyton.BotAI):
+class WorkerRushBot(sc2.BotAI):
     def on_start(self, enemy_start_locations):
         self.enemy_start_locations = enemy_start_locations
 
