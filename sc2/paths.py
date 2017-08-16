@@ -38,9 +38,14 @@ def latest__executeble(versions_dir):
     return path / BINPATH[PF]
 
 class Paths(object):
-    BASE = Path(os.environ.get("SC2PATH", BASEDIR[PF])).expanduser()
-    EXECUTABLE = latest__executeble(BASE / "Versions")
-    CWD = base_dir / CWD[PF] if CWD[PF] else None
+    try:
+        BASE = Path(os.environ.get("SC2PATH", BASEDIR[PF])).expanduser()
+        EXECUTABLE = latest__executeble(BASE / "Versions")
+        CWD = base_dir / CWD[PF] if CWD[PF] else None
 
-    REPLAYS = BASE / "Replays"
-    MAPS = BASE / "Maps"
+        REPLAYS = BASE / "Replays"
+        MAPS = BASE / "Maps"
+    except FileNotFoundError as e:
+        print("SC2 installation not found:")
+        print(f"File '{e.filename}' does not exist.")
+        exit(1)

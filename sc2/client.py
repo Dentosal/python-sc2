@@ -3,7 +3,6 @@ from s2clientprotocol import sc2api_pb2 as sc_pb
 
 from .cache import method_cache_forever
 
-from .paths import Paths
 from .protocol import Protocol
 from .game_data import GameData
 from .data import Race

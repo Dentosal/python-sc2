@@ -8,7 +8,6 @@ from .client import Client
 from .player import Human, Bot, Observer
 from .action import combine_actions
 from .data import Race, Difficulty, Result
-from .paths import Paths
 from .game_state import GameState
 
 
