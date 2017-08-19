@@ -1,5 +1,3 @@
-import sys; sys.path.append(".")
-
 from sc2 import Race, Difficulty
 from sc2 import maps, run_game
 from sc2.player import Computer
