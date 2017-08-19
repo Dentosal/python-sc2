@@ -1,17 +1,21 @@
-from vectors import Vector
+from s2clientprotocol import sc2api_pb2 as sc_pb, raw_pb2 as raw_pb
 
-from s2clientprotocol import sc2api_pb2 as sc_pb, raw_pb2 as raw_pb, data_pb2 as data_pb
-
+from .position import Point3
 from .util import name_matches
 from .data import Alliance, Attribute, DisplayType
+from .game_data import GameData
 from . import action
 
 class Unit(object):
-    def __init__(self, proto_data, type_data):
+    def __init__(self, proto_data, game_data):
         assert isinstance(proto_data, raw_pb.Unit)
-        assert isinstance(type_data, data_pb.UnitTypeData)
+        assert isinstance(game_data, GameData)
         self._proto = proto_data
-        self._type_data = type_data
+        self._game_data = game_data
+
+    @property
+    def _type_data(self):
+        return self._game_data.units[self._proto.unit_type]
 
     @property
     def is_snapshot(self):
@@ -43,7 +47,10 @@ class Unit(object):
 
     @property
     def position(self):
-        return Vector(self._proto.pos.x, self._proto.pos.y, self._proto.pos.z)
+        return Point3.from_proto(self._proto.pos)
+
+    def distance_to(self, p):
+        return self.position.to2.distance_to(p.to2)
 
     @property
     def facing(self):
@@ -58,7 +65,7 @@ class Unit(object):
         return self._proto.build_progress
 
     @property
-    def ready(self):
+    def is_ready(self):
         return self.build_progress == 1.0
 
     @property
@@ -106,9 +113,13 @@ class Unit(object):
     def is_selected(self):
         return self._proto.is_selected
 
-    # @property
-    # def orders(self):
-    #     return self._proto.orders
+    @property
+    def orders(self):
+        return [UnitOrder.from_proto(o, self._game_data) for o in self._proto.orders]
+
+    @property
+    def is_idle(self):
+        return not self.orders
 
     @property
     def name(self):
@@ -119,3 +130,22 @@ class Unit(object):
 
     def __call__(self, ability_name, *args, **kwargs):
         return action.UnitCommand(ability_name, self, *args, **kwargs)
+
+class UnitOrder(object):
+    @classmethod
+    def from_proto(cls, proto, game_data):
+        return cls(
+            game_data.abilities[proto.ability_id],
+            (proto.target_world_space_pos
+                if proto.HasField("target_world_space_pos") else
+                proto.target_unit_tag),
+            proto.progress
+        )
+
+    def __init__(self, ability, target, progress=None):
+        self.ability = ability
+        self.target = target
+        self.progress = progress
+
+    def __repr__(self):
+        return f"UnitOrder({self.ability}, {self.target}, {self.progress})"

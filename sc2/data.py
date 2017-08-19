@@ -20,4 +20,3 @@ CloakState = enum.Enum("CloakState", raw_pb.CloakState.items())
 Attribute = enum.Enum("Attribute", data_pb.Attribute.items())
 
 ActionResult = enum.Enum("ActionResult", error_pb.ActionResult.items())
-0

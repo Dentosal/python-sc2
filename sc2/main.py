@@ -1,15 +1,14 @@
 #!/usr/bin/python
 
 import asyncio
-from vectors import Vector
 
 from .sc2process import SC2Process
 from .client import Client
 from .player import Human, Bot, Observer
-from .action import combine_actions
-from .data import Race, Difficulty, Result
+from .data import Race, Difficulty, Result, ActionResult
 from .game_state import GameState
 
+from . import pixel_map
 
 def run_game(map_settings, players, observe=[], realtime=False):
     assert len(players) > 0, "Can't create a game without players"
@@ -36,10 +35,10 @@ def run_game(map_settings, players, observe=[], realtime=False):
 
             game_data = await client.get_game_data()
             game_info = await client.get_game_info()
-            start_locations = [Vector(p.x, p.y, 0) for p in game_info.start_raw.start_locations]
 
-            for bot in bots:
-                bot.ai.on_start(start_locations)
+            if bots:
+                bots[0].ai._prepare_start(client, game_info, game_data)
+                bots[0].ai.on_start()
 
             iteration = 0
             while True:
@@ -51,9 +50,8 @@ def run_game(map_settings, players, observe=[], realtime=False):
                 gs = GameState(state.observation, game_data)
 
                 if bots:
-                    actions = bots[0].ai.on_step(gs, iteration)
-                    if actions:
-                        await client.actions(combine_actions(actions, game_data))
+                    bots[0].ai._prepare_step(gs)
+                    await bots[0].ai.on_step(gs, iteration)
 
                 await client.step()
                 iteration += 1

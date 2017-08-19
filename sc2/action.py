@@ -1,20 +1,14 @@
 from itertools import groupby
-from vectors import Vector
-from s2clientprotocol import raw_pb2 as raw_pb, common_pb2 as common
+from s2clientprotocol import raw_pb2 as raw_pb, common_pb2 as common_pb
 
-from .util import name_normalize, name_matches
+from .position import Point2
+from .util import name_normalize
 from .unit import Unit
 
 def combine_actions(action_iter, game_data):
     for key, items in groupby(action_iter, key=lambda a: a.combining_tuple):
-        for a in game_data.abilities:
-            if name_matches(key[0], a.button_name) or name_matches(key[0], a.friendly_name):
-                ability_id = a.ability_id
-                break
-        else:
-            raise RuntimeError(f"Unknown action '{key[0]}'")
-
         ability_name, target, queue = key
+        ability_id = game_data.find_ability_by_name(ability_name).id
 
         if target is None:
             cmd = raw_pb.ActionRawUnitCommand(
@@ -22,12 +16,12 @@ def combine_actions(action_iter, game_data):
                 unit_tags=[u.unit.tag for u in items],
                 queue_command=queue
             )
-        elif isinstance(target, Vector):
+        elif isinstance(target, Point2):
             cmd = raw_pb.ActionRawUnitCommand(
                 ability_id=ability_id,
                 unit_tags=[u.unit.tag for u in items],
                 queue_command=queue,
-                target_world_space_pos=common.Point2D(x=target.x, y=target.y)
+                target_world_space_pos=common_pb.Point2D(x=target.x, y=target.y)
             )
         else:
             raise "ERROR"
@@ -38,7 +32,7 @@ def combine_actions(action_iter, game_data):
 class UnitCommand(object):
     def __init__(self, ability_name, unit, target=None, queue=False):
         assert isinstance(unit, Unit)
-        assert target is None or isinstance(target, (Vector, Unit))
+        assert target is None or isinstance(target, (Point2, Unit))
         assert isinstance(queue, bool)
         self.ability_name = name_normalize(ability_name)
         self.unit = unit

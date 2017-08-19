@@ -1,4 +1,5 @@
-from .unit import Unit
+from .units import Units
+from .power_source import PsionicMatrix
 
 class Common(object):
     ATTRIBUTES = [
@@ -13,16 +14,11 @@ class Common(object):
         self._proto = proto
 
     def __getattr__(self, attr):
-        assert attr in ATTRIBUTES
+        assert attr in self.ATTRIBUTES, f"'{attr}' is not a valid attribute"
         return int(getattr(self._proto, attr))
 
 class GameState(object):
     def __init__(self, observation, game_data):
         self.common = Common(observation.observation.player_common)
-        self.units = [
-            Unit(u, game_data.units[u.unit_type])
-            for u in observation.observation.raw_data.units
-        ]
-
-    def get_units(self, name):
-        return [unit for unit in self.units if unit.matches(name)]
+        self.units = Units.from_proto(observation.observation.raw_data.units, game_data)
+        self.psionic_matrix = PsionicMatrix.from_proto(observation.observation.raw_data.player.power_sources)
