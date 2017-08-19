@@ -4,6 +4,8 @@ An easy-to-use library for wrting AI Bots for StarCraft II in Python 3. The ulti
 
 **This library (currently) covers only the raw scripted interface.** At this time I don't ident to add support for graphics-based iterfaces.
 
+**NOTE: This library is still in very early stages, and features are change often.**
+
 ## Installation
 
 You'll need Python 3.6 or newer.
@@ -28,15 +30,10 @@ from sc2 import run_game, maps, Race, Difficulty
 from sc2.player import Bot, Computer
 
 class WorkerRushBot(sc2.BotAI):
-    def on_start(self, enemy_start_locations):
-        self.enemy_start_locations = enemy_start_locations
-
-    def on_step(self, state, iteration):
-        if iteration > 0:
-            return
-        for unit in state.units:
-            if unit.is_visible and unit.is_mine and not unit.is_structure:
-                yield unit("Attack", self.enemy_start_locations[0])
+    async def on_step(self, state, iteration):
+        if iteration == 0:
+            for probe in self.units("Probe"):
+                await self.do(probe("Attack", self.enemy_start_locations[0]))
 
 run_game(maps.get("Abyssal Reef LE"), [
     Bot(Race.Protoss, WorkerRushBot()),
