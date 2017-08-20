@@ -45,7 +45,9 @@ def run_game(map_settings, players, observe=[], realtime=False):
                 state = await client.observation()
 
                 if len(state.observation.player_result) > 0:
-                    return Result(min(state.observation.player_result, key=lambda p: p.player_id).result)
+                    result = Result(min(state.observation.player_result, key=lambda p: p.player_id).result)
+                    await client.quit()
+                    return result
 
                 gs = GameState(state.observation, game_data)
 
@@ -55,8 +57,6 @@ def run_game(map_settings, players, observe=[], realtime=False):
 
                 await client.step()
                 iteration += 1
-
-            await client.quit()
 
     result = asyncio.get_event_loop().run_until_complete(run())
     print(result)
