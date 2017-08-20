@@ -131,6 +131,9 @@ class Unit(object):
     def __call__(self, ability_name, *args, **kwargs):
         return action.UnitCommand(ability_name, self, *args, **kwargs)
 
+    def __repr__(self):
+        return f"Unit(name={self.name !r}, tag={self.tag})"
+
 class UnitOrder(object):
     @classmethod
     def from_proto(cls, proto, game_data):
