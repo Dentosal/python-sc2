@@ -1,3 +1,5 @@
+import sys
+import signal
 import time
 import os.path
 import shutil
@@ -19,6 +21,12 @@ class SC2Process(object):
         self._ws = None
 
     async def __aenter__(self):
+        def signal_handler(signal, frame):
+            self._clean()
+            sys.exit(0)
+
+        signal.signal(signal.SIGINT, signal_handler)
+
         try:
             self._process = self._launch()
             self._ws = await self._connect()
@@ -30,6 +38,7 @@ class SC2Process(object):
 
     async def __aexit__(self, *args):
         self._clean()
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     @property
     def ws_url(self):
