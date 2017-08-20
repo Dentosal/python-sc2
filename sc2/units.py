@@ -22,6 +22,21 @@ class Units(list):
     def select(self, *args, **kwargs):
         return UnitSelection(self, *args, **kwargs)
 
+    def __or__(self, other):
+        tags = {unit.tag for unit in self}
+        units = self + [unit for unit in other if unit.tag not in tags]
+        return Units(units, self.game_data)
+
+    def __and__(self, other):
+        tags = {unit.tag for unit in self}
+        units = [unit for unit in other if unit.tag in tags]
+        return Units(units, self.game_data)
+
+    def __sub__(self, other):
+        tags = {unit.tag for unit in other}
+        units = [unit for unit in self if unit.tag not in tags]
+        return Units(units, self.game_data)
+
     @property
     def amount(self):
         return len(self)
@@ -43,6 +58,15 @@ class Units(list):
     def random(self):
         assert self.exists
         return random.choice(self)
+
+    def random_group_of(self, n):
+        assert 0 <= n <= self.amount
+        if n == 0:
+            return self.subgroup([])
+        elif self.amount == n:
+            return self
+        else:
+            return self.subgroup(random.sample(self, n))
 
     def closest_to(self, position):
         return min(self, key=lambda unit: unit.position.to2.distance_to(position))
