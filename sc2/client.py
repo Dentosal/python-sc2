@@ -1,4 +1,9 @@
-from s2clientprotocol import sc2api_pb2 as sc_pb, common_pb2 as common_pb, query_pb2 as query_pb
+from s2clientprotocol import (
+    sc2api_pb2 as sc_pb,
+    common_pb2 as common_pb,
+    query_pb2 as query_pb,
+    debug_pb2 as debug_pb
+)
 
 from .cache import method_cache_forever
 
@@ -78,3 +83,14 @@ class Client(Protocol):
             ignore_resource_requirements=ignore_resources
         ))
         return [ActionResult(p.result) for p in result.query.placements]
+
+    async def debug_text(self, text, position, color=(0, 255, 0)):
+        await self._execute(debug=sc_pb.RequestDebug(
+            debug=[debug_pb.DebugCommand(draw=debug_pb.DebugDraw(
+                text=[debug_pb.DebugText(
+                    text=text,
+                    color=debug_pb.Color(r=color[0], g=color[1], b=color[2]),
+                    world_pos=common_pb.Point(x=position.x, y=position.y, z=position.z)
+                )]
+            ))]
+        ))
