@@ -31,7 +31,7 @@ class BotAI(object):
     def _prepare_step(self, state):
         self.units = state.units.owned
         self.minerals = state.common.minerals
-        self.vespnene = state.common.vespene
+        self.vespene = state.common.vespene
 
     def on_start(self):
         pass
