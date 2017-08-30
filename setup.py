@@ -3,9 +3,9 @@ from setuptools import setup
 setup(
     name = "sc2",
     packages = ["sc2"],
-    version = "0.1.1alpha0",
+    version = "0.2.0",
     description = "A StarCraft II API Client for Python 3",
-    license='MIT',
+    license="MIT",
     author = "Hannes Karppila",
     author_email = "hannes.karppila@gmail.com",
     url = "https://github.com/Dentosal/python-sc2",
