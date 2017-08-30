@@ -45,8 +45,11 @@ class CannonRushBot(sc2.BotAI):
                     building = PHOTONCANNON if state.psionic_matrix.covers(pos) else PYLON
                     await self.build(building, near=pos)
 
+def main():
+    sc2.run_game(sc2.maps.get("Abyssal Reef LE"), [
+        Bot(Race.Protoss, CannonRushBot()),
+        Computer(Race.Protoss, Difficulty.Medium)
+    ], realtime=True)
 
-sc2.run_game(sc2.maps.get("Abyssal Reef LE"), [
-    Bot(Race.Protoss, CannonRushBot()),
-    Computer(Race.Protoss, Difficulty.Medium)
-], realtime=True)
+if __name__ == '__main__':
+    main()

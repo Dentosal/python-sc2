@@ -8,7 +8,11 @@ class WorkerRushBot(sc2.BotAI):
             for probe in self.workers:
                 await self.do(probe.attack(self.enemy_start_locations[0]))
 
-run_game(maps.get("Abyssal Reef LE"), [
-    Bot(Race.Protoss, WorkerRushBot()),
-    Computer(Race.Protoss, Difficulty.Medium)
-], realtime=True)
+def main():
+    run_game(maps.get("Abyssal Reef LE"), [
+        Bot(Race.Protoss, WorkerRushBot()),
+        Computer(Race.Protoss, Difficulty.Medium)
+    ], realtime=True)
+
+if __name__ == '__main__':
+    main()

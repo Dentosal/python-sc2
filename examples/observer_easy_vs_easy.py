@@ -2,7 +2,12 @@ from sc2 import Race, Difficulty
 from sc2 import maps, run_game
 from sc2.player import Computer
 
-run_game(maps.get("Abyssal Reef LE"), [
-    Computer(Race.Protoss, Difficulty.Easy),
-    Computer(Race.Zerg, Difficulty.Easy)
-])
+
+def main():
+    sc2.run_game(sc2.maps.get("Abyssal Reef LE"), [
+        Bot(Race.Protoss, CannonRushBot()),
+        Computer(Race.Protoss, Difficulty.Medium)
+    ], realtime=True)
+
+if __name__ == '__main__':
+    main()

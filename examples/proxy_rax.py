@@ -39,7 +39,11 @@ class ProxyRaxBot(sc2.BotAI):
         for scv in self.units(SCV).idle:
             await self.do(scv.gather(self.state.mineral_field.closest_to(cc)))
 
-sc2.run_game(sc2.maps.get("Sequencer LE"), [
-    Bot(Race.Terran, ProxyRaxBot()),
-    Computer(Race.Zerg, Difficulty.Hard)
-], realtime=False)
+def main():
+    sc2.run_game(sc2.maps.get("Sequencer LE"), [
+        Bot(Race.Terran, ProxyRaxBot()),
+        Computer(Race.Zerg, Difficulty.Hard)
+    ], realtime=True)
+
+if __name__ == '__main__':
+    main()
