@@ -2,9 +2,9 @@
 
 An easy-to-use library for wrting AI Bots for StarCraft II in Python 3. The ultimate goal is simplicity and ease of use, while still preserving all funcionality. A really simple worker rush bot should be no more than twenty lines of code, not two hundred. However, this library intends to provide both high and low level abstractions.
 
-**This library (currently) covers only the raw scripted interface.** At this time I don't ident to add support for graphics-based iterfaces.
+**This library (currently) covers only the raw scripted interface.** At this time I don't intend to add support for graphics-based iterfaces.
 
-**NOTE: This library is still in very early stages, and features are change often.**
+**NOTE: This library is still in very early stages, and features can still change.**
 
 ## Installation
 
@@ -32,8 +32,8 @@ from sc2.player import Bot, Computer
 class WorkerRushBot(sc2.BotAI):
     async def on_step(self, state, iteration):
         if iteration == 0:
-            for probe in self.units("Probe"):
-                await self.do(probe("Attack", self.enemy_start_locations[0]))
+            for probe in self.workers:
+                await self.do(probe.attack(self.enemy_start_locations[0]))
 
 run_game(maps.get("Abyssal Reef LE"), [
     Bot(Race.Protoss, WorkerRushBot()),
@@ -42,3 +42,8 @@ run_game(maps.get("Abyssal Reef LE"), [
 ```
 
 This is probably the simplest bot that has any realistic chances of winning the game. I have ran it against the medium AI quite a few times, and once in a while it wins.
+
+
+## Bug reports, ideas and contributing
+
+If you have any issues, ideas or feedback, please create [a new issue](https://github.com/Dentosal/python-sc2/issues/new). Pull requests are also welcome!
