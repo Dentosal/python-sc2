@@ -1,10 +1,13 @@
 from s2clientprotocol import sc2api_pb2 as sc_pb, raw_pb2 as raw_pb
 
 from .position import Point3
-from .util import name_matches
 from .data import Alliance, Attribute, DisplayType
 from .game_data import GameData
+from .ids.unit_typeid import UnitTypeId
+from .ids.ability_id import AbilityId
 from . import action
+
+from .tmpfix import creation_ability_from_unit_id
 
 class Unit(object):
     def __init__(self, proto_data, game_data):
@@ -12,6 +15,10 @@ class Unit(object):
         assert isinstance(game_data, GameData)
         self._proto = proto_data
         self._game_data = game_data
+
+    @property
+    def type_id(self):
+        return UnitTypeId(self._proto.unit_type)
 
     @property
     def _type_data(self):
@@ -34,12 +41,12 @@ class Unit(object):
         return self._proto.alliance == Alliance.Self.value
 
     @property
-    def tag(self):
-        return self._proto.tag
+    def is_enemy(self):
+        return self._proto.alliance == Alliance.Enemy.value
 
     @property
-    def unit_type_id(self):
-        return self._proto.unit_type
+    def tag(self):
+        return self._proto.tag
 
     @property
     def owner_id(self):
@@ -50,7 +57,7 @@ class Unit(object):
         return Point3.from_proto(self._proto.pos)
 
     def distance_to(self, p):
-        return self.position.to2.distance_to(p.to2)
+        return self.position.to2.distance_to(p.position.to2)
 
     @property
     def facing(self):
@@ -90,6 +97,14 @@ class Unit(object):
         return Attribute.Structure.value in self._type_data.attributes
 
     @property
+    def is_mineral_field(self):
+        return "MineralField" in self._type_data.name
+
+    @property
+    def is_vespene_geyser(self):
+        return "VespeneGeyser" in self._type_data.name
+
+    @property
     def health(self):
         return self._proto.health
 
@@ -125,11 +140,31 @@ class Unit(object):
     def name(self):
         return self._type_data.name
 
-    def matches(self, name):
-        return name_matches(self.name, name)
+    def train(self, unit, *args, **kwargs):
+        a = creation_ability_from_unit_id(unit)
+        return self(a, *args, **kwargs)
 
-    def __call__(self, ability_name, *args, **kwargs):
-        return action.UnitCommand(ability_name, self, *args, **kwargs)
+    def build(self, unit, *args, **kwargs):
+        a = creation_ability_from_unit_id(unit)
+        return self(a, *args, **kwargs)
+
+    def attack(self, *args, **kwargs):
+        return self(AbilityId.ATTACK, *args, **kwargs)
+
+    def gather(self, *args, **kwargs):
+        return self(AbilityId.HARVEST_GATHER, *args, **kwargs)
+
+    def move(self, *args, **kwargs):
+        return self(AbilityId.MOVE, *args, **kwargs)
+
+    def hold_position(self, *args, **kwargs):
+        return self(AbilityId.HOLDPOSITION, *args, **kwargs)
+
+    def stop(self, *args, **kwargs):
+        return self(AbilityId.STOP, *args, **kwargs)
+
+    def __call__(self, ability, *args, **kwargs):
+        return action.UnitCommand(ability, self, *args, **kwargs)
 
     def __repr__(self):
         return f"Unit(name={self.name !r}, tag={self.tag})"

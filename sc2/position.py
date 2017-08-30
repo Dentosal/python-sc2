@@ -12,8 +12,15 @@ class Pointlike(tuple):
     def rounded(self):
         return self.__class__(round(q) for q in self)
 
+    @property
+    def position(self):
+        return self
+
     def distance_to(self, p):
-        assert self != p
+        p = p.position
+        assert isinstance(p, Pointlike)
+        if self == p:
+            return 0
         return sqrt(sum(self.__class__((b-a)**2 for a, b in itertools.zip_longest(self, p[:len(self)], fillvalue=0))))
 
     def sort_by_distance(self, ps):

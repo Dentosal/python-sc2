@@ -10,6 +10,7 @@ class GameInfo(object):
         self.terrain_height = PixelMap(proto.start_raw.terrain_height)
         self.placement_grid = PixelMap(proto.start_raw.placement_grid)
         self.playable_area = Rect.from_proto(proto.start_raw.playable_area)
+        self.player_races = {p.player_id: p.race_actual or p.race_requested for p in proto.player_info}
         self.start_locations = [Point2.from_proto(sl) for sl in proto.start_raw.start_locations]
 
     @property

@@ -1,7 +1,7 @@
 import random
 
-from .util import name_matches
 from .unit import Unit
+from .ids.unit_typeid import UnitTypeId
 
 class Units(list):
     """A collection for units. Makes it easy to select units by selectors."""
@@ -59,6 +59,12 @@ class Units(list):
         assert self.exists
         return random.choice(self)
 
+    def random_or(self, other):
+        if self.exists:
+            return random.choice(self)
+        else:
+            return other
+
     def random_group_of(self, n):
         assert 0 <= n <= self.amount
         if n == 0:
@@ -71,7 +77,9 @@ class Units(list):
     def closest_to(self, position):
         return min(self, key=lambda unit: unit.position.to2.distance_to(position))
 
-    def closer_than(self, position, distance):
+    def closer_than(self, distance, position):
+        if isinstance(position, Unit):
+            position = position.position
         return self.filter(lambda unit: unit.position.to2.distance_to(position) < distance)
 
     def subgroup(self, units):
@@ -88,12 +96,32 @@ class Units(list):
         return self.filter(lambda unit: unit.is_ready)
 
     @property
+    def not_ready(self):
+        return self.filter(lambda unit: not unit.is_ready)
+
+    @property
     def idle(self):
         return self.filter(lambda unit: unit.is_idle)
 
     @property
     def owned(self):
         return self.filter(lambda unit: unit.is_mine)
+
+    @property
+    def enemy(self):
+        return self.filter(lambda unit: unit.is_enemy)
+
+    @property
+    def structure(self):
+        return self.filter(lambda unit: unit.is_structure)
+
+    @property
+    def mineral_field(self):
+        return self.filter(lambda unit: unit.is_mineral_field)
+
+    @property
+    def vespene_geyser(self):
+        return self.filter(lambda unit: unit.is_vespene_geyser)
 
     @property
     def prefer_idle(self):
@@ -103,25 +131,14 @@ class Units(list):
         return self.sorted(lambda unit: unit.distance_to(p))
 
 class UnitSelection(Units):
-    def __init__(self, parent, name=None, name_exact=True):
-        self.name = name
+    def __init__(self, parent, unit_type_id=None):
+        assert unit_type_id is None or isinstance(unit_type_id, UnitTypeId)
+        self.unit_type_id = unit_type_id
         super().__init__([u for u in parent if self.matches(u)], parent.game_data)
 
     def matches(self, unit):
-        if self.name:
-            return unit.matches(self.name)
+        if self.unit_type_id:
+            return self.unit_type_id == unit.type_id
         else:
             # empty selector matches everything
             return True
-
-    @property
-    def type_data(self):
-        assert self.name
-        for utd in self.game_data.units.values():
-            if name_matches(utd.name, self.name):
-                return utd
-        raise KeyError
-
-    @property
-    def cost(self):
-        return self.type_data.cost

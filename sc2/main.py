@@ -29,7 +29,7 @@ def run_game(map_settings, players, observe=[], realtime=False):
 
             if participants:
                 assert players[0] is participants[0]
-                await client.join_game(players[0].race)
+                player_id = await client.join_game(players[0].race)
             else:
                 await client.join_game(observed_player_id=1)
 
@@ -37,7 +37,7 @@ def run_game(map_settings, players, observe=[], realtime=False):
             game_info = await client.get_game_info()
 
             if bots:
-                bots[0].ai._prepare_start(client, game_info, game_data)
+                bots[0].ai._prepare_start(client, player_id, game_info, game_data)
                 bots[0].ai.on_start()
 
             iteration = 0

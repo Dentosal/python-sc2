@@ -1,4 +1,3 @@
-from .util import name_matches
 from .paths import Paths
 
 def get(name=None):
@@ -31,7 +30,7 @@ class Map(object):
             return f.read()
 
     def matches(self, name):
-        return name_matches(self.name, name)
+        return self.name.lower().replace(" ", "") == name.lower().replace(" ", "")
 
     def __repr__(self):
         return f"Map({self.path})"

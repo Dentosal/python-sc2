@@ -10,7 +10,7 @@ from .cache import method_cache_forever
 from .protocol import Protocol
 from .game_info import GameInfo
 from .game_data import GameData
-from .data import Race, ActionResult
+from .data import Race, ActionResult, ChatChannel
 from .action import combine_actions
 
 class Client(Protocol):
@@ -32,7 +32,7 @@ class Client(Protocol):
                 options=sc_pb.InterfaceOptions(raw=True)
             )
         result = await self._execute(join_game=req)
-        return result
+        return result.join_game.player_id
 
     async def observation(self):
         result = await self._execute(observation=sc_pb.RequestObservation())
@@ -74,23 +74,47 @@ class Client(Protocol):
             else:
                 return [r for r in res if r != ActionResult.Success]
 
-    async def query_building_placement(self, ability_id, positions, ignore_resources=True):
+    async def query_building_placement(self, ability, positions, ignore_resources=True):
         result = await self._execute(query=query_pb.RequestQuery(
             placements=[query_pb.RequestQueryBuildingPlacement(
-                ability_id=ability_id,
+                ability_id=ability.value,
                 target_pos=common_pb.Point2D(x=position.x, y=position.y)
             ) for position in positions],
             ignore_resource_requirements=ignore_resources
         ))
         return [ActionResult(p.result) for p in result.query.placements]
 
-    async def debug_text(self, text, position, color=(0, 255, 0)):
-        await self._execute(debug=sc_pb.RequestDebug(
-            debug=[debug_pb.DebugCommand(draw=debug_pb.DebugDraw(
-                text=[debug_pb.DebugText(
-                    text=text,
-                    color=debug_pb.Color(r=color[0], g=color[1], b=color[2]),
-                    world_pos=common_pb.Point(x=position.x, y=position.y, z=position.z)
-                )]
-            ))]
+    async def chat_send(self, messages, team_only):
+        if not isinstance(messages, list):
+            return await self.chat_send([messages], team_only)
+
+        ch = ChatChannel.Team if team_only else ChatChannel.Broadcast
+        r = await self._execute(action=sc_pb.RequestAction(
+            actions=[sc_pb.Action(chat=[sc_pb.ActionChat(
+                channel=ch.value,
+                message=message
+            ) for message in messages])]
         ))
+        print(r)
+        exit("-")
+
+    async def debug_text(self, texts, positions, color=(0, 255, 0)):
+        if isinstance(positions, list):
+            if not positions:
+                return
+
+            if isinstance(texts, str):
+                texts = [texts] * len(positions)
+            assert len(texts) == len(positions)
+
+            await self._execute(debug=sc_pb.RequestDebug(
+                debug=[debug_pb.DebugCommand(draw=debug_pb.DebugDraw(
+                    text=[debug_pb.DebugText(
+                        text=t,
+                        color=debug_pb.Color(r=color[0], g=color[1], b=color[2]),
+                        world_pos=common_pb.Point(x=p.x, y=p.y, z=p.z)
+                    ) for t, p in zip(texts, positions)]
+                ))]
+            ))
+        else:
+            self.debug_text([texts], [positions], color)

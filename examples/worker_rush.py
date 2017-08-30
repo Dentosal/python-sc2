@@ -5,8 +5,8 @@ from sc2.player import Bot, Computer
 class WorkerRushBot(sc2.BotAI):
     async def on_step(self, state, iteration):
         if iteration == 0:
-            for probe in self.units("Probe"):
-                await self.do(probe("Attack", self.enemy_start_locations[0]))
+            for probe in self.workers:
+                await self.do(probe.attack(self.enemy_start_locations[0]))
 
 run_game(maps.get("Abyssal Reef LE"), [
     Bot(Race.Protoss, WorkerRushBot()),
