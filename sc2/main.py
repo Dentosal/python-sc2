@@ -13,6 +13,7 @@ async def _play_game_human(client, realtime):
 
         if len(state.observation.player_result) > 0:
             result = Result(min(state.observation.player_result, key=lambda p: p.player_id).result)
+            await client.leave()
             await client.quit()
             return result
 
@@ -29,9 +30,10 @@ async def _play_game_ai(client, player_id, ai, realtime):
     iteration = 0
     while True:
         state = await client.observation()
-
         if len(state.observation.player_result) > 0:
+            print("OBSR", state.observation.player_result)
             result = Result(min(state.observation.player_result, key=lambda p: p.player_id).result)
+            await client.leave()
             await client.quit()
             return result
 
@@ -44,7 +46,7 @@ async def _play_game_ai(client, player_id, ai, realtime):
             await client.step()
         iteration += 1
 
-async def _get_run_game_fn(map_settings, players, realtime=False, observer=False, portconfig=None):
+async def _host_game(map_settings, players, realtime=False, observer=False, portconfig=None):
     assert len(players) > 0, "Can't create a game without players"
 
     if observer:
@@ -71,7 +73,7 @@ async def _get_run_game_fn(map_settings, players, realtime=False, observer=False
         else:
             return await _play_game_ai(client, player_id, players[0].ai, realtime)
 
-async def _get_join_game_fn(map_settings, players, realtime, portconfig):
+async def _join_game(map_settings, players, realtime, portconfig):
     async with SC2Process() as server:
         await server.ping()
         client = Client(server._ws)
@@ -83,12 +85,12 @@ async def _get_join_game_fn(map_settings, players, realtime, portconfig):
             return await _play_game_ai(client, player_id, players[1].ai, realtime)
 
 def run_game(*args, **kwargs):
-    if any(isinstance(p, (Human, Bot)) for p in args[1]):
+    if sum(isinstance(p, (Human, Bot)) for p in args[1]) > 1:
         portconfig = Portconfig()
         result = asyncio.get_event_loop().run_until_complete(asyncio.gather(
-            _get_run_game_fn(*args, **kwargs, portconfig=portconfig),
-            _get_join_game_fn(*args, kwargs.get("realtime", False), portconfig)
+            _host_game(*args, **kwargs, portconfig=portconfig),
+            _join_game(*args, kwargs.get("realtime", False), portconfig)
         ))
     else:
-        result = asyncio.get_event_loop().run_until_complete(_get_run_game_fn(*args))
+        result = asyncio.get_event_loop().run_until_complete(_host_game(*args, **kwargs))
     print(result)
