@@ -17,20 +17,33 @@ class Client(Protocol):
     def __init__(self, ws):
         super().__init__(ws)
 
-    async def join_game(self, race=None, observed_player_id=None):
+    async def join_game(self, race=None, observed_player_id=None, portconfig=None):
+        ifopts = sc_pb.InterfaceOptions(raw=True)
+
         if race is None:
             assert isinstance(observed_player_id, int)
             # join as observer
             req = sc_pb.RequestJoinGame(
                 observed_player_id=observed_player_id,
-                options=sc_pb.InterfaceOptions(raw=True)
+                options=ifopts
             )
         else:
             assert isinstance(race, Race)
             req = sc_pb.RequestJoinGame(
                 race=race.value,
-                options=sc_pb.InterfaceOptions(raw=True)
+                options=ifopts
             )
+
+        if portconfig:
+            req.shared_port = portconfig.shared
+            req.server_ports.game_port = portconfig.server[0]
+            req.server_ports.base_port = portconfig.server[1]
+
+            for ppc in portconfig.players:
+                p = req.client_ports.add()
+                p.game_port = ppc[0]
+                p.base_port = ppc[1]
+
         result = await self._execute(join_game=req)
         return result.join_game.player_id
 

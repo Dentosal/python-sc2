@@ -1,62 +1,94 @@
-#!/usr/bin/python
-
 import asyncio
 
 from .sc2process import SC2Process
+from .portconfig import Portconfig
 from .client import Client
 from .player import Human, Bot, Observer
 from .data import Race, Difficulty, Result, ActionResult
 from .game_state import GameState
 
-from . import pixel_map
+async def _play_game_human(client, realtime):
+    while True:
+        state = await client.observation()
 
-def run_game(map_settings, players, observe=[], realtime=False):
+        if len(state.observation.player_result) > 0:
+            result = Result(min(state.observation.player_result, key=lambda p: p.player_id).result)
+            await client.quit()
+            return result
+
+        if not realtime:
+            await client.step()
+
+async def _play_game_ai(client, player_id, ai, realtime):
+    game_data = await client.get_game_data()
+    game_info = await client.get_game_info()
+
+    ai._prepare_start(client, player_id, game_info, game_data)
+    ai.on_start()
+
+    iteration = 0
+    while True:
+        state = await client.observation()
+
+        if len(state.observation.player_result) > 0:
+            result = Result(min(state.observation.player_result, key=lambda p: p.player_id).result)
+            await client.quit()
+            return result
+
+        gs = GameState(state.observation, game_data)
+
+        ai._prepare_step(gs)
+        await ai.on_step(gs, iteration)
+
+        if not realtime:
+            await client.step()
+        iteration += 1
+
+async def _get_run_game_fn(map_settings, players, realtime=False, observer=False, portconfig=None):
     assert len(players) > 0, "Can't create a game without players"
 
-    async def run():
-        async with SC2Process() as server:
-            await server.ping()
+    if observer:
+        players.append(Observer())
+    else:
+        assert any(isinstance(p, (Human, Bot)) for p in players)
 
-            bots = [p for p in players if isinstance(p, Bot)]
-            participants = [p for p in players if isinstance(p, (Human, Bot))]
+    async with SC2Process() as server:
+        await server.ping()
 
-            if not participants:
-                players.insert(0, Observer())
+        await server.create_game(map_settings, players, realtime)
 
-            await server.create_game(map_settings, players, realtime)
+        client = Client(server._ws)
 
-            client = Client(server._ws)
+        if observer:
+            await client.join_game(observed_player_id=1, portconfig=portconfig)
+            return await _play_game_human(client, realtime)
 
-            if participants:
-                assert players[0] is participants[0]
-                player_id = await client.join_game(players[0].race)
-            else:
-                await client.join_game(observed_player_id=1)
 
-            game_data = await client.get_game_data()
-            game_info = await client.get_game_info()
+        player_id = await client.join_game(players[0].race, portconfig=portconfig)
 
-            if bots:
-                bots[0].ai._prepare_start(client, player_id, game_info, game_data)
-                bots[0].ai.on_start()
+        if isinstance(players[0], Human):
+            return await _play_game_human(client, realtime)
+        else:
+            return await _play_game_ai(client, player_id, players[0].ai, realtime)
 
-            iteration = 0
-            while True:
-                state = await client.observation()
+async def _get_join_game_fn(map_settings, players, realtime, portconfig):
+    async with SC2Process() as server:
+        await server.ping()
+        client = Client(server._ws)
 
-                if len(state.observation.player_result) > 0:
-                    result = Result(min(state.observation.player_result, key=lambda p: p.player_id).result)
-                    await client.quit()
-                    return result
+        player_id = await client.join_game(players[1].race, portconfig=portconfig)
+        if isinstance(player_id, Human):
+            return await _play_game_human(client, realtime)
+        else:
+            return await _play_game_ai(client, player_id, players[1].ai, realtime)
 
-                gs = GameState(state.observation, game_data)
-
-                if bots:
-                    bots[0].ai._prepare_step(gs)
-                    await bots[0].ai.on_step(gs, iteration)
-
-                await client.step()
-                iteration += 1
-
-    result = asyncio.get_event_loop().run_until_complete(run())
+def run_game(*args, **kwargs):
+    if any(isinstance(p, (Human, Bot)) for p in args[1]):
+        portconfig = Portconfig()
+        result = asyncio.get_event_loop().run_until_complete(asyncio.gather(
+            _get_run_game_fn(*args, **kwargs, portconfig=portconfig),
+            _get_join_game_fn(*args, kwargs.get("realtime", False), portconfig)
+        ))
+    else:
+        result = asyncio.get_event_loop().run_until_complete(_get_run_game_fn(*args))
     print(result)

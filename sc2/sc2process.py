@@ -1,6 +1,7 @@
 import sys
 import signal
 import time
+import asyncio
 import os.path
 import shutil
 import tempfile
@@ -12,6 +13,18 @@ from .paths import Paths
 from .protocol import Protocol
 from .controller import Controller
 
+class kill_switch(object):
+    _to_kill = []
+
+    @classmethod
+    def add(cls, value):
+        cls._to_kill.append(value)
+
+    @classmethod
+    def kill_all(cls):
+        for p in cls._to_kill:
+            p._clean()
+
 class SC2Process(object):
     def __init__(self, fullscreen=False):
         self._fullscreen = fullscreen
@@ -21,8 +34,11 @@ class SC2Process(object):
         self._ws = None
 
     async def __aenter__(self):
+        print("E>", self._port)
+        kill_switch.add(self)
+
         def signal_handler(signal, frame):
-            self._clean()
+            kill_switch.kill_all()
             sys.exit(0)
 
         signal.signal(signal.SIGINT, signal_handler)
@@ -34,11 +50,14 @@ class SC2Process(object):
             self._clean()
             raise
 
+        print("E<")
         return Controller(self._ws)
 
     async def __aexit__(self, *args):
-        self._clean()
+        print("X>")
+        kill_switch.kill_all()
         signal.signal(signal.SIGINT, signal.SIG_DFL)
+        print("X<")
 
     @property
     def ws_url(self):
@@ -59,7 +78,7 @@ class SC2Process(object):
 
     async def _connect(self):
         for _ in range(30):
-            time.sleep(1)
+            await asyncio.sleep(1)
             try:
                 ws = await websockets.connect(self.ws_url, timeout=120)
                 return ws
