@@ -70,3 +70,6 @@ class Cost(object):
         self.minerals = minerals
         self.vespene = vespene
         self.time = time
+
+    def __repr__(self):
+        return f"Cost({self.minerals}, {self.vespene})"
