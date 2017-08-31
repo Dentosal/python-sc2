@@ -8,7 +8,6 @@ from sc2.player import Bot, Computer
 class ZergRushBot(sc2.BotAI):
     def __init__(self):
         self.drone_counter = 0
-        self.overlord_counter = 0
         self.extractor_started = False
         self.spawning_pool_started = False
         self.moved_workers_to_gas = False
@@ -45,12 +44,10 @@ class ZergRushBot(sc2.BotAI):
         if self.supply_left < 2:
             if self.can_afford(OVERLORD) and larvae.exists:
                 await self.do(larvae.random.train(OVERLORD))
-                return
 
         if self.units(SPAWNINGPOOL).ready.exists:
             if larvae.exists and self.minerals > self.can_afford(ZERGLING):
                 await self.do(larvae.random.train(ZERGLING))
-                return
 
         if self.units(EXTRACTOR).ready.exists and not self.moved_workers_to_gas:
             self.moved_workers_to_gas = True
@@ -67,13 +64,12 @@ class ZergRushBot(sc2.BotAI):
                     break
 
         if self.drone_counter < 3:
-            if self.minerals >= self.can_afford(DRONE):
+            if self.can_afford(DRONE):
                 self.drone_counter += 1
                 await self.do(larvae.random.train(DRONE))
-                return
 
         if not self.extractor_started:
-            if self.minerals >= self.can_afford(EXTRACTOR):
+            if self.can_afford(EXTRACTOR):
                 drone = self.workers.random
                 target = state.vespene_geyser.closest_to(drone.position)
                 err = await self.do(drone.build(EXTRACTOR, target))
@@ -81,8 +77,7 @@ class ZergRushBot(sc2.BotAI):
                     self.extractor_started = True
 
         elif not self.spawning_pool_started:
-            if self.minerals >= self.can_afford(SPAWNINGPOOL):
-
+            if self.can_afford(SPAWNINGPOOL):
                 for d in range(4, 15):
                     pos = hatchery.position.to2.towards(self.game_info.map_center, d)
                     if await self.can_place(SPAWNINGPOOL, pos):
@@ -92,8 +87,8 @@ class ZergRushBot(sc2.BotAI):
                             self.spawning_pool_started = True
                             break
 
-        elif not self.queeen_started:
-            if self.minerals >= self.can_afford(QUEEN):
+        elif not self.queeen_started and self.units(SPAWNINGPOOL).ready.exists:
+            if self.can_afford(QUEEN):
                 r = await self.do(hatchery.train(QUEEN))
                 if not r:
                     self.queeen_started = True
