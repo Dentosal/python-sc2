@@ -34,7 +34,6 @@ class SC2Process(object):
         self._ws = None
 
     async def __aenter__(self):
-        print("E>", self._port)
         kill_switch.add(self)
 
         def signal_handler(signal, frame):
@@ -50,14 +49,11 @@ class SC2Process(object):
             self._clean()
             raise
 
-        print("E<")
         return Controller(self._ws)
 
     async def __aexit__(self, *args):
-        print("X>")
         kill_switch.kill_all()
         signal.signal(signal.SIGINT, signal.SIG_DFL)
-        print("X<")
 
     @property
     def ws_url(self):
