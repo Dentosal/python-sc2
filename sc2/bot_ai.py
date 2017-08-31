@@ -38,8 +38,6 @@ class BotAI(object):
     def select_build_worker(self, pos, force=False):
         workers = self.workers.closer_than(20, pos) or self.workers
         for worker in workers.prefer_close_to(pos).prefer_idle:
-            if worker.orders:
-                print(worker.orders[0].ability.id)
             if not worker.orders or len(worker.orders) == 1 and worker.orders[0].ability.id in [AbilityId.MOVE, AbilityId.HARVEST_GATHER, AbilityId.HARVEST_RETURN]:
                 return worker
 
@@ -83,7 +81,6 @@ class BotAI(object):
         return None
 
     def already_pending(self, unit_type):
-        print("!", unit_type)
         ability = creation_ability_from_unit_id(unit_type)
         if self.units(unit_type).not_ready.exists:
             return True
@@ -114,10 +111,8 @@ class BotAI(object):
             self.minerals -= cost.minerals
             self.vespene -= cost.vespene
 
-
         else:
-            print(action)
-            print(f"Error: {r}")
+            print(f"Error: {r} (action: {action})")
 
         # if r:
             # print("!a", action)

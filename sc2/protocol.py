@@ -47,5 +47,7 @@ class Protocol(object):
         return result
 
     async def quit(self):
-        result = await self._execute(quit=sc_pb.RequestQuit())
-        return result
+        try:
+            await self._execute(quit=sc_pb.RequestQuit())
+        except websockets.exceptions.ConnectionClosed:
+            pass
