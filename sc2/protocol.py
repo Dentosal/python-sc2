@@ -46,6 +46,9 @@ class Protocol(object):
         result = await self._execute(ping=sc_pb.RequestPing())
         return result
 
+    async def leave(self):
+        await self._execute(leave_game=sc_pb.RequestLeaveGame())
+
     async def quit(self):
         try:
             await self._execute(quit=sc_pb.RequestQuit())
