@@ -7,6 +7,7 @@ from .position import Point2, Point3
 from .data import Race, ActionResult, Attribute, race_worker
 from .action import UnitCommand
 from .unit import Unit
+from .game_data import AbilityData
 from .ids.unit_typeid import UnitTypeId
 from .ids.ability_id import AbilityId
 from .ids.upgrade_id import UpgradeId
@@ -51,9 +52,13 @@ class BotAI(object):
         return workers.random if force else None
 
     async def can_place(self, building, position):
-        assert isinstance(building, (AbilityId, UnitTypeId))
+        assert isinstance(building, (AbilityData, AbilityId, UnitTypeId))
+
         if isinstance(building, UnitTypeId):
             building = self._game_data.units[building.value].creation_ability
+        elif isinstance(building, AbilityId):
+            building = self._game_data.abilities[building.value]
+
         r = await self._client.query_building_placement(building, [position])
         return r[0] == ActionResult.Success
 
@@ -63,8 +68,11 @@ class BotAI(object):
         assert isinstance(near, Point2)
 
         if isinstance(building, UnitTypeId):
-            building = self._game_data.units[building.value].creation_ability.id
+            building = self._game_data.units[building.value].creation_ability
+        else: # AbilityId
+            building = self._game_data.abilities[building.value]
 
+        print(building)
         if await self.can_place(building, near):
             return near
 
