@@ -21,20 +21,22 @@ class ProxyRaxBot(sc2.BotAI):
             for marine in self.units(MARINE).idle:
                 await self.do(marine.attack(target))
 
-        if self.can_afford(SCV) and self.workers.amount + len(cc.orders) < 16:
+        if self.can_afford(SCV) and self.workers.amount < 16 and cc.noqueue:
             await self.do(cc.train(SCV))
 
         elif self.supply_left < 2:
             if self.can_afford(SUPPLYDEPOT):
                 await self.build(SUPPLYDEPOT, near=cc.position.towards(self.game_info.map_center, 5))
 
-        elif self.units(BARRACKS).amount < 3 or self.minerals > 500:
+        elif self.units(BARRACKS).amount < 3 or self.minerals > 400:
             if self.can_afford(BARRACKS):
                 p = self.game_info.map_center.towards(self.enemy_start_locations[0], 25)
                 await self.build(BARRACKS, near=p)
 
-        if self.can_afford(MARINE) and self.units(BARRACKS).ready.exists:
-            await self.do(self.units(BARRACKS).ready.random.train(MARINE))
+        for rax in self.units(BARRACKS).ready.noqueue:
+            if not self.can_afford(MARINE):
+                break
+            await self.do(rax.train(MARINE))
 
         for scv in self.units(SCV).idle:
             await self.do(scv.gather(self.state.mineral_field.closest_to(cc)))
