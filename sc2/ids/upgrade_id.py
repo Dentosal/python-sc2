@@ -4,6 +4,7 @@
 import enum
 
 class UpgradeId(enum.Enum):
+    INVALID = 0
     CARRIERLAUNCHSPEEDUPGRADE = 1
     GLIALRECONSTITUTION = 2
     TUNNELINGCLAWS = 3

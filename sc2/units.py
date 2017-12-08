@@ -54,6 +54,10 @@ class Units(list):
         assert self.exists
         return self[0]
 
+    def take(self, n, require_all=True):
+        assert (not require_all) or len(self) >= n
+        return self[:n]
+
     @property
     def random(self):
         assert self.exists
@@ -100,6 +104,10 @@ class Units(list):
         return self.filter(lambda unit: not unit.is_ready)
 
     @property
+    def noqueue(self):
+        return self.filter(lambda unit: unit.noqueue)
+
+    @property
     def idle(self):
         return self.filter(lambda unit: unit.is_idle)
 
@@ -114,6 +122,10 @@ class Units(list):
     @property
     def structure(self):
         return self.filter(lambda unit: unit.is_structure)
+
+    @property
+    def not_structure(self):
+        return self.filter(lambda unit: not unit.is_structure)
 
     @property
     def mineral_field(self):

@@ -7,8 +7,6 @@ from .ids.unit_typeid import UnitTypeId
 from .ids.ability_id import AbilityId
 from . import action
 
-from .tmpfix import creation_ability_from_unit_id
-
 class Unit(object):
     def __init__(self, proto_data, game_data):
         assert isinstance(proto_data, raw_pb.Unit)
@@ -98,11 +96,11 @@ class Unit(object):
 
     @property
     def is_mineral_field(self):
-        return "MineralField" in self._type_data.name
+        return self._type_data.has_minerals
 
     @property
     def is_vespene_geyser(self):
-        return "VespeneGeyser" in self._type_data.name
+        return self._type_data.has_vespene
 
     @property
     def health(self):
@@ -133,6 +131,10 @@ class Unit(object):
         return [UnitOrder.from_proto(o, self._game_data) for o in self._proto.orders]
 
     @property
+    def noqueue(self):
+        return len(self.orders) == 0
+
+    @property
     def is_idle(self):
         return not self.orders
 
@@ -141,12 +143,10 @@ class Unit(object):
         return self._type_data.name
 
     def train(self, unit, *args, **kwargs):
-        a = creation_ability_from_unit_id(unit)
-        return self(a, *args, **kwargs)
+        return self(self._game_data.units[unit.value].creation_ability.id, *args, **kwargs)
 
     def build(self, unit, *args, **kwargs):
-        a = creation_ability_from_unit_id(unit)
-        return self(a, *args, **kwargs)
+        return self(self._game_data.units[unit.value].creation_ability.id, *args, **kwargs)
 
     def attack(self, *args, **kwargs):
         return self(AbilityId.ATTACK, *args, **kwargs)

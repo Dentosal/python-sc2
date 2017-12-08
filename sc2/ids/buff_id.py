@@ -4,6 +4,7 @@
 import enum
 
 class BuffId(enum.Enum):
+    INVALID = 0
     GRAVITONBEAM = 5
     GHOSTCLOAK = 6
     BANSHEECLOAK = 7

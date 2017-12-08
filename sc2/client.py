@@ -9,7 +9,7 @@ from .cache import method_cache_forever
 
 from .protocol import Protocol
 from .game_info import GameInfo
-from .game_data import GameData
+from .game_data import GameData, AbilityData
 from .data import Race, ActionResult, ChatChannel
 from .action import combine_actions
 
@@ -88,9 +88,10 @@ class Client(Protocol):
                 return [r for r in res if r != ActionResult.Success]
 
     async def query_building_placement(self, ability, positions, ignore_resources=True):
+        assert isinstance(ability, AbilityData)
         result = await self._execute(query=query_pb.RequestQuery(
             placements=[query_pb.RequestQueryBuildingPlacement(
-                ability_id=ability.value,
+                ability_id=ability.id.value,
                 target_pos=common_pb.Point2D(x=position.x, y=position.y)
             ) for position in positions],
             ignore_resource_requirements=ignore_resources

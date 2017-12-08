@@ -31,7 +31,6 @@ async def _play_game_ai(client, player_id, ai, realtime):
     while True:
         state = await client.observation()
         if len(state.observation.player_result) > 0:
-            print("OBSR", state.observation.player_result)
             result = Result(min(state.observation.player_result, key=lambda p: p.player_id).result)
             await client.leave()
             await client.quit()
@@ -93,4 +92,5 @@ def run_game(*args, **kwargs):
         ))
     else:
         result = asyncio.get_event_loop().run_until_complete(_host_game(*args, **kwargs))
-    print(result)
+
+    return result

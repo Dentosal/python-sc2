@@ -1,14 +1,15 @@
 import random
 from functools import partial
 
+from sc2.constants import EGG
+
 from .position import Point2, Point3
 from .data import Race, ActionResult, Attribute, race_worker
 from .action import UnitCommand
 from .unit import Unit
 from .ids.unit_typeid import UnitTypeId
 from .ids.ability_id import AbilityId
-
-from .tmpfix import creation_ability_from_unit_id
+from .ids.upgrade_id import UpgradeId
 
 class BotAI(object):
     def _prepare_start(self, client, player_id, game_info, game_data):
@@ -31,9 +32,15 @@ class BotAI(object):
     def known_enemy_structures(self):
         return self.state.units.enemy.structure
 
-    def can_afford(self, unit_type_id):
-        unit_type = self._game_data.units[unit_type_id.value]
-        return unit_type.cost.minerals <= self.minerals and unit_type.cost.vespene <= self.vespene
+    def can_afford(self, item_id):
+        if isinstance(item_id, UnitTypeId):
+            cost = self._game_data.units[item_id.value].cost
+        elif isinstance(item_id, UpgradeId):
+            cost = self._game_data.upgrades[item_id.value].cost
+        else:
+            cost = self._game_data.calculate_ability_cost(item_id)
+
+        return cost.minerals <= self.minerals and cost.vespene <= self.vespene
 
     def select_build_worker(self, pos, force=False):
         workers = self.workers.closer_than(20, pos) or self.workers
@@ -46,7 +53,7 @@ class BotAI(object):
     async def can_place(self, building, position):
         assert isinstance(building, (AbilityId, UnitTypeId))
         if isinstance(building, UnitTypeId):
-            building = creation_ability_from_unit_id(building)
+            building = self._game_data.units[building.value].creation_ability
         r = await self._client.query_building_placement(building, [position])
         return r[0] == ActionResult.Success
 
@@ -56,8 +63,7 @@ class BotAI(object):
         assert isinstance(near, Point2)
 
         if isinstance(building, UnitTypeId):
-            building = creation_ability_from_unit_id(building)
-
+            building = self._game_data.units[building.value].creation_ability.id
 
         if await self.can_place(building, near):
             return near
@@ -81,10 +87,12 @@ class BotAI(object):
         return None
 
     def already_pending(self, unit_type):
-        ability = creation_ability_from_unit_id(unit_type)
+        ability = self._game_data.units[unit_type.value].creation_ability
         if self.units(unit_type).not_ready.exists:
             return True
         elif any(o.ability == ability for w in self.workers for o in w.orders):
+            return True
+        elif any(egg.orders[0].ability == ability for egg in self.units(EGG)):
             return True
         return False
 

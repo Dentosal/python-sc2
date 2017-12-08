@@ -4,6 +4,7 @@
 import enum
 
 class AbilityId(enum.Enum):
+    INVALID = 0
     SMART = 1
     STOP_STOP = 4
     STOP_CHEER = 6
