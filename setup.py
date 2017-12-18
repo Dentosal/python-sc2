@@ -1,9 +1,9 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name = "sc2",
-    packages = ["sc2"],
-    version = "0.3.0",
+    packages = find_packages(),
+    version = "0.3.1",
     description = "A StarCraft II API Client for Python 3",
     license="MIT",
     author = "Hannes Karppila",

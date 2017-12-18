@@ -1,5 +1,13 @@
 from pathlib import Path
-__all__ = [p.stem for p in Path().iterdir() if p.is_file() and p.suffix == ".py" and p.stem != "__init__"]
+
+def is_submodule(path):
+    if path.is_file():
+        return path.suffix == ".py" and path.stem != "__init__"
+    elif path.is_dir():
+        return (path / "__init__.py").exists()
+    return False
+
+__all__ = [p.stem for p in Path(__file__).parent.iterdir() if is_submodule(p)]
 
 from . import maps
 from .data import *
