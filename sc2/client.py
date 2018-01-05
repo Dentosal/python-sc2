@@ -98,19 +98,14 @@ class Client(Protocol):
         ))
         return [ActionResult(p.result) for p in result.query.placements]
 
-    async def chat_send(self, messages, team_only):
-        if not isinstance(messages, list):
-            return await self.chat_send([messages], team_only)
-
+    async def chat_send(self, message, team_only):
         ch = ChatChannel.Team if team_only else ChatChannel.Broadcast
         r = await self._execute(action=sc_pb.RequestAction(
-            actions=[sc_pb.Action(chat=[sc_pb.ActionChat(
+            actions=[sc_pb.Action(action_chat=sc_pb.ActionChat(
                 channel=ch.value,
                 message=message
-            ) for message in messages])]
+            ))]
         ))
-        print(r)
-        exit("-")
 
     async def debug_text(self, texts, positions, color=(0, 255, 0)):
         if isinstance(positions, list):

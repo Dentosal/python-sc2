@@ -15,6 +15,9 @@ class ZergRushBot(sc2.BotAI):
         self.queeen_started = False
 
     async def on_step(self, state, iteration):
+        if iteration == 0:
+            await self.chat_send("(glhf)")
+
         if not self.units(HATCHERY).ready.exists:
             for unit in self.workers | self.units(ZERGLING) | self.units(QUEEN):
                 await self.do(unit.attack(self.enemy_start_locations[0]))

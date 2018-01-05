@@ -138,6 +138,10 @@ class BotAI(object):
             # exit("do::cannot")
         return r
 
+    async def chat_send(self, message):
+        assert isinstance(message, str)
+        await self._client.chat_send(message, False)
+
     def _prepare_step(self, state):
         self.state = state
         self.units = state.units.owned
