@@ -1,13 +1,12 @@
 import random
 from functools import partial
 
-from sc2.constants import EGG
+from .constants import EGG
 
 from .position import Point2, Point3
 from .data import Race, ActionResult, Attribute, race_worker
-from .action import UnitCommand
 from .unit import Unit
-from .game_data import AbilityData
+from .game_data import AbilityData, Cost
 from .ids.unit_typeid import UnitTypeId
 from .ids.ability_id import AbilityId
 from .ids.upgrade_id import UpgradeId
@@ -35,7 +34,8 @@ class BotAI(object):
 
     def can_afford(self, item_id):
         if isinstance(item_id, UnitTypeId):
-            cost = self._game_data.units[item_id.value].cost
+            unit = self._game_data.units[item_id.value]
+            cost = self._game_data.calculate_ability_cost(unit.creation_ability)
         elif isinstance(item_id, UpgradeId):
             cost = self._game_data.upgrades[item_id.value].cost
         else:
@@ -120,6 +120,7 @@ class BotAI(object):
         return await self.do(unit.build(building, p))
 
     async def do(self, action):
+        assert self.can_afford(action)
         r = await self._client.actions(action, game_data=self._game_data)
 
         if not r: # success

@@ -1,9 +1,12 @@
 from functools import lru_cache
 
 from .data import Attribute
+from .unit_command import UnitCommand
 
 from .ids.unit_typeid import UnitTypeId
 from .ids.ability_id import AbilityId
+
+from .constants import ZERGLING
 
 class GameData(object):
     def __init__(self, data):
@@ -13,8 +16,22 @@ class GameData(object):
 
     @lru_cache(maxsize=256)
     def calculate_ability_cost(self, ability):
+        if isinstance(ability, AbilityId):
+            ability = self.abilities[ability.value]
+        elif isinstance(ability, UnitCommand):
+            ability = self.abilities[ability.ability.value]
+
+        assert isinstance(ability, AbilityData), f"C: {ability}"
+
         for unit in self.units.values():
             if unit.creation_ability == ability:
+                if unit.id == ZERGLING:
+                    # HARD CODED: zerglings are generated in pairs
+                    return Cost(
+                        unit.cost.minerals * 2,
+                        unit.cost.vespene * 2,
+                        unit.cost.time
+                    )
                 return unit.cost
 
         for upgrade in self.upgrades.values():
@@ -47,6 +64,10 @@ class UnitTypeData(object):
         self._proto = proto
 
     @property
+    def id(self):
+        return UnitTypeId(self._proto.unit_id)
+
+    @property
     def name(self):
         return self._proto.name
 
@@ -75,7 +96,8 @@ class UnitTypeData(object):
     def cost(self):
         return Cost(
             self._proto.mineral_cost,
-            self._proto.vespene_cost
+            self._proto.vespene_cost,
+            self._proto.build_time
         )
 
 class UpgradeData(object):
@@ -95,7 +117,8 @@ class UpgradeData(object):
     def cost(self):
         return Cost(
             self._proto.mineral_cost,
-            self._proto.vespene_cost
+            self._proto.vespene_cost,
+            self._proto.research_time
         )
 
 class Cost(object):

@@ -13,6 +13,7 @@ class ZergRushBot(sc2.BotAI):
         self.moved_workers_to_gas = False
         self.moved_workers_from_gas = False
         self.queeen_started = False
+        self.mboost_started = False
 
     async def on_step(self, state, iteration):
         if iteration == 0:
@@ -31,12 +32,14 @@ class ZergRushBot(sc2.BotAI):
             await self.do(zl.attack(target))
 
         for queen in self.units(QUEEN).idle:
-            await self.do(queen(INJECTLARVA, hatchery))
+            if queen.energy >= 25: # Hard coded, since this is not (yet) available
+                await self.do(queen(INJECTLARVA, hatchery))
 
         if self.vespene >= 100:
             sp = self.units(SPAWNINGPOOL).ready
-            if sp.exists and self.minerals >= 100:
+            if sp.exists and self.minerals >= 100 and not self.mboost_started:
                 await self.do(sp.first(RESEARCH_ZERGLINGMETABOLICBOOST))
+                self.mboost_started = True
 
             if not self.moved_workers_from_gas:
                 self.moved_workers_from_gas = True
@@ -49,7 +52,7 @@ class ZergRushBot(sc2.BotAI):
                 await self.do(larvae.random.train(OVERLORD))
 
         if self.units(SPAWNINGPOOL).ready.exists:
-            if larvae.exists and self.minerals > self.can_afford(ZERGLING):
+            if larvae.exists and self.can_afford(ZERGLING):
                 await self.do(larvae.random.train(ZERGLING))
 
         if self.units(EXTRACTOR).ready.exists and not self.moved_workers_to_gas:

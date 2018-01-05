@@ -5,7 +5,7 @@ from .data import Alliance, Attribute, DisplayType
 from .game_data import GameData
 from .ids.unit_typeid import UnitTypeId
 from .ids.ability_id import AbilityId
-from . import action
+from . import unit_command
 
 class Unit(object):
     def __init__(self, proto_data, game_data):
@@ -164,7 +164,7 @@ class Unit(object):
         return self(AbilityId.STOP, *args, **kwargs)
 
     def __call__(self, ability, *args, **kwargs):
-        return action.UnitCommand(ability, self, *args, **kwargs)
+        return unit_command.UnitCommand(ability, self, *args, **kwargs)
 
     def __repr__(self):
         return f"Unit(name={self.name !r}, tag={self.tag})"
