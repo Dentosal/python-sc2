@@ -6,13 +6,14 @@ from .client import Client
 from .player import Human, Bot, Observer
 from .data import Race, Difficulty, Result, ActionResult
 from .game_state import GameState
+from .protocol import ProtocolError
 
 async def _play_game_human(client, realtime):
     while True:
         state = await client.observation()
 
         if len(state.observation.player_result) > 0:
-            result = Result(min(state.observation.player_result, key=lambda p: p.player_id).result)
+            result = Result([pr.result for pr in state.observation.player_result if pr.player_id == player_id][0])
             await client.leave()
             await client.quit()
             return result
@@ -31,7 +32,7 @@ async def _play_game_ai(client, player_id, ai, realtime):
     while True:
         state = await client.observation()
         if len(state.observation.player_result) > 0:
-            result = Result(min(state.observation.player_result, key=lambda p: p.player_id).result)
+            result = Result([pr.result for pr in state.observation.player_result if pr.player_id == player_id][0])
             await client.leave()
             await client.quit()
             return result
@@ -39,7 +40,15 @@ async def _play_game_ai(client, player_id, ai, realtime):
         gs = GameState(state.observation, game_data)
 
         ai._prepare_step(gs)
-        await ai.on_step(gs, iteration)
+        try:
+            await ai.on_step(gs, iteration)
+        except ProtocolError:
+            state = await client.observation()
+            assert len(state.observation.player_result) > 0
+            result = Result([pr.result for pr in state.observation.player_result if pr.player_id == player_id][0])
+            await client.leave()
+            await client.quit()
+            return result
 
         if not realtime:
             await client.step()

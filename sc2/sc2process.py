@@ -38,7 +38,6 @@ class SC2Process(object):
 
         def signal_handler(signal, frame):
             kill_switch.kill_all()
-            sys.exit(0)
 
         signal.signal(signal.SIGINT, signal_handler)
 
