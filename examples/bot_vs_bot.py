@@ -1,0 +1,14 @@
+import sc2
+from sc2 import Race
+from sc2.player import Bot
+
+from zerg_rush import ZergRushBot
+
+def main():
+    sc2.run_game(sc2.maps.get("Abyssal Reef LE"), [
+        Bot(Race.Zerg, ZergRushBot()),
+        Bot(Race.Zerg, ZergRushBot())
+    ], realtime=False)
+
+if __name__ == '__main__':
+    main()
