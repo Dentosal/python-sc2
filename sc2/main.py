@@ -3,23 +3,37 @@ import asyncio
 from .sc2process import SC2Process
 from .portconfig import Portconfig
 from .client import Client
-from .player import Human, Bot, Observer
+from .player import Human, Bot
 from .data import Race, Difficulty, Result, ActionResult
 from .game_state import GameState
 from .protocol import ProtocolError
 
-async def _play_game_human(client, realtime):
+def __get_result(state, player_id):
+    assert len(state.observation.player_result) > 0
+    for pr in state.observation.player_result:
+        if pr.player_id == player_id:
+            return Result(pr.result)
+
+    raise RuntimeError("No result found for player")
+
+
+async def _play_game_human(client, player_id, realtime):
     while True:
         state = await client.observation()
 
         if len(state.observation.player_result) > 0:
-            result = Result([pr.result for pr in state.observation.player_result if pr.player_id == player_id][0])
             await client.leave()
             await client.quit()
-            return result
+            return _get_result(state, player_id)
 
-        if not realtime:
-            await client.step()
+        try:
+            if not realtime:
+                await client.step()
+        except ProtocolError:
+            state = await client.observation()
+            await client.leave()
+            await client.quit()
+            return _get_result(state, player_id)
 
 async def _play_game_ai(client, player_id, ai, realtime):
     game_data = await client.get_game_data()
@@ -32,35 +46,29 @@ async def _play_game_ai(client, player_id, ai, realtime):
     while True:
         state = await client.observation()
         if len(state.observation.player_result) > 0:
-            result = Result([pr.result for pr in state.observation.player_result if pr.player_id == player_id][0])
             await client.leave()
             await client.quit()
-            return result
+            return _get_result(state, player_id)
 
         gs = GameState(state.observation, game_data)
 
         ai._prepare_step(gs)
         try:
             await ai.on_step(gs, iteration)
+            if not realtime:
+                await client.step()
         except ProtocolError:
             state = await client.observation()
-            assert len(state.observation.player_result) > 0
-            result = Result([pr.result for pr in state.observation.player_result if pr.player_id == player_id][0])
             await client.leave()
             await client.quit()
-            return result
+            return _get_result(state, player_id)
 
-        if not realtime:
-            await client.step()
         iteration += 1
 
-async def _host_game(map_settings, players, realtime=False, observer=False, portconfig=None):
+async def _host_game(map_settings, players, realtime=False, portconfig=None):
     assert len(players) > 0, "Can't create a game without players"
 
-    if observer:
-        players.append(Observer())
-    else:
-        assert any(isinstance(p, (Human, Bot)) for p in players)
+    assert any(isinstance(p, (Human, Bot)) for p in players)
 
     async with SC2Process() as server:
         await server.ping()
@@ -69,15 +77,10 @@ async def _host_game(map_settings, players, realtime=False, observer=False, port
 
         client = Client(server._ws)
 
-        if observer:
-            await client.join_game(observed_player_id=1, portconfig=portconfig)
-            return await _play_game_human(client, realtime)
-
-
         player_id = await client.join_game(players[0].race, portconfig=portconfig)
 
         if isinstance(players[0], Human):
-            return await _play_game_human(client, realtime)
+            return await _play_game_human(client, player_id, realtime)
         else:
             return await _play_game_ai(client, player_id, players[0].ai, realtime)
 
@@ -88,7 +91,7 @@ async def _join_game(map_settings, players, realtime, portconfig):
 
         player_id = await client.join_game(players[1].race, portconfig=portconfig)
         if isinstance(player_id, Human):
-            return await _play_game_human(client, realtime)
+            return await _play_game_human(client, player_id, realtime)
         else:
             return await _play_game_ai(client, player_id, players[1].ai, realtime)
 
