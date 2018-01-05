@@ -8,7 +8,7 @@ from .data import Race, Difficulty, Result, ActionResult
 from .game_state import GameState
 from .protocol import ProtocolError
 
-def __get_result(state, player_id):
+def _get_result(state, player_id):
     assert len(state.observation.player_result) > 0
     for pr in state.observation.player_result:
         if pr.player_id == player_id:
