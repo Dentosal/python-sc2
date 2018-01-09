@@ -4,6 +4,8 @@ An easy-to-use library for writing AI Bots for StarCraft II in Python 3. The ult
 
 **This library (currently) covers only the raw scripted interface.** At this time I don't intend to add support for graphics-based interfaces.
 
+Documentation is in [the Wiki](https://github.com/Dentosal/python-sc2/wiki).
+
 ## Installation
 
 You'll need Python 3.6 or newer.
