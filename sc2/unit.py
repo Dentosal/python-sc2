@@ -66,6 +66,14 @@ class Unit(object):
         return self._proto.radius
 
     @property
+    def detect_range(self):
+        return self._proto.detect_range
+
+    @property
+    def radar_range(self):
+        return self._proto.radar_range
+
+    @property
     def build_progress(self):
         return self._proto.build_progress
 
@@ -81,6 +89,10 @@ class Unit(object):
     def is_blip(self):
         """Detected by sensor tower."""
         return self._proto.is_blip
+
+    @property
+    def is_powered(self):
+        return self._proto.is_powered
 
     @property
     def is_burrowed(self):
@@ -115,12 +127,20 @@ class Unit(object):
         return self._proto.shield
 
     @property
+    def shield_max(self):
+        return self._proto.shield_max
+
+    @property
     def energy(self):
         return self._proto.energy
 
     @property
     def mineral_contents(self):
         return self._proto.mineral_contents
+
+    @property
+    def vespene_contents(self):
+        return self._proto.vespene_contents
 
     @property
     def is_selected(self):
