@@ -7,7 +7,9 @@ build/
 dist/
 *.egg-info/
 
+.cache/
+
 maps/
 mini_games/
 
-.cache/
+*.SC2Replay

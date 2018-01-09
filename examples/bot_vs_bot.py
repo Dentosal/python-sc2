@@ -8,7 +8,7 @@ def main():
     sc2.run_game(sc2.maps.get("Abyssal Reef LE"), [
         Bot(Race.Zerg, ZergRushBot()),
         Bot(Race.Zerg, ZergRushBot())
-    ], realtime=False)
+    ], realtime=False, save_replay_as="Example.SC2Replay")
 
 if __name__ == '__main__':
     main()

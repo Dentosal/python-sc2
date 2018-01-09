@@ -42,7 +42,10 @@ class Protocol(object):
         return result
 
     async def leave(self):
-        await self._execute(leave_game=sc_pb.RequestLeaveGame())
+        try:
+            await self._execute(leave_game=sc_pb.RequestLeaveGame())
+        except websockets.exceptions.ConnectionClosed:
+            pass
 
     async def quit(self):
         try:

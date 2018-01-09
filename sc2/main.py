@@ -21,8 +21,6 @@ async def _play_game_human(client, player_id, realtime):
     while True:
         state = await client.observation()
         if len(state.observation.player_result) > 0:
-            await client.leave()
-            await client.quit()
             return _get_result(state, player_id)
 
         try:
@@ -30,8 +28,6 @@ async def _play_game_human(client, player_id, realtime):
                 await client.step()
         except ProtocolError:
             state = await client.observation()
-            await client.leave()
-            await client.quit()
             return _get_result(state, player_id)
 
 async def _play_game_ai(client, player_id, ai, realtime):
@@ -45,8 +41,6 @@ async def _play_game_ai(client, player_id, ai, realtime):
     while True:
         state = await client.observation()
         if len(state.observation.player_result) > 0:
-            await client.leave()
-            await client.quit()
             return _get_result(state, player_id)
 
         gs = GameState(state.observation, game_data)
@@ -58,13 +52,19 @@ async def _play_game_ai(client, player_id, ai, realtime):
                 await client.step()
         except ProtocolError:
             state = await client.observation()
-            await client.leave()
-            await client.quit()
             return _get_result(state, player_id)
 
         iteration += 1
 
-async def _host_game(map_settings, players, realtime=False, portconfig=None):
+async def _play_game(player, client, realtime, portconfig):
+    player_id = await client.join_game(player.race, portconfig=portconfig)
+
+    if isinstance(player, Human):
+        return await _play_game_human(client, player_id, realtime)
+    else:
+        return await _play_game_ai(client, player_id, player.ai, realtime)
+
+async def _host_game(map_settings, players, realtime=False, portconfig=None, save_replay_as=None):
     assert len(players) > 0, "Can't create a game without players"
 
     assert any(isinstance(p, (Human, Bot)) for p in players)
@@ -76,23 +76,22 @@ async def _host_game(map_settings, players, realtime=False, portconfig=None):
 
         client = Client(server._ws)
 
-        player_id = await client.join_game(players[0].race, portconfig=portconfig)
-
-        if isinstance(players[0], Human):
-            return await _play_game_human(client, player_id, realtime)
-        else:
-            return await _play_game_ai(client, player_id, players[0].ai, realtime)
+        result = await _play_game(players[0], client, realtime, portconfig)
+        if save_replay_as is not None:
+            await client.save_replay(save_replay_as)
+        await client.leave()
+        await client.quit()
+        return result
 
 async def _join_game(map_settings, players, realtime, portconfig):
     async with SC2Process() as server:
         await server.ping()
         client = Client(server._ws)
 
-        player_id = await client.join_game(players[1].race, portconfig=portconfig)
-        if isinstance(player_id, Human):
-            return await _play_game_human(client, player_id, realtime)
-        else:
-            return await _play_game_ai(client, player_id, players[1].ai, realtime)
+        result = await _play_game(players[1], client, realtime, portconfig)
+        await client.leave()
+        await client.quit()
+        return result
 
 def run_game(*args, **kwargs):
     if sum(isinstance(p, (Human, Bot)) for p in args[1]) > 1:

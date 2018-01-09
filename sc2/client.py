@@ -47,6 +47,11 @@ class Client(Protocol):
         result = await self._execute(join_game=req)
         return result.join_game.player_id
 
+    async def save_replay(self, path):
+        result = await self._execute(save_replay=sc_pb.RequestSaveReplay())
+        with open(path, "wb") as f:
+            f.write(result.save_replay.data)
+
     async def observation(self):
         result = await self._execute(observation=sc_pb.RequestObservation())
         return result
