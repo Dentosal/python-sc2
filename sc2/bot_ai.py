@@ -72,7 +72,6 @@ class BotAI(object):
         else: # AbilityId
             building = self._game_data.abilities[building.value]
 
-        print(building)
         if await self.can_place(building, near):
             return near
 

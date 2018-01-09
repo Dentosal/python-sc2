@@ -7,6 +7,9 @@ from sc2.player import Bot, Computer
 
 class CannonRushBot(sc2.BotAI):
     async def on_step(self, state, iteration):
+        if iteration == 0:
+            await self.chat_send("(probe)(pylon)(cannon)(cannon)(gg)")
+
         if not self.units(NEXUS).exists:
             for worker in self.workers:
                 worker.attack(self.enemy_start_locations[0])
@@ -14,7 +17,7 @@ class CannonRushBot(sc2.BotAI):
         else:
             nexus = self.units(NEXUS).first
 
-        if self.workers.amount + len(nexus.orders) < 14:
+        if self.workers.amount < 16 and nexus.noqueue:
             if self.can_afford(PROBE):
                 await self.do(nexus.train(PROBE))
 
@@ -43,7 +46,9 @@ class CannonRushBot(sc2.BotAI):
                 for _ in range(20):
                     pos = self.enemy_start_locations[0].random_on_distance(random.randrange(5, 12))
                     building = PHOTONCANNON if state.psionic_matrix.covers(pos) else PYLON
-                    await self.build(building, near=pos)
+                    r = await self.build(building, near=pos)
+                    if not r: # success
+                        break
 
 def main():
     sc2.run_game(sc2.maps.get("Abyssal Reef LE"), [

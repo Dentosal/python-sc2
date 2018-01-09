@@ -20,7 +20,6 @@ def _get_result(state, player_id):
 async def _play_game_human(client, player_id, realtime):
     while True:
         state = await client.observation()
-
         if len(state.observation.player_result) > 0:
             await client.leave()
             await client.quit()
