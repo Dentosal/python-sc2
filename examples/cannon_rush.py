@@ -12,7 +12,7 @@ class CannonRushBot(sc2.BotAI):
 
         if not self.units(NEXUS).exists:
             for worker in self.workers:
-                worker.attack(self.enemy_start_locations[0])
+                await self.do(worker.attack(self.enemy_start_locations[0]))
             return
         else:
             nexus = self.units(NEXUS).first
