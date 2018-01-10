@@ -159,6 +159,14 @@ class Unit(object):
         return not self.orders
 
     @property
+    def assigned_harvesters(self):
+        return self._proto.assigned_harvesters
+
+    @property
+    def ideal_harvesters(self):
+        return self._proto.ideal_harvesters
+
+    @property
     def name(self):
         return self._type_data.name
 

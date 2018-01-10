@@ -12,6 +12,8 @@ from .game_info import GameInfo
 from .game_data import GameData, AbilityData
 from .data import Race, ActionResult, ChatChannel
 from .action import combine_actions
+from .position import Point2
+from .unit import Unit
 
 class Client(Protocol):
     def __init__(self, ws):
@@ -92,6 +94,28 @@ class Client(Protocol):
             else:
                 return [r for r in res if r != ActionResult.Success]
 
+    async def query_pathing(self, start, end):
+        assert isinstance(start, (Point2, Unit))
+        assert isinstance(end, Point2)
+        if isinstance(start, Point2):
+            result = await self._execute(query=query_pb.RequestQuery(
+                pathing=[query_pb.RequestQueryPathing(
+                    start_pos=common_pb.Point2D(x=start.x, y=start.y),
+                    end_pos=common_pb.Point2D(x=end.x, y=end.y)
+                )]
+            ))
+        else:
+            result = await self._execute(query=query_pb.RequestQuery(
+                pathing=[query_pb.RequestQueryPathing(
+                    unit_tag=start.tag,
+                    end_pos=common_pb.Point2D(x=end.x, y=end.y)
+                )]
+            ))
+        distance = float(result.query.pathing[0].distance)
+        if distance <= 0.0:
+            return None
+        return distance
+
     async def query_building_placement(self, ability, positions, ignore_resources=True):
         assert isinstance(ability, AbilityData)
         result = await self._execute(query=query_pb.RequestQuery(
@@ -131,4 +155,4 @@ class Client(Protocol):
                 ))]
             ))
         else:
-            self.debug_text([texts], [positions], color)
+            await self.debug_text([texts], [positions], color)

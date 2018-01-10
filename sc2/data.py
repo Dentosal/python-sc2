@@ -7,6 +7,9 @@ from s2clientprotocol import (
     error_pb2 as error_pb
 )
 from .ids.unit_typeid import PROBE, SCV, DRONE
+from .ids.unit_typeid import NEXUS
+from .ids.unit_typeid import COMMANDCENTER, ORBITALCOMMAND, PLANETARYFORTRESS
+from .ids.unit_typeid import HATCHERY, LAIR, HIVE
 
 PlayerType = enum.Enum("PlayerType", sc_pb.PlayerType.items())
 Difficulty = enum.Enum("Difficulty", sc_pb.Difficulty.items())
@@ -30,4 +33,10 @@ race_worker = {
     Race.Protoss: PROBE,
     Race.Terran: SCV,
     Race.Zerg: DRONE
+}
+
+race_townhalls = {
+    Race.Protoss: {NEXUS},
+    Race.Terran: {COMMANDCENTER, ORBITALCOMMAND, PLANETARYFORTRESS},
+    Race.Zerg: {HATCHERY, LAIR, HIVE}
 }

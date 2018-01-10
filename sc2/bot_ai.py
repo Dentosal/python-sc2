@@ -4,8 +4,9 @@ from functools import partial
 from .constants import EGG
 
 from .position import Point2, Point3
-from .data import Race, ActionResult, Attribute, race_worker
+from .data import Race, ActionResult, Attribute, race_worker, race_townhalls
 from .unit import Unit
+from .cache import property_cache_forever
 from .game_data import AbilityData, Cost
 from .ids.unit_typeid import UnitTypeId
 from .ids.ability_id import AbilityId
@@ -16,8 +17,8 @@ class BotAI(object):
         self._client = client
         self._game_info = game_info
         self._game_data = game_data
-        self.player_id = player_id
 
+        self.player_id = player_id
         self.race = Race(self._game_info.player_races[self.player_id])
 
     @property
@@ -31,6 +32,56 @@ class BotAI(object):
     @property
     def known_enemy_structures(self):
         return self.state.units.enemy.structure
+
+    @property
+    @property_cache_forever
+    def expansion_locations(self):
+        DISTANCE_THRESHOLD = 8.0 # Tried with Abyssal Reef LE, this was fine
+        resources = [
+            r.position.to2
+            for r in self.state.mineral_field | self.state.vespene_geyser
+        ]
+
+        # Group nearby minerals together to form expansion locations
+        r_groups = []
+        for mf in resources:
+            for g in r_groups:
+                if any(mf.distance_to(p) < DISTANCE_THRESHOLD for p in g):
+                    g.add(mf)
+                    break
+            else: # not found
+                r_groups.append({mf})
+
+        # Filter out bases with only one mineral field
+        r_groups = [g for g in r_groups if len(g) > 1]
+
+        # Find centers
+        avg = lambda l: sum(l) / len(l)
+        centers = [Point2(tuple(map(avg, zip(*g)))) for g in r_groups]
+
+        # Not always accurate, but good enought for now.
+        return [c.rounded for c in centers]
+
+    async def get_next_expansion(self):
+        DISTANCE_THRESHOLD = 15.0
+        closest = None
+        distance = float("inf")
+        for el in self.expansion_locations:
+            th = self.townhalls.first
+            d = await self._client.query_pathing(th.position, el)
+            if d is None:
+                continue
+
+            if d < DISTANCE_THRESHOLD:
+                # already taken
+                continue
+
+            if d < distance:
+                distance = d
+                closest = el
+
+        return closest
+
 
     def can_afford(self, item_id):
         if isinstance(item_id, UnitTypeId):
@@ -86,9 +137,6 @@ class BotAI(object):
             possible = [p for r, p in zip(res, possible_positions) if r == ActionResult.Success]
             if not possible:
                 continue
-
-            for p in possible:
-                p = Point3((*p, self.workers.random.position.z))
 
             return random.choice(possible)
         return None
@@ -146,6 +194,7 @@ class BotAI(object):
         self.state = state
         self.units = state.units.owned
         self.workers = self.units(race_worker[self.race])
+        self.townhalls = self.units(race_townhalls[self.race])
 
         self.minerals = state.common.minerals
         self.vespene = state.common.vespene

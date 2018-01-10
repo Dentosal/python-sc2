@@ -144,13 +144,18 @@ class Units(list):
 
 class UnitSelection(Units):
     def __init__(self, parent, unit_type_id=None):
-        assert unit_type_id is None or isinstance(unit_type_id, UnitTypeId)
+        assert unit_type_id is None or isinstance(unit_type_id, (UnitTypeId, set))
+        if isinstance(unit_type_id, set):
+            assert all(isinstance(t, UnitTypeId) for t in unit_type_id)
+
         self.unit_type_id = unit_type_id
         super().__init__([u for u in parent if self.matches(u)], parent.game_data)
 
     def matches(self, unit):
-        if self.unit_type_id:
-            return self.unit_type_id == unit.type_id
-        else:
+        if self.unit_type_id is None:
             # empty selector matches everything
             return True
+        elif isinstance(self.unit_type_id, set):
+            return unit.type_id in self.unit_type_id
+        else:
+            return self.unit_type_id == unit.type_id
