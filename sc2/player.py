@@ -28,7 +28,11 @@ class Human(AbstractPlayer):
 
 class Bot(AbstractPlayer):
     def __init__(self, race, ai):
-        assert isinstance(ai, BotAI)
+        """
+        AI can be None if this player object is just used to inform the
+        server about player types.
+        """
+        assert isinstance(ai, BotAI) or ai is None
         super().__init__(PlayerType.Participant, race)
         self.ai = ai
 
