@@ -26,9 +26,16 @@ class kill_switch(object):
             p._clean()
 
 class SC2Process(object):
-    def __init__(self, fullscreen=False):
+    def __init__(self, host="127.0.0.1", port=None, fullscreen=False):
+        assert isinstance(host, str)
+        assert isinstance(port, int) or port is None
+
         self._fullscreen = fullscreen
-        self._port = portpicker.pick_unused_port()
+        self._host = host
+        if port is None:
+            self._port = portpicker.pick_unused_port()
+        else:
+            self._port = port
         self._tmp_dir = tempfile.mkdtemp(prefix="SC2_")
         self._process = None
         self._ws = None
@@ -56,12 +63,12 @@ class SC2Process(object):
 
     @property
     def ws_url(self):
-        return f"ws://127.0.0.1:{self._port}/sc2api"
+        return f"ws://{self._host}:{self._port}/sc2api"
 
     def _launch(self):
         return subprocess.Popen([
                 Paths.EXECUTABLE,
-                "-listen", "127.0.0.1",
+                "-listen", self._host,
                 "-port", str(self._port),
                 "-displayMode", "1" if self._fullscreen else "0",
                 "-dataDir", Paths.BASE,
