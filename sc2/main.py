@@ -64,7 +64,7 @@ async def _play_game(player, client, realtime, portconfig):
     else:
         return await _play_game_ai(client, player_id, player.ai, realtime)
 
-async def _host_game(map_settings, players, realtime=False, portconfig=None, save_replay_as=None):
+async def _host_game(map_settings, players, realtime, portconfig=None, save_replay_as=None):
     assert len(players) > 0, "Can't create a game without players"
 
     assert any(isinstance(p, (Human, Bot)) for p in players)
@@ -83,7 +83,7 @@ async def _host_game(map_settings, players, realtime=False, portconfig=None, sav
         await client.quit()
         return result
 
-async def _join_game(map_settings, players, realtime, portconfig):
+async def _join_game(players, realtime, portconfig):
     async with SC2Process() as server:
         await server.ping()
         client = Client(server._ws)
@@ -93,14 +93,15 @@ async def _join_game(map_settings, players, realtime, portconfig):
         await client.quit()
         return result
 
-def run_game(*args, **kwargs):
-    if sum(isinstance(p, (Human, Bot)) for p in args[1]) > 1:
+def run_game(map_settings, players, **kwargs):
+    if sum(isinstance(p, (Human, Bot)) for p in players) > 1:
         portconfig = Portconfig()
         result = asyncio.get_event_loop().run_until_complete(asyncio.gather(
-            _host_game(*args, **kwargs, portconfig=portconfig),
-            _join_game(*args, kwargs.get("realtime", False), portconfig)
+            _host_game(map_settings, players, **kwargs, portconfig=portconfig),
+            _join_game(players, kwargs.get("realtime", False), portconfig)
         ))
     else:
-        result = asyncio.get_event_loop().run_until_complete(_host_game(*args, **kwargs))
-
+        result = asyncio.get_event_loop().run_until_complete(
+            _host_game(map_settings, players, **kwargs)
+        )
     return result
