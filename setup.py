@@ -10,7 +10,7 @@ setup(
     author_email = "hannes.karppila@gmail.com",
     url = "https://github.com/Dentosal/python-sc2",
     keywords = ["StarCraft", "StarCraft 2", "StarCraft II", "AI", "Bot"],
-    install_requires=["s2clientprotocol", "websockets", "portpicker"],
+    install_requires=["s2clientprotocol", "websockets", "portpicker", "async_timeout"],
     classifiers = [
         "Development Status :: 3 - Alpha",
 

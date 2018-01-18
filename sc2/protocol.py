@@ -1,4 +1,8 @@
+from asyncio import shield
 import websockets
+
+import logging
+logger = logging.getLogger(__name__)
 
 from s2clientprotocol import sc2api_pb2 as sc_pb
 
@@ -14,25 +18,38 @@ class Protocol(object):
         self._ws = ws
         self._status = None
 
-    async def _execute(self, **kwargs):
-        assert len(kwargs) == 1, "Only one request allowed"
-        request = sc_pb.Request(**kwargs)
-
+    async def __request(self, request):
+        logger.debug(f"Sending request: {request !r}")
         await self._ws.send(request.SerializeToString())
+        logger.debug(f"Request sent")
 
         response = sc_pb.Response()
         try:
             response_bytes = await self._ws.recv()
         except websockets.exceptions.ConnectionClosed:
+            logger.exception("Connection already closed.")
             raise ProtocolError("Connection already closed.")
         response.ParseFromString(response_bytes)
+        logger.debug(f"Response received")
+        return response
 
-        self._status = Status(response.status)
+    async def _execute(self, **kwargs):
+        assert len(kwargs) == 1, "Only one request allowed"
+
+        request = sc_pb.Request(**kwargs)
+
+        response = await shield(self.__request(request))
+
+        new_status = Status(response.status)
+        if new_status != self._status:
+            logger.info(f"Client status changed to {new_status} (was {self._status})")
+        self._status = new_status
 
         if response.error:
-            # if response.HasField("error_details"):
-            #     raise ProtocolError(f"{response.error}: {response.error_details}")
-            # else:
+            if response.HasField("error_details"):
+                logger.debug(f"Response contained an error: {response.error}: {response.error_details}")
+            else:
+                logger.debug(f"Response contained an error: {response.error}")
             raise ProtocolError(f"{response.error}")
 
         return response
