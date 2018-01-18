@@ -2,6 +2,9 @@ from s2clientprotocol import sc2api_pb2 as sc_pb
 from .protocol import Protocol
 from .player import Computer
 
+import logging
+logger = logging.getLogger(__name__)
+
 class Controller(Protocol):
     def __init__(self, ws):
         super().__init__(ws)
@@ -22,5 +25,8 @@ class Controller(Protocol):
                 p.race = player.race.value
                 p.difficulty = player.difficulty.value
 
+        logger.info("Creating new game")
+        logger.info(f"Map:     {game_map.name}")
+        logger.info(f"Players: {', '.join(str(p) for p in players)}")
         result = await self._execute(create_game=req)
         return result

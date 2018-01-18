@@ -1,4 +1,3 @@
-from asyncio import shield
 import websockets
 
 import logging
@@ -12,6 +11,9 @@ from .player import Computer
 class ProtocolError(Exception):
     pass
 
+class ConnectionAlreadyClosed(ProtocolError):
+    pass
+
 class Protocol(object):
     def __init__(self, ws):
         assert ws
@@ -20,15 +22,19 @@ class Protocol(object):
 
     async def __request(self, request):
         logger.debug(f"Sending request: {request !r}")
-        await self._ws.send(request.SerializeToString())
+        try:
+            await self._ws.send(request.SerializeToString())
+        except websockets.exceptions.ConnectionClosed:
+            logger.exception("Cannot send: Connection already closed.")
+            raise ConnectionAlreadyClosed("Connection already closed.")
         logger.debug(f"Request sent")
 
         response = sc_pb.Response()
         try:
             response_bytes = await self._ws.recv()
         except websockets.exceptions.ConnectionClosed:
-            logger.exception("Connection already closed.")
-            raise ProtocolError("Connection already closed.")
+            logger.exception("Cannot receive: Connection already closed.")
+            raise ConnectionAlreadyClosed("Connection already closed.")
         response.ParseFromString(response_bytes)
         logger.debug(f"Response received")
         return response
@@ -38,7 +44,7 @@ class Protocol(object):
 
         request = sc_pb.Request(**kwargs)
 
-        response = await shield(self.__request(request))
+        response = await self.__request(request)
 
         new_status = Status(response.status)
         if new_status != self._status:

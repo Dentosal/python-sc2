@@ -2,6 +2,9 @@ import os
 from pathlib import Path
 import platform
 
+import logging
+logger = logging.getLogger(__name__)
+
 BASEDIR = {
     "Windows": "C:/Program Files (x86)/StarCraft II",
     "Darwin": "/Applications/StarCraft II",
@@ -23,7 +26,7 @@ CWD = {
 PF = platform.system()
 
 if PF not in BASEDIR:
-    print(f"Unsupported platform '{PF}'")
+    logger.critical(f"Unsupported platform '{PF}'")
     exit(1)
 
 def get_env():
@@ -34,7 +37,8 @@ def latest__executeble(versions_dir):
     latest = max((int(p.name[4:]), p) for p in versions_dir.iterdir() if p.is_dir())
     version, path = latest
     if version < 55958:
-        raise RuntimeError("Your SC2 binary is too old. Upgrade to 3.16.1 or newer.")
+        logger.critical(f"Your SC2 binary is too old. Upgrade to 3.16.1 or newer.")
+        exit(1)
     return path / BINPATH[PF]
 
 class Paths(object):
@@ -46,6 +50,5 @@ class Paths(object):
         REPLAYS = BASE / "Replays"
         MAPS = BASE / "Maps"
     except FileNotFoundError as e:
-        print("SC2 installation not found:")
-        print(f"File '{e.filename}' does not exist.")
+        logger.critical(f"SC2 installation not found: File '{e.filename}' does not exist.")
         exit(1)

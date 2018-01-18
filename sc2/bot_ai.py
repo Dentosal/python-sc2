@@ -1,6 +1,9 @@
 import random
 from functools import partial
 
+import logging
+logger = logging.getLogger(__name__)
+
 from .constants import EGG
 
 from .position import Point2, Point3
@@ -176,14 +179,8 @@ class BotAI(object):
             self.vespene -= cost.vespene
 
         else:
-            print(f"Error: {r} (action: {action})")
+            logger.error(f"Error: {r} (action: {action})")
 
-        # if r:
-            # print("!a", action)
-            # print("!r", r)
-            # p = Point3((*action.target.to2, self.workers.random.position.z))
-            # await self._client.debug_text("HERE", p)
-            # exit("do::cannot")
         return r
 
     async def chat_send(self, message):

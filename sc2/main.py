@@ -10,7 +10,7 @@ from .client import Client
 from .player import Human, Bot
 from .data import Race, Difficulty, Result, ActionResult
 from .game_state import GameState
-from .protocol import ProtocolError
+from .protocol import ConnectionAlreadyClosed
 
 def _get_result(state, player_id):
     assert len(state.observation.player_result) > 0
@@ -26,12 +26,8 @@ async def _play_game_human(client, player_id, realtime):
         if len(state.observation.player_result) > 0:
             return _get_result(state, player_id)
 
-        try:
-            if not realtime:
-                await client.step()
-        except ProtocolError:
-            state = await client.observation()
-            return _get_result(state, player_id)
+        if not realtime:
+            await client.step()
 
 async def _play_game_ai(client, player_id, ai, realtime, step_time_limit):
     game_data = await client.get_game_data()
@@ -49,23 +45,19 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit):
         gs = GameState(state.observation, game_data)
 
         ai._prepare_step(gs)
-        try:
-            if realtime:
-                logger.debug(f"Running AI step, realtime")
-                await ai.on_step(gs, iteration)
-                logger.debug(f"Running AI step: done")
-            else:
-                logger.debug(f"Running AI step, timeout={step_time_limit}")
-                try:
-                    async with async_timeout.timeout(step_time_limit):
-                        await ai.on_step(gs, iteration)
-                except asyncio.TimeoutError:
-                    logger.error(f"Running AI step: out of time")
-                logger.debug(f"Running AI step: done")
-                await client.step()
-        except ProtocolError:
-            state = await client.observation()
-            return _get_result(state, player_id)
+        if realtime:
+            logger.debug(f"Running AI step, realtime")
+            await ai.on_step(gs, iteration)
+            logger.debug(f"Running AI step: done")
+        else:
+            logger.debug(f"Running AI step, timeout={step_time_limit}")
+            try:
+                async with async_timeout.timeout(step_time_limit):
+                    await ai.on_step(gs, iteration)
+            except asyncio.TimeoutError:
+                logger.error(f"Running AI step: out of time")
+            logger.debug(f"Running AI step: done")
+            await client.step()
 
         iteration += 1
 
@@ -92,11 +84,16 @@ async def _host_game(map_settings, players, realtime, portconfig=None, save_repl
 
         client = Client(server._ws)
 
-        result = await _play_game(players[0], client, realtime, portconfig, step_time_limit)
-        if save_replay_as is not None:
-            await client.save_replay(save_replay_as)
-        await client.leave()
-        await client.quit()
+        try:
+            result = await _play_game(players[0], client, realtime, portconfig, step_time_limit)
+            if save_replay_as is not None:
+                await client.save_replay(save_replay_as)
+            await client.leave()
+            await client.quit()
+        except ConnectionAlreadyClosed:
+            logging.error(f"Connection was closed before the game ended")
+            return None
+
         return result
 
 async def _join_game(players, realtime, portconfig, step_time_limit=None):
@@ -104,9 +101,14 @@ async def _join_game(players, realtime, portconfig, step_time_limit=None):
         await server.ping()
         client = Client(server._ws)
 
-        result = await _play_game(players[1], client, realtime, portconfig, step_time_limit)
-        await client.leave()
-        await client.quit()
+        try:
+            result = await _play_game(players[1], client, realtime, portconfig, step_time_limit)
+            await client.leave()
+            await client.quit()
+        except ConnectionAlreadyClosed:
+            logging.error(f"Connection was closed before the game ended")
+            return None
+
         return result
 
 def run_game(map_settings, players, **kwargs):

@@ -9,6 +9,9 @@ import subprocess
 import portpicker
 import websockets
 
+import logging
+logger = logging.getLogger(__name__)
+
 from .paths import Paths
 from .protocol import Protocol
 from .controller import Controller
@@ -22,6 +25,7 @@ class kill_switch(object):
 
     @classmethod
     def kill_all(cls):
+        logger.info("kill_switch: Process cleanup")
         for p in cls._to_kill:
             p._clean()
 
@@ -90,7 +94,7 @@ class SC2Process(object):
         raise TimeoutError("Websocket")
 
     def _clean(self):
-        print("Cleanup")
+        logger.info("Cleaning up...")
         if self._ws is not None:
             self._ws.close()
 
@@ -104,11 +108,11 @@ class SC2Process(object):
                 else:
                     self._process.kill()
                     self._process.wait()
-                    print("KILLED")
+                    logger.error("KILLED")
 
         if os.path.exists(self._tmp_dir):
             shutil.rmtree(self._tmp_dir)
 
         self._process = None
         self._ws = None
-        print("Cleanup complete")
+        logger.info("Cleanup complete")

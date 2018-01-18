@@ -26,6 +26,9 @@ class Human(AbstractPlayer):
     def __init__(self, race):
         super().__init__(PlayerType.Participant, race)
 
+    def __str__(self):
+        return f"Human({self.race})"
+
 class Bot(AbstractPlayer):
     def __init__(self, race, ai):
         """
@@ -36,14 +39,22 @@ class Bot(AbstractPlayer):
         super().__init__(PlayerType.Participant, race)
         self.ai = ai
 
+    def __str__(self):
+        return f"Bot({self.race}, {self.ai})"
+
 class Computer(AbstractPlayer):
     def __init__(self, race, difficulty=Difficulty.Easy):
         super().__init__(PlayerType.Computer, race, difficulty)
+
+    def __str__(self):
+        return f"Computer({self.race}, {self.difficulty})"
 
 class Observer(AbstractPlayer):
     def __init__(self):
         super().__init__(PlayerType.Observer)
 
+    def __str__(self):
+        return f"Observer()"
 
 class Player(AbstractPlayer):
     @classmethod
