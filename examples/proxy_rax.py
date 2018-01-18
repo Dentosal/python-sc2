@@ -24,11 +24,11 @@ class ProxyRaxBot(sc2.BotAI):
         if self.can_afford(SCV) and self.workers.amount < 16 and cc.noqueue:
             await self.do(cc.train(SCV))
 
-        elif self.supply_left < 2:
+        elif self.supply_left < (2 if self.units(BARRACKS).amount < 3 else 4):
             if self.can_afford(SUPPLYDEPOT):
                 await self.build(SUPPLYDEPOT, near=cc.position.towards(self.game_info.map_center, 5))
 
-        elif self.units(BARRACKS).amount < 3 or self.minerals > 400:
+        elif self.units(BARRACKS).amount < 3 or (self.minerals > 400 and self.units(BARRACKS).amount < 5):
             if self.can_afford(BARRACKS):
                 p = self.game_info.map_center.towards(self.enemy_start_locations[0], 25)
                 await self.build(BARRACKS, near=p)
@@ -45,7 +45,7 @@ def main():
     sc2.run_game(sc2.maps.get("Sequencer LE"), [
         Bot(Race.Terran, ProxyRaxBot()),
         Computer(Race.Zerg, Difficulty.Hard)
-    ], realtime=True)
+    ], realtime=False)
 
 if __name__ == '__main__':
     main()
