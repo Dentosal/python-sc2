@@ -33,8 +33,8 @@ def get_env():
     # TODO: Linux env conf from: https://github.com/deepmind/pysc2/blob/master/pysc2/run_configs/platforms.py
     return None
 
-def latest__executeble(versions_dir):
-    latest = max((int(p.name[4:]), p) for p in versions_dir.iterdir() if p.is_dir())
+def latest_executeble(versions_dir):
+    latest = max((int(p.name[4:]), p) for p in versions_dir.iterdir() if p.is_dir() and p.name.startswith("Base"))
     version, path = latest
     if version < 55958:
         logger.critical(f"Your SC2 binary is too old. Upgrade to 3.16.1 or newer.")
@@ -44,7 +44,7 @@ def latest__executeble(versions_dir):
 class Paths(object):
     try:
         BASE = Path(os.environ.get("SC2PATH", BASEDIR[PF])).expanduser()
-        EXECUTABLE = latest__executeble(BASE / "Versions")
+        EXECUTABLE = latest_executeble(BASE / "Versions")
         CWD = base_dir / CWD[PF] if CWD[PF] else None
 
         REPLAYS = BASE / "Replays"
