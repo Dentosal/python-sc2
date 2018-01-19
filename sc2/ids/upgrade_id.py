@@ -90,6 +90,9 @@ class UpgradeId(enum.Enum):
     MEDIVACINCREASESPEEDBOOST = 139
     LIBERATORAGRANGEUPGRADE = 140
     DARKTEMPLARBLINKUPGRADE = 141
+    SMARTSERVOS = 289
+    RAPIDFIRELAUNCHERS = 291
+    ENHANCEDMUNITIONS = 292
 
 for item in UpgradeId:
     globals()[item.name] = item

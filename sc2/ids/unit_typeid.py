@@ -423,6 +423,8 @@ class UnitTypeId(enum.Enum):
     ZERG_OVERLORDTRANSPORT = 893
     PYLONOVERCHARGED = 894
     PROTOSS_PYLONOVERCHARGED = 894
+    SHIELDBATTERY = 1910
+    PROTOSS_SHIELDBATTERY = 1910
 
 for item in UnitTypeId:
     globals()[item.name] = item
