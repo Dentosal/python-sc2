@@ -116,7 +116,7 @@ def run_game(map_settings, players, **kwargs):
         portconfig = Portconfig()
         result = asyncio.get_event_loop().run_until_complete(asyncio.gather(
             _host_game(map_settings, players, **kwargs, portconfig=portconfig),
-            _join_game(players, kwargs.get("realtime", False), **kwargs, portconfig=portconfig)
+            _join_game(players, **kwargs, portconfig=portconfig)
         ))
     else:
         result = asyncio.get_event_loop().run_until_complete(

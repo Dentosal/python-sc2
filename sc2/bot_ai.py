@@ -33,6 +33,10 @@ class BotAI(object):
         return self._game_info.start_locations
 
     @property
+    def known_enemy_units(self):
+        return self.state.units.enemy
+
+    @property
     def known_enemy_structures(self):
         return self.state.units.enemy.structure
 

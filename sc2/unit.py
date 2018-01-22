@@ -159,6 +159,14 @@ class Unit(object):
         return not self.orders
 
     @property
+    def add_on_tag(self):
+        return self._proto.add_on_tag
+
+    @property
+    def has_add_on(self):
+        return self.add_on_tag != 0
+
+    @property
     def assigned_harvesters(self):
         return self._proto.assigned_harvesters
 
