@@ -52,10 +52,7 @@ class Protocol(object):
         self._status = new_status
 
         if response.error:
-            if response.HasField("error_details"):
-                logger.debug(f"Response contained an error: {response.error}: {response.error_details}")
-            else:
-                logger.debug(f"Response contained an error: {response.error}")
+            logger.debug(f"Response contained an error: {response.error}")
             raise ProtocolError(f"{response.error}")
 
         return response

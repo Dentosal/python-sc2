@@ -1,5 +1,8 @@
 from .paths import Paths
 
+import logging
+logger = logging.getLogger(__name__)
+
 def get(name=None):
     maps = []
     for mapdir in (p for p in Paths.MAPS.iterdir() if p.is_dir()):
@@ -19,6 +22,15 @@ def get(name=None):
 class Map(object):
     def __init__(self, path):
         self.path = path
+
+        if self.path.is_absolute():
+            try:
+                self.relative_path = self.path.relative_to(Paths.MAPS)
+            except ValueError: # path not relative to basedir
+                logging.warning(f"Using absolute path: {self.path}")
+                self.relative_path = self.path
+        else:
+            self.relative_path = self.path
 
     @property
     def name(self):
