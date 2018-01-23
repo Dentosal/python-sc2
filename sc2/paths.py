@@ -25,10 +25,6 @@ CWD = {
 
 PF = platform.system()
 
-if PF not in BASEDIR:
-    logger.critical(f"Unsupported platform '{PF}'")
-    exit(1)
-
 def get_env():
     # TODO: Linux env conf from: https://github.com/deepmind/pysc2/blob/master/pysc2/run_configs/platforms.py
     return None
@@ -41,14 +37,28 @@ def latest_executeble(versions_dir):
         exit(1)
     return path / BINPATH[PF]
 
-class Paths(object):
-    try:
-        BASE = Path(os.environ.get("SC2PATH", BASEDIR[PF])).expanduser()
-        EXECUTABLE = latest_executeble(BASE / "Versions")
-        CWD = base_dir / CWD[PF] if CWD[PF] else None
 
-        REPLAYS = BASE / "Replays"
-        MAPS = BASE / "Maps"
-    except FileNotFoundError as e:
-        logger.critical(f"SC2 installation not found: File '{e.filename}' does not exist.")
-        exit(1)
+class _MetaPaths(type):
+    """"Lazily loads paths to allow importing the library even if SC2 isn't installed."""
+    def __setup(self):
+        if PF not in BASEDIR:
+            logger.critical(f"Unsupported platform '{PF}'")
+            exit(1)
+
+        try:
+            self.BASE = Path(os.environ.get("SC2PATH", BASEDIR[PF])).expanduser()
+            self.EXECUTABLE = latest_executeble(self.BASE / "Versions")
+            self.CWD = base_dir / CWD[PF] if CWD[PF] else None
+
+            self.REPLAYS = self.BASE / "Replays"
+            self.MAPS = self.BASE / "Maps"
+        except FileNotFoundError as e:
+            logger.critical(f"SC2 installation not found: File '{e.filename}' does not exist.")
+            exit(1)
+
+    def __getattr__(self, attr):
+        self.__setup()
+        return getattr(self, attr)
+
+class Paths(metaclass=_MetaPaths):
+    """Paths for SC2 folders, lazily loaded using the above metaclass."""
