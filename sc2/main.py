@@ -96,13 +96,15 @@ async def _host_game(map_settings, players, realtime, portconfig=None, save_repl
 
         return result
 
-async def _join_game(players, realtime, portconfig, step_time_limit=None):
+async def _join_game(players, realtime, portconfig, save_replay_as=None, step_time_limit=None):
     async with SC2Process() as server:
         await server.ping()
         client = Client(server._ws)
 
         try:
             result = await _play_game(players[1], client, realtime, portconfig, step_time_limit)
+            if save_replay_as is not None:
+                await client.save_replay(save_replay_as)
             await client.leave()
             await client.quit()
         except ConnectionAlreadyClosed:
@@ -113,10 +115,12 @@ async def _join_game(players, realtime, portconfig, step_time_limit=None):
 
 def run_game(map_settings, players, **kwargs):
     if sum(isinstance(p, (Human, Bot)) for p in players) > 1:
+        join_kwargs = {k: v for k,v in kwargs.items() if k != "save_replay_as"}
+
         portconfig = Portconfig()
         result = asyncio.get_event_loop().run_until_complete(asyncio.gather(
             _host_game(map_settings, players, **kwargs, portconfig=portconfig),
-            _join_game(players, **kwargs, portconfig=portconfig)
+            _join_game(players, join_kwargs, portconfig=portconfig)
         ))
     else:
         result = asyncio.get_event_loop().run_until_complete(
