@@ -5,6 +5,9 @@ from s2clientprotocol import (
     debug_pb2 as debug_pb
 )
 
+import logging
+logger = logging.getLogger(__name__)
+
 from .cache import method_cache_forever
 
 from .protocol import Protocol
@@ -50,9 +53,11 @@ class Client(Protocol):
         return result.join_game.player_id
 
     async def save_replay(self, path):
+        logger.debug(f"Requesting replay from server")
         result = await self._execute(save_replay=sc_pb.RequestSaveReplay())
         with open(path, "wb") as f:
             f.write(result.save_replay.data)
+        logger.info(f"Saved replay to {path}")
 
     async def observation(self):
         result = await self._execute(observation=sc_pb.RequestObservation())
