@@ -71,14 +71,14 @@ class SC2Process(object):
 
     def _launch(self):
         return subprocess.Popen([
-                Paths.EXECUTABLE,
+                str(Paths.EXECUTABLE),
                 "-listen", self._host,
                 "-port", str(self._port),
                 "-displayMode", "1" if self._fullscreen else "0",
-                "-dataDir", Paths.BASE,
+                "-dataDir", str(Paths.BASE),
                 "-tempDir", self._tmp_dir
             ],
-            cwd=Paths.CWD,
+            cwd=str(Paths.CWD),
             #, env=run_config.env
         )
 

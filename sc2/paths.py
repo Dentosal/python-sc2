@@ -48,7 +48,7 @@ class _MetaPaths(type):
         try:
             self.BASE = Path(os.environ.get("SC2PATH", BASEDIR[PF])).expanduser()
             self.EXECUTABLE = latest_executeble(self.BASE / "Versions")
-            self.CWD = base_dir / CWD[PF] if CWD[PF] else None
+            self.CWD = self.BASE / CWD[PF] if CWD[PF] else None
 
             self.REPLAYS = self.BASE / "Replays"
             self.MAPS = self.BASE / "Maps"
