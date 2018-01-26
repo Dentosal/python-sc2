@@ -79,7 +79,9 @@ class BotAI(object):
             if d is None:
                 continue
 
-            if d < DISTANCE_THRESHOLD:
+            def is_near_to_expansion(t): return t.position.distance_to(el) < DISTANCE_THRESHOLD
+
+            if any([t for t in map(is_near_to_expansion, self.townhalls)]):
                 # already taken
                 continue
 
