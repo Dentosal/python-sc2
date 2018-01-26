@@ -157,8 +157,7 @@ class BotAI(object):
             if random_alternative:
                 return random.choice(possible)
             else:
-                m = min(possible, key=lambda p: p.distance_to(near))
-                return m
+                return min(possible, key=lambda p: p.distance_to(near))
         return None
 
     def already_pending(self, unit_type):
