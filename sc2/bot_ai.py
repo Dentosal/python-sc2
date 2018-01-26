@@ -69,6 +69,13 @@ class BotAI(object):
         # Not always accurate, but good enought for now.
         return [c.rounded for c in centers]
 
+    async def expand_to_nearest(self, building, max_distance=10):
+        assert isinstance(building, UnitTypeId)
+
+        location = await self.get_next_expansion()
+        await self.build(building, near=location, max_distance=max_distance, random_alternative=False,
+                         placement_step=1)
+
     async def get_next_expansion(self):
         DISTANCE_THRESHOLD = 15.0
         closest = None
