@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 from .constants import EGG
 
 from .position import Point2, Point3
-from .data import Race, ActionResult, Attribute, race_worker, race_townhalls
+from .data import Race, ActionResult, Attribute, race_worker, race_townhalls, race_gas
 from .unit import Unit
 from .cache import property_cache_forever
 from .game_data import AbilityData, Cost
@@ -15,7 +15,11 @@ from .ids.unit_typeid import UnitTypeId
 from .ids.ability_id import AbilityId
 from .ids.upgrade_id import UpgradeId
 
+
 class BotAI(object):
+
+    EXPANSION_GAP_THRESHOLD = 15
+
     def _prepare_start(self, client, player_id, game_info, game_data):
         self._client = client
         self._game_info = game_info
@@ -43,9 +47,9 @@ class BotAI(object):
     @property
     @property_cache_forever
     def expansion_locations(self):
-        DISTANCE_THRESHOLD = 8.0 # Tried with Abyssal Reef LE, this was fine
+        RESOURCE_SPREAD_THRESHOLD = 8.0 # Tried with Abyssal Reef LE, this was fine
         resources = [
-            r.position.to2
+            r
             for r in self.state.mineral_field | self.state.vespene_geyser
         ]
 
@@ -53,7 +57,7 @@ class BotAI(object):
         r_groups = []
         for mf in resources:
             for g in r_groups:
-                if any(mf.distance_to(p) < DISTANCE_THRESHOLD for p in g):
+                if any(mf.position.to2.distance_to(p) < RESOURCE_SPREAD_THRESHOLD for p in g):
                     g.add(mf)
                     break
             else: # not found
@@ -64,10 +68,10 @@ class BotAI(object):
 
         # Find centers
         avg = lambda l: sum(l) / len(l)
-        centers = [Point2(tuple(map(avg, zip(*g)))) for g in r_groups]
+        pos = lambda u: u.position.to2
+        centers = {Point2(tuple(map(avg, zip(*map(pos,g))))).rounded: g for g in r_groups}
 
-        # Not always accurate, but good enought for now.
-        return [c.rounded for c in centers]
+        return centers
 
     async def expand_now(self, building=None, max_distance=10):
         if not building:
@@ -80,11 +84,10 @@ class BotAI(object):
                          placement_step=1)
 
     async def get_next_expansion(self):
-        DISTANCE_THRESHOLD = 15.0
         closest = None
         distance = float("inf")
         for el in self.expansion_locations:
-            def is_near_to_expansion(t): return t.position.distance_to(el) < DISTANCE_THRESHOLD
+            def is_near_to_expansion(t): return t.position.distance_to(el) < self.EXPANSION_GAP_THRESHOLD
             if any([t for t in map(is_near_to_expansion, self.townhalls)]):
                 # already taken
                 continue
