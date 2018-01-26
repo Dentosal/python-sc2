@@ -78,7 +78,7 @@ class SC2Process(object):
                 "-dataDir", str(Paths.BASE),
                 "-tempDir", self._tmp_dir
             ],
-            cwd=str(Paths.CWD),
+            cwd=(str(Paths.CWD) if Paths.CWD else None),
             #, env=run_config.env
         )
 
