@@ -21,6 +21,17 @@ class BuildOrder(object):
                 return await action(self.bot, state)
 
 
+def expand():
+    async def expand_spec(bot, state):
+        building = bot.townhalls.first.type_id
+        if bot.can_afford(building):
+            return await bot.expand_now(building=building)
+        else:
+            return None
+
+    return expand_spec
+
+
 def train(unit, on_building):
     async def train_spec(bot, state):
         buildings = bot.units(on_building).ready.noqueue

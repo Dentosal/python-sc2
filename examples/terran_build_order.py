@@ -20,6 +20,7 @@ class TerranBuildOrderBot(sc2.BotAI):
             (all_of(supply_is(15), minerals_at_least(150)), build(UnitTypeId.BARRACKS)),
             (supply_is(15), train(UnitTypeId.SCV, on_building=UnitTypeId.COMMANDCENTER)),
             (supply_is(16), train(UnitTypeId.SCV, on_building=UnitTypeId.COMMANDCENTER)),
+            (all_of(supply_is(17), minerals_at_least(400)), expand()),
             (supply_is(17), train(UnitTypeId.SCV, on_building=UnitTypeId.COMMANDCENTER)),
             (all_of(supply_is(18), minerals_at_least(150)), build(UnitTypeId.BARRACKS)),
             (all_of(supply_is(18), minerals_at_least(100)), build(UnitTypeId.SUPPLYDEPOT, around_building=first_barracks)),
