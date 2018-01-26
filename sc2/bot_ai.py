@@ -81,15 +81,14 @@ class BotAI(object):
         closest = None
         distance = float("inf")
         for el in self.expansion_locations:
+            def is_near_to_expansion(t): return t.position.distance_to(el) < DISTANCE_THRESHOLD
+            if any([t for t in map(is_near_to_expansion, self.townhalls)]):
+                # already taken
+                continue
+
             th = self.townhalls.first
             d = await self._client.query_pathing(th.position, el)
             if d is None:
-                continue
-
-            def is_near_to_expansion(t): return t.position.distance_to(el) < DISTANCE_THRESHOLD
-
-            if any([t for t in map(is_near_to_expansion, self.townhalls)]):
-                # already taken
                 continue
 
             if d < distance:
