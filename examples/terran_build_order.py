@@ -1,8 +1,9 @@
 import sc2
 from sc2 import run_game, maps, Race, Difficulty
-from sc2.build_order import BuildOrder, supply_is, minerals_at_least, train, build, all_of
+from sc2.build_orders.build_order import BuildOrder, train, build, expand
 from sc2.player import Bot, Computer
 from sc2.constants import *
+from sc2.build_orders.state_conditions import all_of, supply_is, minerals_at_least
 
 
 def first_barracks(bot, state):
@@ -21,7 +22,7 @@ class TerranBuildOrderBot(sc2.BotAI):
             (supply_is(16), train(UnitTypeId.SCV, on_building=UnitTypeId.COMMANDCENTER)),
             (supply_is(17), train(UnitTypeId.SCV, on_building=UnitTypeId.COMMANDCENTER)),
             (all_of(supply_is(18), minerals_at_least(150)), build(UnitTypeId.BARRACKS)),
-            (supply_is(18), build(UnitTypeId.SUPPLYDEPOT, around_building=first_barracks)),
+            (all_of(supply_is(18), minerals_at_least(100)), build(UnitTypeId.SUPPLYDEPOT, around_building=first_barracks)),
             (supply_is(18), train(UnitTypeId.SCV, on_building=UnitTypeId.COMMANDCENTER)),
         ]
         self.build_order = BuildOrder(self, build_order)
