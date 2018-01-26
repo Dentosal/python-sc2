@@ -10,9 +10,10 @@ logger = logging.getLogger(__name__)
 
 from .cache import method_cache_forever
 
-from .protocol import Protocol
+from .protocol import Protocol, ProtocolError
 from .game_info import GameInfo
 from .game_data import GameData, AbilityData
+from .data import Status, Result
 from .data import Race, ActionResult, ChatChannel
 from .action import combine_actions
 from .position import Point2
@@ -21,6 +22,12 @@ from .unit import Unit
 class Client(Protocol):
     def __init__(self, ws):
         super().__init__(ws)
+        self._player_id = None
+        self._game_result = None
+
+    @property
+    def in_game(self):
+        return self._status == Status.in_game
 
     async def join_game(self, race=None, observed_player_id=None, portconfig=None):
         ifopts = sc_pb.InterfaceOptions(raw=True)
@@ -50,7 +57,23 @@ class Client(Protocol):
                 p.base_port = ppc[1]
 
         result = await self._execute(join_game=req)
+        self._game_result = None
+        self._player_id = result.join_game.player_id
         return result.join_game.player_id
+
+    async def leave(self):
+        is_resign = self._game_result is None
+
+        if is_resign:
+            # For all clients that can leave, result of leaving the game either
+            # loss, or the client will ignore the result
+            self._game_result = {self._player_id: Result.Defeat}
+
+        try:
+            await self._execute(leave_game=sc_pb.RequestLeaveGame())
+        except ProtocolError:
+            if is_resign:
+                raise
 
     async def save_replay(self, path):
         logger.debug(f"Requesting replay from server")
@@ -61,6 +84,11 @@ class Client(Protocol):
 
     async def observation(self):
         result = await self._execute(observation=sc_pb.RequestObservation())
+        if len(result.observation.player_result) > 0:
+            player_id_to_result = {}
+            for pr in result.observation.player_result:
+                player_id_to_result[pr.player_id] = Result(pr.result)
+            self._game_result = player_id_to_result
         return result
 
     async def step(self):
