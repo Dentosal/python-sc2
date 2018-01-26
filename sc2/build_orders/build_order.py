@@ -12,25 +12,26 @@ class BuildOrder(object):
             if index > self.next_execution:
                 return None
 
-            condition, intent = item
-            action, intended_unit = intent
+            condition, action = item
             condition = item[0] if item[0] else always_true
-            if condition(self.bot, state) and self.bot.can_afford(intended_unit):
+            if condition(self.bot, state):
+                print("Executing build order index {}".format(index))
                 self.next_execution = index + 1
+                print("Next build order index {}".format(self.next_execution))
                 return await action(self.bot, state)
 
 
 def train(unit, on_building):
     async def train_spec(bot, state):
         buildings = bot.units(on_building).ready.noqueue
-        if buildings.exists:
+        if buildings.exists and bot.can_afford(unit):
             selected = buildings.first
             print("Training {}".format(unit))
             return await bot.do(selected.train(unit))
         else:
             return None
 
-    return train_spec, unit
+    return train_spec
 
 
 def build(building, around_building=None, placement=None):
@@ -44,4 +45,10 @@ def build(building, around_building=None, placement=None):
             location = around.position.towards(bot.game_info.map_center, 5)
         else:
             location = placement
+        if bot.can_afford(building):
+            print("Building {}".format(building))
+            return await bot.build(building, near=location)
+        else:
+            return None
 
+    return build_spec
