@@ -120,7 +120,7 @@ class BotAI(object):
         r = await self._client.query_building_placement(building, [position])
         return r[0] == ActionResult.Success
 
-    async def find_placement(self, building, near, max_distance=20):
+    async def find_placement(self, building, near, max_distance=20, random_alternative=True, placement_step=2):
         assert isinstance(building, (AbilityId, UnitTypeId))
         assert self.can_afford(building)
         assert isinstance(near, Point2)
@@ -133,19 +133,23 @@ class BotAI(object):
         if await self.can_place(building, near):
             return near
 
-        for distance in range(2, max_distance, 2):
+        for distance in range(placement_step, max_distance, placement_step):
             possible_positions = [Point2(p).offset(near).to2 for p in (
-                [(dx, -distance) for dx in range(-distance, distance+1, 2)] +
-                [(dx,  distance) for dx in range(-distance, distance+1, 2)] +
-                [(-distance, dy) for dy in range(-distance, distance+1, 2)] +
-                [( distance, dy) for dy in range(-distance, distance+1, 2)]
+                [(dx, -distance) for dx in range(-distance, distance+1, placement_step)] +
+                [(dx,  distance) for dx in range(-distance, distance+1, placement_step)] +
+                [(-distance, dy) for dy in range(-distance, distance+1, placement_step)] +
+                [( distance, dy) for dy in range(-distance, distance+1, placement_step)]
             )]
             res = await self._client.query_building_placement(building, possible_positions)
             possible = [p for r, p in zip(res, possible_positions) if r == ActionResult.Success]
             if not possible:
                 continue
 
-            return random.choice(possible)
+            if random_alternative:
+                return random.choice(possible)
+            else:
+                m = min(possible, key=lambda p: p.distance_to(near))
+                return m
         return None
 
     def already_pending(self, unit_type):
@@ -158,13 +162,13 @@ class BotAI(object):
             return True
         return False
 
-    async def build(self, building, near, max_distance=20, unit=None):
+    async def build(self, building, near, max_distance=20, unit=None, random_alternative=True, placement_step=2):
         if isinstance(near, Unit):
             near = near.position.to2
         elif near is not None:
             near = near.to2
 
-        p = await self.find_placement(building, near.rounded, max_distance)
+        p = await self.find_placement(building, near.rounded, max_distance, random_alternative, placement_step)
         if p is None:
             return ActionResult.CantFindPlacementLocation
 
