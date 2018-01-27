@@ -38,10 +38,10 @@ def minerals_at_least(s):
     return condition
 
 
-def unit_count(building, n, include_pending=False):
+def unit_count(unit, n, include_pending=False):
     def condition(bot,state):
-        actual_amount = bot.units(building).amount
+        actual_amount = bot.units(unit).amount
         if include_pending:
-            actual_amount += bot.already_pending(building)
+            actual_amount += bot.already_pending(unit)
         return actual_amount == n
     return condition
