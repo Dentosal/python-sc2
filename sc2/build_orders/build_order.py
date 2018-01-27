@@ -1,25 +1,48 @@
+from sc2 import Race, race_worker, ActionResult
 from sc2.build_orders.state_conditions import always_true
 from sc2.ids.unit_typeid import UnitTypeId
 
+class Intent(object):
+    def __init__(self, action):
+        self.action = action
+        self.done = False
+
+    async def execute(self, bot, state):
+        e = await self.action(bot, state)
+        if not e: #success
+            self.done = True
+
+        return e
+
+    @property
+    def is_done(self):
+        return self.done
+
 
 class BuildOrder(object):
-    def __init__(self, bot, build):
+    def __init__(self, bot, build, worker_count=0):
         self.build = build
         self.bot = bot
-        self.next_execution = 0
+        self.worker_count = worker_count
 
     async def execute_build(self, state):
         for index, item in enumerate(self.build):
-            if index > self.next_execution:
-                return None
-
-            condition, action = item
+            condition, intent = item
             condition = item[0] if item[0] else always_true
-            if condition(self.bot, state):
-                print("Executing build order index {}".format(index))
-                self.next_execution = index + 1
-                print("Next build order index {}".format(self.next_execution))
-                return await action(self.bot, state)
+            if condition(self.bot, state) and not intent.is_done:
+                e = await intent.execute(self.bot, state)
+                if intent.is_done:
+                    return e
+                else:
+                    continue
+
+        if self.bot.workers.amount < self.worker_count:
+            if self.bot.race == Race.Zerg:
+                return await morph(race_worker[Race.Zerg]).execute(self.bot, state)
+            else:
+                return await train(race_worker[self.bot.race], self.bot.townhalls.ready.random.type_id).execute(self.bot,
+                                                                                                         state)
+        return None
 
 
 def expand():
@@ -28,9 +51,9 @@ def expand():
         if bot.can_afford(building):
             return await bot.expand_now(building=building)
         else:
-            return None
+            return ActionResult.Error
 
-    return expand_spec
+    return Intent(expand_spec)
 
 
 def train(unit, on_building):
@@ -41,9 +64,9 @@ def train(unit, on_building):
             print("Training {}".format(unit))
             return await bot.do(selected.train(unit))
         else:
-            return None
+            return ActionResult.Error
 
-    return train_spec
+    return Intent(train_spec)
 
 def morph(unit):
     async def train_spec(bot, state):
@@ -53,9 +76,9 @@ def morph(unit):
             print("Morph {}".format(unit))
             return await bot.do(selected.train(unit))
         else:
-            return None
+            return ActionResult.Error
 
-    return train_spec
+    return Intent(train_spec)
 
 
 def build(building, around_building=None, placement=None):
@@ -73,6 +96,6 @@ def build(building, around_building=None, placement=None):
             print("Building {}".format(building))
             return await bot.build(building, near=location)
         else:
-            return None
+            return ActionResult.Error
 
-    return build_spec
+    return Intent(build_spec)

@@ -16,11 +16,10 @@ def always_true(bot, state):
     return True
 
 
-def supply_is(s):
+def supply_at_least(s):
     def condition(bot, state):
-        return bot.supply_used == s
+        return bot.supply_used >= s
 
-    condition.__str__()
     return condition
 
 
