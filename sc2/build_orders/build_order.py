@@ -6,13 +6,18 @@ class Intent(object):
     def __init__(self, action):
         self.action = action
         self.done = False
+        self.infinite = False
 
     async def execute(self, bot, state):
         e = await self.action(bot, state)
-        if not e: #success
+        if not e and not self.infinite:
             self.done = True
 
         return e
+
+    def keep_going(self):
+        self.infinite = True
+        return self
 
     @property
     def is_done(self):
