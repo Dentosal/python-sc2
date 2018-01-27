@@ -1,4 +1,5 @@
 from sc2.build_orders.state_conditions import always_true
+from sc2.ids.unit_typeid import UnitTypeId
 
 
 class BuildOrder(object):
@@ -38,6 +39,18 @@ def train(unit, on_building):
         if buildings.exists and bot.can_afford(unit):
             selected = buildings.first
             print("Training {}".format(unit))
+            return await bot.do(selected.train(unit))
+        else:
+            return None
+
+    return train_spec
+
+def morph(unit):
+    async def train_spec(bot, state):
+        larvae = bot.units(UnitTypeId.LARVA)
+        if larvae.exists and bot.can_afford(unit):
+            selected = larvae.first
+            print("Morph {}".format(unit))
             return await bot.do(selected.train(unit))
         else:
             return None
