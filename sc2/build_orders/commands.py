@@ -5,32 +5,24 @@ from sc2.constants import *
 class Command(object):
     def __init__(self, action, repeatable=False, priority=False):
         self.action = action
-        self.done = False
-        self.repeatable = repeatable
-        self.priority = priority
+        self.is_done = False
+        self.is_repeatable = repeatable
+        self.is_priority = priority
 
     async def execute(self, bot, state):
         e = await self.action(bot, state)
-        if not e and not self.repeatable:
-            self.done = True
+        if not e and not self.is_repeatable:
+            self.is_done = True
 
         return e
 
     def allow_repeat(self):
-        self.repeatable = True
-        self.done = False
+        self.is_repeatable = True
+        self.is_done = False
         return self
 
-    @property
-    def is_done(self):
-        return self.done
 
-    @property
-    def is_priority(self):
-        return self.priority
-
-
-def expand(prioritize=False, repeatable=False):
+def expand(prioritize=False, repeatable=True):
     async def do_expand(bot, state):
         building = bot.basic_townhall_type
         can_afford = bot.can_afford(building)
@@ -76,7 +68,7 @@ def morph(unit, prioritize=False, repeatable=False):
     return Command(do_morph, priority=prioritize, repeatable=repeatable)
 
 
-def build(building, around_building=None, placement=None, prioritize=False, repeatable=False):
+def build(building, around_building=None, placement=None, prioritize=True, repeatable=False):
     async def do_build(bot, state):
         if not around_building:
             around = bot.townhalls.first
@@ -98,7 +90,7 @@ def build(building, around_building=None, placement=None, prioritize=False, repe
     return Command(do_build, priority=prioritize, repeatable=repeatable)
 
 
-def add_supply(prioritize=False, repeatable=False):
+def add_supply(prioritize=True, repeatable=False):
     async def supply_spec(bot, state):
         can_afford = bot.can_afford(bot.supply_type)
         if can_afford:
@@ -112,7 +104,7 @@ def add_supply(prioritize=False, repeatable=False):
     return Command(supply_spec, priority=prioritize, repeatable=repeatable)
 
 
-def add_gas(prioritize=False, repeatable=False):
+def add_gas(prioritize=True, repeatable=False):
     async def do_add_gas(bot, state):
         can_afford = bot.can_afford(bot.geyser_type)
         if not can_afford:
