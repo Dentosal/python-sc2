@@ -61,12 +61,6 @@ class Protocol(object):
         result = await self._execute(ping=sc_pb.RequestPing())
         return result
 
-    async def leave(self):
-        try:
-            await self._execute(leave_game=sc_pb.RequestLeaveGame())
-        except websockets.exceptions.ConnectionClosed:
-            pass
-
     async def quit(self):
         try:
             await self._execute(quit=sc_pb.RequestQuit())

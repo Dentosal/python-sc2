@@ -12,19 +12,11 @@ from .data import Race, Difficulty, Result, ActionResult
 from .game_state import GameState
 from .protocol import ConnectionAlreadyClosed
 
-def _get_result(state, player_id):
-    assert len(state.observation.player_result) > 0
-    for pr in state.observation.player_result:
-        if pr.player_id == player_id:
-            return Result(pr.result)
-
-    raise RuntimeError("No result found for player")
-
 async def _play_game_human(client, player_id, realtime):
     while True:
         state = await client.observation()
-        if len(state.observation.player_result) > 0:
-            return _get_result(state, player_id)
+        if client._game_result:
+            return client._game_result[player_id]
 
         if not realtime:
             await client.step()
@@ -39,8 +31,8 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit):
     iteration = 0
     while True:
         state = await client.observation()
-        if len(state.observation.player_result) > 0:
-            return _get_result(state, player_id)
+        if client._game_result:
+            return client._game_result[player_id]
 
         gs = GameState(state.observation, game_data)
 
@@ -57,6 +49,10 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit):
             except asyncio.TimeoutError:
                 logger.error(f"Running AI step: out of time")
             logger.debug(f"Running AI step: done")
+
+            if not client.in_game: # Client left (resigned) the game
+                return client._game_result[player_id]
+
             await client.step()
 
         iteration += 1
