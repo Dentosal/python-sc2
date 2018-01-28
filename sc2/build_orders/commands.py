@@ -27,10 +27,11 @@ class Command(object):
 def expand():
     async def expand_spec(bot, state):
         building = bot.basic_townhall_type
-        if bot.can_afford(building):
+        can_afford = bot.can_afford(building)
+        if can_afford:
             return await bot.expand_now(building=building)
         else:
-            return ActionResult.Error
+            return can_afford.action_result
 
     return Command(expand_spec)
 
@@ -38,10 +39,14 @@ def expand():
 def train(unit, on_building):
     async def train_spec(bot, state):
         buildings = bot.units(on_building).ready.noqueue
-        if buildings.exists and bot.can_afford(unit):
+        if buildings.exists:
             selected = buildings.first
-            print("Training {}".format(unit))
-            return await bot.do(selected.train(unit))
+            can_afford = bot.can_afford(unit)
+            if can_afford:
+                print("Training {}".format(unit))
+                return await bot.do(selected.train(unit))
+            else:
+                return can_afford.action_result
         else:
             return ActionResult.Error
 
@@ -53,8 +58,12 @@ def morph(unit):
         larvae = bot.units(UnitTypeId.LARVA)
         if larvae.exists and bot.can_afford(unit):
             selected = larvae.first
-            print("Morph {}".format(unit))
-            return await bot.do(selected.train(unit))
+            can_afford = bot.can_afford(unit)
+            if can_afford:
+                print("Morph {}".format(unit))
+                return await bot.do(selected.train(unit))
+            else:
+                return can_afford.action_result
         else:
             return ActionResult.Error
 
@@ -72,43 +81,48 @@ def build(building, around_building=None, placement=None):
             location = around.position.towards(bot.game_info.map_center, 5)
         else:
             location = placement
-        if bot.can_afford(building):
+
+        can_afford = bot.can_afford(building)
+        if can_afford:
             print("Building {}".format(building))
             return await bot.build(building, near=location)
         else:
-            return ActionResult.Error
+            return can_afford.action_result
 
     return Command(build_spec)
 
 
 def add_supply():
     async def supply_spec(bot, state):
-        if bot.can_afford(bot.supply_type):
+        can_afford = bot.can_afford(bot.supply_type)
+        if can_afford:
             if bot.race == Race.Zerg:
                 return await morph(bot.supply_type).execute(bot, state)
             else:
                 return await build(bot.supply_type).execute(bot, state)
         else:
-            return ActionResult.Error
+            return can_afford.action_result
 
     return Command(supply_spec)
 
 
 def add_gas():
     async def add_gas_spec(bot, state):
-        for th in bot.townhalls:
-            for nexus in bot.units(th.type_id).ready:
-                vgs = state.vespene_geyser.closer_than(20.0, nexus)
-                for vg in vgs:
-                    if not bot.can_afford(UnitTypeId.EXTRACTOR):
-                        break
+        can_afford = bot.can_afford(bot.geyser_type)
+        if not can_afford:
+            return can_afford.action_result
 
-                    worker = bot.select_build_worker(vg.position)
-                    if worker is None:
-                        break
+        owned_expansions = bot.owned_expansions
+        for location, th in owned_expansions.items():
+            vgs = state.vespene_geyser.closer_than(20.0, th)
+            for vg in vgs:
+                worker = bot.select_build_worker(vg.position)
+                if worker is None:
+                    break
 
-                    if not bot.units(UnitTypeId.EXTRACTOR).closer_than(1.0, vg).exists:
-                        return await bot.do(worker.build(UnitTypeId.EXTRACTOR, vg))
+                if not bot.units(bot.geyser_type).closer_than(1.0, vg).exists:
+                    return await bot.do(worker.build(bot.geyser_type, vg))
+
         return ActionResult.Error
 
     return Command(add_gas_spec)
