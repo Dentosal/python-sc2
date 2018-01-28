@@ -107,7 +107,7 @@ class BotAI(object):
 
     async def distribute_workers(self):
         expansion_locations = self.expansion_locations
-        owned_expansions = self.get_owned_expansions()
+        owned_expansions = self.owned_expansions
         worker_pool = []
         for location, townhall in owned_expansions.items():
             workers = self.workers.closer_than(20, location)
@@ -156,15 +156,16 @@ class BotAI(object):
                     else:
                         await self.do(w.gather(mf))
 
-    def get_owned_expansions(self):
-        owned_expansions = {}
+    @property
+    def owned_expansions(self):
+        owned = {}
         for el in self.expansion_locations:
             def is_near_to_expansion(t): return t.position.distance_to(el) < self.EXPANSION_GAP_THRESHOLD
             th = next((x for x in self.townhalls if is_near_to_expansion(x)), None)
             if th:
-                owned_expansions[el] = th
+                owned[el] = th
 
-        return owned_expansions
+        return owned
 
     def can_afford(self, item_id):
         if isinstance(item_id, UnitTypeId):
