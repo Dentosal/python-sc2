@@ -152,11 +152,9 @@ class BotAI(object):
             for x in range(0, deficit):
                 if worker_pool:
                     w = worker_pool.pop()
-                    mf = next(iter(filter(lambda r: r.type_id in [UnitTypeId.MINERALFIELD750, UnitTypeId.MINERALFIELD,
-                                                                  UnitTypeId.RICHMINERALFIELD750, UnitTypeId.RICHMINERALFIELD],
-                                          expansion_locations[location])))
+                    mf = self.state.mineral_field.closest_to(townhall)
                     if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
-                        await self.do(w.move(mf))
+                        await self.do(w.move(townhall))
                         await self.do(w.return_resource(queue=True))
                     else:
                         await self.do(w.gather(mf))
