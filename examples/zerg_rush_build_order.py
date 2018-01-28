@@ -1,6 +1,7 @@
 import sc2
 from sc2 import Race, Difficulty
-from sc2.build_orders.build_order import train, expand, build, BuildOrder, morph, add_gas
+from sc2.build_orders.build_order import train, BuildOrder, morph
+from sc2.build_orders.commands import add_gas, build, expand
 from sc2.constants import *
 from sc2.player import Bot, Computer
 from sc2.state_conditions.conditions import supply_at_least, all_of, unit_count
