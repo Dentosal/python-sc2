@@ -3,29 +3,35 @@ from sc2.constants import *
 
 
 class Command(object):
-    def __init__(self, action):
+    def __init__(self, action, repeatable=False, priority=False):
         self.action = action
         self.done = False
-        self.infinite = False
+        self.repeatable = repeatable
+        self.priority = priority
 
     async def execute(self, bot, state):
         e = await self.action(bot, state)
-        if not e and not self.infinite:
+        if not e and not self.repeatable:
             self.done = True
 
         return e
 
-    def keep_going(self):
-        self.infinite = True
+    def allow_repeat(self):
+        self.repeatable = True
+        self.done = False
         return self
 
     @property
     def is_done(self):
         return self.done
 
+    @property
+    def is_priority(self):
+        return self.priority
 
-def expand():
-    async def expand_spec(bot, state):
+
+def expand(prioritize=False, repeatable=False):
+    async def do_expand(bot, state):
         building = bot.basic_townhall_type
         can_afford = bot.can_afford(building)
         if can_afford:
@@ -33,11 +39,11 @@ def expand():
         else:
             return can_afford.action_result
 
-    return Command(expand_spec)
+    return Command(do_expand, priority=prioritize, repeatable=repeatable)
 
 
-def train(unit, on_building):
-    async def train_spec(bot, state):
+def train(unit, on_building, prioritize=False, repeatable=False):
+    async def do_train(bot, state):
         buildings = bot.units(on_building).ready.noqueue
         if buildings.exists:
             selected = buildings.first
@@ -50,13 +56,13 @@ def train(unit, on_building):
         else:
             return ActionResult.Error
 
-    return Command(train_spec)
+    return Command(do_train, priority=prioritize, repeatable=repeatable)
 
 
-def morph(unit):
-    async def train_spec(bot, state):
+def morph(unit, prioritize=False, repeatable=False):
+    async def do_morph(bot, state):
         larvae = bot.units(UnitTypeId.LARVA)
-        if larvae.exists and bot.can_afford(unit):
+        if larvae.exists:
             selected = larvae.first
             can_afford = bot.can_afford(unit)
             if can_afford:
@@ -67,11 +73,11 @@ def morph(unit):
         else:
             return ActionResult.Error
 
-    return Command(train_spec)
+    return Command(do_morph, priority=prioritize, repeatable=repeatable)
 
 
-def build(building, around_building=None, placement=None):
-    async def build_spec(bot, state):
+def build(building, around_building=None, placement=None, prioritize=False, repeatable=False):
+    async def do_build(bot, state):
         if not around_building:
             around = bot.townhalls.first
         else:
@@ -89,10 +95,10 @@ def build(building, around_building=None, placement=None):
         else:
             return can_afford.action_result
 
-    return Command(build_spec)
+    return Command(do_build, priority=prioritize, repeatable=repeatable)
 
 
-def add_supply():
+def add_supply(prioritize=False, repeatable=False):
     async def supply_spec(bot, state):
         can_afford = bot.can_afford(bot.supply_type)
         if can_afford:
@@ -103,11 +109,11 @@ def add_supply():
         else:
             return can_afford.action_result
 
-    return Command(supply_spec)
+    return Command(supply_spec, priority=prioritize, repeatable=repeatable)
 
 
-def add_gas():
-    async def add_gas_spec(bot, state):
+def add_gas(prioritize=False, repeatable=False):
+    async def do_add_gas(bot, state):
         can_afford = bot.can_afford(bot.geyser_type)
         if not can_afford:
             return can_afford.action_result
@@ -125,4 +131,4 @@ def add_gas():
 
         return ActionResult.Error
 
-    return Command(add_gas_spec)
+    return Command(do_add_gas, priority=prioritize, repeatable=repeatable)

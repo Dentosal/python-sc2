@@ -17,13 +17,17 @@ class BuildOrder(object):
             return await add_supply().execute(bot, state)
 
         for index, item in enumerate(self.build):
-            condition, intent = item
+            condition, command = item
             condition = item[0] if item[0] else always_true
-            if condition(bot, state) and not intent.is_done:
-                e = await intent.execute(bot, state)
-                if intent.is_done:
+            if condition(bot, state) and not command.is_done:
+                e = await command.execute(bot, state)
+                if command.is_done:
                     return e
                 else:
+                    # Save up to be able to do this command and hold worker creation.
+                    if command.is_priority and e == ActionResult.NotEnoughMinerals:
+                        return e
+
                     if e == ActionResult.NotEnoughFood and self.auto_add_supply \
                             and not bot.already_pending(bot.supply_type):
                         return await add_supply().execute(bot, state)
