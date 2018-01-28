@@ -30,4 +30,4 @@ class TerranBot(sc2.BotAI):
 run_game(maps.get("Abyssal Reef LE"), [
     Bot(Race.Terran, TerranBot()),
     Computer(Race.Protoss, Difficulty.Medium)
-], realtime=True)
+], realtime=False)

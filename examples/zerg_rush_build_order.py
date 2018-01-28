@@ -4,7 +4,8 @@ from sc2.build_orders.build_order import train, BuildOrder, morph
 from sc2.build_orders.commands import add_gas, build, expand
 from sc2.constants import *
 from sc2.player import Bot, Computer
-from sc2.state_conditions.conditions import supply_at_least, all_of, unit_count, gas_less_than
+from sc2.state_conditions.conditions import supply_at_least, all_of, unit_count, gas_less_than, unit_count_less_than, \
+    unit_count_at_least
 
 
 def research(building, upgrade):
@@ -29,9 +30,9 @@ class ZergRushBot(sc2.BotAI):
             (all_of(supply_at_least(21), unit_count(UnitTypeId.OVERLORD, 2, include_pending=True)), morph(UnitTypeId.OVERLORD)),
             (all_of(supply_at_least(21), unit_count(UnitTypeId.ROACHWARREN, 0, include_pending=True)), build(UnitTypeId.ROACHWARREN)),
             (all_of(supply_at_least(20), unit_count(UnitTypeId.OVERLORD, 3, include_pending=True)), morph(UnitTypeId.OVERLORD)),
-            (all_of(unit_count(UnitTypeId.HATCHERY, 1), unit_count(UnitTypeId.ROACHWARREN, 1)), train(UnitTypeId.QUEEN, on_building=UnitTypeId.HATCHERY)),
-            (all_of(unit_count(UnitTypeId.ROACHWARREN, 1), gas_less_than(25)), morph(UnitTypeId.ZERGLING, repeatable=True)),
+            (unit_count_at_least(UnitTypeId.ROACH, 7), morph(UnitTypeId.ZERGLING, repeatable=True)),
             (unit_count(UnitTypeId.ROACHWARREN, 1), morph(UnitTypeId.ROACH, repeatable=True))
+
         ]
 
         self.build_order = BuildOrder(self, build_order, worker_count=35)
@@ -45,7 +46,7 @@ class ZergRushBot(sc2.BotAI):
                 hatchery = self.townhalls.closest_to(queen.position.to2)
                 await self.do(queen(AbilityId.INJECTLARVA, hatchery))
 
-        if self.units(UnitTypeId.ROACH).amount >= 7 or self.attack:
+        if (self.units(UnitTypeId.ROACH).amount >= 7 and self.units(UnitTypeId.ZERGLING).amount >= 10) or self.attack:
             self.attack = True
             for unit in self.units(UnitTypeId.ZERGLING) | self.units(UnitTypeId.ROACH):
                 await self.do(unit.attack(self.enemy_start_locations[0]))
@@ -55,7 +56,7 @@ def main():
     sc2.run_game(sc2.maps.get("Abyssal Reef LE"), [
         Bot(Race.Zerg, ZergRushBot()),
         Computer(Race.Terran, Difficulty.Medium)
-    ], realtime=True)
+    ], realtime=False)
 
 if __name__ == '__main__':
     main()
