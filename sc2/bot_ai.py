@@ -115,6 +115,10 @@ class BotAI(object):
         expansion_locations = self.expansion_locations
         owned_expansions = self.owned_expansions
         worker_pool = []
+        for idle_worker in self.workers.idle:
+            mf = self.state.mineral_field.closest_to(idle_worker)
+            await self.do(idle_worker.gather(mf))
+
         for location, townhall in owned_expansions.items():
             workers = self.workers.closer_than(20, location)
             actual = townhall.assigned_harvesters

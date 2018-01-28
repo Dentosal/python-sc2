@@ -25,8 +25,6 @@ class TerranBot(sc2.BotAI):
         if self.supply_left < 4 and not self.already_pending(UnitTypeId.SUPPLYDEPOT):
             if self.can_afford(UnitTypeId.SUPPLYDEPOT):
                 await self.build(UnitTypeId.SUPPLYDEPOT, near=cc.position.towards(self.game_info.map_center, 5))
-        for scv in self.units(UnitTypeId.SCV).idle:
-            await self.do(scv.gather(self.state.mineral_field.closest_to(cc)))
 
 
 run_game(maps.get("Abyssal Reef LE"), [
