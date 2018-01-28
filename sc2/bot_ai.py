@@ -181,7 +181,7 @@ class BotAI(object):
         else:
             cost = self._game_data.calculate_ability_cost(item_id)
 
-        return cost.minerals <= self.minerals and cost.vespene <= self.vespene
+        return CanAffordWrapper(cost.minerals <= self.minerals, cost.vespene <= self.vespene)
 
     def select_build_worker(self, pos, force=False):
         workers = self.workers.closer_than(20, pos) or self.workers
@@ -294,3 +294,22 @@ class BotAI(object):
 
     async def on_step(self, do, state, game_loop):
         raise NotImplementedError
+
+
+class CanAffordWrapper(object):
+
+    def __init__(self, can_afford_minerals, can_afford_vespene):
+        self.can_afford_minerals = can_afford_minerals
+        self.can_afford_vespene = can_afford_vespene
+
+    def __bool__(self):
+        return self.can_afford_minerals and self.can_afford_vespene
+
+    @property
+    def action_result(self):
+        if not self.can_afford_vespene:
+            return ActionResult.NotEnoughVespene
+        elif not self.can_afford_minerals:
+            return ActionResult.NotEnoughMinerals
+        else:
+            return None
