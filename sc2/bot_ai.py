@@ -232,3 +232,12 @@ class CanAffordWrapper(object):
 
     def __bool__(self):
         return self.can_afford_minerals and self.can_afford_vespene
+
+    @property
+    def action_result(self):
+        if not self.can_afford_vespene:
+            return ActionResult.NotEnoughVespene
+        elif not self.can_afford_minerals:
+            return ActionResult.NotEnoughMinerals
+        else:
+            return None
