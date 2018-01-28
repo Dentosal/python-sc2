@@ -1,6 +1,7 @@
-from sc2 import Race, race_worker, ActionResult
-from sc2.build_orders.state_conditions import always_true
+from sc2 import Race, race_worker, ActionResult, race_townhalls
 from sc2.ids.unit_typeid import UnitTypeId
+from sc2.state_conditions.conditions import always_true
+
 
 class Intent(object):
     def __init__(self, action):

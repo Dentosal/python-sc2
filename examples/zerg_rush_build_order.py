@@ -1,29 +1,10 @@
-import random
-
 import sc2
 from sc2 import Race, Difficulty
-from sc2.build_orders.build_order import train, expand, build, BuildOrder, morph, Intent
-from sc2.build_orders.state_conditions import supply_at_least, all_of, minerals_at_least, unit_count
+from sc2.build_orders.build_order import train, expand, build, BuildOrder, morph, add_gas
 from sc2.constants import *
 from sc2.player import Bot, Computer
+from sc2.state_conditions.conditions import supply_at_least, all_of, unit_count
 
-def add_gas():
-    async def add_gas_spec(bot, state):
-        for th in bot.townhalls:
-            for nexus in bot.units(th.type_id).ready:
-                vgs = state.vespene_geyser.closer_than(20.0, nexus)
-                for vg in vgs:
-                    if not bot.can_afford(UnitTypeId.EXTRACTOR):
-                        break
-
-                    worker = bot.select_build_worker(vg.position)
-                    if worker is None:
-                        break
-
-                    if not bot.units(UnitTypeId.EXTRACTOR).closer_than(1.0, vg).exists:
-                        return await bot.do(worker.build(UnitTypeId.EXTRACTOR, vg))
-        return sc2.ActionResult.Error
-    return Intent(add_gas_spec)
 
 def research(building, upgrade):
     async def research_spec(bot,state):
@@ -54,7 +35,7 @@ class ZergRushBot(sc2.BotAI):
             (unit_count(UnitTypeId.ROACH, 4, include_pending=True), morph(UnitTypeId.ROACH)),
             (unit_count(UnitTypeId.ROACH, 5, include_pending=True), morph(UnitTypeId.ROACH)),
             (unit_count(UnitTypeId.ROACH, 6, include_pending=True), morph(UnitTypeId.ROACH)),
-            (None, morph(UnitTypeId.ZERGLING).keep_going())
+            (unit_count(UnitTypeId.SPAWNINGPOOL, 1), morph(UnitTypeId.ZERGLING).keep_going())
         ]
 
         self.build_order = BuildOrder(self, build_order, worker_count=35)
