@@ -59,3 +59,23 @@ def unit_count(unit, n, include_pending=False):
         return actual_amount == n
 
     return condition
+
+
+def unit_count_at_least(unit, n, include_pending=False):
+    def condition(bot, state):
+        actual_amount = bot.units(unit).amount
+        if include_pending:
+            actual_amount += bot.already_pending(unit)
+        return actual_amount >= n
+
+    return condition
+
+
+def unit_count_less_than(unit, n, include_pending=False):
+    def condition(bot, state):
+        actual_amount = bot.units(unit).amount
+        if include_pending:
+            actual_amount += bot.already_pending(unit)
+        return actual_amount < n
+
+    return condition
