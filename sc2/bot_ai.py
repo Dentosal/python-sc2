@@ -162,6 +162,7 @@ class BotAI(object):
                     if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
                         await self.do(w.move(townhall))
                         await self.do(w.return_resource(queue=True))
+                        await self.do(w.gather(mf, queue=True))
                     else:
                         await self.do(w.gather(mf))
 
