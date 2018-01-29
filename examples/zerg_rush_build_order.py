@@ -1,7 +1,7 @@
 import sc2
 from sc2 import Race, Difficulty
 from sc2.build_orders.build_order import train, BuildOrder, morph
-from sc2.build_orders.commands import add_gas, build, expand
+from sc2.build_orders.commands import add_gas, build, expand, add_supply
 from sc2.constants import *
 from sc2.player import Bot, Computer
 from sc2.state_conditions.conditions import supply_at_least, all_of, unit_count, gas_less_than, unit_count_less_than, \
@@ -21,15 +21,15 @@ class ZergRushBot(sc2.BotAI):
     def __init__(self):
         self.attack = False
         build_order = [
-            (all_of(supply_at_least(13), unit_count(UnitTypeId.OVERLORD, 1, include_pending=True)), morph(UnitTypeId.OVERLORD, prioritize=True)),
+            (all_of(supply_at_least(13), unit_count(UnitTypeId.OVERLORD, 1, include_pending=True)), add_supply(prioritize=True)),
             (all_of(supply_at_least(17), unit_count(UnitTypeId.EXTRACTOR, 0, include_pending=True)), add_gas()),
             (all_of(supply_at_least(17), unit_count(UnitTypeId.SPAWNINGPOOL, 0, include_pending=True)), build(UnitTypeId.SPAWNINGPOOL)),
             (all_of(supply_at_least(17), unit_count(UnitTypeId.HATCHERY, 1, include_pending=True)), expand()),
             (supply_at_least(18), morph(UnitTypeId.ZERGLING)),
             (supply_at_least(19), train(UnitTypeId.QUEEN, on_building=UnitTypeId.HATCHERY, prioritize=True)),
-            (all_of(supply_at_least(21), unit_count(UnitTypeId.OVERLORD, 2, include_pending=True)), morph(UnitTypeId.OVERLORD)),
+            (all_of(supply_at_least(21), unit_count(UnitTypeId.OVERLORD, 2, include_pending=True)), add_supply(prioritize=True)),
             (all_of(supply_at_least(21), unit_count(UnitTypeId.ROACHWARREN, 0, include_pending=True)), build(UnitTypeId.ROACHWARREN)),
-            (all_of(supply_at_least(20), unit_count(UnitTypeId.OVERLORD, 3, include_pending=True)), morph(UnitTypeId.OVERLORD)),
+            (all_of(supply_at_least(20), unit_count(UnitTypeId.OVERLORD, 3, include_pending=True)), add_supply(prioritize=True)),
             (unit_count_at_least(UnitTypeId.ROACH, 7), morph(UnitTypeId.ZERGLING, repeatable=True)),
             (unit_count(UnitTypeId.ROACHWARREN, 1), morph(UnitTypeId.ROACH, repeatable=True))
 
