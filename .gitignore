@@ -13,3 +13,6 @@ maps/
 mini_games/
 
 *.SC2Replay
+
+.idea
+*.iml
