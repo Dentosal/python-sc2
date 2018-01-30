@@ -29,7 +29,7 @@ class ThreebaseVoidrayBot(sc2.BotAI):
 
         if self.units(VOIDRAY).amount > 10 and iteration % 50 == 0:
             for vr in self.units(VOIDRAY).idle:
-                await self.do(vr.attack(self.select_target(state)))
+                await self.do(vr.attack(self.select_target(self.state)))
 
         for a in self.units(ASSIMILATOR):
             if a.assigned_harvesters < a.ideal_harvesters:
