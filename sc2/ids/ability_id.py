@@ -4,6 +4,7 @@
 import enum
 
 class AbilityId(enum.Enum):
+    SMART = 1
     TAUNT = 2
     HOLDFIRE = 10
     MOVE = 16

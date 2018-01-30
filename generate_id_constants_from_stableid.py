@@ -49,6 +49,8 @@ def clike_enum_parse(data):
             # it looks like SC2 is only using abilities with index 0. Needs further verification.
             body[key] = v['id']
         enums[d] = body
+
+    enums['Abilities']['SMART'] = 1
     return enums
 
 
