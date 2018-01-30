@@ -58,6 +58,8 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit):
         iteration += 1
 
 async def _play_game(player, client, realtime, portconfig, step_time_limit=None):
+    assert isinstance(realtime, bool), repr(realtime)
+
     player_id = await client.join_game(player.race, portconfig=portconfig)
 
     if isinstance(player, Human):
@@ -116,7 +118,7 @@ def run_game(map_settings, players, **kwargs):
         portconfig = Portconfig()
         result = asyncio.get_event_loop().run_until_complete(asyncio.gather(
             _host_game(map_settings, players, **kwargs, portconfig=portconfig),
-            _join_game(players, join_kwargs, portconfig=portconfig)
+            _join_game(players, **join_kwargs, portconfig=portconfig)
         ))
     else:
         result = asyncio.get_event_loop().run_until_complete(
