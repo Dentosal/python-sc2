@@ -33,7 +33,7 @@ class ZergRushBot(sc2.BotAI):
 
         for UnitTypeId.QUEEN in self.units(UnitTypeId.QUEEN).idle:
             if UnitTypeId.QUEEN.energy >= 25: # Hard coded, since this is not (yet) available
-                await self.do(UnitTypeId.QUEEN(AbilityId.INJECTLARVA, hatchery))
+                await self.do(UnitTypeId.QUEEN(AbilityId.EFFECT_INJECTLARVA, hatchery))
 
         if self.vespene >= 100:
             sp = self.units(UnitTypeId.SPAWNINGPOOL).ready

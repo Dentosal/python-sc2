@@ -46,13 +46,21 @@ def clike_enum_parse(data):
 
         key = key.upper().replace(" ", "_")
 
-        if key in abilities:
+        if 'name' in v:
             key = "{}_{}".format(v['name'].upper().replace(" ", "_"), key)
+
+        if 'friendlyname' in v:
+            key = v['friendlyname'].upper().replace(" ", "_")
 
         if key[0].isdigit():
             key = "_" + key
 
+        if key in abilities and v['index'] == 0:
+            print(key)
+            raise ValueError
         abilities[key] = v['id']
+
+    abilities['SMART'] = 1
 
     enums = {}
     enums["Units"] = units
