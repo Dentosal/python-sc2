@@ -69,6 +69,10 @@ class BotAI(object):
         # Not always accurate, but good enought for now.
         return [c.rounded for c in centers]
 
+    async def get_available_abilities(self, unit):
+        # right know only checks cooldown, energy cost, and whether the ability has been researched
+        return await self._client.query_available_abilities(unit)
+
     async def expand_now(self, building=None, max_distance=10):
         if not building:
             building = self.townhalls.first.type_id
