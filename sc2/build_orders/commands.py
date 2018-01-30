@@ -34,7 +34,7 @@ def expand(prioritize=False, repeatable=True):
     return Command(do_expand, priority=prioritize, repeatable=repeatable)
 
 
-def train(unit, on_building, prioritize=False, repeatable=False):
+def train_unit(unit, on_building, prioritize=False, repeatable=False):
     async def do_train(bot, state):
         buildings = bot.units(on_building).ready.noqueue
         if buildings.exists:
@@ -68,15 +68,11 @@ def morph(unit, prioritize=False, repeatable=False):
     return Command(do_morph, priority=prioritize, repeatable=repeatable)
 
 
-def build(building, around_building=None, placement=None, prioritize=True, repeatable=False):
+def construct(building, placement=None, prioritize=True, repeatable=False):
     async def do_build(bot, state):
-        if not around_building:
-            around = bot.townhalls.first
-        else:
-            around = around_building(bot, state)
 
         if not placement:
-            location = around.position.towards(bot.game_info.map_center, 5)
+            location = bot.townhalls.first.position.towards(bot.game_info.map_center, 5)
         else:
             location = placement
 
@@ -97,7 +93,7 @@ def add_supply(prioritize=True, repeatable=False):
             if bot.race == Race.Zerg:
                 return await morph(bot.supply_type).execute(bot, state)
             else:
-                return await build(bot.supply_type).execute(bot, state)
+                return await construct(bot.supply_type).execute(bot, state)
         else:
             return can_afford.action_result
 

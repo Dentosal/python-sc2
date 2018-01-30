@@ -1,5 +1,5 @@
 from sc2 import Race, race_worker, ActionResult, race_townhalls
-from sc2.build_orders.commands import add_supply, morph, train
+from sc2.build_orders.commands import add_supply, morph, train_unit
 from sc2.state_conditions.conditions import always_true
 
 
@@ -37,5 +37,5 @@ class BuildOrder(object):
             if bot.race == Race.Zerg:
                 return await morph(race_worker[Race.Zerg]).execute(bot, state)
             else:
-                return await train(race_worker[bot.race], race_townhalls[self.bot.race]).execute(bot, state)
+                return await train_unit(race_worker[bot.race], race_townhalls[self.bot.race]).execute(bot, state)
         return None
