@@ -42,6 +42,11 @@ def clike_enum_parse(data):
                 key = "_" + key
 
             key = key.upper().replace(" ", "_")
+
+            if 'index' in v and v['index'] > 0:
+                continue
+
+            # it looks like SC2 is only using abilities with index 0. Needs further verification.
             body[key] = v['id']
         enums[d] = body
     return enums
