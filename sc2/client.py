@@ -6,6 +6,9 @@ from s2clientprotocol import (
 )
 
 import logging
+
+from sc2.ids.ability_id import AbilityId
+
 logger = logging.getLogger(__name__)
 
 from .cache import method_cache_forever
@@ -159,6 +162,16 @@ class Client(Protocol):
             ignore_resource_requirements=ignore_resources
         ))
         return [ActionResult(p.result) for p in result.query.placements]
+
+    async def query_available_abilities(self, unit):
+        assert isinstance(unit, Unit)
+        result = await self._execute(query=query_pb.RequestQuery(
+            abilities=[query_pb.RequestQueryAvailableAbilities(
+                unit_tag=unit.tag
+            )]
+        ))
+        return [AbilityId(a.ability_id) for a in result.query.abilities[0].abilities]
+
 
     async def chat_send(self, message, team_only):
         ch = ChatChannel.Team if team_only else ChatChannel.Broadcast
