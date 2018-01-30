@@ -43,7 +43,7 @@ class ZergRushBot(sc2.BotAI):
         if self.vespene >= 100:
             sp = self.units(UnitTypeId.SPAWNINGPOOL).ready
             if sp.exists and self.minerals >= 100 and not self.mboost_started:
-                await self.do(sp.first(AbilityId.RESEARCH_ZERGLINGMETABOLICBOOST))
+                await self.do(sp.first(AbilityId.ZERGLINGMOVEMENTSPEED))
                 self.mboost_started = True
 
         await self.build_order.execute_build(state)

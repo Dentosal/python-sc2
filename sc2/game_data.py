@@ -6,7 +6,6 @@ from .unit_command import UnitCommand
 from .ids.unit_typeid import UnitTypeId
 from .ids.ability_id import AbilityId
 
-from .constants import ZERGLING
 
 class GameData(object):
     def __init__(self, data):
@@ -25,7 +24,7 @@ class GameData(object):
 
         for unit in self.units.values():
             if unit.creation_ability == ability:
-                if unit.id == ZERGLING:
+                if unit.id == UnitTypeId.ZERGLING:
                     # HARD CODED: zerglings are generated in pairs
                     return Cost(
                         unit.cost.minerals * 2,

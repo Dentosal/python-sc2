@@ -6,12 +6,7 @@ from s2clientprotocol import (
     common_pb2 as common_pb,
     error_pb2 as error_pb
 )
-from .ids.unit_typeid import PROBE, SCV, DRONE
-from .ids.unit_typeid import NEXUS
-from .ids.unit_typeid import COMMANDCENTER, ORBITALCOMMAND, PLANETARYFORTRESS
-from .ids.unit_typeid import HATCHERY, LAIR, HIVE
-from .ids.unit_typeid import ASSIMILATOR, REFINERY, EXTRACTOR
-from .ids.unit_typeid import PYLON, SUPPLYDEPOT, OVERLORD
+from .ids.unit_typeid import UnitTypeId
 
 PlayerType = enum.Enum("PlayerType", sc_pb.PlayerType.items())
 Difficulty = enum.Enum("Difficulty", sc_pb.Difficulty.items())
@@ -31,31 +26,31 @@ Attribute = enum.Enum("Attribute", data_pb.Attribute.items())
 ActionResult = enum.Enum("ActionResult", error_pb.ActionResult.items())
 
 race_supply = {
-    Race.Protoss: PYLON,
-    Race.Terran: SUPPLYDEPOT,
-    Race.Zerg: OVERLORD
+    Race.Protoss: UnitTypeId.PYLON,
+    Race.Terran: UnitTypeId.SUPPLYDEPOT,
+    Race.Zerg: UnitTypeId.OVERLORD
 }
 
 race_worker = {
-    Race.Protoss: PROBE,
-    Race.Terran: SCV,
-    Race.Zerg: DRONE
+    Race.Protoss: UnitTypeId.PROBE,
+    Race.Terran: UnitTypeId.SCV,
+    Race.Zerg: UnitTypeId.DRONE
 }
 
 race_basic_townhalls = {
-    Race.Protoss: NEXUS,
-    Race.Terran: COMMANDCENTER,
-    Race.Zerg: HATCHERY
+    Race.Protoss: UnitTypeId.NEXUS,
+    Race.Terran: UnitTypeId.COMMANDCENTER,
+    Race.Zerg: UnitTypeId.HATCHERY
 }
 
 race_townhalls = {
-    Race.Protoss: {NEXUS},
-    Race.Terran: {COMMANDCENTER, ORBITALCOMMAND, PLANETARYFORTRESS},
-    Race.Zerg: {HATCHERY, LAIR, HIVE}
+    Race.Protoss: {UnitTypeId.NEXUS},
+    Race.Terran: {UnitTypeId.COMMANDCENTER, UnitTypeId.ORBITALCOMMAND, UnitTypeId.PLANETARYFORTRESS},
+    Race.Zerg: {UnitTypeId.HATCHERY, UnitTypeId.LAIR, UnitTypeId.HIVE}
 }
 
 race_gas = {
-    Race.Protoss: ASSIMILATOR,
-    Race.Terran: REFINERY,
-    Race.Zerg: EXTRACTOR
+    Race.Protoss: UnitTypeId.ASSIMILATOR,
+    Race.Terran: UnitTypeId.REFINERY,
+    Race.Zerg: UnitTypeId.EXTRACTOR
 }

@@ -10,42 +10,42 @@ class CannonRushBot(sc2.BotAI):
         if iteration == 0:
             await self.chat_send("(probe)(pylon)(cannon)(cannon)(gg)")
 
-        if not self.units(NEXUS).exists:
+        if not self.units(UnitTypeId.NEXUS).exists:
             for worker in self.workers:
                 await self.do(worker.attack(self.enemy_start_locations[0]))
             return
         else:
-            nexus = self.units(NEXUS).first
+            nexus = self.units(UnitTypeId.NEXUS).first
 
         if self.workers.amount < 16 and nexus.noqueue:
-            if self.can_afford(PROBE):
-                await self.do(nexus.train(PROBE))
+            if self.can_afford(UnitTypeId.PROBE):
+                await self.do(nexus.train(UnitTypeId.PROBE))
 
-        elif not self.units(PYLON).exists and not self.already_pending(PYLON):
-            if self.can_afford(PYLON):
-                await self.build(PYLON, near=nexus)
+        elif not self.units(UnitTypeId.PYLON).exists and not self.already_pending(UnitTypeId.PYLON):
+            if self.can_afford(UnitTypeId.PYLON):
+                await self.build(UnitTypeId.PYLON, near=nexus)
 
-        elif not self.units(FORGE).exists:
-            pylon = self.units(PYLON).ready
+        elif not self.units(UnitTypeId.FORGE).exists:
+            pylon = self.units(UnitTypeId.PYLON).ready
             if pylon.exists:
-                if self.can_afford(FORGE):
-                    await self.build(FORGE, near=pylon.closest_to(nexus))
+                if self.can_afford(UnitTypeId.FORGE):
+                    await self.build(UnitTypeId.FORGE, near=pylon.closest_to(nexus))
 
-        elif self.units(PYLON).amount < 2:
-            if self.can_afford(PYLON):
+        elif self.units(UnitTypeId.PYLON).amount < 2:
+            if self.can_afford(UnitTypeId.PYLON):
                 pos = self.enemy_start_locations[0].towards(self.game_info.map_center, random.randrange(8, 15))
-                await self.build(PYLON, near=pos)
+                await self.build(UnitTypeId.PYLON, near=pos)
 
-        elif not self.units(PHOTONCANNON).exists:
-            if self.units(PYLON).ready.amount >= 2 and self.can_afford(PHOTONCANNON):
-                pylon = self.units(PYLON).closer_than(20, self.enemy_start_locations[0]).random
-                await self.build(PHOTONCANNON, near=pylon)
+        elif not self.units(UnitTypeId.PHOTONCANNON).exists:
+            if self.units(UnitTypeId.PYLON).ready.amount >= 2 and self.can_afford(UnitTypeId.PHOTONCANNON):
+                pylon = self.units(UnitTypeId.PYLON).closer_than(20, self.enemy_start_locations[0]).random
+                await self.build(UnitTypeId.PHOTONCANNON, near=pylon)
 
         else:
-            if self.can_afford(PYLON) and self.can_afford(PHOTONCANNON): # ensure "fair" decision
+            if self.can_afford(UnitTypeId.PYLON) and self.can_afford(UnitTypeId.PHOTONCANNON): # ensure "fair" decision
                 for _ in range(20):
                     pos = self.enemy_start_locations[0].random_on_distance(random.randrange(5, 12))
-                    building = PHOTONCANNON if state.psionic_matrix.covers(pos) else PYLON
+                    building = UnitTypeId.PHOTONCANNON if state.psionic_matrix.covers(pos) else UnitTypeId.PYLON
                     r = await self.build(building, near=pos)
                     if not r: # success
                         break

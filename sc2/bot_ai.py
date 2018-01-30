@@ -4,7 +4,7 @@ from functools import partial
 import logging
 logger = logging.getLogger(__name__)
 
-from .constants import EGG
+from .constants import UnitTypeId
 
 from .position import Point2, Point3
 from .data import Race, ActionResult, Attribute, race_worker, race_townhalls, race_gas, race_supply, \
@@ -148,7 +148,7 @@ class BotAI(object):
             for x in range(0, deficit):
                 if worker_pool:
                     w = worker_pool.pop()
-                    if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
+                    if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVESTRETURN]:
                         await self.do(w.move(g))
                         await self.do(w.return_resource(queue=True))
                     else:
@@ -163,7 +163,7 @@ class BotAI(object):
                 if worker_pool:
                     w = worker_pool.pop()
                     mf = self.state.mineral_field.closest_to(townhall)
-                    if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
+                    if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVESTRETURN]:
                         await self.do(w.move(townhall))
                         await self.do(w.return_resource(queue=True))
                         await self.do(w.gather(mf, queue=True))
@@ -195,7 +195,7 @@ class BotAI(object):
     def select_build_worker(self, pos, force=False):
         workers = self.workers.closer_than(20, pos) or self.workers
         for worker in workers.prefer_close_to(pos).prefer_idle:
-            if not worker.orders or len(worker.orders) == 1 and worker.orders[0].ability.id in [AbilityId.MOVE, AbilityId.HARVEST_GATHER, AbilityId.HARVEST_RETURN]:
+            if not worker.orders or len(worker.orders) == 1 and worker.orders[0].ability.id in [AbilityId.MOVE, AbilityId.HARVESTGATHER, AbilityId.HARVESTRETURN]:
                 return worker
 
         return workers.random if force else None
@@ -248,8 +248,8 @@ class BotAI(object):
             return len(self.units(unit_type).not_ready)
         elif any(o.ability == ability for w in self.workers for o in w.orders):
             return sum([o.ability == ability for w in self.workers for o in w.orders])
-        elif any(egg.orders[0].ability == ability for egg in self.units(EGG)):
-            return sum([egg.orders[0].ability == ability for egg in self.units(EGG)])
+        elif any(egg.orders[0].ability == ability for egg in self.units(UnitTypeId.EGG)):
+            return sum([egg.orders[0].ability == ability for egg in self.units(UnitTypeId.EGG)])
         return 0
 
     async def build(self, building, near, max_distance=20, unit=None, random_alternative=True, placement_step=2):
