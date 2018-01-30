@@ -16,7 +16,7 @@ def clike_enum_parse(code):
 
     # parse enum blocks
     enums = {}
-    for enum in re.findall(r"enum(?: class)? ([a-zA-Z_][a-zA-Z0-9_]*) \{\s?(.+?)\s?}", code):
+    for enum in re.findall(r"enum(?: class)? ([a-zA-Z_][a-zA-Z0-9_]*) {\s?(.+?)\s?}", code):
         name, body = enum
         body = {key: int(value) for key, value in re.findall(r"([a-zA-Z_][a-zA-Z0-9_]*) = (\d+),?\s?", body)}
         enums[name] = body
