@@ -6,7 +6,7 @@ from sc2.constants import *
 from sc2.player import Bot, Computer
 
 class ProxyRaxBot(sc2.BotAI):
-    async def on_step(self, state, iteration):
+    async def on_step(self, iteration):
         cc = self.units(COMMANDCENTER)
         if not cc.exists:
             target = self.known_enemy_structures.random_or(self.enemy_start_locations[0]).position

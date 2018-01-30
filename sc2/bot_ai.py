@@ -220,5 +220,5 @@ class BotAI(object):
     def on_start(self):
         pass
 
-    async def on_step(self, do, state, game_loop):
+    async def on_step(self, iteration):
         raise NotImplementedError

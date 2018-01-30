@@ -39,13 +39,13 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit):
         ai._prepare_step(gs)
         if realtime:
             logger.debug(f"Running AI step, realtime")
-            await ai.on_step(gs, iteration)
+            await ai.on_step(iteration)
             logger.debug(f"Running AI step: done")
         else:
             logger.debug(f"Running AI step, timeout={step_time_limit}")
             try:
                 async with async_timeout.timeout(step_time_limit):
-                    await ai.on_step(gs, iteration)
+                    await ai.on_step(iteration)
             except asyncio.TimeoutError:
                 logger.error(f"Running AI step: out of time")
             logger.debug(f"Running AI step: done")
