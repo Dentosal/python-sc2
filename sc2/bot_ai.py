@@ -4,7 +4,7 @@ from functools import partial
 import logging
 logger = logging.getLogger(__name__)
 
-from .constants import EGG
+from .constants import UnitTypeId
 
 from .position import Point2, Point3
 from .data import Race, ActionResult, Attribute, race_worker, race_townhalls
@@ -115,7 +115,7 @@ class BotAI(object):
     def select_build_worker(self, pos, force=False):
         workers = self.workers.closer_than(20, pos) or self.workers
         for worker in workers.prefer_close_to(pos).prefer_idle:
-            if not worker.orders or len(worker.orders) == 1 and worker.orders[0].ability.id in [AbilityId.MOVE, AbilityId.HARVEST_GATHER, AbilityId.HARVEST_RETURN]:
+            if not worker.orders or len(worker.orders) == 1 and worker.orders[0].ability.id in [AbilityId.MOVE, AbilityId.HARVESTGATHER, AbilityId.HARVESTRETURN]:
                 return worker
 
         return workers.random if force else None
@@ -168,7 +168,7 @@ class BotAI(object):
             return True
         elif any(o.ability == ability for w in self.workers for o in w.orders):
             return True
-        elif any(egg.orders[0].ability == ability for egg in self.units(EGG)):
+        elif any(egg.orders[0].ability == ability for egg in self.units(UnitTypeId.EGG)):
             return True
         return False
 
