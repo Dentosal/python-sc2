@@ -6,7 +6,7 @@ from sc2.constants import *
 from sc2.player import Bot, Computer
 
 class CannonRushBot(sc2.BotAI):
-    async def on_step(self, state, iteration):
+    async def on_step(self, iteration):
         if iteration == 0:
             await self.chat_send("(probe)(pylon)(cannon)(cannon)(gg)")
 
@@ -45,7 +45,7 @@ class CannonRushBot(sc2.BotAI):
             if self.can_afford(PYLON) and self.can_afford(PHOTONCANNON): # ensure "fair" decision
                 for _ in range(20):
                     pos = self.enemy_start_locations[0].random_on_distance(random.randrange(5, 12))
-                    building = PHOTONCANNON if state.psionic_matrix.covers(pos) else PYLON
+                    building = PHOTONCANNON if self.state.psionic_matrix.covers(pos) else PYLON
                     r = await self.build(building, near=pos)
                     if not r: # success
                         break

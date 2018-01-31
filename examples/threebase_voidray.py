@@ -13,7 +13,7 @@ class ThreebaseVoidrayBot(sc2.BotAI):
 
         return self.enemy_start_locations[0]
 
-    async def on_step(self, state, iteration):
+    async def on_step(self, iteration):
         if iteration == 0:
             await self.chat_send("(glhf)")
 
@@ -38,12 +38,12 @@ class ThreebaseVoidrayBot(sc2.BotAI):
             await self.chat_send("Nexus is boosted")
 
         for idle_worker in self.workers.idle:
-            mf = state.mineral_field.closest_to(idle_worker)
+            mf = self.state.mineral_field.closest_to(idle_worker)
             await self.do(idle_worker.gather(mf))
 
         if self.units(VOIDRAY).amount > 10 and iteration % 50 == 0:
             for vr in self.units(VOIDRAY).idle:
-                await self.do(vr.attack(self.select_target(state)))
+                await self.do(vr.attack(self.select_target(self.state)))
 
         for a in self.units(ASSIMILATOR):
             if a.assigned_harvesters < a.ideal_harvesters:
@@ -80,7 +80,7 @@ class ThreebaseVoidrayBot(sc2.BotAI):
                     await self.build(GATEWAY, near=pylon)
 
         for nexus in self.units(NEXUS).ready:
-            vgs = state.vespene_geyser.closer_than(20.0, nexus)
+            vgs = self.state.vespene_geyser.closer_than(20.0, nexus)
             for vg in vgs:
                 if not self.can_afford(ASSIMILATOR):
                     break
