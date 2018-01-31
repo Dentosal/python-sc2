@@ -13,7 +13,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 from .paths import Paths
-from .protocol import Protocol
 from .controller import Controller
 
 class kill_switch(object):

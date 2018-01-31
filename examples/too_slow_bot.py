@@ -9,9 +9,9 @@ from sc2.player import Bot, Computer
 from proxy_rax import ProxyRaxBot
 
 class SlowBot(ProxyRaxBot):
-    async def on_step(self, state, iteration):
+    async def on_step(self, iteration):
         await asyncio.sleep(random.random())
-        await super().on_step(state, iteration)
+        await super().on_step(iteration)
 
 def main():
     sc2.run_game(sc2.maps.get("Abyssal Reef LE"), [
