@@ -1926,3 +1926,6 @@ class UnitTypeId(enum.Enum):
     INFESTEDACIDSPINESWEAPON = 1919
     INFESTORENSNAREATTACKMISSILE = 1920
     SNARE_PLACEHOLDER = 1921
+
+for item in UnitTypeId:
+    globals()[item.name] = item

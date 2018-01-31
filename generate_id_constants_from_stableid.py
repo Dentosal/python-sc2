@@ -98,7 +98,7 @@ def generate_python_code(enums):
     with (idsdir / "__init__.py").open("w") as f:
         f.write("\n".join([
             HEADER,
-            f"__all__ = {[n.lower() for n in enums.keys()] !r}\n"
+            f"__all__ = {[n.lower() for n in FILE_TRANSLATE.values()] !r}\n"
         ]))
 
     for name, body in enums.items():
@@ -113,6 +113,13 @@ def generate_python_code(enums):
 
         for key, value in sorted(body.items(), key=lambda p: p[1]):
             code.append(f"    {key} = {value}")
+
+        code += [
+            "",
+            f"for item in {class_name}:",
+            f"    globals()[item.name] = item",
+            ""
+        ]
 
         with (idsdir / FILE_TRANSLATE[name]).with_suffix(".py").open("w") as f:
             f.write("\n".join(code))

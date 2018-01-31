@@ -297,3 +297,6 @@ class UpgradeId(enum.Enum):
     CYCLONERAPIDFIRELAUNCHERS = 291
     RAVENENHANCEDMUNITIONS = 292
     DIGGINGCLAWS = 293
+
+for item in UpgradeId:
+    globals()[item.name] = item
