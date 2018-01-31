@@ -299,4 +299,5 @@ class UpgradeId(enum.Enum):
     DIGGINGCLAWS = 293
 
 for item in UpgradeId:
+    assert not item.name in globals()
     globals()[item.name] = item

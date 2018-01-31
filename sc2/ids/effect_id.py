@@ -19,4 +19,5 @@ class EffectId(enum.Enum):
     LURKERMP = 12
 
 for item in EffectId:
+    assert not item.name in globals()
     globals()[item.name] = item

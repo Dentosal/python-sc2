@@ -1928,4 +1928,5 @@ class UnitTypeId(enum.Enum):
     SNARE_PLACEHOLDER = 1921
 
 for item in UnitTypeId:
+    assert not item.name in globals()
     globals()[item.name] = item

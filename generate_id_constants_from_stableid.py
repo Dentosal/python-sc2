@@ -117,6 +117,7 @@ def generate_python_code(enums):
         code += [
             "",
             f"for item in {class_name}:",
+            f"    assert not item.name in globals()",
             f"    globals()[item.name] = item",
             ""
         ]

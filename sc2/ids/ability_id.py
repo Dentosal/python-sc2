@@ -1226,4 +1226,5 @@ class AbilityId(enum.Enum):
     NEXUSSHIELDOVERCHARGEOFF_NEXUSSHIELDOVERCHARGEOFF = 3769
 
 for item in AbilityId:
+    assert not item.name in globals()
     globals()[item.name] = item

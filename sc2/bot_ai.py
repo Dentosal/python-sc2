@@ -4,7 +4,7 @@ from functools import partial
 import logging
 logger = logging.getLogger(__name__)
 
-from .constants import UnitTypeId
+from .constants import EGG
 
 from .position import Point2, Point3
 from .data import Race, ActionResult, Attribute, race_worker, race_townhalls
@@ -168,7 +168,7 @@ class BotAI(object):
             return True
         elif any(o.ability == ability for w in self.workers for o in w.orders):
             return True
-        elif any(egg.orders[0].ability == ability for egg in self.units(UnitTypeId.EGG)):
+        elif any(egg.orders[0].ability == ability for egg in self.units(EGG)):
             return True
         return False
 
