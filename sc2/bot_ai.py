@@ -290,7 +290,7 @@ class BotAI(object):
         self.units = state.units.owned
         self.workers = self.units(self.worker_type)
         self.townhalls = self.units(race_townhalls[self.race])
-        self.geysers = self.units(self.geyser_type)
+        self.geysers = self.units(race_gas[self.race])
 
         self.minerals = state.common.minerals
         self.vespene = state.common.vespene
