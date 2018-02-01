@@ -27,15 +27,11 @@ class ThreebaseVoidrayBot(sc2.BotAI):
         if not nexus.has_buff(BuffId.CHRONOBOOSTENERGYCOST):
             abilities = await self.get_available_abilities(nexus)
             if AbilityId.CHRONOBOOSTENERGYCOST in abilities:
-                if nexus.energy > 25:
                     await self.do(nexus(AbilityId.CHRONOBOOSTENERGYCOST, nexus))
-                else:
-                    await self.chat_send("Not enough energy")
             else:
-                await self.chat_send("Can't cast")
-                print(abilities)
+                await self.chat_send("Can't cast chrono boost")
         else:
-            await self.chat_send("Nexus is boosted")
+            await self.chat_send("Nexus is already boosted")
 
         for idle_worker in self.workers.idle:
             mf = self.state.mineral_field.closest_to(idle_worker)
