@@ -1,4 +1,5 @@
 from s2clientprotocol import sc2api_pb2 as sc_pb, raw_pb2 as raw_pb
+from sc2.ids.buff_id import BuffId
 
 from .position import Point3
 from .data import Alliance, Attribute, DisplayType
@@ -183,6 +184,11 @@ class Unit(object):
 
     def build(self, unit, *args, **kwargs):
         return self(self._game_data.units[unit.value].creation_ability.id, *args, **kwargs)
+
+    def has_buff(self, buff):
+        assert isinstance(buff, BuffId)
+
+        return buff.value in self._proto.buff_ids
 
     def attack(self, *args, **kwargs):
         return self(AbilityId.ATTACK, *args, **kwargs)
