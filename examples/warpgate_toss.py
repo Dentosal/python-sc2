@@ -91,8 +91,9 @@ class WarpGateBot(sc2.BotAI):
 
         for warpgate in self.units(WARPGATE).ready:
             abilities = await self.get_available_abilities(warpgate)
+            # all the units have the same cooldown anyway so let's just look at ZEALOT
             if AbilityId.TRAINWARP_ZEALOT in abilities:
-                placement = await self.find_placement(AbilityId.TRAINWARP_ZEALOT, warpgate.position.to2, placement_step=1)
+                placement = await self.find_placement(AbilityId.TRAINWARP_STALKER, warpgate.position.to2, placement_step=1)
                 if placement is None:
                     #return ActionResult.CantFindPlacementLocation
                     print("can't place")
