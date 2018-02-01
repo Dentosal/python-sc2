@@ -9,7 +9,7 @@ from sc2.state_conditions.conditions import supply_at_least, all_of, unit_count,
 
 
 def research(building, upgrade):
-    async def research_spec(bot,state):
+    async def research_spec(bot):
         sp = bot.units(building).ready
         if sp.exists and bot.can_afford(upgrade) and not bot.already_pending(upgrade):
             await bot.do(sp.first(upgrade))
@@ -37,7 +37,7 @@ class ZergRushBot(sc2.BotAI):
 
         self.build_order = BuildOrder(self, build_order, worker_count=35)
 
-    async def on_step(self, state, iteration):
+    async def on_step(self, iteration):
         await self.distribute_workers()
 
         if self.vespene >= 100:
@@ -46,7 +46,7 @@ class ZergRushBot(sc2.BotAI):
                 await self.do(sp.first(AbilityId.ZERGLINGMOVEMENTSPEED))
                 self.mboost_started = True
 
-        await self.build_order.execute_build(state)
+        await self.build_order.execute_build()
 
         for queen in self.units(UnitTypeId.QUEEN).idle:
             if queen.energy >= 25:  # Hard coded, since this is not (yet) available

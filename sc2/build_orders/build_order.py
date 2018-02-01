@@ -10,17 +10,17 @@ class BuildOrder(object):
         self.worker_count = worker_count
         self.auto_add_supply = auto_add_supply
 
-    async def execute_build(self, state):
+    async def execute_build(self):
         bot = self.bot
         if bot.supply_left <= ((bot.supply_cap+50) / 50) and not bot.already_pending(bot.supply_type) \
                 and self.auto_add_supply:
-            return await add_supply().execute(bot, state)
+            return await add_supply().execute(bot)
 
         for index, item in enumerate(self.build):
             condition, command = item
             condition = item[0] if item[0] else always_true
-            if condition(bot, state) and not command.is_done:
-                e = await command.execute(bot, state)
+            if condition(bot) and not command.is_done:
+                e = await command.execute(bot)
                 if command.is_done:
                     return e
                 else:
@@ -30,12 +30,12 @@ class BuildOrder(object):
 
                     if e == ActionResult.NotEnoughFood and self.auto_add_supply \
                             and not bot.already_pending(bot.supply_type):
-                        return await add_supply().execute(bot, state)
+                        return await add_supply().execute(bot)
                     continue
 
         if bot.workers.amount < self.worker_count:
             if bot.race == Race.Zerg:
-                return await morph(race_worker[Race.Zerg]).execute(bot, state)
+                return await morph(race_worker[Race.Zerg]).execute(bot)
             else:
-                return await train_unit(race_worker[bot.race], race_townhalls[self.bot.race]).execute(bot, state)
+                return await train_unit(race_worker[bot.race], race_townhalls[self.bot.race]).execute(bot)
         return None

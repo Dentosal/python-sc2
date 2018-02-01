@@ -9,8 +9,8 @@ class Command(object):
         self.is_repeatable = repeatable
         self.is_priority = priority
 
-    async def execute(self, bot, state):
-        e = await self.action(bot, state)
+    async def execute(self, bot):
+        e = await self.action(bot)
         if not e and not self.is_repeatable:
             self.is_done = True
 
@@ -23,7 +23,7 @@ class Command(object):
 
 
 def expand(prioritize=False, repeatable=True):
-    async def do_expand(bot, state):
+    async def do_expand(bot):
         building = bot.basic_townhall_type
         can_afford = bot.can_afford(building)
         if can_afford:
@@ -35,7 +35,7 @@ def expand(prioritize=False, repeatable=True):
 
 
 def train_unit(unit, on_building, prioritize=False, repeatable=False):
-    async def do_train(bot, state):
+    async def do_train(bot):
         buildings = bot.units(on_building).ready.noqueue
         if buildings.exists:
             selected = buildings.first
@@ -52,7 +52,7 @@ def train_unit(unit, on_building, prioritize=False, repeatable=False):
 
 
 def morph(unit, prioritize=False, repeatable=False):
-    async def do_morph(bot, state):
+    async def do_morph(bot):
         larvae = bot.units(UnitTypeId.LARVA)
         if larvae.exists:
             selected = larvae.first
@@ -69,7 +69,7 @@ def morph(unit, prioritize=False, repeatable=False):
 
 
 def construct(building, placement=None, prioritize=True, repeatable=False):
-    async def do_build(bot, state):
+    async def do_build(bot):
 
         if not placement:
             location = bot.townhalls.first.position.towards(bot.game_info.map_center, 5)
@@ -87,13 +87,13 @@ def construct(building, placement=None, prioritize=True, repeatable=False):
 
 
 def add_supply(prioritize=True, repeatable=False):
-    async def supply_spec(bot, state):
+    async def supply_spec(bot):
         can_afford = bot.can_afford(bot.supply_type)
         if can_afford:
             if bot.race == Race.Zerg:
-                return await morph(bot.supply_type).execute(bot, state)
+                return await morph(bot.supply_type).execute(bot)
             else:
-                return await construct(bot.supply_type).execute(bot, state)
+                return await construct(bot.supply_type).execute(bot)
         else:
             return can_afford.action_result
 
@@ -101,14 +101,14 @@ def add_supply(prioritize=True, repeatable=False):
 
 
 def add_gas(prioritize=True, repeatable=False):
-    async def do_add_gas(bot, state):
+    async def do_add_gas(bot):
         can_afford = bot.can_afford(bot.geyser_type)
         if not can_afford:
             return can_afford.action_result
 
         owned_expansions = bot.owned_expansions
         for location, th in owned_expansions.items():
-            vgs = state.vespene_geyser.closer_than(20.0, th)
+            vgs = bot.state.vespene_geyser.closer_than(20.0, th)
             for vg in vgs:
                 worker = bot.select_build_worker(vg.position)
                 if worker is None:

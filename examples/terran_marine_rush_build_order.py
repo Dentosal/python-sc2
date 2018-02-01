@@ -7,7 +7,7 @@ from sc2.player import Bot, Computer
 from sc2.state_conditions.conditions import all_of, supply_at_least, minerals_at_least, unit_count
 
 
-def first_barracks(bot, state):
+def first_barracks(bot):
     return bot.units(UnitTypeId.BARRACKS).first
 
 
@@ -38,9 +38,9 @@ class TerranBuildOrderBot(sc2.BotAI):
         self.attack = False
         self.build_order = BuildOrder(self, build_order, worker_count=16)
 
-    async def on_step(self, state, iteration):
+    async def on_step(self, iteration):
         await self.distribute_workers()
-        await self.build_order.execute_build(state)
+        await self.build_order.execute_build()
 
         if self.units(UnitTypeId.MARINE).amount >= 15 or self.attack:
             self.attack = True
