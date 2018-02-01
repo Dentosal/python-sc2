@@ -4,7 +4,7 @@ from functools import partial
 import logging
 logger = logging.getLogger(__name__)
 
-from .constants import UnitTypeId
+from .constants import EGG
 
 from .position import Point2, Point3
 from .data import Race, ActionResult, Attribute, race_worker, race_townhalls, race_gas, race_supply, \
@@ -195,7 +195,7 @@ class BotAI(object):
     def select_build_worker(self, pos, force=False):
         workers = self.workers.closer_than(20, pos) or self.workers
         for worker in workers.prefer_close_to(pos).prefer_idle:
-            if not worker.orders or len(worker.orders) == 1 and worker.orders[0].ability.id in [AbilityId.MOVE, AbilityId.HARVESTGATHER, AbilityId.HARVESTRETURN]:
+            if not worker.orders or len(worker.orders) == 1 and worker.orders[0].ability.id in [AbilityId.MOVE, AbilityId.HARVEST_GATHER, AbilityId.HARVEST_RETURN]:
                 return worker
 
         return workers.random if force else None
@@ -248,9 +248,9 @@ class BotAI(object):
             return len(self.units(unit_type).not_ready)
         elif any(o.ability == ability for w in self.workers for o in w.orders):
             return sum([o.ability == ability for w in self.workers for o in w.orders])
-        elif any(egg.orders[0].ability == ability for egg in self.units(UnitTypeId.EGG)):
-            return sum([egg.orders[0].ability == ability for egg in self.units(UnitTypeId.EGG)])
-        return 0
+        elif any(egg.orders[0].ability == ability for egg in self.units(EGG)):
+            return sum([egg.orders[0].ability == ability for egg in self.units(EGG)])
+        return
 
     async def build(self, building, near, max_distance=20, unit=None, random_alternative=True, placement_step=2):
         if isinstance(near, Unit):
@@ -301,7 +301,7 @@ class BotAI(object):
     def on_start(self):
         pass
 
-    async def on_step(self, do, state, game_loop):
+    async def on_step(self, iteration):
         raise NotImplementedError
 
 

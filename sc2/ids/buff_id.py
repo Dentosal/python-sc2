@@ -291,3 +291,7 @@ class BuffId(enum.Enum):
     INFESTORENSNARE = 284
     INFESTORENSNAREMAKEPRECURSORREHEIGHTSOURCE = 285
     NEXUSSHIELDOVERCHARGE = 286
+
+for item in BuffId:
+    assert not item.name in globals()
+    globals()[item.name] = item

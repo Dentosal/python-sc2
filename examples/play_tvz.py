@@ -8,7 +8,6 @@ from cannon_rush import CannonRushBot
 def main():
     sc2.run_game(sc2.maps.get("Abyssal Reef LE"), [
         Human(Race.Terran),
-        # Bot(Race.Protoss, CannonRushBot())
         Bot(Race.Zerg, ZergRushBot())
     ], realtime=True)
 

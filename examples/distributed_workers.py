@@ -5,22 +5,22 @@ from sc2.constants import *
 
 
 class TerranBot(sc2.BotAI):
-    async def on_step(self, state, iteration):
+    async def on_step(self, iteration):
         await self.distribute_workers()
-        await self.build_supply(state)
-        await self.build_workers(state)
-        await self.expand(state)
+        await self.build_supply()
+        await self.build_workers()
+        await self.expand()
 
-    async def build_workers(self, state):
+    async def build_workers(self):
         for cc in self.units(UnitTypeId.COMMANDCENTER).ready.noqueue:
             if self.can_afford(UnitTypeId.SCV):
                 await self.do(cc.train(UnitTypeId.SCV))
 
-    async def expand(self, state):
+    async def expand(self):
         if self.units(UnitTypeId.COMMANDCENTER).amount < 3 and self.can_afford(UnitTypeId.COMMANDCENTER):
             await self.expand_now()
 
-    async def build_supply(self, state):
+    async def build_supply(self):
         cc = self.units(UnitTypeId.COMMANDCENTER).ready.first
         if self.supply_left < 4 and not self.already_pending(UnitTypeId.SUPPLYDEPOT):
             if self.can_afford(UnitTypeId.SUPPLYDEPOT):

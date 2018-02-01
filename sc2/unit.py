@@ -194,7 +194,7 @@ class Unit(object):
         return self(AbilityId.ATTACK, *args, **kwargs)
 
     def gather(self, *args, **kwargs):
-        return self(AbilityId.HARVESTGATHER, *args, **kwargs)
+        return self(AbilityId.HARVEST_GATHER, *args, **kwargs)
 
     def return_resource(self, *args, **kwargs):
         return self(AbilityId.HARVESTRETURN, *args, **kwargs)
@@ -203,7 +203,7 @@ class Unit(object):
         return self(AbilityId.MOVE, *args, **kwargs)
 
     def hold_position(self, *args, **kwargs):
-        return self(AbilityId.MOVEHOLDPOSITION, *args, **kwargs)
+        return self(AbilityId.HOLDPOSITION, *args, **kwargs)
 
     def stop(self, *args, **kwargs):
         return self(AbilityId.STOP, *args, **kwargs)

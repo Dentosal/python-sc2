@@ -46,13 +46,21 @@ def clike_enum_parse(data):
 
         key = key.upper().replace(" ", "_")
 
-        if key in abilities:
+        if 'name' in v:
             key = "{}_{}".format(v['name'].upper().replace(" ", "_"), key)
+
+        if 'friendlyname' in v:
+            key = v['friendlyname'].upper().replace(" ", "_")
 
         if key[0].isdigit():
             key = "_" + key
 
+        if key in abilities and v['index'] == 0:
+            print(key)
+            raise ValueError
         abilities[key] = v['id']
+
+    abilities['SMART'] = 1
 
     enums = {}
     enums["Units"] = units
@@ -90,7 +98,7 @@ def generate_python_code(enums):
     with (idsdir / "__init__.py").open("w") as f:
         f.write("\n".join([
             HEADER,
-            f"__all__ = {[n.lower() for n in enums.keys()] !r}\n"
+            f"__all__ = {[n.lower() for n in FILE_TRANSLATE.values()] !r}\n"
         ]))
 
     for name, body in enums.items():
@@ -105,6 +113,14 @@ def generate_python_code(enums):
 
         for key, value in sorted(body.items(), key=lambda p: p[1]):
             code.append(f"    {key} = {value}")
+
+        code += [
+            "",
+            f"for item in {class_name}:",
+            f"    assert not item.name in globals()",
+            f"    globals()[item.name] = item",
+            ""
+        ]
 
         with (idsdir / FILE_TRANSLATE[name]).with_suffix(".py").open("w") as f:
             f.write("\n".join(code))

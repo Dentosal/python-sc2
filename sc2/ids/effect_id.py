@@ -17,3 +17,7 @@ class EffectId(enum.Enum):
     BLINDINGCLOUDCP = 10
     RAVAGERCORROSIVEBILECP = 11
     LURKERMP = 12
+
+for item in EffectId:
+    assert not item.name in globals()
+    globals()[item.name] = item
