@@ -170,7 +170,7 @@ class BotAI(object):
             return sum([o.ability == ability for w in self.workers for o in w.orders])
         elif any(egg.orders[0].ability == ability for egg in self.units(EGG)):
             return sum([egg.orders[0].ability == ability for egg in self.units(EGG)])
-        return
+        return 0
 
     async def build(self, building, near, max_distance=20, unit=None, random_alternative=True, placement_step=2):
         if isinstance(near, Unit):
