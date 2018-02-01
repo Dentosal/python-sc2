@@ -4,6 +4,7 @@
 import enum
 
 class BuffId(enum.Enum):
+    CHRONOBOOSTENERGYCOST = 281 # temporary > please see PR#24
     INVALID = 0
     GRAVITONBEAM = 5
     GHOSTCLOAK = 6
