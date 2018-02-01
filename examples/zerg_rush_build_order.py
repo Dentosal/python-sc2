@@ -43,7 +43,7 @@ class ZergRushBot(sc2.BotAI):
         if self.vespene >= 100:
             sp = self.units(UnitTypeId.SPAWNINGPOOL).ready
             if sp.exists and self.minerals >= 100 and not self.mboost_started:
-                await self.do(sp.first(AbilityId.ZERGLINGMOVEMENTSPEED))
+                await self.do(sp.first(AbilityId.RESEARCH_ZERGLINGMETABOLICBOOST))
                 self.mboost_started = True
 
         await self.build_order.execute_build()
@@ -51,7 +51,7 @@ class ZergRushBot(sc2.BotAI):
         for queen in self.units(UnitTypeId.QUEEN).idle:
             if queen.energy >= 25:  # Hard coded, since this is not (yet) available
                 hatchery = self.townhalls.closest_to(queen.position.to2)
-                await self.do(queen(AbilityId.INJECTLARVA, hatchery))
+                await self.do(queen(AbilityId.EFFECT_INJECTLARVA, hatchery))
 
         if (self.units(UnitTypeId.ROACH).amount >= 7 and self.units(UnitTypeId.ZERGLING).amount >= 10) or self.attack:
             self.attack = True

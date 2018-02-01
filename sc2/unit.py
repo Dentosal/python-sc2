@@ -197,7 +197,7 @@ class Unit(object):
         return self(AbilityId.HARVEST_GATHER, *args, **kwargs)
 
     def return_resource(self, *args, **kwargs):
-        return self(AbilityId.HARVESTRETURN, *args, **kwargs)
+        return self(AbilityId.HARVEST_RETURN, *args, **kwargs)
 
     def move(self, *args, **kwargs):
         return self(AbilityId.MOVE, *args, **kwargs)
