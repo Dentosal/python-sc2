@@ -1,3 +1,7 @@
+# Usage: python run_external.py [--host]
+
+import argparse
+
 import sys
 import asyncio
 
@@ -7,12 +11,11 @@ from sc2.player import Bot
 
 from zerg_rush import ZergRushBot
 
-def main(pc):
-    if pc:
-        host = False
+def main(is_host, pc):
+    if args.portconfig:
         portconfig = sc2.portconfig.Portconfig.from_json(pc)
     else:
-        host = True
+        assert args.host, "Must be host if portconfig is not given"
         portconfig = sc2.portconfig.Portconfig()
         print(portconfig.as_json)
 
@@ -21,9 +24,9 @@ def main(pc):
         Bot(Race.Zerg, None)
     ]
 
-    player_config[0 if host else 1].ai = ZergRushBot()
+    player_config[0 if is_host else 1].ai = ZergRushBot()
 
-    if host:
+    if is_host:
         g = sc2.main._host_game(
             sc2.maps.get("Abyssal Reef LE"),
             player_config,
@@ -41,4 +44,9 @@ def main(pc):
     print(result)
 
 if __name__ == '__main__':
-    main(sys.argv[1] if len(sys.argv) > 1 else None)
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--host', action='store_true', help='host a game')
+    parser.add_argument('portconfig', type=str, nargs="?", help='port configuration as json')
+    args = parser.parse_args()
+
+    main(args.host, args.portconfig)
