@@ -205,7 +205,7 @@ class BotAI(object):
         r = await self._client.query_building_placement(building, [position])
         return r[0] == ActionResult.Success
 
-    async def find_placement(self, building, near, max_distance=20, random_alternative=True, placement_step=1):
+    async def find_placement(self, building, near, max_distance=20, random_alternative=True, placement_step=2):
         assert isinstance(building, (AbilityId, UnitTypeId))
         assert self.can_afford(building)
         assert isinstance(near, Point2)
