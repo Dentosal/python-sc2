@@ -32,7 +32,8 @@ class ZergRushBot(sc2.BotAI):
             await self.do(zl.attack(target))
 
         for queen in self.units(QUEEN).idle:
-            if queen.energy >= 25: # Hard coded, since this is not (yet) available
+            abilities = await self.get_available_abilities(queen)
+            if AbilityId.EFFECT_INJECTLARVA in abilities:
                 await self.do(queen(EFFECT_INJECTLARVA, hatchery))
 
         if self.vespene >= 100:
