@@ -11,6 +11,16 @@ from .ids.unit_typeid import NEXUS
 from .ids.unit_typeid import COMMANDCENTER, ORBITALCOMMAND, PLANETARYFORTRESS
 from .ids.unit_typeid import HATCHERY, LAIR, HIVE
 
+from .ids.ability_id import TRAIN_ZEALOT, TRAIN_STALKER, TRAIN_HIGHTEMPLAR, TRAIN_DARKTEMPLAR, TRAIN_SENTRY, \
+    TRAIN_ADEPT
+from .ids.ability_id import \
+    TRAINWARP_ZEALOT, \
+    TRAINWARP_STALKER, \
+    TRAINWARP_HIGHTEMPLAR, \
+    TRAINWARP_DARKTEMPLAR, \
+    TRAINWARP_SENTRY, \
+    TRAINWARP_ADEPT
+
 PlayerType = enum.Enum("PlayerType", sc_pb.PlayerType.items())
 Difficulty = enum.Enum("Difficulty", sc_pb.Difficulty.items())
 Status = enum.Enum("Status", sc_pb.Status.items())
@@ -28,7 +38,6 @@ Attribute = enum.Enum("Attribute", data_pb.Attribute.items())
 
 ActionResult = enum.Enum("ActionResult", error_pb.ActionResult.items())
 
-
 race_worker = {
     Race.Protoss: PROBE,
     Race.Terran: SCV,
@@ -39,4 +48,13 @@ race_townhalls = {
     Race.Protoss: {NEXUS},
     Race.Terran: {COMMANDCENTER, ORBITALCOMMAND, PLANETARYFORTRESS},
     Race.Zerg: {HATCHERY, LAIR, HIVE}
+}
+
+warpgate_abilities = {
+    TRAIN_ZEALOT: TRAINWARP_ZEALOT,
+    TRAIN_STALKER: TRAINWARP_STALKER,
+    TRAIN_HIGHTEMPLAR: TRAINWARP_HIGHTEMPLAR,
+    TRAIN_DARKTEMPLAR: TRAINWARP_DARKTEMPLAR,
+    TRAIN_SENTRY: TRAINWARP_SENTRY,
+    TRAIN_ADEPT: TRAINWARP_ADEPT
 }
