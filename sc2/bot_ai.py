@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 from .constants import EGG
 
 from .position import Point2, Point3
-from .data import Race, ActionResult, Attribute, race_worker, race_townhalls
+from .data import Race, ActionResult, Attribute, race_worker, race_townhalls, race_gas
 from .unit import Unit
 from .cache import property_cache_forever
 from .game_data import AbilityData, Cost
@@ -15,7 +15,11 @@ from .ids.unit_typeid import UnitTypeId
 from .ids.ability_id import AbilityId
 from .ids.upgrade_id import UpgradeId
 
+
 class BotAI(object):
+
+    EXPANSION_GAP_THRESHOLD = 15
+
     def _prepare_start(self, client, player_id, game_info, game_data):
         self._client = client
         self._game_info = game_info
@@ -43,9 +47,9 @@ class BotAI(object):
     @property
     @property_cache_forever
     def expansion_locations(self):
-        DISTANCE_THRESHOLD = 8.0 # Tried with Abyssal Reef LE, this was fine
+        RESOURCE_SPREAD_THRESHOLD = 8.0 # Tried with Abyssal Reef LE, this was fine
         resources = [
-            r.position.to2
+            r
             for r in self.state.mineral_field | self.state.vespene_geyser
         ]
 
@@ -53,7 +57,7 @@ class BotAI(object):
         r_groups = []
         for mf in resources:
             for g in r_groups:
-                if any(mf.distance_to(p) < DISTANCE_THRESHOLD for p in g):
+                if any(mf.position.to2.distance_to(p) < RESOURCE_SPREAD_THRESHOLD for p in g):
                     g.add(mf)
                     break
             else: # not found
@@ -64,31 +68,32 @@ class BotAI(object):
 
         # Find centers
         avg = lambda l: sum(l) / len(l)
-        centers = [Point2(tuple(map(avg, zip(*g)))) for g in r_groups]
+        pos = lambda u: u.position.to2
+        centers = {Point2(tuple(map(avg, zip(*map(pos,g))))).rounded: g for g in r_groups}
 
-        # Not always accurate, but good enought for now.
-        return [c.rounded for c in centers]
+        return centers
 
     async def get_available_abilities(self, unit):
         # right know only checks cooldown, energy cost, and whether the ability has been researched
         return await self._client.query_available_abilities(unit)
 
-    async def expand_now(self, building=None, max_distance=10):
+    async def expand_now(self, building=None, max_distance=10, location=None):
         if not building:
             building = self.townhalls.first.type_id
 
         assert isinstance(building, UnitTypeId)
 
-        location = await self.get_next_expansion()
+        if not location:
+            location = await self.get_next_expansion()
+
         await self.build(building, near=location, max_distance=max_distance, random_alternative=False,
                          placement_step=1)
 
     async def get_next_expansion(self):
-        DISTANCE_THRESHOLD = 15.0
         closest = None
         distance = float("inf")
         for el in self.expansion_locations:
-            def is_near_to_expansion(t): return t.position.distance_to(el) < DISTANCE_THRESHOLD
+            def is_near_to_expansion(t): return t.position.distance_to(el) < self.EXPANSION_GAP_THRESHOLD
             if any([t for t in map(is_near_to_expansion, self.townhalls)]):
                 # already taken
                 continue
@@ -104,6 +109,71 @@ class BotAI(object):
 
         return closest
 
+    async def distribute_workers(self):
+        expansion_locations = self.expansion_locations
+        owned_expansions = self.owned_expansions
+        worker_pool = []
+        for idle_worker in self.workers.idle:
+            mf = self.state.mineral_field.closest_to(idle_worker)
+            await self.do(idle_worker.gather(mf))
+
+        for location, townhall in owned_expansions.items():
+            workers = self.workers.closer_than(20, location)
+            actual = townhall.assigned_harvesters
+            ideal = townhall.ideal_harvesters
+            excess = actual-ideal
+            if actual > ideal:
+                worker_pool.extend(workers.random_group_of(min(excess, len(workers))))
+                continue
+        for g in self.geysers:
+            workers = self.workers.closer_than(5, g)
+            actual = g.assigned_harvesters
+            ideal = g.ideal_harvesters
+            excess = actual - ideal
+            if actual > ideal:
+                worker_pool.extend(workers.random_group_of(min(excess, len(workers))))
+                continue
+
+        for g in self.geysers:
+            actual = g.assigned_harvesters
+            ideal = g.ideal_harvesters
+            deficit = ideal - actual
+
+            for x in range(0, deficit):
+                if worker_pool:
+                    w = worker_pool.pop()
+                    if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
+                        await self.do(w.move(g))
+                        await self.do(w.return_resource(queue=True))
+                    else:
+                        await self.do(w.gather(g))
+
+        for location, townhall in owned_expansions.items():
+            actual = townhall.assigned_harvesters
+            ideal = townhall.ideal_harvesters
+
+            deficit = ideal - actual
+            for x in range(0, deficit):
+                if worker_pool:
+                    w = worker_pool.pop()
+                    mf = self.state.mineral_field.closest_to(townhall)
+                    if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
+                        await self.do(w.move(townhall))
+                        await self.do(w.return_resource(queue=True))
+                        await self.do(w.gather(mf, queue=True))
+                    else:
+                        await self.do(w.gather(mf))
+
+    @property
+    def owned_expansions(self):
+        owned = {}
+        for el in self.expansion_locations:
+            def is_near_to_expansion(t): return t.position.distance_to(el) < self.EXPANSION_GAP_THRESHOLD
+            th = next((x for x in self.townhalls if is_near_to_expansion(x)), None)
+            if th:
+                owned[el] = th
+
+        return owned
 
     def can_afford(self, item_id):
         if isinstance(item_id, UnitTypeId):
@@ -169,12 +239,12 @@ class BotAI(object):
     def already_pending(self, unit_type):
         ability = self._game_data.units[unit_type.value].creation_ability
         if self.units(unit_type).not_ready.exists:
-            return True
+            return len(self.units(unit_type).not_ready)
         elif any(o.ability == ability for w in self.workers for o in w.orders):
-            return True
+            return sum([o.ability == ability for w in self.workers for o in w.orders])
         elif any(egg.orders[0].ability == ability for egg in self.units(EGG)):
-            return True
-        return False
+            return sum([egg.orders[0].ability == ability for egg in self.units(EGG)])
+        return 0
 
     async def build(self, building, near, max_distance=20, unit=None, random_alternative=True, placement_step=2):
         if isinstance(near, Unit):
@@ -214,6 +284,7 @@ class BotAI(object):
         self.units = state.units.owned
         self.workers = self.units(race_worker[self.race])
         self.townhalls = self.units(race_townhalls[self.race])
+        self.geysers = self.units(race_gas[self.race])
 
         self.minerals = state.common.minerals
         self.vespene = state.common.vespene

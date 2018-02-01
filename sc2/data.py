@@ -10,6 +10,7 @@ from .ids.unit_typeid import PROBE, SCV, DRONE
 from .ids.unit_typeid import NEXUS
 from .ids.unit_typeid import COMMANDCENTER, ORBITALCOMMAND, PLANETARYFORTRESS
 from .ids.unit_typeid import HATCHERY, LAIR, HIVE
+from .ids.unit_typeid import ASSIMILATOR, REFINERY, EXTRACTOR
 
 from .ids.ability_id import TRAIN_ZEALOT, TRAIN_STALKER, TRAIN_HIGHTEMPLAR, TRAIN_DARKTEMPLAR, TRAIN_SENTRY, \
     TRAIN_ADEPT
@@ -57,4 +58,10 @@ warpgate_abilities = {
     TRAIN_DARKTEMPLAR: TRAINWARP_DARKTEMPLAR,
     TRAIN_SENTRY: TRAINWARP_SENTRY,
     TRAIN_ADEPT: TRAINWARP_ADEPT
+}
+
+race_gas = {
+    Race.Protoss: ASSIMILATOR,
+    Race.Terran: REFINERY,
+    Race.Zerg: EXTRACTOR
 }
