@@ -13,6 +13,16 @@ from .ids.unit_typeid import HATCHERY, LAIR, HIVE
 from .ids.unit_typeid import ASSIMILATOR, REFINERY, EXTRACTOR
 from .ids.unit_typeid import PYLON, OVERLORD, SUPPLYDEPOT
 
+from .ids.ability_id import TRAIN_ZEALOT, TRAIN_STALKER, TRAIN_HIGHTEMPLAR, TRAIN_DARKTEMPLAR, TRAIN_SENTRY, \
+    TRAIN_ADEPT
+from .ids.ability_id import \
+    TRAINWARP_ZEALOT, \
+    TRAINWARP_STALKER, \
+    TRAINWARP_HIGHTEMPLAR, \
+    TRAINWARP_DARKTEMPLAR, \
+    TRAINWARP_SENTRY, \
+    TRAINWARP_ADEPT
+
 PlayerType = enum.Enum("PlayerType", sc_pb.PlayerType.items())
 Difficulty = enum.Enum("Difficulty", sc_pb.Difficulty.items())
 Status = enum.Enum("Status", sc_pb.Status.items())
@@ -58,4 +68,13 @@ race_gas = {
     Race.Protoss: ASSIMILATOR,
     Race.Terran: REFINERY,
     Race.Zerg: EXTRACTOR
+}
+
+warpgate_abilities = {
+    TRAIN_ZEALOT: TRAINWARP_ZEALOT,
+    TRAIN_STALKER: TRAINWARP_STALKER,
+    TRAIN_HIGHTEMPLAR: TRAINWARP_HIGHTEMPLAR,
+    TRAIN_DARKTEMPLAR: TRAINWARP_DARKTEMPLAR,
+    TRAIN_SENTRY: TRAINWARP_SENTRY,
+    TRAIN_ADEPT: TRAINWARP_ADEPT
 }
