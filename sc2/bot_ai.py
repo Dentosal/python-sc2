@@ -169,12 +169,12 @@ class BotAI(object):
     def already_pending(self, unit_type):
         ability = self._game_data.units[unit_type.value].creation_ability
         if self.units(unit_type).not_ready.exists:
-            return True
+            return len(self.units(unit_type).not_ready)
         elif any(o.ability == ability for w in self.workers for o in w.orders):
-            return True
+            return sum([o.ability == ability for w in self.workers for o in w.orders])
         elif any(egg.orders[0].ability == ability for egg in self.units(EGG)):
-            return True
-        return False
+            return sum([egg.orders[0].ability == ability for egg in self.units(EGG)])
+        return
 
     async def build(self, building, near, max_distance=20, unit=None, random_alternative=True, placement_step=2):
         if isinstance(near, Unit):
