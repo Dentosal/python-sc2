@@ -21,10 +21,12 @@ class TerranBot(sc2.BotAI):
             await self.expand_now()
 
     async def build_supply(self):
-        cc = self.units(UnitTypeId.COMMANDCENTER).ready.first
-        if self.supply_left < 4 and not self.already_pending(UnitTypeId.SUPPLYDEPOT):
-            if self.can_afford(UnitTypeId.SUPPLYDEPOT):
-                await self.build(UnitTypeId.SUPPLYDEPOT, near=cc.position.towards(self.game_info.map_center, 5))
+        ccs = self.units(UnitTypeId.COMMANDCENTER).ready
+        if ccs.exists:
+            cc = ccs.first
+            if self.supply_left < 4 and not self.already_pending(UnitTypeId.SUPPLYDEPOT):
+                if self.can_afford(UnitTypeId.SUPPLYDEPOT):
+                    await self.build(UnitTypeId.SUPPLYDEPOT, near=cc.position.towards(self.game_info.map_center, 5))
 
 
 run_game(maps.get("Abyssal Reef LE"), [
