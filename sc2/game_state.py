@@ -22,6 +22,7 @@ class GameState(object):
         self.common = Common(observation.observation.player_common)
         self.units = Units.from_proto(observation.observation.raw_data.units, game_data)
         self.psionic_matrix = PsionicMatrix.from_proto(observation.observation.raw_data.player.power_sources)
+        self.game_loop = observation.observation.game_loop
 
     @property
     def mineral_field(self):
