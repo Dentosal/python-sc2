@@ -44,19 +44,28 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
             return Result.Tie
 
         ai._prepare_step(gs)
-        if realtime:
-            logger.debug(f"Running AI step, realtime")
-            await ai.on_step(iteration)
-            logger.debug(f"Running AI step: done")
-        else:
-            logger.debug(f"Running AI step, timeout={step_time_limit}")
-            try:
-                async with async_timeout.timeout(step_time_limit):
-                    await ai.on_step(iteration)
-            except asyncio.TimeoutError:
-                logger.error(f"Running AI step: out of time")
-            logger.debug(f"Running AI step: done")
 
+        logger.debug(f"Running AI step, realtime={realtime}")
+
+        try:
+            if realtime:
+                await ai.on_step(iteration)
+            else:
+                logger.debug(f"Running AI step, timeout={step_time_limit}")
+                try:
+                    async with async_timeout.timeout(step_time_limit):
+                        await ai.on_step(iteration)
+                except asyncio.TimeoutError:
+                    logger.warning(f"Running AI step: out of time")
+        except Exception as e:
+            logger.exception(f"AI step threw an error")
+            logger.error(f"resigning due to previous error")
+            await client.leave()
+            return Result.Defeat
+
+        logger.debug(f"Running AI step: done")
+
+        if not realtime:
             if not client.in_game: # Client left (resigned) the game
                 return client._game_result[player_id]
 
