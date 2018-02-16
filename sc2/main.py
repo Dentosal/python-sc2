@@ -60,7 +60,6 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
         except Exception as e:
             logger.exception(f"AI step threw an error")
             logger.error(f"resigning due to previous error")
-            await client.leave()
             return Result.Defeat
 
         logger.debug(f"Running AI step: done")
