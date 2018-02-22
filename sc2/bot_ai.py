@@ -1,3 +1,4 @@
+import math
 import random
 from functools import partial
 
@@ -44,7 +45,6 @@ class BotAI(object):
     def known_enemy_structures(self):
         return self.state.units.enemy.structure
 
-    @property
     @property_cache_forever
     def expansion_locations(self):
         RESOURCE_SPREAD_THRESHOLD = 8.0 # Tried with Abyssal Reef LE, this was fine
@@ -91,7 +91,7 @@ class BotAI(object):
 
     async def get_next_expansion(self):
         closest = None
-        distance = float("inf")
+        distance = math.inf
         for el in self.expansion_locations:
             def is_near_to_expansion(t): return t.position.distance_to(el) < self.EXPANSION_GAP_THRESHOLD
             if any([t for t in map(is_near_to_expansion, self.townhalls)]):
