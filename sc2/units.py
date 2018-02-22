@@ -49,6 +49,18 @@ class Units(list):
     def exists(self):
         return not self.empty
 
+    def find_by_tag(self, tag):
+        for unit in self:
+            if unit.tag == tag:
+                return unit
+        return None
+
+    def by_tag(self, tag):
+        unit = find_by_tag(tag)
+        if unit is None:
+            raise KeyError("Unit not found")
+        return unit
+
     @property
     def first(self):
         assert self.exists
