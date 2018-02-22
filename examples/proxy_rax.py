@@ -28,7 +28,7 @@ class ProxyRaxBot(sc2.BotAI):
             await self.do(cc.train(SCV))
 
         elif self.supply_left < (2 if self.units(BARRACKS).amount < 3 else 4):
-            if self.can_afford(SUPPLYDEPOT):
+            if self.can_afford(SUPPLYDEPOT) and self.already_pending(SUPPLYDEPOT) < 2:
                 await self.build(SUPPLYDEPOT, near=cc.position.towards(self.game_info.map_center, 5))
 
         elif self.units(BARRACKS).amount < 3 or (self.minerals > 400 and self.units(BARRACKS).amount < 5):
