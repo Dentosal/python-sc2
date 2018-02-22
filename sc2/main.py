@@ -18,7 +18,7 @@ async def _play_game_human(client, player_id, realtime, game_time_limit):
         if client._game_result:
             return client._game_result[player_id]
 
-        if game_time_limit and (state.observation.game_loop * 0.725 * (1/16)) > game_time_limit:
+        if game_time_limit and (state.observation.observation.game_loop * 0.725 * (1/16)) > game_time_limit:
             print(state.observation.game_loop, state.observation.game_loop*0.14)
             return Result.Tie
 
