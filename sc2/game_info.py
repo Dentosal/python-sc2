@@ -21,7 +21,6 @@ def _pxmap_sub_scale(map1, map2, map3):
 
             if old == 0 and new == 0:
                 scaled = int((map3[(x, y)] - limits[0]) * 255) // (limits[1] - limits[0])
-                print(scaled)
                 result[(x, y)] = bytearray([scaled])
             else:
                 result[(x, y)] = b"\x00"
