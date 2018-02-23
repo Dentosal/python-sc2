@@ -20,7 +20,7 @@ from .ids.upgrade_id import UpgradeId
 class BotAI(object):
     """Base class for bots."""
 
-    EXPANSION_GAP_THRESHOLD = 15
+    EXPANSION_GAP_THRESHOLD = 12
 
     def _prepare_start(self, client, player_id, game_info, game_data):
         """Ran until game start to set game and player data."""
