@@ -51,6 +51,42 @@ class PixelMap(object):
     def invert(self):
         raise NotImplementedError
 
+    def flood_fill(self, start_point, pred):
+        nodes = set()
+        queue = [start_point]
+
+        while queue:
+            x, y = queue.pop()
+
+            if not (0 <= x < self.width and 0 <= y < self.height):
+                continue
+
+            if (x, y) in nodes:
+                continue
+
+            if pred(self[x, y]):
+                nodes.add((x, y))
+
+                queue.append((x+1, y))
+                queue.append((x-1, y))
+                queue.append((x, y+1))
+                queue.append((x, y-1))
+
+        return nodes
+
+    def flood_fill_all(self, pred):
+        groups = set()
+
+        for x in range(self.width):
+            for y in range(self.height):
+                if any((x, y) in g for g in groups):
+                    continue
+
+                if pred(self[x, y]):
+                    groups.add(frozenset(self.flood_fill((x, y), pred)))
+
+        return groups
+
     def print(self, wide=False):
         for y in range(self.height):
             for x in range(self.width):

@@ -1,4 +1,5 @@
 from copy import deepcopy
+import itertools
 
 from .position import Point2, Size, Rect
 from .pixel_map import PixelMap
@@ -20,10 +21,19 @@ def _pxmap_sub_scale(map1, map2, map3):
             new = map2[(x, y)]
 
             if old == 0 and new == 0:
-                scaled = int((map3[(x, y)] - limits[0]) * 255) // (limits[1] - limits[0])
-                result[(x, y)] = bytearray([scaled])
+                result[(x, y)] = bytearray([map3[(x, y)]])
             else:
                 result[(x, y)] = b"\x00"
+
+    gs = result.flood_fill_all(lambda value: value > 0)
+
+
+    for g in gs:
+        gg = dict(itertools.groupby(g, lambda p: map3[p]))
+        upper = list(gg[max(gg.keys()))])
+        lower = list(gg[max(gg.keys()))])
+
+        for p in upper
 
     return result
 
