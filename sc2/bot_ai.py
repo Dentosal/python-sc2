@@ -55,16 +55,13 @@ class BotAI(object):
         """List of possible expansion locations."""
 
         RESOURCE_SPREAD_THRESHOLD = 8.0 # Tried with Abyssal Reef LE, this was fine
-        resources = [
-            r
-            for r in self.state.mineral_field | self.state.vespene_geyser
-        ]
+        resources = self.state.mineral_field | self.state.vespene_geyser
 
         # Group nearby minerals together to form expansion locations
         r_groups = []
         for mf in resources:
             for g in r_groups:
-                if any(mf.position.to2.distance_to(p) < RESOURCE_SPREAD_THRESHOLD for p in g):
+                if any(mf.position.to2.distance_to(p.position.to2) < RESOURCE_SPREAD_THRESHOLD for p in g):
                     g.add(mf)
                     break
             else: # not found
@@ -106,8 +103,10 @@ class BotAI(object):
         closest = None
         distance = math.inf
         for el in self.expansion_locations:
-            def is_near_to_expansion(t): return t.position.distance_to(el) < self.EXPANSION_GAP_THRESHOLD
-            if any([t for t in map(is_near_to_expansion, self.townhalls)]):
+            def is_near_to_expansion(t):
+                return t.position.distance_to(el) < self.EXPANSION_GAP_THRESHOLD
+
+            if any(map(is_near_to_expansion, self.townhalls)):
                 # already taken
                 continue
 
