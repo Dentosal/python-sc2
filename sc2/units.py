@@ -91,12 +91,14 @@ class Units(list):
             return self.subgroup(random.sample(self, n))
 
     def closest_to(self, position):
-        return min(self, key=lambda unit: unit.position.to2.distance_to(position))
+        if isinstance(position, Unit):
+            position = position.position
+        return min(self, key=lambda unit: unit.position.to2.distance_to(position.to2))
 
     def closer_than(self, distance, position):
         if isinstance(position, Unit):
             position = position.position
-        return self.filter(lambda unit: unit.position.to2.distance_to(position) < distance)
+        return self.filter(lambda unit: unit.position.to2.distance_to(position.to2) < distance)
 
     def subgroup(self, units):
         return Units(list(units), self.game_data)
