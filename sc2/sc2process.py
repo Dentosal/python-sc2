@@ -20,6 +20,7 @@ class kill_switch(object):
 
     @classmethod
     def add(cls, value):
+        logger.debug("kill_switch: Add switch")
         cls._to_kill.append(value)
 
     @classmethod
@@ -87,14 +88,22 @@ class SC2Process(object):
         )
 
     async def _connect(self):
-        for _ in range(30):
+        for i in range(60):
+            if self._process == None:
+                # The ._clean() was called, clearing the process
+                logger.debug("Process cleanup complete, exit")
+                sys.exit()
+
             await asyncio.sleep(1)
             try:
                 ws = await websockets.connect(self.ws_url, timeout=120)
+                logger.debug("Websocket connection ready")
                 return ws
             except ConnectionRefusedError:
-                pass
+                if i > 15:
+                    logger.debug("Connection refused (startup not complete (yet))")
 
+        logger.debug("Websocket connection to SC2 process timed out")
         raise TimeoutError("Websocket")
 
     def _clean(self):

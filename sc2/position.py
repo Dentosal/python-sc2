@@ -90,6 +90,25 @@ class Point2(Pointlike):
         angle = (angle - max_difference) + max_difference * 2 * random.random()
         return Point2((self.x + cos(angle) * distance, self.y + sin(angle) * distance))
 
+    @property
+    def neighbors4(self):
+        return {
+            Point2((self.x - 1, self.y)),
+            Point2((self.x + 1, self.y)),
+            Point2((self.x, self.y - 1)),
+            Point2((self.x, self.y + 1)),
+        }
+
+    @property
+    def neighbors8(self):
+        return self.neighbors4 | {
+            Point2((self.x - 1, self.y - 1)),
+            Point2((self.x - 1, self.y + 1)),
+            Point2((self.x + 1, self.y - 1)),
+            Point2((self.x + 1, self.y + 1)),
+        }
+
+
 class Point3(Point2):
     @classmethod
     def from_proto(cls, data):

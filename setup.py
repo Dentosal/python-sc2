@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name = "sc2",
     packages = find_packages(),
-    version = "0.7.9",
+    version = "0.8.0",
     description = "A StarCraft II API Client for Python 3",
     license="MIT",
     author = "Hannes Karppila",

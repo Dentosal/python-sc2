@@ -21,7 +21,7 @@ class BroodlordBot(sc2.BotAI):
         larvae = self.units(LARVA)
         forces = self.units(ZERGLING) | self.units(CORRUPTOR) | self.units(BROODLORD)
 
-        if self.units(BROODLORD).amount > 2:
+        if self.units(BROODLORD).amount > 2 and iteration % 50 == 0:
             for unit in forces:
                 await self.do(unit.attack(self.select_target()))
 

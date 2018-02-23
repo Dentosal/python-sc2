@@ -22,18 +22,13 @@ class BotAI(object):
 
     EXPANSION_GAP_THRESHOLD = 15
 
-    def _prepare_start(self, client, player_id, game_info, game_data):
-        """Ran until game start to set game and player data."""
-        self._client = client
-        self._game_info = game_info
-        self._game_data = game_data
-
-        self.player_id = player_id
-        self.race = Race(self._game_info.player_races[self.player_id])
-
     @property
     def game_info(self):
         return self._game_info
+
+    @property
+    def start_location(self):
+        return self._game_info.player_start_location
 
     @property
     def enemy_start_locations(self):
@@ -49,6 +44,13 @@ class BotAI(object):
     def known_enemy_structures(self):
         """List of known enemy units, structures only."""
         return self.state.units.enemy.structure
+
+    @property_cache_forever
+    def main_base_ramp(self):
+        return min(
+            self.game_info.map_ramps,
+            key=(lambda r: self.start_location.distance_to(r.top_center))
+        )
 
     @property_cache_forever
     def expansion_locations(self):
@@ -242,6 +244,9 @@ class BotAI(object):
         if await self.can_place(building, near):
             return near
 
+        if max_distance == 0:
+            return None
+
         for distance in range(placement_step, max_distance, placement_step):
             possible_positions = [Point2(p).offset(near).to2 for p in (
                 [(dx, -distance) for dx in range(-distance, distance+1, placement_step)] +
@@ -321,9 +326,22 @@ class BotAI(object):
         assert isinstance(message, str)
         await self._client.chat_send(message, False)
 
+    def _prepare_start(self, client, player_id, game_info, game_data):
+        """Ran until game start to set game and player data."""
+        self._client = client
+        self._game_info = game_info
+        self._game_data = game_data
+
+        self.player_id = player_id
+        self.race = Race(self._game_info.player_races[self.player_id])
+
+    def _prepare_first_step(self):
+        """First step extra preparations. Must not be called before _prepare_step."""
+        assert len(self.townhalls) == 1
+        self._game_info.player_start_location = self.townhalls.first.position
+
     def _prepare_step(self, state):
         """Set attributes from new state before on_step."""
-
         self.state = state
         self.units = state.units.owned
         self.workers = self.units(race_worker[self.race])

@@ -19,7 +19,7 @@ from .game_data import GameData, AbilityData
 from .data import Status, Result
 from .data import Race, ActionResult, ChatChannel
 from .action import combine_actions
-from .position import Point2
+from .position import Point2, Point3
 from .unit import Unit
 
 class Client(Protocol):
@@ -182,7 +182,7 @@ class Client(Protocol):
             ))]
         ))
 
-    async def debug_text(self, texts, positions, color=(0, 255, 0)):
+    async def debug_text(self, texts, positions, color=(0, 255, 0), size_px=16):
         if isinstance(positions, list):
             if not positions:
                 return
@@ -196,7 +196,8 @@ class Client(Protocol):
                     text=[debug_pb.DebugText(
                         text=t,
                         color=debug_pb.Color(r=color[0], g=color[1], b=color[2]),
-                        world_pos=common_pb.Point(x=p.x, y=p.y, z=p.z)
+                        world_pos=common_pb.Point(x=p.x, y=p.y, z=getattr(p, "z", 10)),
+                        size=size_px
                     ) for t, p in zip(texts, positions)]
                 ))]
             ))
