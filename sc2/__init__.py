@@ -12,7 +12,6 @@ __all__ = [p.stem for p in Path(__file__).parent.iterdir() if is_submodule(p)]
 import sys, logging
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 from . import maps
 from . import helpers
