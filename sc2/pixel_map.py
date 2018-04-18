@@ -3,6 +3,7 @@ class PixelMap(object):
         self._proto = proto
         assert self.bits_per_pixel % 8 == 0, "Unsupported pixel density"
         assert self.width * self.height * self.bits_per_pixel / 8 == len(self._proto.data)
+        self.data = bytearray(self._proto.data)
 
     @property
     def width(self):
@@ -28,14 +29,27 @@ class PixelMap(object):
 
         index = self.width * y + x
         start = index * self.bytes_per_pixel
-        data = self._proto.data[start : start + self.bytes_per_pixel]
-        return data
+        data = self.data[start : start + self.bytes_per_pixel]
+        return int.from_bytes(data, byteorder="little", signed=False)
+
+    def __setitem__(self, pos, val):
+        x, y = pos
+
+        assert 0 <= x < self.width
+        assert 0 <= y < self.height
+
+        index = self.width * y + x
+        start = index * self.bytes_per_pixel
+        self.data[start : start + self.bytes_per_pixel] = val
 
     def is_set(self, p):
         return any(b != 0 for b in self[p])
 
     def is_empty(self, p):
         return not self.is_set(p)
+
+    def invert(self):
+        raise NotImplementedError
 
     def print(self, wide=False):
         for y in range(self.height):
@@ -44,7 +58,7 @@ class PixelMap(object):
             print("")
 
     def save_image(self, filename):
-        data = [(0,0,self[x, y][0]) for y in range(self.height) for x in range(self.width)]
+        data = [(0,0,self[x, y]) for y in range(self.height) for x in range(self.width)]
         from PIL import Image
         im= Image.new('RGB', (self.width, self.height))
         im.putdata(data)

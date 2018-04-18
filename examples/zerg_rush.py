@@ -33,7 +33,7 @@ class ZergRushBot(sc2.BotAI):
 
         for queen in self.units(QUEEN).idle:
             abilities = await self.get_available_abilities(queen)
-            if AbilityId.INJECTLARVA in abilities:
+            if AbilityId.EFFECT_INJECTLARVA in abilities:
                 await self.do(queen(EFFECT_INJECTLARVA, hatchery))
 
         if self.vespene >= 100:

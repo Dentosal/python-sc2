@@ -6,6 +6,8 @@ An easy-to-use library for writing AI Bots for StarCraft II in Python 3. The ult
 
 Documentation is in [the Wiki](https://github.com/Dentosal/python-sc2/wiki).
 
+For automaticly running multiple matches, check out [Dentosal/sc2-bot-match-runner](https://github.com/Dentosal/sc2-bot-match-runner).
+
 ## Installation
 
 You'll need Python 3.6 or newer.
@@ -18,7 +20,7 @@ Please note that not all commits are not released to PyPI. Releases are tagged w
 
 You'll also need an StarCraft II executable. If you are running Windows or macOS, just install the normal SC2 from blizzard app. [The free starter edition works too.](https://us.battle.net/account/sc2/starter-edition/). Linux users must use the [Linux binary](https://github.com/Blizzard/s2client-proto#downloads).
 
-You probably want some maps too. Official map downloads are available from [Blizzard/s2client-proto](https://github.com/Blizzard/s2client-proto#downloads),
+You probably want some maps too. Official map downloads are available from [Blizzard/s2client-proto](https://github.com/Blizzard/s2client-proto#downloads). Notice: the map files are to be extracted into *subdirectories* of the `install-dir/Maps` directory.
 
 ## Example
 

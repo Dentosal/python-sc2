@@ -25,4 +25,4 @@ def property_cache_forever(f):
         if f.cached is None:
             f.cached = f(self)
         return f.cached
-    return inner
+    return property(inner)

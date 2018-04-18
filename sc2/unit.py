@@ -2,7 +2,7 @@ from s2clientprotocol import sc2api_pb2 as sc_pb, raw_pb2 as raw_pb
 from sc2.ids.buff_id import BuffId
 
 from .position import Point3
-from .data import Alliance, Attribute, DisplayType
+from .data import Alliance, Attribute, DisplayType, warpgate_abilities
 from .game_data import GameData
 from .ids.unit_typeid import UnitTypeId
 from .ids.ability_id import AbilityId
@@ -189,6 +189,10 @@ class Unit(object):
         assert isinstance(buff, BuffId)
 
         return buff.value in self._proto.buff_ids
+
+    def warp_in(self, unit, placement, *args, **kwargs):
+        normal_creation_ability = self._game_data.units[unit.value].creation_ability.id
+        return self(warpgate_abilities[normal_creation_ability], placement, *args, **kwargs)
 
     def attack(self, *args, **kwargs):
         return self(AbilityId.ATTACK, *args, **kwargs)
