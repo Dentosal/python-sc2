@@ -7,7 +7,7 @@ from sc2.ids.buff_id import BuffId
 from sc2.player import Bot, Computer
 
 class ThreebaseVoidrayBot(sc2.BotAI):
-    def select_target(self, state):
+    def select_target(self):
         if self.known_enemy_structures.exists:
             return random.choice(self.known_enemy_structures)
 
@@ -26,12 +26,8 @@ class ThreebaseVoidrayBot(sc2.BotAI):
 
         if not nexus.has_buff(BuffId.CHRONOBOOSTENERGYCOST):
             abilities = await self.get_available_abilities(nexus)
-            if AbilityId.CHRONOBOOSTENERGYCOST in abilities:
-                    await self.do(nexus(AbilityId.CHRONOBOOSTENERGYCOST, nexus))
-            else:
-                await self.chat_send("Can't cast chrono boost")
-        else:
-            await self.chat_send("Nexus is already boosted")
+            if AbilityId.EFFECT_CHRONOBOOSTENERGYCOST in abilities:
+                await self.do(nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, nexus))
 
         for idle_worker in self.workers.idle:
             mf = self.state.mineral_field.closest_to(idle_worker)
