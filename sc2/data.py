@@ -11,7 +11,12 @@ from .ids.unit_typeid import NEXUS
 from .ids.unit_typeid import COMMANDCENTER, ORBITALCOMMAND, PLANETARYFORTRESS
 from .ids.unit_typeid import HATCHERY, LAIR, HIVE
 from .ids.unit_typeid import ASSIMILATOR, REFINERY, EXTRACTOR
-from .ids.unit_typeid import PYLON, OVERLORD, SUPPLYDEPOT
+
+# TODO check merge conflict
+# from .ids.unit_typeid import PYLON, OVERLORD, SUPPLYDEPOT
+
+
+
 from .ids.ability_id import (
     GATEWAYTRAIN_ZEALOT,
     GATEWAYTRAIN_STALKER,
