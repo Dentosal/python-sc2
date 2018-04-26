@@ -13,7 +13,7 @@ from .ids.unit_typeid import HATCHERY, LAIR, HIVE
 from .ids.unit_typeid import ASSIMILATOR, REFINERY, EXTRACTOR
 
 # TODO check merge conflict
-# from .ids.unit_typeid import PYLON, OVERLORD, SUPPLYDEPOT
+from .ids.unit_typeid import PYLON, OVERLORD, SUPPLYDEPOT
 
 
 
