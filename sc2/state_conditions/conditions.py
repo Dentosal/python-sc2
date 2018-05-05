@@ -22,6 +22,12 @@ def supply_at_least(s):
 
     return condition
 
+def cum_supply_at_least(s):
+    def condition(bot):
+        return bot.cum_supply >= s
+
+    return condition
+
 
 def gas_at_least(s):
     def condition(bot):

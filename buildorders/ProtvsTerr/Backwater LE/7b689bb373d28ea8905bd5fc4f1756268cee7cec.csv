@@ -1,35 +1,35 @@
-"type";"unit_name";"on_building";"total_supply_lag"
-"Building";"Pylon";NA;14
-"Building";"Gateway";NA;16
-"Building";"Assimilator";NA;17
-"Building";"Nexus";NA;20
-"Building";"CyberneticsCore";NA;20
-"Building";"Assimilator";NA;21
-"Building";"Pylon";NA;22
-"Unit";"Adept";"Gateway";23
-"Building";"RoboticsFacility";NA;26
-"Unit";"Stalker";"Gateway";27
-"Unit";"Stalker";"Gateway";35
-"Unit";"Observer";"Robotics Facility";37
-"Building";"Gateway";NA;41
-"Building";"Gateway";NA;41
-"Unit";"Observer";"Robotics Facility";42
-"Building";"Pylon";NA;44
-"Building";"Pylon";NA;45
-"Building";"Assimilator";NA;45
-"Building";"RoboticsBay";NA;46
-"Unit";"Immortal";"Robotics Facility";46
-"Building";"ShieldBattery";NA;50
-"Building";"Pylon";NA;50
-"Building";"ShieldBattery";NA;50
-"Unit";"Stalker";"Gateway";50
-"Unit";"Stalker";"Gateway";52
-"Unit";"Stalker";"Gateway";54
-"Unit";"Immortal";"Robotics Facility";56
-"Unit";"Zealot";"Gateway";60
-"Unit";"Stalker";"Gateway";64
-"Unit";"Stalker";"Gateway";66
-"Unit";"Stalker";"Gateway";68
-"Upgrade";"SprayProtoss";NA;70
-"Upgrade";"SprayProtoss";NA;70
-"Upgrade";"WarpGateResearch";NA;70
+"type";"unit_name";"on_building";"total_supply_lag";"supply"
+"Building";"Pylon";NA;14;0
+"Building";"Gateway";NA;16;0
+"Building";"Assimilator";NA;17;0
+"Building";"Nexus";NA;20;0
+"Building";"CyberneticsCore";NA;20;0
+"Building";"Assimilator";NA;21;0
+"Building";"Pylon";NA;22;0
+"Unit";"Adept";"Gateway";23;2
+"Building";"RoboticsFacility";NA;26;0
+"Unit";"Stalker";"Gateway";27;2
+"Unit";"Stalker";"Gateway";35;2
+"Unit";"Observer";"Robotics Facility";37;1
+"Building";"Gateway";NA;41;0
+"Building";"Gateway";NA;41;0
+"Unit";"Observer";"Robotics Facility";42;1
+"Building";"Pylon";NA;44;0
+"Building";"Pylon";NA;45;0
+"Building";"Assimilator";NA;45;0
+"Building";"RoboticsBay";NA;46;0
+"Unit";"Immortal";"Robotics Facility";46;4
+"Building";"ShieldBattery";NA;50;0
+"Building";"Pylon";NA;50;0
+"Building";"ShieldBattery";NA;50;0
+"Unit";"Stalker";"Gateway";50;2
+"Unit";"Stalker";"Gateway";52;2
+"Unit";"Stalker";"Gateway";54;2
+"Unit";"Immortal";"Robotics Facility";56;4
+"Unit";"Zealot";"Gateway";60;2
+"Unit";"Stalker";"Gateway";64;2
+"Unit";"Stalker";"Gateway";66;2
+"Unit";"Stalker";"Gateway";68;2
+"Upgrade";"SprayProtoss";NA;70;0
+"Upgrade";"SprayProtoss";NA;70;0
+"Upgrade";"WarpGateResearch";NA;70;0

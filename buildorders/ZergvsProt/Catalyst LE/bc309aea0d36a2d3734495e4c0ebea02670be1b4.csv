@@ -1,6 +1,6 @@
-"type";"unit_name";"on_building";"total_supply_lag"
-"Unit";"Overlord";"Larva";13
-"Building";"Extractor";NA;18
-"Building";"SpawningPool";NA;18
-"Unit";"Overlord";"Larva";21
-"Upgrade";"SprayZerg";NA;22
+"type";"unit_name";"on_building";"total_supply_lag";"supply"
+"Unit";"Overlord";"Larva";13;0
+"Building";"Extractor";NA;18;0
+"Building";"SpawningPool";NA;18;0
+"Unit";"Overlord";"Larva";21;0
+"Upgrade";"SprayZerg";NA;22;0

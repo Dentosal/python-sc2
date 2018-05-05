@@ -35,7 +35,8 @@ def expand(prioritize=False, repeatable=True):
     return Command(do_expand, priority=prioritize, repeatable=repeatable, increase_workers = worker_expand_increase)
 
 
-def train_unit(unit, on_building, prioritize=False, repeatable=False):
+def train_unit(unit, on_building, prioritize=False, repeatable=False, increased_supply = 0):
+
     async def do_train(bot):
         buildings = bot.units(on_building).ready.noqueue
         if buildings.exists:
@@ -43,6 +44,8 @@ def train_unit(unit, on_building, prioritize=False, repeatable=False):
             can_afford = bot.can_afford(unit)
             if can_afford:
                 print("Training {}".format(unit))
+                print("Increase supply by {0} to cum supply {1}".format(increased_supply, bot.cum_supply))
+                bot.cum_supply = bot.cum_supply + increased_supply
                 return await bot.do(selected.train(unit))
             else:
                 return can_afford.action_result
@@ -52,7 +55,7 @@ def train_unit(unit, on_building, prioritize=False, repeatable=False):
     return Command(do_train, priority=prioritize, repeatable=repeatable)
 
 
-def morph(unit, prioritize=False, repeatable=False):
+def morph(unit, prioritize=False, repeatable=False, increased_supply = 0):
     async def do_morph(bot):
         larvae = bot.units(UnitTypeId.LARVA)
         if larvae.exists:
@@ -60,6 +63,8 @@ def morph(unit, prioritize=False, repeatable=False):
             can_afford = bot.can_afford(unit)
             if can_afford:
                 print("Morph {}".format(unit))
+                print("Increase supply by {0} to cum supply {1}".format(increased_supply, bot.cum_supply))
+                bot.cum_supply = bot.cum_supply + increased_supply
                 return await bot.do(selected.train(unit))
             else:
                 return can_afford.action_result

@@ -1,65 +1,65 @@
-"type";"unit_name";"on_building";"total_supply_lag"
-"Building";"Pylon";NA;14
-"Building";"Gateway";NA;16
-"Building";"Assimilator";NA;17
-"Building";"Assimilator";NA;18
-"Building";"Gateway";NA;20
-"Building";"CyberneticsCore";NA;21
-"Building";"Pylon";NA;22
-"Building";"Pylon";NA;23
-"Unit";"Adept";"Gateway";24
-"Unit";"Adept";"Gateway";26
-"Building";"Stargate";NA;28
-"Building";"Pylon";NA;28
-"Unit";"Stalker";"Gateway";28
-"Unit";"Stalker";"Gateway";30
-"Unit";"Oracle";"Stargate";32
-"Unit";"Oracle";"Stargate";35
-"Building";"Nexus";NA;38
-"Building";"RoboticsFacility";NA;40
-"Unit";"Stalker";"Gateway";41
-"Unit";"Stalker";"Gateway";43
-"Unit";"Observer";"Robotics Facility";47
-"Building";"Pylon";NA;48
-"Building";"TwilightCouncil";NA;50
-"Unit";"Observer";"Robotics Facility";52
-"Building";"Assimilator";NA;53
-"Unit";"Observer";"Robotics Facility";58
-"Unit";"Stalker";"Gateway";62
-"Unit";"Stalker";"Gateway";64
-"Building";"Gateway";NA;66
-"Building";"Gateway";NA;66
-"Building";"Gateway";NA;68
-"Building";"Gateway";NA;68
-"Building";"Pylon";NA;68
-"Building";"Pylon";NA;68
-"Building";"Pylon";NA;68
-"Building";"Pylon";NA;68
-"Unit";"Stalker";"Gateway";68
-"Unit";"Stalker";"Gateway";70
-"Unit";"Observer";"Robotics Facility";72
-"Unit";"Stalker";"Gateway";73
-"Unit";"Stalker";"Gateway";75
-"Unit";"Stalker";"Gateway";77
-"Unit";"Stalker";"Gateway";79
-"Unit";"Stalker";"Gateway";81
-"Unit";"Stalker";"Gateway";83
-"Building";"Pylon";NA;85
-"Unit";"Observer";"Robotics Facility";85
-"Unit";"Stalker";"Gateway";86
-"Unit";"Stalker";"Gateway";88
-"Unit";"Stalker";"Gateway";90
-"Unit";"Stalker";"Gateway";92
-"Unit";"Stalker";"Gateway";94
-"Unit";"Stalker";"Gateway";96
-"Unit";"Observer";"Robotics Facility";98
-"Unit";"Zealot";"Gateway";99
-"Unit";"Zealot";"Gateway";101
-"Unit";"Zealot";"Gateway";103
-"Unit";"Zealot";"Gateway";105
-"Unit";"Zealot";"Gateway";107
-"Unit";"Zealot";"Gateway";109
-"Upgrade";"SprayProtoss";NA;111
-"Upgrade";"WarpGateResearch";NA;111
-"Upgrade";"SprayProtoss";NA;111
-"Upgrade";"BlinkTech";NA;111
+"type";"unit_name";"on_building";"total_supply_lag";"supply"
+"Building";"Pylon";NA;14;0
+"Building";"Gateway";NA;16;0
+"Building";"Assimilator";NA;17;0
+"Building";"Assimilator";NA;18;0
+"Building";"Gateway";NA;20;0
+"Building";"CyberneticsCore";NA;21;0
+"Building";"Pylon";NA;22;0
+"Building";"Pylon";NA;23;0
+"Unit";"Adept";"Gateway";24;2
+"Unit";"Adept";"Gateway";26;2
+"Building";"Stargate";NA;28;0
+"Building";"Pylon";NA;28;0
+"Unit";"Stalker";"Gateway";28;2
+"Unit";"Stalker";"Gateway";30;2
+"Unit";"Oracle";"Stargate";32;3
+"Unit";"Oracle";"Stargate";35;3
+"Building";"Nexus";NA;38;0
+"Building";"RoboticsFacility";NA;40;0
+"Unit";"Stalker";"Gateway";41;2
+"Unit";"Stalker";"Gateway";43;2
+"Unit";"Observer";"Robotics Facility";47;1
+"Building";"Pylon";NA;48;0
+"Building";"TwilightCouncil";NA;50;0
+"Unit";"Observer";"Robotics Facility";52;1
+"Building";"Assimilator";NA;53;0
+"Unit";"Observer";"Robotics Facility";58;1
+"Unit";"Stalker";"Gateway";62;2
+"Unit";"Stalker";"Gateway";64;2
+"Building";"Gateway";NA;66;0
+"Building";"Gateway";NA;66;0
+"Building";"Gateway";NA;68;0
+"Building";"Gateway";NA;68;0
+"Building";"Pylon";NA;68;0
+"Building";"Pylon";NA;68;0
+"Building";"Pylon";NA;68;0
+"Building";"Pylon";NA;68;0
+"Unit";"Stalker";"Gateway";68;2
+"Unit";"Stalker";"Gateway";70;2
+"Unit";"Observer";"Robotics Facility";72;1
+"Unit";"Stalker";"Gateway";73;2
+"Unit";"Stalker";"Gateway";75;2
+"Unit";"Stalker";"Gateway";77;2
+"Unit";"Stalker";"Gateway";79;2
+"Unit";"Stalker";"Gateway";81;2
+"Unit";"Stalker";"Gateway";83;2
+"Building";"Pylon";NA;85;0
+"Unit";"Observer";"Robotics Facility";85;1
+"Unit";"Stalker";"Gateway";86;2
+"Unit";"Stalker";"Gateway";88;2
+"Unit";"Stalker";"Gateway";90;2
+"Unit";"Stalker";"Gateway";92;2
+"Unit";"Stalker";"Gateway";94;2
+"Unit";"Stalker";"Gateway";96;2
+"Unit";"Observer";"Robotics Facility";98;1
+"Unit";"Zealot";"Gateway";99;2
+"Unit";"Zealot";"Gateway";101;2
+"Unit";"Zealot";"Gateway";103;2
+"Unit";"Zealot";"Gateway";105;2
+"Unit";"Zealot";"Gateway";107;2
+"Unit";"Zealot";"Gateway";109;2
+"Upgrade";"SprayProtoss";NA;111;0
+"Upgrade";"WarpGateResearch";NA;111;0
+"Upgrade";"SprayProtoss";NA;111;0
+"Upgrade";"BlinkTech";NA;111;0

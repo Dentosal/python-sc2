@@ -1,7 +1,7 @@
 import csv
 import pandas as pd
 from sc2.build_orders.build_order import train_unit
-from sc2.state_conditions.conditions import  supply_at_least
+from sc2.state_conditions.conditions import  supply_at_least, cum_supply_at_least
 from sc2.build_orders.commands import construct, expand, add_supply, add_gas
 from sc2.constants import *
 from sc2.data import *
@@ -12,12 +12,12 @@ def init_build_order(path):
 
     build_order = []
     df = pd.read_csv(path, sep=";")
-
+    #supply_previous = init_supply
     for index, row in df.iterrows():
         supply = row['total_supply_lag']
         type = row['type']
         unit_building = row['on_building']
-
+        unit_supply = row['supply']
    
         unit_name = row['unit_name']
 
@@ -41,13 +41,13 @@ def init_build_order(path):
 
         if(type == "Building"):
             if(unit_name in vespene_buildings): # race_gas
-                build_order.append((supply_at_least(supply), add_gas()))
+                build_order.append((cum_supply_at_least(supply), add_gas()))
             elif(unit_name in main_buildings): # race_basic_townhalls
-                build_order.append((supply_at_least(supply), expand(repeatable=False)))
+                build_order.append((cum_supply_at_least(supply), expand(repeatable=False)))
             else:
-                build_order.append((supply_at_least(supply), construct(UnitTypeId[unit_name])))
+                build_order.append((cum_supply_at_least(supply), construct(UnitTypeId[unit_name])))
         elif(type == "Unit"):
-            build_order.append((supply_at_least(supply), train_unit(UnitTypeId[unit_name], on_building = UnitTypeId[unit_building.upper()])))
+            build_order.append((cum_supply_at_least(supply), train_unit(UnitTypeId[unit_name], on_building = UnitTypeId[unit_building.upper()], increased_supply = unit_supply)))
         elif(type == "Upgrade"):
             # ignore upgrades e.g. spray
             # TODO check if it works
@@ -55,6 +55,8 @@ def init_build_order(path):
                 build_order.append((supply_at_least(supply), train_unit(UpgradeId[unit_name], on_building = UnitTypeId[unit_building.upper()])))
             except (NameError, KeyError):
                 pass
+
+        #supply_previous = supply
             
     return build_order
         

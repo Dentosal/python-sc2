@@ -1,8 +1,8 @@
-"type";"unit_name";"on_building";"total_supply_lag"
-"Building";"Refinery";NA;15
-"Building";"Barracks";NA;16
-"Unit";"Reaper";"Barracks";19
-"Building";"Factory";NA;20
-"Building";"Refinery";NA;21
-"Building";"BarracksReactor";NA;21
-"Upgrade";"SprayTerran";NA;24
+"type";"unit_name";"on_building";"total_supply_lag";"supply"
+"Building";"Refinery";NA;15;0
+"Building";"Barracks";NA;16;0
+"Unit";"Reaper";"Barracks";19;1
+"Building";"Factory";NA;20;0
+"Building";"Refinery";NA;21;0
+"Building";"BarracksReactor";NA;21;0
+"Upgrade";"SprayTerran";NA;24;0
