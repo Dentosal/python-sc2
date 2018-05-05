@@ -1,0 +1,66 @@
+"type";"unit_name";"on_building";"total_supply_lag"
+"Building";"Pylon";NA;14
+"Building";"Gateway";NA;16
+"Building";"Assimilator";NA;17
+"Building";"Assimilator";NA;18
+"Building";"Gateway";NA;19
+"Building";"CyberneticsCore";NA;21
+"Building";"Pylon";NA;22
+"Unit";"Stalker";"Gateway";24
+"Unit";"Stalker";"Gateway";26
+"Building";"Pylon";NA;28
+"Unit";"Stalker";"Gateway";28
+"Unit";"Stalker";"Gateway";30
+"Building";"Gateway";NA;32
+"Building";"Gateway";NA;32
+"Unit";"Stalker";"Gateway";32
+"Unit";"Stalker";"Gateway";34
+"Building";"ShieldBattery";NA;36
+"Building";"Pylon";NA;36
+"Unit";"Stalker";"Gateway";36
+"Unit";"Stalker";"Gateway";38
+"Unit";"Stalker";"Gateway";40
+"Unit";"Stalker";"Gateway";42
+"Unit";"Adept";"Gateway";44
+"Unit";"Stalker";"Gateway";46
+"Unit";"Stalker";"Gateway";48
+"Building";"RoboticsFacility";NA;50
+"Unit";"Sentry";"Gateway";50
+"Unit";"Stalker";"Gateway";52
+"Building";"Pylon";NA;55
+"Unit";"Stalker";"Gateway";56
+"Unit";"Observer";"Robotics Facility";58
+"Unit";"Immortal";"Robotics Facility";59
+"Building";"Nexus";NA;63
+"Building";"ShieldBattery";NA;63
+"Building";"Pylon";NA;63
+"Building";"Pylon";NA;63
+"Unit";"Immortal";"Robotics Facility";63
+"Unit";"Sentry";"Gateway";67
+"Unit";"Adept";"Gateway";69
+"Unit";"Sentry";"Gateway";71
+"Building";"ShieldBattery";NA;73
+"Unit";"Stalker";"Gateway";73
+"Unit";"Sentry";"Gateway";75
+"Unit";"Stalker";"Gateway";77
+"Unit";"Stalker";"Gateway";79
+"Unit";"Stalker";"Gateway";83
+"Unit";"Sentry";"Gateway";85
+"Unit";"Zealot";"Gateway";87
+"Unit";"Immortal";"Robotics Facility";89
+"Unit";"Stalker";"Gateway";93
+"Unit";"Zealot";"Gateway";95
+"Building";"Pylon";NA;99
+"Building";"Pylon";NA;99
+"Unit";"Immortal";"Robotics Facility";99
+"Unit";"Adept";"Gateway";103
+"Unit";"Adept";"Gateway";105
+"Unit";"Adept";"Gateway";107
+"Unit";"Zealot";"Gateway";109
+"Unit";"Stalker";"Gateway";113
+"Unit";"Stalker";"Gateway";115
+"Unit";"Stalker";"Gateway";117
+"Unit";"Stalker";"Gateway";119
+"Upgrade";"WarpGateResearch";NA;121
+"Upgrade";"SprayProtoss";NA;121
+"Upgrade";"SprayProtoss";NA;121

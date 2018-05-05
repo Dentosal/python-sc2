@@ -1,0 +1,16 @@
+"type";"unit_name";"on_building";"total_supply_lag"
+"Building";"Pylon";NA;14
+"Building";"Gateway";NA;16
+"Building";"Assimilator";NA;17
+"Building";"Assimilator";NA;19
+"Building";"Pylon";NA;20
+"Building";"CyberneticsCore";NA;21
+"Unit";"Zealot";"Gateway";21
+"Unit";"Adept";"Gateway";25
+"Building";"Stargate";NA;27
+"Unit";"Stalker";"Gateway";28
+"Building";"Pylon";NA;30
+"Building";"ShieldBattery";NA;30
+"Unit";"Stalker";"Gateway";30
+"Unit";"Oracle";"Stargate";32
+"Building";"ShieldBattery";NA;35

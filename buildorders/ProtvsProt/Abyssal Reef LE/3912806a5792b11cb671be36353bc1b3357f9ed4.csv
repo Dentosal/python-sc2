@@ -1,0 +1,34 @@
+"type";"unit_name";"on_building";"total_supply_lag"
+"Building";"Pylon";NA;14
+"Building";"Gateway";NA;16
+"Building";"Assimilator";NA;16
+"Building";"Assimilator";NA;16
+"Building";"Gateway";NA;18
+"Building";"CyberneticsCore";NA;20
+"Building";"Pylon";NA;21
+"Unit";"Stalker";"Gateway";23
+"Unit";"Stalker";"Gateway";25
+"Building";"Pylon";NA;28
+"Unit";"Stalker";"Gateway";29
+"Unit";"Stalker";"Gateway";31
+"Unit";"Stalker";"Gateway";33
+"Unit";"Stalker";"Gateway";35
+"Building";"Pylon";NA;37
+"Building";"Nexus";NA;37
+"Building";"RoboticsFacility";NA;38
+"Unit";"Sentry";"Gateway";39
+"Unit";"Sentry";"Gateway";41
+"Building";"Pylon";NA;44
+"Building";"TwilightCouncil";NA;46
+"Unit";"Oracle";"Stargate";46
+"Unit";"Observer";"Robotics Facility";49
+"Unit";"Immortal";"Robotics Facility";53
+"Unit";"Immortal";"Robotics Facility";62
+"Building";"Pylon";NA;66
+"Unit";"Stalker";"Gateway";69
+"Unit";"Stalker";"Gateway";71
+"Building";"Pylon";NA;73
+"Unit";"Zealot";"Gateway";73
+"Upgrade";"SprayProtoss";NA;75
+"Upgrade";"WarpGateResearch";NA;75
+"Upgrade";"SprayProtoss";NA;75

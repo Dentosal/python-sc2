@@ -1,0 +1,16 @@
+"type";"unit_name";"on_building";"total_supply_lag"
+"Building";"Barracks";NA;16
+"Building";"Refinery";NA;16
+"Building";"Refinery";NA;17
+"Unit";"Reaper";"Barracks";19
+"Building";"Factory";NA;20
+"Unit";"Reaper";"Barracks";21
+"Building";"Starport";NA;25
+"Unit";"Cyclone";"Factory";26
+"Unit";"Medivac";"Starport";30
+"Unit";"Cyclone";"Factory";32
+"Building";"CommandCenter";NA;35
+"Unit";"Cyclone";"Factory";35
+"Building";"BarracksReactor";NA;39
+"Upgrade";"SprayTerran";NA;41
+"Upgrade";"SprayTerran";NA;41

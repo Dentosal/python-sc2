@@ -1,0 +1,63 @@
+"type";"unit_name";"on_building";"total_supply_lag"
+"Building";"Pylon";NA;14
+"Building";"Gateway";NA;16
+"Building";"Assimilator";NA;17
+"Building";"Assimilator";NA;19
+"Building";"Gateway";NA;21
+"Building";"CyberneticsCore";NA;21
+"Building";"Pylon";NA;22
+"Unit";"Adept";"Gateway";24
+"Unit";"Adept";"Gateway";26
+"Building";"Pylon";NA;29
+"Unit";"Stalker";"Gateway";29
+"Unit";"Stalker";"Gateway";31
+"Building";"Nexus";NA;33
+"Unit";"Stalker";"Gateway";33
+"Unit";"Stalker";"Gateway";35
+"Building";"ShieldBattery";NA;38
+"Unit";"Stalker";"Gateway";38
+"Unit";"Stalker";"Gateway";40
+"Building";"Pylon";NA;42
+"Building";"RoboticsFacility";NA;42
+"Unit";"Stalker";"Gateway";42
+"Unit";"Stalker";"Gateway";44
+"Building";"ShieldBattery";NA;46
+"Unit";"Immortal";"Robotics Facility";46
+"Unit";"Stalker";"Gateway";50
+"Unit";"Stalker";"Gateway";52
+"Unit";"Stalker";"Gateway";54
+"Unit";"Stalker";"Gateway";56
+"Building";"Pylon";NA;58
+"Unit";"Immortal";"Robotics Facility";58
+"Building";"Pylon";NA;62
+"Unit";"Sentry";"Gateway";62
+"Unit";"Immortal";"Robotics Facility";64
+"Building";"ShieldBattery";NA;68
+"Building";"Gateway";NA;68
+"Building";"Gateway";NA;68
+"Unit";"Immortal";"Robotics Facility";68
+"Unit";"Stalker";"Gateway";72
+"Unit";"Stalker";"Gateway";74
+"Unit";"Sentry";"Gateway";77
+"Unit";"Sentry";"Gateway";80
+"Unit";"Stalker";"Gateway";84
+"Building";"ShieldBattery";NA;87
+"Unit";"Observer";"Robotics Facility";87
+"Unit";"Stalker";"Gateway";88
+"Unit";"Stalker";"Gateway";90
+"Unit";"Immortal";"Robotics Facility";92
+"Unit";"Immortal";"Robotics Facility";97
+"Unit";"Zealot";"Gateway";101
+"Unit";"Zealot";"Gateway";103
+"Unit";"Adept";"Gateway";105
+"Unit";"Adept";"Gateway";107
+"Unit";"Immortal";"Robotics Facility";109
+"Unit";"Stalker";"Gateway";113
+"Unit";"Stalker";"Gateway";115
+"Unit";"Adept";"Gateway";117
+"Unit";"Adept";"Gateway";119
+"Unit";"Adept";"Gateway";121
+"Unit";"Adept";"Gateway";123
+"Upgrade";"SprayProtoss";NA;125
+"Upgrade";"WarpGateResearch";NA;125
+"Upgrade";"SprayProtoss";NA;125
