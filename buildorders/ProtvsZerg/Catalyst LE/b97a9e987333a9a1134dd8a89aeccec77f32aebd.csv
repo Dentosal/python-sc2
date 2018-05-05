@@ -1,0 +1,145 @@
+"type";"unit_name";"on_building";"total_supply_lag"
+"Building";"Pylon";NA;14
+"Building";"Assimilator";NA;15
+"Building";"Gateway";NA;17
+"Building";"Nexus";NA;20
+"Building";"CyberneticsCore";NA;20
+"Building";"Assimilator";NA;21
+"Building";"Pylon";NA;22
+"Unit";"Adept";"Gateway";23
+"Building";"Stargate";NA;26
+"Unit";"Adept";"Gateway";27
+"Unit";"Adept";"Gateway";32
+"Unit";"Oracle";"Stargate";36
+"Building";"Pylon";NA;41
+"Unit";"Phoenix";"Stargate";44
+"Building";"Gateway";NA;47
+"Building";"Gateway";NA;48
+"Building";"Pylon";NA;49
+"Unit";"Oracle";"Stargate";50
+"Building";"Assimilator";NA;53
+"Building";"Assimilator";NA;54
+"Building";"Pylon";NA;54
+"Building";"TwilightCouncil";NA;56
+"Unit";"Oracle";"Stargate";58
+"Building";"Pylon";NA;61
+"Unit";"Adept";"Gateway";63
+"Unit";"Adept";"Gateway";65
+"Unit";"Adept";"Gateway";67
+"Building";"Pylon";NA;71
+"Building";"Nexus";NA;73
+"Building";"Pylon";NA;73
+"Unit";"Adept";"Gateway";73
+"Unit";"Adept";"Gateway";75
+"Unit";"Adept";"Gateway";77
+"Building";"RoboticsFacility";NA;81
+"Unit";"Adept";"Gateway";84
+"Unit";"Adept";"Gateway";86
+"Unit";"Adept";"Gateway";88
+"Building";"Pylon";NA;91
+"Unit";"Adept";"Gateway";93
+"Unit";"Adept";"Gateway";95
+"Unit";"Adept";"Gateway";97
+"Unit";"Immortal";"Robotics Facility";99
+"Building";"ShieldBattery";NA;105
+"Building";"Assimilator";NA;107
+"Building";"Assimilator";NA;108
+"Unit";"Sentry";"Gateway";110
+"Unit";"Sentry";"Gateway";112
+"Unit";"Sentry";"Gateway";114
+"Unit";"Immortal";"Robotics Facility";116
+"Building";"ShieldBattery";NA;122
+"Building";"ShieldBattery";NA;123
+"Building";"Pylon";NA;123
+"Building";"Forge";NA;123
+"Building";"RoboticsBay";NA;124
+"Building";"Pylon";NA;125
+"Building";"Pylon";NA;125
+"Unit";"Immortal";"Robotics Facility";125
+"Building";"RoboticsFacility";NA;129
+"Unit";"Sentry";"Gateway";130
+"Unit";"Sentry";"Gateway";132
+"Unit";"Sentry";"Gateway";134
+"Building";"Pylon";NA;136
+"Building";"Pylon";NA;136
+"Building";"Gateway";NA;136
+"Building";"Gateway";NA;136
+"Building";"Gateway";NA;136
+"Unit";"Colossus";"Robotics Facility";136
+"Building";"Pylon";NA;142
+"Unit";"Stalker";"Gateway";142
+"Unit";"Stalker";"Gateway";144
+"Unit";"Stalker";"Gateway";146
+"Unit";"Colossus";"Robotics Facility";148
+"Upgrade";"ProtossGroundWeaponsLevel1";"Forge";154
+"Upgrade";"ExtendedThermalLance";"RoboticsBay";155
+"Building";"Pylon";NA;155
+"Unit";"Adept";"Gateway";155
+"Unit";"Colossus";"Robotics Facility";157
+"Unit";"Adept";"Gateway";163
+"Unit";"Adept";"Gateway";165
+"Unit";"Colossus";"Robotics Facility";169
+"Unit";"Phoenix";"Stargate";175
+"Building";"Gateway";NA;177
+"Building";"Gateway";NA;177
+"Unit";"Stalker";"Gateway";177
+"Unit";"Stalker";"Gateway";179
+"Unit";"Stalker";"Gateway";181
+"Unit";"Stalker";"Gateway";183
+"Building";"Nexus";NA;185
+"Building";"Pylon";NA;185
+"Unit";"Observer";"Robotics Facility";185
+"Building";"OracleStasisTrap";NA;186
+"Building";"Gateway";NA;186
+"Building";"Gateway";NA;186
+"Unit";"Stalker";"Gateway";186
+"Unit";"Stalker";"Gateway";188
+"Unit";"Stalker";"Gateway";190
+"Unit";"Stalker";"Gateway";192
+"Unit";"Stalker";"Gateway";194
+"Unit";"Stalker";"Gateway";196
+"Unit";"Observer";"Robotics Facility";198
+"Building";"PhotonCannon";NA;199
+"Upgrade";"ProtossGroundWeaponsLevel2";"Forge";199
+"Building";"PhotonCannon";NA;199
+"Building";"PhotonCannon";NA;199
+"Unit";"Colossus";"Robotics Facility";199
+"Unit";"Colossus";"Robotics Facility";205
+"Unit";"Stalker";"Gateway";211
+"Unit";"Stalker";"Gateway";213
+"Unit";"Stalker";"Gateway";215
+"Unit";"Stalker";"Gateway";217
+"Unit";"Stalker";"Gateway";219
+"Unit";"Stalker";"Gateway";221
+"Unit";"Stalker";"Gateway";223
+"Unit";"Stalker";"Gateway";225
+"Building";"Assimilator";NA;231
+"Building";"Assimilator";NA;231
+"Unit";"Stalker";"Gateway";231
+"Unit";"Stalker";"Gateway";233
+"Unit";"Stalker";"Gateway";235
+"Unit";"Stalker";"Gateway";237
+"Unit";"Observer";"Robotics Facility";240
+"Unit";"Colossus";"Robotics Facility";241
+"Unit";"Stalker";"Gateway";247
+"Unit";"Stalker";"Gateway";249
+"Unit";"Stalker";"Gateway";251
+"Unit";"Stalker";"Gateway";253
+"Unit";"Stalker";"Gateway";255
+"Unit";"Observer";"Robotics Facility";257
+"Unit";"Stalker";"Gateway";260
+"Unit";"Stalker";"Gateway";262
+"Unit";"Stalker";"Gateway";264
+"Unit";"Stalker";"Gateway";266
+"Unit";"Stalker";"Gateway";268
+"Unit";"Stalker";"Gateway";270
+"Unit";"Stalker";"Gateway";272
+"Upgrade";"SprayProtoss";NA;274
+"Upgrade";"SprayProtoss";NA;274
+"Upgrade";"WarpGateResearch";NA;274
+"Upgrade";"SprayProtoss";NA;274
+"Upgrade";"AdeptPiercingAttack";NA;274
+"Upgrade";"SprayProtoss";NA;274
+"Upgrade";"SprayProtoss";NA;274
+"Upgrade";"SprayProtoss";NA;274
+"Upgrade";"BlinkTech";NA;274

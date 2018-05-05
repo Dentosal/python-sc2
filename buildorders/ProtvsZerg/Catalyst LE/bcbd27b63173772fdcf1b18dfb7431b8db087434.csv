@@ -1,0 +1,65 @@
+"type";"unit_name";"on_building";"total_supply_lag"
+"Building";"Pylon";NA;14
+"Building";"Gateway";NA;16
+"Building";"Assimilator";NA;18
+"Building";"Nexus";NA;21
+"Building";"CyberneticsCore";NA;21
+"Building";"Assimilator";NA;21
+"Building";"Pylon";NA;22
+"Unit";"Adept";"Gateway";23
+"Building";"TwilightCouncil";NA;26
+"Unit";"Stalker";"Gateway";27
+"Building";"RoboticsFacility";NA;35
+"Building";"DarkShrine";NA;38
+"Building";"Gateway";NA;38
+"Building";"Gateway";NA;42
+"Building";"Gateway";NA;42
+"Building";"Assimilator";NA;42
+"Building";"Assimilator";NA;44
+"Building";"Pylon";NA;44
+"Building";"Pylon";NA;44
+"Building";"Pylon";NA;45
+"Building";"DarkTemplar";NA;49
+"Building";"DarkTemplar";NA;49
+"Building";"DarkTemplar";NA;49
+"Building";"DarkTemplar";NA;49
+"Unit";"Immortal";"Robotics Facility";49
+"Building";"Gateway";NA;54
+"Upgrade";"Charge";"TwilightCouncil";54
+"Unit";"Immortal";"Robotics Facility";54
+"Building";"Gateway";NA;58
+"Building";"Gateway";NA;58
+"Building";"Gateway";NA;58
+"Unit";"Sentry";"Gateway";58
+"Building";"Pylon";NA;60
+"Building";"Pylon";NA;60
+"Unit";"Archon";"High Templar";60
+"Unit";"Archon";"High Templar";60
+"Unit";"Zealot";"Gateway";60
+"Unit";"Zealot";"Gateway";62
+"Unit";"Zealot";"Gateway";64
+"Unit";"Immortal";"Robotics Facility";66
+"Building";"Pylon";NA;70
+"Building";"Pylon";NA;70
+"Building";"DarkTemplar";NA;70
+"Building";"DarkTemplar";NA;70
+"Building";"DarkTemplar";NA;70
+"Building";"DarkTemplar";NA;70
+"Unit";"Zealot";"Gateway";70
+"Unit";"Archon";"High Templar";72
+"Unit";"Archon";"High Templar";72
+"Unit";"Zealot";"Gateway";72
+"Unit";"Zealot";"Gateway";74
+"Unit";"Zealot";"Gateway";76
+"Unit";"Zealot";"Gateway";78
+"Unit";"Zealot";"Gateway";80
+"Unit";"Zealot";"Gateway";82
+"Unit";"Zealot";"Gateway";84
+"Unit";"Zealot";"Gateway";86
+"Unit";"Zealot";"Gateway";88
+"Unit";"Zealot";"Gateway";90
+"Unit";"Zealot";"Gateway";92
+"Unit";"Zealot";"Gateway";94
+"Upgrade";"SprayProtoss";NA;96
+"Upgrade";"SprayProtoss";NA;96
+"Upgrade";"WarpGateResearch";NA;96
