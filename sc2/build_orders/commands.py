@@ -3,18 +3,21 @@ from sc2.constants import *
 
 
 class Command(object):
-    def __init__(self, action, repeatable=False, priority=False, increase_workers = 0):
+    def __init__(self, action, repeatable=False, priority=False, increase_workers = 0, increased_supply = 0):
         self.action = action
         self.is_done = False
         self.is_repeatable = repeatable
         self.is_priority = priority
         self.increase_workers = increase_workers
+        self.increased_supply = increased_supply
 
     async def execute(self, bot):
         e = await self.action(bot)
         if not e and not self.is_repeatable:
             self.is_done = True
-
+            print("Increase supply by {0} to cum supply {1}".format(self.increased_supply, bot.cum_supply))
+            bot.cum_supply = bot.cum_supply + self.increased_supply
+            bot.build_order.worker_count = bot.build_order.worker_count + self.increase_workers
         return e
 
     def allow_repeat(self):
@@ -44,15 +47,13 @@ def train_unit(unit, on_building, prioritize=False, repeatable=False, increased_
             can_afford = bot.can_afford(unit)
             if can_afford:
                 print("Training {}".format(unit))
-                print("Increase supply by {0} to cum supply {1}".format(increased_supply, bot.cum_supply))
-                bot.cum_supply = bot.cum_supply + increased_supply
                 return await bot.do(selected.train(unit))
             else:
                 return can_afford.action_result
         else:
             return ActionResult.Error
 
-    return Command(do_train, priority=prioritize, repeatable=repeatable)
+    return Command(do_train, priority=prioritize, repeatable=repeatable, increased_supply= increased_supply)
 
 
 def morph(unit, prioritize=False, repeatable=False, increased_supply = 0):
@@ -63,15 +64,13 @@ def morph(unit, prioritize=False, repeatable=False, increased_supply = 0):
             can_afford = bot.can_afford(unit)
             if can_afford:
                 print("Morph {}".format(unit))
-                print("Increase supply by {0} to cum supply {1}".format(increased_supply, bot.cum_supply))
-                bot.cum_supply = bot.cum_supply + increased_supply
                 return await bot.do(selected.train(unit))
             else:
                 return can_afford.action_result
         else:
             return ActionResult.Error
 
-    return Command(do_morph, priority=prioritize, repeatable=repeatable)
+    return Command(do_morph, priority=prioritize, repeatable=repeatable, increased_supply = increased_supply)
 
 
 def construct(building, placement=None, prioritize=True, repeatable=False):

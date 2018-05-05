@@ -26,9 +26,9 @@ class BuildOrder(object):
             if condition(bot) and not command.is_done:
                 e = await command.execute(bot)
 
-                if command.increase_workers > 0:            
+                #if command.increase_workers > 0:            
                     # Increase worker count due to expansion
-                    self.worker_count = self.worker_count + command.increase_workers
+                #    self.worker_count = self.worker_count + command.increase_workers
 
                 #if command.increased_supply > 0:
                 #    bot.cum_supply = bot.cum_supply + command.increased_supply

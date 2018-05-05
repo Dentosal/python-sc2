@@ -21,7 +21,10 @@
 - rebuild dying unit/building
 
 - build random units after finishing build order
+
 - attack after reaching end of build order
+
+- amount of workers is not really
 
 
 # Think its done
