@@ -20,3 +20,7 @@
 	- only execute respearch if not currently researching or research done 
 
 - auto rename+export replays p1vsp2-time.SC2Replay
+
+
+- export x,y coordinate to hash.csv and use info for placement?
+  - problem: what if different start position
