@@ -16,11 +16,18 @@ class BuildOrder(object):
                 and self.auto_add_supply:
             return await add_supply().execute(bot)
 
+        
+
         for index, item in enumerate(self.build):
             condition, command = item
             condition = item[0] if item[0] else always_true
             if condition(bot) and not command.is_done:
                 e = await command.execute(bot)
+
+                if command.increase_workers > 0:            
+                    # Increase worker count due to expansion
+                    self.worker_count = self.worker_count + command.increase_workers
+
                 if command.is_done:
                     return e
                 else:

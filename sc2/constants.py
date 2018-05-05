@@ -9,3 +9,7 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 vespene_buildings = ("REFINERY", "ASSIMILATOR", "EXTRACTOR")
 main_buildings = ("COMMANDCENTER", "NEXUS", "HATCHERY")
+
+
+worker_expand_increase = 16
+worker_gas_increase = 3

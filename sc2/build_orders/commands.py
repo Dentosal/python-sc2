@@ -3,11 +3,12 @@ from sc2.constants import *
 
 
 class Command(object):
-    def __init__(self, action, repeatable=False, priority=False):
+    def __init__(self, action, repeatable=False, priority=False, increase_workers = 0):
         self.action = action
         self.is_done = False
         self.is_repeatable = repeatable
         self.is_priority = priority
+        self.increase_workers = increase_workers
 
     async def execute(self, bot):
         e = await self.action(bot)
@@ -31,7 +32,7 @@ def expand(prioritize=False, repeatable=True):
         else:
             return can_afford.action_result
 
-    return Command(do_expand, priority=prioritize, repeatable=repeatable)
+    return Command(do_expand, priority=prioritize, repeatable=repeatable, increase_workers = worker_expand_increase)
 
 
 def train_unit(unit, on_building, prioritize=False, repeatable=False):
@@ -119,4 +120,4 @@ def add_gas(prioritize=True, repeatable=False):
 
         return ActionResult.Error
 
-    return Command(do_add_gas, priority=prioritize, repeatable=repeatable)
+    return Command(do_add_gas, priority=prioritize, repeatable=repeatable, increase_workers=worker_gas_increase)

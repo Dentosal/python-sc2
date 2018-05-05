@@ -48,20 +48,13 @@ def init_build_order(path):
                 build_order.append((supply_at_least(supply), construct(UnitTypeId[unit_name])))
         elif(type == "Unit"):
             build_order.append((supply_at_least(supply), train_unit(UnitTypeId[unit_name], on_building = UnitTypeId[unit_building.upper()])))
-        #elif(type == "Upgrade"):
-        #    build_order.append((supply_at_least(supply), train_unit(UpgradeId[unit_name], on_building = UnitTypeId[unit_building.upper()])))
+        elif(type == "Upgrade"):
+            # ignore upgrades e.g. spray
+            # TODO check if it works
+            try:
+                build_order.append((supply_at_least(supply), train_unit(UpgradeId[unit_name], on_building = UnitTypeId[unit_building.upper()])))
+            except (NameError, KeyError):
+                pass
             
     return build_order
         
-        #elif(row['type'] == "Upgrade"):
-        
-        #build_order.append((supply_at_least(row['total_supply_lag']), )
-        #print( + row['unit_name'] +  row['type'])
-
-   
-    #df
-    #with open(path, newline='') as csvfile:
-    #    csvreader = csv.reader(csvfile, delimiter=';', quotechar='"')
-    #    for row in csvreader:
-    #        build_order.append(())
-    #        print(', '.join(row))
