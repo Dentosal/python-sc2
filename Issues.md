@@ -46,7 +46,7 @@
   - not all upgrades have buildings
   - maybe export requires
 
-- if under 
+- if under attack --> defend with all units except workers (inc. MULE)
 
 # Think its done
 

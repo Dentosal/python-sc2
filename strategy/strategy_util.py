@@ -9,14 +9,6 @@ import sc2
 from sc2 import Race
 import re
 
-def race_to_string(race):
-    if race == Race.Terran:
-        return(race_terran_string)
-    elif race == Race.Protoss:
-        return(race_protoss_string)
-    elif race == Race.Zerg:
-        return(race_zerg_string)
-
 
 def init_build_order(path):
 
@@ -64,13 +56,14 @@ def init_build_order(path):
             if(unit_name[0:5] == "SPRAY"):
                 continue
 
-            # ignore upgrades e.g. spray
+    
             # TODO check if it works
             try:
-                build_order.append((all_of(supply_at_least(supply)), unit_count_at_least(UnitTypeId[unit_building], 1, include_pending=False)), train_unit(UpgradeId[unit_name], on_building = UnitTypeId[unit_building.upper()]))
+                unit_building = unit_building.upper()
+                build_order.append((all_of(supply_at_least(supply), unit_count_at_least(UnitTypeId[unit_building], 1, include_pending=False)), train_unit(UpgradeId[unit_name], on_building = UnitTypeId[unit_building])))
             except (NameError, KeyError):
                 print("Error appending Upgrade {0}".format(unit_name))
-                pass
+               # pass
             except AttributeError:
                 print("Error appending Upgrade {0}, building {1} not found".format(unit_name, unit_building))
                 pass
