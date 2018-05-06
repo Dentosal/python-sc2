@@ -31,8 +31,14 @@ def main():
         Race.Protoss: Protoss_Bot_Buildorder
     }
 
+    hash = "1cc609b79314bee713eb2e3708c3ae4d2a03762c"#"90145ee27487043a70b38e4346100dd882197036"
+        
+    folder = folder_buildorder + self_race_string + race_bot_separator + enemy_race_string + ending_folder + map_name + ending_folder
+    path = folder + hash + ending_csv
+
+
     run_game(maps.get(map_name), [
-        Bot(self_race, bot_selector[self_race](map_name, self_race_string, enemy_race_string)),
+        Bot(self_race, bot_selector[self_race](path)),
         Computer(enemy_race, Difficulty.Easy)
     ], realtime=False, save_replay_as= output_replay)
 
