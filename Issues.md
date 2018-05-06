@@ -24,13 +24,6 @@
 
 - attack after reaching end of build order
 
-- amount of workers is not really
-
-
-# Think its done
-
-- increase workers after expand()
-
 - Research in build order --> using train_unit
 	- check
 	def research(building, upgrade, prioritize=True, repeatable=False):
@@ -41,3 +34,19 @@
 
 		return research_spec
 	- only execute respearch if not currently researching or research done 
+
+- cant reproduce buildings switching places
+  - e.g. solve via: if enough units simple build an addon? what if a different one is build later
+  - better: why upgrade/addon/unit cant be build 
+    - check if building not pending / exists --> if not build building
+    - check if addon can be build --> if not create new building
+    - check if unit cant be build due to missing add on --> build add on
+
+- improve export of csv
+  - not all upgrades have buildings
+  - maybe export requires
+
+# Think its done
+
+- increase workers after expand()
+

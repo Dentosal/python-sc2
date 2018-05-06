@@ -54,6 +54,10 @@ def init_build_order(path):
             try:
                 build_order.append((supply_at_least(supply), train_unit(UpgradeId[unit_name], on_building = UnitTypeId[unit_building.upper()])))
             except (NameError, KeyError):
+                print("Error appending Upgrade {0}".format(unit_name))
+                pass
+            except AttributeError:
+                print("Error appending Upgrade {0}, building {1} not found".format(unit_name, unit_building))
                 pass
 
         #supply_previous = supply

@@ -32,18 +32,17 @@ class Terran_Bot_Buildorder(sc2.BotAI):
 
     def __init__(self):
 
-        # 16 only mineral, 21 for mineral and vespene, 22 leads to worker gathering minerals far away
-        worker_count = 21
+        
 
        
-        hash = "90145ee27487043a70b38e4346100dd882197036"
+        hash = "1cc609b79314bee713eb2e3708c3ae4d2a03762c"#"90145ee27487043a70b38e4346100dd882197036"
         ending_csv = ".csv"
-        folder = os.path.dirname(ROOT_DIR) + "/buildorders/TerrvsTerr/Abiogenesis LE/"
+        folder = os.path.dirname(ROOT_DIR) + "/buildorders/TerrvsTerr/Catalyst LE/"
         path = folder + hash + ending_csv
         
         build_order = init_build_order(path)
         self.attack = False
-        self.build_order = BuildOrder(self, build_order, worker_count=worker_count)
+        self.build_order = BuildOrder(self, build_order, worker_count=init_worker_count)
        
        
     async def on_step(self, iteration):

@@ -1,7 +1,7 @@
 from sc2 import Race, race_worker, ActionResult, race_townhalls
 from sc2.build_orders.commands import add_supply, morph, train_unit
 from sc2.state_conditions.conditions import always_true
-from sc2.constants import worker_supply
+from sc2.constants import worker_supply, init_supply
 
 class BuildOrder(object):
     def __init__(self, bot, build, worker_count=0, auto_add_supply=True):
@@ -9,7 +9,7 @@ class BuildOrder(object):
         self.bot = bot
         self.worker_count = worker_count
         self.auto_add_supply = auto_add_supply
-        self.bot.cum_supply = 12 # TODO not hardcoded
+        self.bot.cum_supply = init_supply
         
 
     async def execute_build(self):

@@ -17,3 +17,6 @@ worker_gas_increase = 3
 worker_supply = 1
 
 init_supply = 12
+
+# 16 only mineral, 21 for mineral and vespene, 22 leads to worker gathering minerals far away
+init_worker_count = 16
