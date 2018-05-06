@@ -32,3 +32,9 @@ race_zerg_string = "Zerg"
 race_bot_separator = "vs"
 
 folder_buildorder = os.path.dirname(ROOT_DIR) + "/buildorders/"
+
+
+# http://liquipedia.net/starcraft2/Terran_Building_Statistics_(Legacy_of_the_Void)
+construct_requirements = {
+    UnitTypeId.STARPORT : UnitTypeId.FACTORY
+}

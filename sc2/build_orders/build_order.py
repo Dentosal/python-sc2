@@ -1,6 +1,6 @@
 from sc2 import Race, race_worker, ActionResult, race_townhalls
-from sc2.build_orders.commands import add_supply, morph, train_unit
-from sc2.state_conditions.conditions import always_true
+from sc2.build_orders.commands import add_supply, morph, train_unit, construct
+from sc2.state_conditions.conditions import always_true, unit_count_at_least
 from sc2.constants import worker_supply, init_supply
 
 class BuildOrder(object):
@@ -26,16 +26,26 @@ class BuildOrder(object):
             if condition(bot) and not command.is_done:
                 e = await command.execute(bot)
 
-                #if command.increase_workers > 0:            
-                    # Increase worker count due to expansion
-                #    self.worker_count = self.worker_count + command.increase_workers
-
-                #if command.increased_supply > 0:
-                #    bot.cum_supply = bot.cum_supply + command.increased_supply
-                #    print("Increase supply by {0} to cum_supply of {1}".format(command.increased_supply,self.bot.cum_supply))
 
                 if command.is_done:
                     return e
+
+                elif e == ActionResult.NotSupported and command.requires is not None:
+                    # required building currently constructing
+                    require_condition = unit_count_at_least(command.requires, 1, True)
+                    if require_condition(bot):       
+                        return e
+                    else:
+                        # CHECK build new building
+                        print("Build new building {0} due to requirements".format(command.requires))
+                        await construct(command.requires).execute(bot)
+                        return e
+                    continue
+               #     
+               #     if command.requires and not bot.already_pending(command.requires): 
+               #         print("BUILDING required")
+               #     elif command.requires and not bot.already_pending(command.requires):
+               #          print("Required BUILDING currently building")
                 else:
                     # Save up to be able to do this command and hold worker creation.
                     if command.is_priority and e == ActionResult.NotEnoughMinerals:

@@ -23,7 +23,7 @@ def main():
     self_race_string =  race_to_string[self_race]
     enemy_race_string = race_to_string[enemy_race]
     time = strftime("%Y-%m-%d-%H:%M:%S", gmtime())
-    output_replay = map_name + self_race_string + race_bot_separator + enemy_race_string
+    output_replay = map_name + self_race_string + race_bot_separator + enemy_race_string + ending_sc2replay
 
     bot_selector = {
         Race.Terran:  Terran_Bot_Buildorder,

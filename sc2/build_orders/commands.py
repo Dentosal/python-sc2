@@ -1,18 +1,33 @@
 from sc2 import ActionResult, Race
 from sc2.constants import *
-
+from sc2.state_conditions.conditions import  unit_count_at_least
 
 class Command(object):
-    def __init__(self, action, repeatable=False, priority=False, increase_workers = 0, increased_supply = 0):
+    def __init__(self, action, repeatable=False, priority=False, increase_workers = 0, increased_supply = 0, requires = None):
         self.action = action
         self.is_done = False
         self.is_repeatable = repeatable
         self.is_priority = priority
         self.increase_workers = increase_workers
         self.increased_supply = increased_supply
+        self.requires = requires
 
     async def execute(self, bot):
+
+        
+
+       # if self.requires is not None:
+       #     condition = unit_count_at_least(self.requires, 1, True)
+       #     condition_done = unit_count_at_least(self.requires, 1, False)
+       #     print("Required")
+       #     if condition(bot):
+       #         print("already pending or built")
+       #         return e
+       #     else:
+       #         print("not pending")
+        
         e = await self.action(bot)
+        
         if not e and not self.is_repeatable:
             self.is_done = True
             print("Increase supply by {0} to cum supply {1}".format(self.increased_supply, bot.cum_supply))
@@ -76,6 +91,7 @@ def morph(unit, prioritize=False, repeatable=False, increased_supply = 0):
 def construct(building, placement=None, prioritize=True, repeatable=False):
     async def do_build(bot):
 
+
         if not placement:
             location = bot.townhalls.first.position.towards(bot.game_info.map_center, 5)
         else:
@@ -88,7 +104,7 @@ def construct(building, placement=None, prioritize=True, repeatable=False):
         else:
             return can_afford.action_result
 
-    return Command(do_build, priority=prioritize, repeatable=repeatable)
+    return Command(do_build, priority=prioritize, repeatable=repeatable, requires =  construct_requirements.get(building))
 
 
 def add_supply(prioritize=True, repeatable=False):
