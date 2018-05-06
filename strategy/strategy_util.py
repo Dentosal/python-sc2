@@ -5,8 +5,18 @@ from sc2.state_conditions.conditions import  supply_at_least, cum_supply_at_leas
 from sc2.build_orders.commands import construct, expand, add_supply, add_gas
 from sc2.constants import *
 from sc2.data import *
-
+import sc2
+from sc2 import Race
 import re
+
+def race_to_string(race):
+    if race == Race.Terran:
+        return(race_terran_string)
+    elif race == Race.Protoss:
+        return(race_protoss_string)
+    elif race == Race.Zerg:
+        return(race_zerg_string)
+
 
 def init_build_order(path):
 

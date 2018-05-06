@@ -20,3 +20,15 @@ init_supply = 12
 
 # 16 only mineral, 21 for mineral and vespene, 22 leads to worker gathering minerals far away
 init_worker_count = 16
+
+ending_folder = "/"
+ending_csv = ".csv"
+ending_sc2replay = ".SC2Replay"
+
+race_terran_string = "Terr"
+race_protoss_string = "Prot"
+race_zerg_string = "Zerg"
+
+race_bot_separator = "vs"
+
+folder_buildorder = os.path.dirname(ROOT_DIR) + "/buildorders/"

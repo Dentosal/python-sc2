@@ -46,6 +46,8 @@
   - not all upgrades have buildings
   - maybe export requires
 
+- if under 
+
 # Think its done
 
 - increase workers after expand()

@@ -9,6 +9,7 @@ from sc2.state_conditions.conditions import all_of, supply_at_least, minerals_at
 from abc import ABCMeta, abstractmethod, abstractproperty
 
 from strategy_util import *
+from time import gmtime, strftime
 
 
 
@@ -30,14 +31,11 @@ class Terran_Bot_Buildorder(sc2.BotAI):
                 #self.cloak_started = True
     '''   
 
-    def __init__(self):
+    def __init__(self, map_name, self_race, enemy_race):
 
-        
-
-       
         hash = "1cc609b79314bee713eb2e3708c3ae4d2a03762c"#"90145ee27487043a70b38e4346100dd882197036"
-        ending_csv = ".csv"
-        folder = os.path.dirname(ROOT_DIR) + "/buildorders/TerrvsTerr/Catalyst LE/"
+        
+        folder = folder_buildorder + self_race + race_bot_separator + enemy_race + ending_folder + map_name + ending_folder
         path = folder + hash + ending_csv
         
         build_order = init_build_order(path)
@@ -82,11 +80,16 @@ def get_units_attack(self):
     self.units
 
 def main():
-    run_game(maps.get("Abyssal Reef LE"), [
-        Bot(Race.Terran, Terran_Bot_Buildorder()),
-        # Bot(Race.Terran, TerranBuildOrderBot()),
-        Computer(Race.Terran, Difficulty.Easy)
-    ], realtime=False, save_replay_as="111ExpandVsEasy.SC2Replay")
+    map_name = "Catalyst LE"
+    self_race = Race.Terran
+    enemy_race = Race.Terran
+    time = strftime("%Y-%m-%d-%H:%M:%S", gmtime())
+    output_replay = map_name +  race_to_string(self_race) + race_bot_separator + race_to_string(enemy_race) 
+
+    run_game(maps.get(map_name), [
+        Bot(self_race, Terran_Bot_Buildorder(map_name, race_to_string(self_race), race_to_string(enemy_race))),
+        Computer(enemy_race, Difficulty.Easy)
+    ], realtime=False, save_replay_as= output_replay)
 
 if __name__ == '__main__':
     main()
