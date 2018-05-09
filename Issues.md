@@ -35,7 +35,7 @@
 		return research_spec
 	- only execute respearch if not currently researching or research done 
 
-- cant reproduce buildings switching places
+- cant reproduce buildings switching places (addon swapping)
   - e.g. solve via: if enough units simple build an addon? what if a different one is build later
   - better: why upgrade/addon/unit cant be build 
     - check if building not pending / exists --> if not build building
@@ -47,6 +47,8 @@
   - maybe export requires
 
 - if under attack --> defend with all units except workers (inc. MULE)
+
+
 
 # Think its done
 
