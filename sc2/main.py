@@ -8,7 +8,7 @@ from .sc2process import SC2Process
 from .portconfig import Portconfig
 from .client import Client
 from .player import Human, Bot
-from .data import Race, Difficulty, Result, ActionResult
+from .data import Race, Difficulty, Result, ActionResult, CreateGameError
 from .game_state import GameState
 from .protocol import ConnectionAlreadyClosed
 
@@ -94,7 +94,13 @@ async def _host_game(map_settings, players, realtime, portconfig=None, save_repl
     async with SC2Process() as server:
         await server.ping()
 
-        await server.create_game(map_settings, players, realtime)
+        r = await server.create_game(map_settings, players, realtime)
+        if r.create_game.HasField("error"):
+            err = f"Could not create game: {CreateGameError(r.create_game.error)}"
+            if r.create_game.HasField("error_details"):
+                err += f": {r.create_game.error_details}"
+            logger.critical(err)
+            return None
 
         client = Client(server._ws)
 
