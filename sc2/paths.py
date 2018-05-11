@@ -51,7 +51,12 @@ class _MetaPaths(type):
             self.CWD = self.BASE / CWD[PF] if CWD[PF] else None
 
             self.REPLAYS = self.BASE / "Replays"
-            self.MAPS = self.BASE / "Maps"
+
+
+            if (self.BASE / "maps").exists():
+                self.MAPS = self.BASE / "maps"
+            else:
+                self.MAPS = self.BASE / "Maps"
         except FileNotFoundError as e:
             logger.critical(f"SC2 installation not found: File '{e.filename}' does not exist.")
             exit(1)

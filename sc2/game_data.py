@@ -1,4 +1,4 @@
-from functools import lru_cache
+from functools import lru_cache, reduce
 
 from .data import Attribute
 from .unit_command import UnitCommand
@@ -8,9 +8,22 @@ from .ids.ability_id import AbilityId
 
 from .constants import ZERGLING
 
+FREE_MORPH_ABILITY_CATEGORIES = [
+    "Lower", "Raise", # SUPPLYDEPOT
+    "Land",  "Lift",  # Flying buildings
+]
+
+def split_camel_case(text):
+    """Splits words from CamelCase text."""
+    return list(reduce(
+        lambda a, b: (a + [b] if b.isupper() else a[:-1] + [a[-1] + b]),
+        text,
+        []
+    ))
+
 class GameData(object):
     def __init__(self, data):
-        self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities}
+        self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities if AbilityData.id_exists(a.ability_id)}
         self.units = {u.unit_id: UnitTypeData(self, u) for u in data.units if u.available}
         self.upgrades = {u.upgrade_id: UpgradeData(self, u) for u in data.upgrades}
 
@@ -24,6 +37,15 @@ class GameData(object):
         assert isinstance(ability, AbilityData), f"C: {ability}"
 
         for unit in self.units.values():
+            if unit.creation_ability is None:
+                continue
+
+            if not AbilityData.id_exists(unit.creation_ability.id.value):
+                continue
+
+            if unit.creation_ability.is_free_morph:
+                continue
+
             if unit.creation_ability == ability:
                 if unit.id == ZERGLING:
                     # HARD CODED: zerglings are generated in pairs
@@ -41,15 +63,30 @@ class GameData(object):
         return Cost(0, 0)
 
 class AbilityData(object):
+    @staticmethod
+    def id_exists(ability_id):
+        assert isinstance(ability_id, int), f"Wrong type: {ability_id} is not int"
+        return ability_id != 0 and ability_id in (a.value for a in AbilityId)
+
     def __init__(self, game_data, proto):
         self._game_data = game_data
         self._proto = proto
+
+        assert self.id != 0
 
     @property
     def id(self):
         if self._proto.remaps_to_ability_id:
             return AbilityId(self._proto.remaps_to_ability_id)
         return AbilityId(self._proto.ability_id)
+
+    @property
+    def is_free_morph(self):
+        parts = split_camel_case(self._proto.link_name)
+        for p in parts:
+            if p in FREE_MORPH_ABILITY_CATEGORIES:
+                return True
+        return False
 
     @property
     def cost(self):
@@ -73,6 +110,10 @@ class UnitTypeData(object):
 
     @property
     def creation_ability(self):
+        if self._proto.ability_id == 0:
+            return None
+        if self._proto.ability_id not in self._game_data.abilities:
+            return None
         return self._game_data.abilities[self._proto.ability_id]
 
     @property
@@ -110,6 +151,10 @@ class UpgradeData(object):
 
     @property
     def research_ability(self):
+        if self._proto.ability_id == 0:
+            return None
+        if self._proto.ability_id not in self._game_data.abilities:
+            return None
         return self._game_data.abilities[self._proto.ability_id]
 
     @property

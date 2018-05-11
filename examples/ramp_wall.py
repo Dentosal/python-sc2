@@ -1,11 +1,30 @@
 import random
 
+from PIL import Image
+
 import sc2
 from sc2 import Race, Difficulty
 from sc2.constants import *
 from sc2.player import Bot, Computer
+from sc2.position import Point2
 
 class RampWallBot(sc2.BotAI):
+    @property
+    def next_ramp_top(self):
+        cc = self.units(COMMANDCENTER).first
+
+        ramps = sorted(self.game_info.map_ramps, key=lambda r: cc.distance_to(r.top_center))
+
+        for ramp in ramps:
+            if (self.units(SUPPLYDEPOT) | self.units(SUPPLYDEPOTLOWERED)).closer_than(8, ramp.top_center).amount < 3:
+                break
+        else:
+            return None
+
+        self.game_info.placement_grid
+
+        exit("??")
+
     async def on_step(self, iteration):
         cc = self.units(COMMANDCENTER)
         if not cc.exists:
@@ -16,21 +35,14 @@ class RampWallBot(sc2.BotAI):
         if self.can_afford(SCV) and self.workers.amount < 16 and cc.noqueue:
             await self.do(cc.train(SCV))
 
-        # elif self.supply_left < (2 if self.units(BARRACKS).amount < 3 else 4):
-        # if self.can_afford(SUPPLYDEPOT):
-        #     await self.build(SUPPLYDEPOT, near=cc.position.towards_with_random_angle(self.game_info.map_center, distance=15))
+        if self.can_afford(SUPPLYDEPOT):
+            await self.build(SUPPLYDEPOT, near=self.next_ramp_top, placement_step=1, random_alternative=False)
 
-        self.game_info.placement_grid.save_image("placement_grid.png")
-        self.game_info.pathing_grid.save_image("pathing_grid.png")
-        self.game_info.map_ramps.save_image("ramps.png")
+        for depo in self.units(SUPPLYDEPOT).ready:
+            await self.do(depo(MORPH_SUPPLYDEPOT_LOWER))
 
-        ramps = self.game_info.map_ramps
-        data = [(self.game_info.pathing_grid[x, y],0,ramps[x, y]) for y in range(ramps.height) for x in range(ramps.width)]
-        from PIL import Image
-        im= Image.new('RGB', (ramps.width, ramps.height))
-        im.putdata(data)
-        im.save("combined.png")
-        exit()
+        for scv in self.units(SCV).idle:
+            await self.do(scv.gather(self.state.mineral_field.closest_to(cc)))
 
 def main():
     sc2.run_game(sc2.maps.get("Abyssal Reef LE"), [

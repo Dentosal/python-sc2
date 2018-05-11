@@ -1926,6 +1926,7 @@ class UnitTypeId(enum.Enum):
     INFESTEDACIDSPINESWEAPON = 1919
     INFESTORENSNAREATTACKMISSILE = 1920
     SNARE_PLACEHOLDER = 1921
+    PARASITICBOMBRELAYDUMMY = 1922
 
 for item in UnitTypeId:
     assert not item.name in globals()

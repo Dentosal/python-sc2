@@ -5,37 +5,49 @@ from .position import Point2, Size, Rect
 from .pixel_map import PixelMap
 from .player import Player
 
-def _pxmap_sub_scale(map1, map2, map3):
-    """ (map1 - map2) * map3 """
+class Ramp(object):
+    def __init__(self, points, height_map):
+        self.points = set(points)
+        self.__height_map = height_map
 
-    assert map1.width == map2.width and map1.height == map2.height
+    @property
+    def size(self):
+        return len(self.points)
 
-    values = [map3[(x, y)] for x in range(map1.width) for y in range(map1.height) if map1[(x, y)] == 0 and map2[(x, y)] == 0]
-    limits = min(values), max(values)
+    def height_at(self, p):
+        return self.__height_map[p]
 
-    result = deepcopy(map1)
+    @property
+    def upper(self):
+        max_height = max([self.height_at(p) for p in self.points])
+        return {
+            Point2((p[0], self.__height_map.height - p[1]))
+            for p in self.points
+            if self.height_at(p) == max_height
+        }
 
-    for x in range(map1.width):
-        for y in range(map1.height):
-            old = map1[(x, y)]
-            new = map2[(x, y)]
+    @property
+    def lower(self):
+        min_height = max([self.height_at(p) for p in self.points])
+        return {
+            Point2((p[0], self.__height_map.height - p[1]))
+            for p in self.points
+            if self.height_at(p) == min_height
+        }
 
-            if old == 0 and new == 0:
-                result[(x, y)] = bytearray([map3[(x, y)]])
-            else:
-                result[(x, y)] = b"\x00"
+    @property
+    def top_center(self):
+        upper = self.upper
 
-    gs = result.flood_fill_all(lambda value: value > 0)
+        minx = min(p.x for p in upper)
+        miny = min(p.y for p in upper)
+        maxx = max(p.x for p in upper)
+        maxy = max(p.y for p in upper)
 
+        p1 = Point2((minx, miny))
+        p2 = Point2((maxx, maxy))
 
-    for g in gs:
-        gg = dict(itertools.groupby(g, lambda p: map3[p]))
-        upper = list(gg[max(gg.keys()))])
-        lower = list(gg[max(gg.keys()))])
-
-        for p in upper
-
-    return result
+        return p2 if p1 in self.points else p1
 
 class GameInfo(object):
     def __init__(self, proto):
@@ -45,10 +57,35 @@ class GameInfo(object):
         self.terrain_height = PixelMap(proto.start_raw.terrain_height)
         self.placement_grid = PixelMap(proto.start_raw.placement_grid)
         self.playable_area = Rect.from_proto(proto.start_raw.playable_area)
-        self.map_ramps = _pxmap_sub_scale(self.pathing_grid, self.placement_grid, self.terrain_height)
+        self.map_ramps =  self._find_ramps()
         self.player_races = {p.player_id: p.race_actual or p.race_requested for p in proto.player_info}
         self.start_locations = [Point2.from_proto(sl) for sl in proto.start_raw.start_locations]
 
     @property
     def map_center(self):
         return self.playable_area.center
+
+    def _find_ramps(self):
+        """Calculate (self.pathing_grid - self.placement_grid) (for sets) and then find ramps by comparing heights."""
+        values = [
+            self.terrain_height[(x, y)]
+            for x in range(self.pathing_grid.width)
+            for y in range(self.pathing_grid.height)
+            if self.pathing_grid[(x, y)] == 0 and self.placement_grid[(x, y)] == 0
+        ]
+
+        limits = min(values), max(values)
+        result = deepcopy(self.pathing_grid)
+
+        for x in range(self.pathing_grid.width):
+            for y in range(self.pathing_grid.height):
+                old = self.pathing_grid[(x, y)]
+                new = self.placement_grid[(x, y)]
+
+                if old == 0 and new == 0:
+                    result[(x, y)] = bytearray([self.terrain_height[(x, y)]])
+                else:
+                    result[(x, y)] = b"\x00"
+
+        gs = result.flood_fill_all(lambda value: value > 0)
+        return [Ramp(g, self.terrain_height) for g in gs if len(g) > 1]
