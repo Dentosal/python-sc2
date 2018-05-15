@@ -13,7 +13,7 @@ class Controller(Protocol):
         assert isinstance(realtime, bool)
         req = sc_pb.RequestCreateGame(
             local_map=sc_pb.LocalMap(
-                map_path=str(game_map.relative_path)
+                map_path=str(game_map.path)
             ),
             realtime=realtime
         )
