@@ -12,6 +12,11 @@ from .data import Race, Difficulty, Result, ActionResult, CreateGameError
 from .game_state import GameState
 from .protocol import ConnectionAlreadyClosed
 
+# NOTE: added by Davey for pysc2
+from pysc2.lib.renderer_human import *
+from pysc2.lib.static_data import *
+from pysc2 import run_configs
+
 async def _play_game_human(client, player_id, realtime, game_time_limit):
     while True:
         state = await client.observation()
@@ -33,12 +38,26 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
     ai.on_start()
 
     iteration = 0
+
+    # Note: Added by davey for pysc2
+    renderer_human = RendererHuman()
+    renderer_human.init(game_info.raw_game_info, StaticData(game_data.raw_data))
+
     while True:
         state = await client.observation()
         if client._game_result:
             return client._game_result[player_id]
 
         gs = GameState(state.observation, game_data)
+
+        # Note added by Davey for pysc2
+        renderer_human.render(state.observation)
+        cmd = renderer_human.get_actions(
+           None, client)
+        # if cmd == renderer_human.ActionCmd.STEP:
+        #     pass
+        # elif cmd == renderer_human.ActionCmd.QUIT:
+        #     raise KeyboardInterrupt("Quit?")
 
         if game_time_limit and (gs.game_loop * 0.725 * (1/16)) > game_time_limit:
             return Result.Tie
@@ -103,7 +122,6 @@ async def _host_game(map_settings, players, realtime, portconfig=None, save_repl
             return None
 
         client = Client(server._ws)
-
         try:
             result = await _play_game(players[0], client, realtime, portconfig, step_time_limit, game_time_limit)
             if save_replay_as is not None:

@@ -1,3 +1,5 @@
+import asyncio
+
 from s2clientprotocol import (
     sc2api_pb2 as sc_pb,
     common_pb2 as common_pb,
@@ -22,6 +24,9 @@ from .action import combine_actions
 from .position import Point2
 from .unit import Unit
 
+# Note Added by Davey for pysc2
+from pysc2.lib import point
+
 class Client(Protocol):
     def __init__(self, ws):
         super().__init__(ws)
@@ -33,7 +38,17 @@ class Client(Protocol):
         return self._status == Status.in_game
 
     async def join_game(self, race=None, observed_player_id=None, portconfig=None):
-        ifopts = sc_pb.InterfaceOptions(raw=True)
+        # Note modified by Davey for pysc2
+        screen_size_px = (64, 64)
+        minimap_size_px = (64, 64)
+        screen_size_px = point.Point(*screen_size_px)
+        minimap_size_px = point.Point(*minimap_size_px)
+        ifopts = sc_pb.InterfaceOptions(
+            raw=True,
+            score=True,
+            feature_layer=sc_pb.SpatialCameraSetup(width=24))
+        screen_size_px.assign_to(ifopts.feature_layer.resolution)
+        minimap_size_px.assign_to(ifopts.feature_layer.minimap_resolution)
 
         if race is None:
             assert isinstance(observed_player_id, int)
@@ -130,6 +145,12 @@ class Client(Protocol):
             else:
                 return [r for r in res if r != ActionResult.Success]
 
+    # NOTE: added by Davey for pysc2
+    def act(self, action):
+        ''' Synchronous action '''
+        asyncio.get_event_loop().create_task(self._execute(action=sc_pb.RequestAction(actions=[action])))
+
+
     async def query_pathing(self, start, end):
         assert isinstance(start, (Point2, Unit))
         assert isinstance(end, Point2)
@@ -202,3 +223,8 @@ class Client(Protocol):
             ))
         else:
             await self.debug_text([texts], [positions], color)
+
+    #NOTE: added by davey to get pysc2 to work with this
+    @property
+    def status(self):
+        return self._status
