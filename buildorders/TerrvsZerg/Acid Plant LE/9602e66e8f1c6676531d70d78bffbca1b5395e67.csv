@@ -1,0 +1,17 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Refinery";NA;13;0
+"Building";"Refinery";NA;16;0
+"Building";"Barracks";NA;15;0
+"Building";"BarracksReactor";NA;19;0
+"Building";"Factory";NA;19;0
+"Building";"GhostAcademy";NA;19;0
+"Building";"BarracksTechLab";NA;19;0
+"Unit";"Cyclone";"Factory";19;3
+"Unit";"Cyclone";"Factory";19;3
+"Unit";"Hellion";"Factory";20;2
+"Unit";"Ghost";"Barracks";20;2
+"Unit";"Hellion";"Factory";26;2
+"Unit";"Ghost";"Barracks";30;2
+"Unit";"Hellion";"Factory";30;2
+"Unit";"Hellion";"Factory";32;2
+"Unit";"Ghost";"Barracks";32;2

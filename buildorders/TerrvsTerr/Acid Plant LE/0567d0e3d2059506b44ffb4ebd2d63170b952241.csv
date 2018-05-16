@@ -1,0 +1,14 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Refinery";NA;14;0
+"Building";"Barracks";NA;15;0
+"Unit";"Marine";"Barracks";19;1
+"Building";"Factory";NA;19;0
+"Building";"BarracksReactor";NA;20;0
+"Unit";"Hellion";"Factory";22;2
+"Unit";"Hellion";"Factory";22;2
+"Building";"Starport";NA;22;0
+"Building";"BarracksTechLab";NA;23;0
+"Building";"Refinery";NA;23;0
+"Building";"CommandCenter";NA;20;0
+"Unit";"Marine";"Barracks";29;1
+"Building";"FactoryTechLab";NA;36;0

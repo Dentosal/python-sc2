@@ -1,0 +1,62 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Pylon";NA;13;0
+"Building";"Assimilator";NA;16;0
+"Building";"Gateway";NA;15;0
+"Building";"Assimilator";NA;18;0
+"Building";"Pylon";NA;20;0
+"Building";"CyberneticsCore";NA;20;0
+"Unit";"Adept";"Gateway";22;2
+"Building";"Pylon";NA;23;0
+"Unit";"Stalker";"Gateway";25;2
+"Building";"ShieldBattery";NA;26;0
+"Building";"Nexus";NA;23;0
+"Building";"Pylon";NA;31;0
+"Building";"RoboticsFacility";NA;26;0
+"Unit";"Observer";"Robotics Facility";34;1
+"Unit";"Stalker";"Gateway";39;2
+"Unit";"Observer";"Robotics Facility";38;1
+"Building";"RoboticsBay";NA;33;0
+"Building";"Pylon";NA;43;0
+"Building";"Gateway";NA;36;0
+"Building";"Gateway";NA;36;0
+"Building";"Assimilator";NA;47;0
+"Building";"Pylon";NA;48;0
+"Building";"Pylon";NA;51;0
+"Building";"Assimilator";NA;51;0
+"Unit";"Colossus";"Robotics Facility";46;6
+"Unit";"Stalker";"Gateway";61;2
+"Unit";"Stalker";"Gateway";61;2
+"Unit";"Stalker";"Gateway";61;2
+"Building";"TwilightCouncil";NA;52;0
+"Building";"Gateway";NA;52;0
+"Building";"Gateway";NA;52;0
+"Building";"Gateway";NA;52;0
+"Building";"Pylon";NA;61;0
+"Building";"Pylon";NA;68;0
+"Unit";"Stalker";"Gateway";68;2
+"Unit";"Stalker";"Gateway";68;2
+"Unit";"Stalker";"Gateway";68;2
+"Unit";"Colossus";"Robotics Facility";52;6
+"Building";"ShieldBattery";NA;68;0
+"Unit";"Stalker";"Gateway";81;2
+"Unit";"Stalker";"Gateway";81;2
+"Unit";"Stalker";"Gateway";81;2
+"Upgrade";"ExtendedThermalLance";"RoboticsBay";52;0
+"Building";"Forge";NA;68;0
+"Unit";"Stalker";"Gateway";88;2
+"Building";"Pylon";NA;88;0
+"Unit";"Colossus";"Robotics Facility";81;6
+"Unit";"Stalker";"Gateway";98;2
+"Unit";"Stalker";"Gateway";98;2
+"Unit";"Stalker";"Gateway";104;2
+"Unit";"Stalker";"Gateway";104;2
+"Unit";"Stalker";"Gateway";104;2
+"Unit";"Stalker";"Gateway";112;2
+"Unit";"Stalker";"Gateway";112;2
+"Building";"Nexus";NA;88;0
+"Building";"Pylon";NA;112;0
+"Unit";"Stalker";"Gateway";120;2
+"Unit";"Stalker";"Gateway";120;2
+"Unit";"Stalker";"Gateway";120;2
+"Building";"ShieldBattery";NA;118;0
+"Building";"Pylon";NA;127;0

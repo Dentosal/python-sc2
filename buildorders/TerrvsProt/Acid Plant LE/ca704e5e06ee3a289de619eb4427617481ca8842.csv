@@ -1,0 +1,17 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Refinery";NA;14;0
+"Building";"Barracks";NA;15;0
+"Unit";"Reaper";"Barracks";19;1
+"Unit";"Marine";"Barracks";21;1
+"Building";"Bunker";NA;21;0
+"Building";"BarracksReactor";NA;23;0
+"Building";"CommandCenter";NA;21;0
+"Building";"EngineeringBay";NA;24;0
+"Building";"Factory";NA;22;0
+"Building";"MissileTurret";NA;27;0
+"Unit";"Marine";"Barracks";27;1
+"Unit";"Marine";"Barracks";27;1
+"Building";"Refinery";NA;27;0
+"Unit";"Marine";"Barracks";31;1
+"Unit";"Marine";"Barracks";31;1
+"Building";"MissileTurret";NA;34;0

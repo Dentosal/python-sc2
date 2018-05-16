@@ -1,0 +1,16 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Refinery";NA;14;0
+"Building";"Refinery";NA;16;0
+"Building";"Barracks";NA;15;0
+"Unit";"Reaper";"Barracks";19;1
+"Building";"Factory";NA;19;0
+"Unit";"Reaper";"Barracks";20;1
+"Building";"FactoryReactor";NA;22;0
+"Unit";"Cyclone";"Factory";23;3
+"Unit";"Cyclone";"Factory";23;3
+"Building";"Factory";NA;23;0
+"Unit";"Cyclone";"Factory";31;3
+"Unit";"Cyclone";"Factory";31;3
+"Building";"CommandCenter";NA;23;0
+"Unit";"Hellion";"Factory";32;2
+"Unit";"Hellion";"Factory";39;2

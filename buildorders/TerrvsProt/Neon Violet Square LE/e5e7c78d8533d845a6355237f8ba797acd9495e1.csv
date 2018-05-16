@@ -1,0 +1,13 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Refinery";NA;14;0
+"Building";"Barracks";NA;15;0
+"Unit";"Marine";"Barracks";18;1
+"Unit";"Marine";"Barracks";19;1
+"Building";"Factory";NA;19;0
+"Unit";"Marine";"Barracks";20;1
+"Unit";"Marine";"Barracks";22;1
+"Unit";"Cyclone";"Factory";24;3
+"Unit";"Marine";"Barracks";25;1
+"Unit";"Cyclone";"Factory";32;3
+"Building";"Refinery";NA;33;0
+"Building";"BarracksReactor";NA;32;0

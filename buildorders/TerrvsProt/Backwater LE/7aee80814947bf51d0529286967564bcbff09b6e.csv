@@ -1,0 +1,17 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Refinery";NA;14;0
+"Building";"Barracks";NA;15;0
+"Building";"Barracks";NA;17;0
+"Unit";"Reaper";"Barracks";18;1
+"Building";"BarracksTechLab";NA;19;0
+"Building";"BarracksTechLab";NA;20;0
+"Unit";"Marauder";"Barracks";20;2
+"Building";"Barracks";NA;19;0
+"Unit";"Marauder";"Barracks";21;2
+"Building";"BarracksTechLab";NA;24;0
+"Unit";"Marauder";"Barracks";24;2
+"Building";"EngineeringBay";NA;26;0
+"Unit";"Marauder";"Barracks";26;2
+"Unit";"Marauder";"Barracks";28;2
+"Unit";"Marauder";"Barracks";28;2
+"Unit";"Marauder";"Barracks";29;2

@@ -1,0 +1,10 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Refinery";NA;14;0
+"Building";"Refinery";NA;15;0
+"Building";"Barracks";NA;15;0
+"Building";"GhostAcademy";NA;18;0
+"Unit";"Reaper";"Barracks";18;1
+"Building";"BarracksTechLab";NA;19;0
+"Upgrade";"PersonalCloaking";"GhostAcademy";20;0
+"Building";"Factory";NA;20;0
+"Unit";"Cyclone";"Factory";25;3

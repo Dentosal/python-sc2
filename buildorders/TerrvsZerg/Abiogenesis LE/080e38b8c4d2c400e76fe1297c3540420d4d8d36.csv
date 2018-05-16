@@ -1,0 +1,16 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Refinery";NA;14;0
+"Building";"Barracks";NA;15;0
+"Unit";"Reaper";"Barracks";19;1
+"Building";"Factory";NA;19;0
+"Building";"Refinery";NA;21;0
+"Building";"BarracksReactor";NA;20;0
+"Building";"CommandCenter";NA;19;0
+"Building";"BarracksTechLab";NA;23;0
+"Unit";"Hellion";"Factory";23;2
+"Unit";"Hellion";"Factory";23;2
+"Building";"Starport";NA;22;0
+"Unit";"Hellion";"Factory";24;2
+"Unit";"Hellion";"Factory";28;2
+"Unit";"Hellion";"Factory";34;2
+"Unit";"Hellion";"Factory";34;2

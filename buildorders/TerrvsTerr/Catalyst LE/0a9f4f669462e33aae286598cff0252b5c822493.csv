@@ -1,0 +1,17 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Refinery";NA;15;0
+"Building";"Refinery";NA;16;0
+"Building";"Barracks";NA;15;0
+"Unit";"Marine";"Barracks";18;1
+"Unit";"Marine";"Barracks";20;1
+"Building";"Factory";NA;19;0
+"Unit";"Marine";"Barracks";21;1
+"Unit";"Marine";"Barracks";24;1
+"Unit";"Cyclone";"Factory";24;3
+"Unit";"Marine";"Barracks";25;1
+"Building";"Starport";NA;25;0
+"Unit";"Cyclone";"Factory";32;3
+"Unit";"Marine";"Barracks";32;1
+"Building";"StarportTechLab";NA;32;0
+"Unit";"Marine";"Barracks";37;1
+"Building";"FusionCore";NA;32;0
