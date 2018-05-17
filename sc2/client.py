@@ -169,15 +169,16 @@ class Client(Protocol):
         ))
         return [ActionResult(p.result) for p in result.query.placements]
 
-    async def query_available_abilities(self, unit):
-        assert isinstance(unit, Unit)
+    async def query_available_abilities(self, units):
+        if not isinstance(units, list):
+            assert isinstance(units, Unit)
+            units = [units]
+        assert len(units) > 0
         result = await self._execute(query=query_pb.RequestQuery(
             abilities=[query_pb.RequestQueryAvailableAbilities(
-                unit_tag=unit.tag
-            )]
+                unit_tag=unit.tag) for unit in units]
         ))
-        return [AbilityId(a.ability_id) for a in result.query.abilities[0].abilities]
-
+        return [[AbilityId(a.ability_id) for a in b.abilities] for b in result.query.abilities]
 
     async def chat_send(self, message, team_only):
         ch = ChatChannel.Team if team_only else ChatChannel.Broadcast
