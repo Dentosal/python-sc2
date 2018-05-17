@@ -23,6 +23,7 @@ from .action import combine_actions
 from .position import Point2, Point3
 from .unit import Unit
 
+
 class Client(Protocol):
     def __init__(self, ws):
         super().__init__(ws)
@@ -225,5 +226,16 @@ class Client(Protocol):
                 owner=owner_id,
                 pos=common_pb.Point2D(x=position.x, y=position.y),
                 quantity=(amount_of_units)
+            ))]
+        ))
+    async def debug_text_simple(self, texts):
+        if not isinstance(texts, list):
+            texts = [texts]
+        await self._execute(debug=sc_pb.RequestDebug(
+            debug=[debug_pb.DebugCommand(draw=debug_pb.DebugDraw(
+                text=[debug_pb.DebugText(
+                    text=text,
+                    color=debug_pb.Color(r=1, g=1, b=1),
+                ) for text in texts]
             ))]
         ))
