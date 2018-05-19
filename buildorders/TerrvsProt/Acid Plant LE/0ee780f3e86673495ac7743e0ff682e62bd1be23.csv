@@ -1,21 +1,38 @@
-"type";"unit_name";"on_building";"total_supply";"supply"
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
 "Building";"Refinery";NA;14;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";16;1
 "Building";"Refinery";NA;16;0
+"Unit";"SCV";"Command Center";17;1
 "Building";"Barracks";NA;15;0
+"Unit";"SCV";"Command Center";19;1
 "Unit";"Marine";"Barracks";19;1
 "Unit";"Marine";"Barracks";20;1
+"Building";"SupplyDepot";NA;20;0
+"Unit";"SCV";"Command Center";21;1
 "Building";"Factory";NA;20;0
 "Unit";"Marine";"Barracks";22;1
+"Unit";"SCV";"Command Center";23;1
 "Building";"FactoryTechLab";NA;23;0
 "Unit";"Marine";"Barracks";23;1
+"Building";"SupplyDepot";NA;23;0
+"Unit";"SCV";"Command Center";25;1
 "Building";"Starport";NA;23;0
 "Unit";"Marine";"Barracks";26;1
+"Building";"SupplyDepot";NA;27;0
 "Unit";"Marine";"Barracks";27;1
 "Unit";"Medivac";"Starport";27;2
 "Unit";"Marine";"Barracks";28;1
 "Unit";"Medivac";"Starport";29;2
 "Unit";"Marine";"Barracks";31;1
 "Building";"Barracks";NA;29;0
+"Building";"SupplyDepot";NA;32;0
+"Building";"SupplyDepot";NA;32;0
 "Building";"Barracks";NA;31;0
 "Building";"BarracksTechLab";NA;35;0
 "Unit";"Marine";"Barracks";35;1
@@ -61,9 +78,12 @@
 "Unit";"Marine";"Barracks";74;1
 "Unit";"Marine";"Barracks";75;1
 "Unit";"Marine";"Barracks";77;1
+"Building";"SupplyDepot";NA;77;0
+"Building";"SupplyDepot";NA;77;0
 "Unit";"Marine";"Barracks";79;1
 "Unit";"Marine";"Barracks";80;1
 "Unit";"Marine";"Barracks";81;1
+"Unit";"SCV";"Command Center";82;1
 "Unit";"Marine";"Barracks";82;1
 "Unit";"Marine";"Barracks";83;1
 "Unit";"Marine";"Barracks";84;1

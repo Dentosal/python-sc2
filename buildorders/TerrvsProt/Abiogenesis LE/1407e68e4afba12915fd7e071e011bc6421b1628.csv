@@ -1,12 +1,26 @@
-"type";"unit_name";"on_building";"total_supply";"supply"
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";14;1
+"Building";"SupplyDepot";NA;13;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";15;1
 "Building";"Refinery";NA;15;0
+"Unit";"SCV";"Command Center";16;1
+"Unit";"SCV";"Command Center";17;1
 "Building";"Barracks";NA;15;0
 "Unit";"Reaper";"Barracks";19;1
+"Unit";"SCV";"Command Center";19;1
+"Building";"SupplyDepot";NA;19;0
 "Building";"Refinery";NA;19;0
 "Unit";"Marine";"Barracks";20;1
+"Unit";"SCV";"Command Center";21;1
+"Unit";"SCV";"Command Center";22;1
+"Unit";"SCV";"Command Center";23;1
 "Building";"CommandCenter";NA;19;0
 "Building";"Factory";NA;21;0
 "Building";"BarracksReactor";NA;23;0
+"Unit";"SCV";"Command Center";25;1
 "Building";"EngineeringBay";NA;25;0
 "Unit";"Marine";"Barracks";25;1
 "Unit";"Marine";"Barracks";25;1
@@ -19,8 +33,10 @@
 "Building";"Bunker";NA;31;0
 "Building";"MissileTurret";NA;33;0
 "Unit";"Cyclone";"Factory";33;3
+"Unit";"SCV";"Command Center";33;1
 "Unit";"Marine";"Barracks";34;1
 "Unit";"Marine";"Barracks";34;1
+"Building";"SupplyDepot";NA;38;0
 "Unit";"Marine";"Barracks";38;1
 "Unit";"Marine";"Barracks";39;1
 "Building";"MissileTurret";NA;40;0
@@ -33,6 +49,7 @@
 "Building";"Barracks";NA;42;0
 "Building";"Barracks";NA;42;0
 "Building";"FactoryTechLab";NA;47;0
+"Building";"SupplyDepot";NA;47;0
 "Unit";"Marine";"Barracks";47;1
 "Unit";"Marine";"Barracks";48;1
 "Building";"BarracksTechLab";NA;49;0

@@ -1,5 +1,13 @@
-"type";"unit_name";"on_building";"total_supply";"supply"
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";16;1
 "Building";"Barracks";NA;15;0
+"Building";"SupplyDepot";NA;18;0
 "Building";"Barracks";NA;16;0
 "Unit";"Marine";"Barracks";18;1
 "Unit";"Marine";"Barracks";18;1
@@ -14,6 +22,7 @@
 "Unit";"Marine";"Barracks";23;1
 "Unit";"Marine";"Barracks";24;1
 "Unit";"Marine";"Barracks";26;1
+"Building";"SupplyDepot";NA;24;0
 "Unit";"Marine";"Barracks";26;1
 "Building";"Barracks";NA;21;0
 "Unit";"Marine";"Barracks";26;1
@@ -21,6 +30,7 @@
 "Unit";"Marine";"Barracks";29;1
 "Building";"Barracks";NA;24;0
 "Unit";"Marine";"Barracks";29;1
+"Building";"SupplyDepot";NA;30;0
 "Unit";"Marine";"Barracks";30;1
 "Unit";"Marine";"Barracks";31;1
 "Unit";"Marine";"Barracks";31;1
@@ -28,6 +38,7 @@
 "Unit";"Marine";"Barracks";33;1
 "Unit";"Marine";"Barracks";34;1
 "Unit";"Marine";"Barracks";34;1
+"Building";"SupplyDepot";NA;36;0
 "Unit";"Marine";"Barracks";38;1
 "Unit";"Marine";"Barracks";38;1
 "Unit";"Marine";"Barracks";39;1

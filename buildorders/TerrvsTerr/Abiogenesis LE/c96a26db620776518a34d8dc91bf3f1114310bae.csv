@@ -1,4 +1,6 @@
-"type";"unit_name";"on_building";"total_supply";"supply"
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Building";"SupplyDepot";NA;12;0
+"Unit";"SCV";"Command Center";12;1
 "Building";"Barracks";NA;12;0
 "Building";"Barracks";NA;12;0
 "Unit";"Marine";"Barracks";13;1
