@@ -43,10 +43,10 @@ def main():
     
     hash = get_buildorder_hash(path_strategy, method)
 
+    print("Selected buildorder: {0}".format(hash))
+
     path = folder + hash + ending_csv
 
-
-    
 
     run_game(maps.get(map_name.replace(" ", "")), [
         Bot(self_race, bot_selector[self_race](path)),

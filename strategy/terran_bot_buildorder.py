@@ -1,22 +1,8 @@
-import sc2
-from sc2 import run_game, maps, Race, Difficulty
-from sc2.build_orders.build_order import BuildOrder, train_unit
-from sc2.build_orders.commands import construct, expand, add_supply, add_gas
-from sc2.constants import *
-from sc2.player import Bot, Computer
-from sc2.state_conditions.conditions import all_of, supply_at_least, minerals_at_least, unit_count
 
-from abc import ABCMeta, abstractmethod, abstractproperty
+from bot_ai_extended import *
 
-from strategy_util import *
+class Terran_Bot_Buildorder(Bot_AI_Extended):
 
-
-
-class Terran_Bot_Buildorder(sc2.BotAI):
-
-    # TODO
-    def get_units_attack(self):
-        self.units
 
 
     # TODO list with upgrades pending or finished
@@ -28,11 +14,7 @@ class Terran_Bot_Buildorder(sc2.BotAI):
                 #self.cloak_started = True
     '''   
 
-    def __init__(self, path):
-
-        build_order = init_build_order(path)
-        self.attack = False
-        self.build_order = BuildOrder(self, build_order, worker_count=init_worker_count)
+    
        
        
     async def on_step(self, iteration):
@@ -46,25 +28,19 @@ class Terran_Bot_Buildorder(sc2.BotAI):
         # TODO research in build order
 
         # TODO can be improved significantly --> e.g. superclass units without SCV
-        if self.units(UnitTypeId.MARINE).amount + self.units(UnitTypeId.HELLION).amount + self.units(UnitTypeId.BANSHEE).amount  >= 15 or self.attack:
+        units_military = get_units_military(self)
+
+
+
+        # TODO attack as group, or solution as in proxy_ray.py???
+        if len(units_military)  >= 5 or self.attack:
             self.attack = True
-            for unit in self.units(UnitTypeId.MARINE).idle:
+            for unit in  filter(lambda u: u.is_idle, units_military):
                 await self.do(unit.attack(self.enemy_start_locations[0]))
                 if self.known_enemy_structures.exists:
                     enemy = self.known_enemy_structures.first
                     await self.do(unit.attack(enemy.position.to2, queue=True))
-            
-            for unit in self.units(UnitTypeId.HELLION).idle:
-                await self.do(unit.attack(self.enemy_start_locations[0]))
-                if self.known_enemy_structures.exists:
-                    enemy = self.known_enemy_structures.first
-                    await self.do(unit.attack(enemy.position.to2, queue=True))
-            
-            for unit in self.units(UnitTypeId.BANSHEE).idle:
-                await self.do(unit.attack(self.enemy_start_locations[0]))
-                if self.known_enemy_structures.exists:
-                    enemy = self.known_enemy_structures.first
-                    await self.do(unit.attack(enemy.position.to2, queue=True))
+           
             return
             
 

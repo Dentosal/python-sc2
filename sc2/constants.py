@@ -38,6 +38,18 @@ folder_buildorder = os.path.dirname(ROOT_DIR) + "/buildorders/"
 file_strategy = "strategy"+ending_csv
 
 # http://liquipedia.net/starcraft2/Terran_Building_Statistics_(Legacy_of_the_Void)
+# https://liquipedia.net/starcraft2/Terran_Units_(Legacy_of_the_Void)
+# TODO also for units   
 construct_requirements = {
     UnitTypeId.STARPORT : UnitTypeId.FACTORY
+}
+
+
+terran_military_units = {
+    UnitTypeId.MARINE,
+    UnitTypeId.MARAUDER,
+    UnitTypeId.REAPER,
+    UnitTypeId.GHOST,
+    UnitTypeId.HELLION
+    #UnitTypeId.HELLBAT
 }
