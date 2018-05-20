@@ -28,7 +28,7 @@ class Command(object):
         
         if not e and not self.is_repeatable:
             self.is_done = True
-            print("Increase supply by {0} to cum supply {1}".format(self.increased_supply, bot.cum_supply))
+            #print("Increase supply by {0} to cum supply {1}".format(self.increased_supply, bot.cum_supply))
             bot.cum_supply = bot.cum_supply + self.increased_supply
             bot.build_order.worker_count = bot.build_order.worker_count + self.increase_workers
         return e
@@ -156,8 +156,19 @@ async def build_required(self, bot, command_requires):
     
     prerequires = construct_requirements[command_requires]
 
-    amount_requires = bot.units(command_requires).amount 
-    amount_prerequires = bot.units(prerequires).amount  
+    amount_requires = 0
+    amount_prerequires = 0
+
+    if command_requires in building_addons:
+        for building in bot.units(command_requires):
+            if not building.has_add_on:
+                amount_requires += 1
+        for building in bot.units(prerequires):
+            if not building.has_add_on:
+                amount_prerequires += 1
+    else:
+        amount_requires = bot.units(command_requires).amount 
+        amount_prerequires = bot.units(prerequires).amount  
 
     if amount_requires + bot.already_pending(command_requires)  > 0:
         return

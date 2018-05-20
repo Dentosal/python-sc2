@@ -24,16 +24,21 @@ class BuildOrder(object):
 
         for index, item in enumerate(self.build):
             condition, command = item
+
+            
+
             condition = item[0] if item[0] else always_true
             if condition(bot) and not command.is_done:
+
+                if  command.requires is not None: # e == ActionResult.NotSupported and
+                    await build_required(self, bot, command.requires)
+                    
+                    
                 e = await command.execute(bot)
-
-
+                
                 if command.is_done: 
                     return e
-                elif command.requires is not None: # e == ActionResult.NotSupported and
-                    await build_required(self, bot, command.requires)
-                    continue
+                
                 else:
                     # Save up to be able to do this command and hold worker creation.
                     if command.is_priority and e == ActionResult.NotEnoughMinerals:

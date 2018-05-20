@@ -8,11 +8,13 @@ import os
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-buildorder_excluded = ("SCV", "DRONE", "PROBE", "SUPPLYDEPOT", "PYLON", "OVERLORD" )
+gameloops_check_frequency = 16
 
 vespene_buildings = ("REFINERY", "ASSIMILATOR", "EXTRACTOR")
 main_buildings = ("COMMANDCENTER", "NEXUS", "HATCHERY")
 #workers = ("SCV", "DRONE", "PROBE")
+
+buildorder_excluded = ("SCV", "DRONE", "PROBE", "SUPPLYDEPOT", "PYLON", "OVERLORD" )
 
 worker_expand_increase = 16
 worker_gas_increase = 3
@@ -80,12 +82,12 @@ unit_requirements = {
     UnitTypeId.REAPER : UnitTypeId.BARRACKS,
     UnitTypeId.GHOST : UnitTypeId.BARRACKSTECHLAB,
     UnitTypeId.HELLION : UnitTypeId.FACTORY,
-    # UnitTypeId.HELLBAT : UnitTypeId.FACTORY,
+    # TODO UnitTypeId.HELLBAT : UnitTypeId.FACTORY,
     UnitTypeId.SIEGETANK : UnitTypeId.FACTORYTECHLAB,
     UnitTypeId.CYCLONE : UnitTypeId.FACTORY,
     UnitTypeId.WIDOWMINE : UnitTypeId.FACTORY,
     UnitTypeId.THOR : UnitTypeId.FACTORYTECHLAB,
-    UnitTypeId.VIKINGFIGHTER : UnitTypeId.STARPORT, # TODO Check
+    UnitTypeId.VIKINGFIGHTER : UnitTypeId.STARPORT,
     UnitTypeId.MEDIVAC : UnitTypeId.STARPORT,
     UnitTypeId.LIBERATOR : UnitTypeId.STARPORT,
     UnitTypeId.RAVEN : UnitTypeId.STARPORTTECHLAB,
@@ -115,6 +117,7 @@ terran_military_units_mineral = {
      #TODO UnitTypeId.HELLBAT
 }
 
+# note Viking == VIKINGFIGHTER
 terran_military_units_vepene = {
     UnitTypeId.MARAUDER,
     UnitTypeId.REAPER,
@@ -123,14 +126,11 @@ terran_military_units_vepene = {
     UnitTypeId.CYCLONE,
     UnitTypeId.WIDOWMINE,
     UnitTypeId.THOR,
-    
     UnitTypeId.MEDIVAC,
     UnitTypeId.LIBERATOR,
     UnitTypeId.RAVEN,
     UnitTypeId.BANSHEE,
     UnitTypeId.BATTLECRUISER,
-
-    # TODO check
     UnitTypeId.VIKINGFIGHTER
 }
 
