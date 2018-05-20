@@ -14,18 +14,16 @@ class Command(object):
 
     async def execute(self, bot):
 
-        
+        condition = unit_count_at_least(self.requires, 1, True)
+        condition_done = unit_count_at_least(self.requires, 1, False)
 
-       # if self.requires is not None:
-       #     condition = unit_count_at_least(self.requires, 1, True)
-       #     condition_done = unit_count_at_least(self.requires, 1, False)
-       #     print("Required")
-       #     if condition(bot):
-       #         print("already pending or built")
-       #         return e
-       #     else:
-       #         print("not pending")
-        
+        if  self.requires is not None and not condition:
+
+            print("Required {0} is not pending. Therefore, schedule to built it".format(self.requires))
+            await construct(self.requires)
+            # await bot.do(bot.build(self.requires))
+            
+         
         e = await self.action(bot)
         
         if not e and not self.is_repeatable:
@@ -55,6 +53,7 @@ def expand(prioritize=False, repeatable=True):
 
 def train_unit(unit, on_building, prioritize=False, repeatable=False, increased_supply = 0):
 
+   
     async def do_train(bot):
         buildings = bot.units(on_building).ready.noqueue
         if buildings.exists:
@@ -65,10 +64,11 @@ def train_unit(unit, on_building, prioritize=False, repeatable=False, increased_
                 return await bot.do(selected.train(unit))
             else:
                 return can_afford.action_result
+ 
         else:
             return ActionResult.Error
 
-    return Command(do_train, priority=prioritize, repeatable=repeatable, increased_supply= increased_supply)
+    return Command(do_train, priority=prioritize, repeatable=repeatable, increased_supply= increased_supply, requires =  unit_requirements.get(unit))
 
 
 def morph(unit, prioritize=False, repeatable=False, increased_supply = 0):

@@ -52,4 +52,6 @@
 
 - how do i build hellbat and viking
 
+- fix cum supply by 1 too low despite init at 12
+
 

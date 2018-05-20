@@ -64,21 +64,21 @@ construct_requirements = {
 # List: https://liquipedia.net/starcraft2/Terran_Units_(Legacy_of_the_Void)
 unit_requirements = {
     UnitTypeId.MARINE : UnitTypeId.BARRACKS,
-    UnitTypeId.MARAUDER : UnitTypeId.BARRACKS,
+    UnitTypeId.MARAUDER : UnitTypeId.BARRACKSTECHLAB,
     UnitTypeId.REAPER : UnitTypeId.BARRACKS,
-    UnitTypeId.GHOST : UnitTypeId.BARRACKS,
+    UnitTypeId.GHOST : UnitTypeId.BARRACKSTECHLAB,
     UnitTypeId.HELLION : UnitTypeId.FACTORY,
     # UnitTypeId.HELLBAT : UnitTypeId.FACTORY,
-    UnitTypeId.SIEGETANK : UnitTypeId.FACTORY,
+    UnitTypeId.SIEGETANK : UnitTypeId.FACTORYTECHLAB,
     UnitTypeId.CYCLONE : UnitTypeId.FACTORY,
     UnitTypeId.WIDOWMINE : UnitTypeId.FACTORY,
-    UnitTypeId.THOR : UnitTypeId.FACTORY,
+    UnitTypeId.THOR : UnitTypeId.FACTORYTECHLAB,
     UnitTypeId.VIKINGFIGHTER : UnitTypeId.STARPORT, # TODO Check
     UnitTypeId.MEDIVAC : UnitTypeId.STARPORT,
     UnitTypeId.LIBERATOR : UnitTypeId.STARPORT,
-    UnitTypeId.RAVEN : UnitTypeId.STARPORT,
-    UnitTypeId.BANSHEE : UnitTypeId.STARPORT,
-    UnitTypeId.BATTLECRUISER : UnitTypeId.STARPORT
+    UnitTypeId.RAVEN : UnitTypeId.STARPORTTECHLAB,
+    UnitTypeId.BANSHEE : UnitTypeId.STARPORTTECHLAB,
+    UnitTypeId.BATTLECRUISER : UnitTypeId.STARPORTTECHLAB
 }
 
 

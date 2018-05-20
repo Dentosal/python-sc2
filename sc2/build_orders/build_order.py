@@ -27,25 +27,20 @@ class BuildOrder(object):
                 e = await command.execute(bot)
 
 
-                if command.is_done:
+                if command.is_done: 
                     return e
-
-                elif e == ActionResult.NotSupported and command.requires is not None:
+                elif command.requires is not None: # e == ActionResult.NotSupported and
                     # required building currently constructing
                     require_condition = unit_count_at_least(command.requires, 1, True)
                     if require_condition(bot):       
                         return e
                     else:
-                        # CHECK build new building
-                        print("Build new building {0} due to requirements".format(command.requires))
-                        await construct(command.requires).execute(bot)
-                        return e
+                        if not bot.already_pending(command.requires) and bot.can_afford(command.requires):
+                            # TODO build new building
+                            print("Build new building {0} due to requirements".format(command.requires))
+                            await construct(command.requires).execute(bot)
+                            return e
                     continue
-               #     
-               #     if command.requires and not bot.already_pending(command.requires): 
-               #         print("BUILDING required")
-               #     elif command.requires and not bot.already_pending(command.requires):
-               #          print("Required BUILDING currently building")
                 else:
                     # Save up to be able to do this command and hold worker creation.
                     if command.is_priority and e == ActionResult.NotEnoughMinerals:

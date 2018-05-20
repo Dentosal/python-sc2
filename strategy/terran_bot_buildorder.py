@@ -32,7 +32,7 @@ class Terran_Bot_Buildorder(Bot_AI_Extended):
         # TODO shuffle or random order for different units
         # build units if enough resources, check every second
         if iteration % 16 == 0 and self.minerals > sufficently_enough_minerals and self.vespene > sufficently_enough_vespene:  
-            for unit in shuffle(terran_military_units_vepene):
+            for unit in terran_military_units_vepene:
                 building_required = unit_requirements[unit]
                 # find at least one idle building that can built the unit
                 for building in self.units(building_required):
