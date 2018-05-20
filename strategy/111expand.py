@@ -1,16 +1,9 @@
-import sc2
-from sc2 import run_game, maps, Race, Difficulty
-from sc2.build_orders.build_order import BuildOrder, train_unit
-from sc2.build_orders.commands import construct, expand, add_supply, add_gas
-from sc2.constants import *
-from sc2.player import Bot, Computer
-from sc2.state_conditions.conditions import all_of, supply_at_least, minerals_at_least, unit_count
+from bot_ai_extended import *
 
 
-class Strategy_111Expand(sc2.BotAI):
+class Strategy_111Expand(Bot_AI_Extended):
 
    
-
     def __init__(self):
         
         self.cloak_started = False
@@ -50,7 +43,7 @@ class Strategy_111Expand(sc2.BotAI):
          
         ]
         self.attack = False
-        self.build_order = BuildOrder(self, build_order, worker_count=21) # 20 also vespene gas, 16 only mineral, 21 as reserve for building units
+        self.build_order = BuildOrder(self, build_order, worker_count=init_worker_count)
        
         
 
@@ -72,27 +65,8 @@ class Strategy_111Expand(sc2.BotAI):
             await self.do(upgrader(RESEARCH_BANSHEECLOAKINGFIELD))
             self.cloak_started = True
 
-        # TODO can be improved significantly --> e.g. superclass units without SCV
-        if self.units(UnitTypeId.MARINE).amount + self.units(UnitTypeId.HELLION).amount + self.units(UnitTypeId.BANSHEE).amount  >= 15 or self.attack:
-            self.attack = True
-            for unit in self.units(UnitTypeId.MARINE).idle:
-                await self.do(unit.attack(self.enemy_start_locations[0]))
-                if self.known_enemy_structures.exists:
-                    enemy = self.known_enemy_structures.first
-                    await self.do(unit.attack(enemy.position.to2, queue=True))
-            
-            for unit in self.units(UnitTypeId.HELLION).idle:
-                await self.do(unit.attack(self.enemy_start_locations[0]))
-                if self.known_enemy_structures.exists:
-                    enemy = self.known_enemy_structures.first
-                    await self.do(unit.attack(enemy.position.to2, queue=True))
-            
-            for unit in self.units(UnitTypeId.BANSHEE).idle:
-                await self.do(unit.attack(self.enemy_start_locations[0]))
-                if self.known_enemy_structures.exists:
-                    enemy = self.known_enemy_structures.first
-                    await self.do(unit.attack(enemy.position.to2, queue=True))
-            return
+        if iteration % gameloops_check_frequency == 0:
+            await auto_attack(self)
             
 
 

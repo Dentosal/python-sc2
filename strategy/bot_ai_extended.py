@@ -19,14 +19,19 @@ class Bot_AI_Extended(sc2.BotAI):
         self.build_order = BuildOrder(self, build_order, worker_count=init_worker_count)
 
     
-# TODO
-def get_units_military(self):
-    units_military = []
+async def auto_attack(bot):
+    if bot.attack or len(get_units_military(bot)) >= min_units_attack:
+        bot.attack = True
+        units_military = get_units_military(bot)
+        for unit in filter(lambda u: u.is_idle, units_military):
+            await bot.do(unit.attack(bot.enemy_start_locations[0]))
+            if bot.known_enemy_structures.exists:
+                enemy = bot.known_enemy_structures.first
+                await bot.do(unit.attack(enemy.position.to2, queue=True))
+    return           
+        
+                
 
-    for unit in terran_military_units:
-        units_military = units_military + self.units(unit)
-            
-    return  units_military
 
 
 

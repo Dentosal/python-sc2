@@ -30,7 +30,7 @@ class BuildOrder(object):
             condition = item[0] if item[0] else always_true
             if condition(bot) and not command.is_done:
 
-                if  command.requires is not None: # e == ActionResult.NotSupported and
+                if command.requires is not None: # e == ActionResult.NotSupported and
                     await build_required(self, bot, command.requires)
                     
                     

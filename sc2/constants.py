@@ -8,6 +8,8 @@ import os
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
+min_units_attack = 15
+
 gameloops_check_frequency = 16
 
 vespene_buildings = ("REFINERY", "ASSIMILATOR", "EXTRACTOR")

@@ -66,19 +66,11 @@ class Terran_Bot_Buildorder(Bot_AI_Extended):
         
        
         
-        # TODO attack as group, or solution as in proxy_ray.py???
+        
         if iteration % gameloops_check_frequency == 0:
-             # TODO can be improved significantly --> e.g. superclass units without SCV
-            units_military = get_units_military(self)
-            if len(units_military)  >= 15 or self.attack:
-                self.attack = True
-                for unit in  filter(lambda u: u.is_idle, units_military):
-                    await self.do(unit.attack(self.enemy_start_locations[0]))
-                    if self.known_enemy_structures.exists:
-                        enemy = self.known_enemy_structures.first
-                        await self.do(unit.attack(enemy.position.to2, queue=True))
+             await auto_attack(self)
+             
            
-                return
             
 
 
