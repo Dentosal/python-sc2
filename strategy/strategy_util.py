@@ -8,6 +8,22 @@ from sc2.data import *
 import sc2
 from sc2 import Race
 import re
+from random import uniform
+
+def get_buildorder_hash(path_strategy, method):
+    df = pd.read_csv(path_strategy, sep=";", decimal=b',')
+
+    r = uniform(0,1)
+    #print(r)
+
+    for index, row in df.iterrows():
+        weight = row[method]
+        if weight >= r: 
+            return row["Hash"]
+
+
+
+
 
 
 def init_build_order(path):
@@ -16,12 +32,16 @@ def init_build_order(path):
     df = pd.read_csv(path, sep=";")
     #supply_previous = init_supply
     for index, row in df.iterrows():
-        supply = row['total_supply_lag']
-        type = row['type']
-        unit_building = row['on_building']
-        unit_supply = row['supply']
+        supply = row['TotalSupply']
+        type = row['Type']
+        unit_building = row['OnBuilding']
+        unit_supply = row['Supply']
    
-        unit_name = row['unit_name']
+        unit_name = row['UnitName']
+
+        # exlude automatic builded units
+        if unit_name in buildorder_excluded:
+            continue
 
         # check if its addon to a building
 

@@ -4,14 +4,20 @@ from time import gmtime, strftime
 from sc2.constants import *
 from sc2.player import Bot, Computer
 
+from strategy_util import get_buildorder_hash
+
 from zerg_bot_buildorder import Zerg_Bot_Buildorder
 from protoss_bot_buildorder import Protoss_Bot_Buildorder
 from terran_bot_buildorder import Terran_Bot_Buildorder
+import pandas as pd
+
 
 def main():
-    map_name = "Catalyst LE"
+    # CatalystLE
+    map_name = "Catalyst LE" # "Blackpink LE" #""
     self_race = Race.Terran
     enemy_race = Race.Terran
+    method = "EqualWeighted"
 
     race_to_string = {
         Race.Terran:  race_terran_string,
@@ -31,13 +37,18 @@ def main():
         Race.Protoss: Protoss_Bot_Buildorder
     }
 
-    hash = "1cc609b79314bee713eb2e3708c3ae4d2a03762c"#"90145ee27487043a70b38e4346100dd882197036"
-        
+            
     folder = folder_buildorder + self_race_string + race_bot_separator + enemy_race_string + ending_folder + map_name + ending_folder
+    path_strategy = folder + file_strategy 
+    
+    hash = get_buildorder_hash(path_strategy, method)
+
     path = folder + hash + ending_csv
 
 
-    run_game(maps.get(map_name), [
+    
+
+    run_game(maps.get(map_name.replace(" ", "")), [
         Bot(self_race, bot_selector[self_race](path)),
         Computer(enemy_race, Difficulty.Easy)
     ], realtime=False, save_replay_as= output_replay)

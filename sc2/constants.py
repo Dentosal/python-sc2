@@ -7,6 +7,9 @@ from .ids.upgrade_id import *
 import os
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+
+buildorder_excluded = ("SCV", "DRONE", "PROBE", "SUPPLYDEPOT", "PYLON", "OVERLORD" )
+
 vespene_buildings = ("REFINERY", "ASSIMILATOR", "EXTRACTOR")
 main_buildings = ("COMMANDCENTER", "NEXUS", "HATCHERY")
 #workers = ("SCV", "DRONE", "PROBE")
@@ -32,7 +35,7 @@ race_zerg_string = "Zerg"
 race_bot_separator = "vs"
 
 folder_buildorder = os.path.dirname(ROOT_DIR) + "/buildorders/"
-
+file_strategy = "strategy"+ending_csv
 
 # http://liquipedia.net/starcraft2/Terran_Building_Statistics_(Legacy_of_the_Void)
 construct_requirements = {
