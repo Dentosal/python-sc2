@@ -156,12 +156,14 @@ async def build_required(self, bot, command_requires):
     
     prerequires = construct_requirements[command_requires]
 
-    amount_requires = bot.units(command_requires).amount + bot.already_pending(command_requires) 
-    amount_prerequires = bot.units(prerequires).amount + bot.already_pending(prerequires)
+    amount_requires = bot.units(command_requires).amount 
+    amount_prerequires = bot.units(prerequires).amount  
 
-    if amount_prerequires == 0:
+    if amount_requires + bot.already_pending(command_requires)  > 0:
+        return
+    elif amount_prerequires + bot.already_pending(prerequires) == 0:
         await build_required(self, bot, prerequires)
-    elif  bot.can_afford(command_requires): #amount_requires == 0 and
+    elif amount_requires == 0 and amount_prerequires >= 1 and bot.can_afford(command_requires): 
         print("Build new building {0} due to requirements".format(command_requires))
         if command_requires in building_addons:
             await train_unit(command_requires, prerequires).execute(bot)

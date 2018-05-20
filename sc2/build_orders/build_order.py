@@ -32,20 +32,7 @@ class BuildOrder(object):
                 if command.is_done: 
                     return e
                 elif command.requires is not None: # e == ActionResult.NotSupported and
-                    # required building currently constructing
-                    require_condition = unit_count_at_least(command.requires, 1, True)
-                    if require_condition(bot):       
-                        continue
-                        #return e
-                    else:
-                        if not bot.already_pending(command.requires) and bot.can_afford(command.requires):
-                            
-                            await build_required(self, bot, command.requires)
-
-                            # TODO build new building
-                            #print("Build new building {0} due to requirements".format(command.requires))
-                            #return await construct(command.requires).execute(bot)
-                            #return e
+                    await build_required(self, bot, command.requires)
                     continue
                 else:
                     # Save up to be able to do this command and hold worker creation.
