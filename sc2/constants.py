@@ -39,17 +39,87 @@ file_strategy = "strategy"+ending_csv
 
 # http://liquipedia.net/starcraft2/Terran_Building_Statistics_(Legacy_of_the_Void)
 # https://liquipedia.net/starcraft2/Terran_Units_(Legacy_of_the_Void)
-# TODO also for units   
 construct_requirements = {
-    UnitTypeId.STARPORT : UnitTypeId.FACTORY
+    UnitTypeId.BARRACKS : UnitTypeId.SUPPLYDEPOT,
+    UnitTypeId.ORBITALCOMMAND : UnitTypeId.BARRACKS,
+    UnitTypeId.FACTORY : UnitTypeId.BARRACKS,
+    UnitTypeId.GHOSTACADEMY : UnitTypeId.BARRACKS,
+    UnitTypeId.BUNKER : UnitTypeId.BARRACKS,
+    UnitTypeId.STARPORT : UnitTypeId.FACTORY,
+    UnitTypeId.ARMORY : UnitTypeId.FACTORY,
+    UnitTypeId.FUSIONCORE : UnitTypeId.STARPORT,
+    UnitTypeId.PLANETARYFORTRESS : UnitTypeId.ENGINEERINGBAY,
+    UnitTypeId.SENSORTOWER : UnitTypeId.ENGINEERINGBAY,
+    UnitTypeId.MISSILETURRET : UnitTypeId.ENGINEERINGBAY,
+    UnitTypeId.STARPORTREACTOR :  UnitTypeId.STARPORT,
+    UnitTypeId.STARPORTTECHLAB :  UnitTypeId.STARPORT,
+    UnitTypeId.BARRACKSREACTOR:  UnitTypeId.BARRACKS,
+    UnitTypeId.BARRACKSTECHLAB :  UnitTypeId.BARRACKS,
+    UnitTypeId.FACTORYREACTOR:  UnitTypeId.FACTORY,
+    UnitTypeId.FACTORYTECHLAB :  UnitTypeId.FACTORY
 }
 
 
-terran_military_units = {
+
+# List: https://liquipedia.net/starcraft2/Terran_Units_(Legacy_of_the_Void)
+unit_requirements = {
+    UnitTypeId.MARINE : UnitTypeId.BARRACKS,
+    UnitTypeId.MARAUDER : UnitTypeId.BARRACKS,
+    UnitTypeId.REAPER : UnitTypeId.BARRACKS,
+    UnitTypeId.GHOST : UnitTypeId.BARRACKS,
+    UnitTypeId.HELLION : UnitTypeId.FACTORY,
+    # UnitTypeId.HELLBAT : UnitTypeId.FACTORY,
+    UnitTypeId.SIEGETANK : UnitTypeId.FACTORY,
+    UnitTypeId.CYCLONE : UnitTypeId.FACTORY,
+    UnitTypeId.WIDOWMINE : UnitTypeId.FACTORY,
+    UnitTypeId.THOR : UnitTypeId.FACTORY,
+    UnitTypeId.VIKINGFIGHTER : UnitTypeId.STARPORT, # TODO Check
+    UnitTypeId.MEDIVAC : UnitTypeId.STARPORT,
+    UnitTypeId.LIBERATOR : UnitTypeId.STARPORT,
+    UnitTypeId.RAVEN : UnitTypeId.STARPORT,
+    UnitTypeId.BANSHEE : UnitTypeId.STARPORT,
+    UnitTypeId.BATTLECRUISER : UnitTypeId.STARPORT
+}
+
+
+# TODO reason why theses (fuzzy) limits
+# for units
+sufficently_enough_minerals = 800 # i.e. 2 times Battlecruiser or commandcenter
+sufficently_enough_vespene = 600 # i.e. 2 times Battlecruiser
+
+#for buildings
+sufficently_much_minerals = sufficently_enough_minerals + 400 # i.e. 3 times commandcenter
+sufficently_much_vespene = sufficently_enough_vespene + 150 # additional Planetary Fortress
+
+terran_military_buildings = {
+   UnitTypeId.STARPORT,
+   UnitTypeId.FACTORY,
+   UnitTypeId.BARRACKS
+}
+
+terran_military_units_mineral = {
     UnitTypeId.MARINE,
+    UnitTypeId.HELLION
+     #TODO UnitTypeId.HELLBAT
+}
+
+terran_military_units_vepene = {
     UnitTypeId.MARAUDER,
     UnitTypeId.REAPER,
     UnitTypeId.GHOST,
-    UnitTypeId.HELLION
-    #UnitTypeId.HELLBAT
+    UnitTypeId.SIEGETANK,
+    UnitTypeId.CYCLONE,
+    UnitTypeId.WIDOWMINE,
+    UnitTypeId.THOR,
+    
+    UnitTypeId.MEDIVAC,
+    UnitTypeId.LIBERATOR,
+    UnitTypeId.RAVEN,
+    UnitTypeId.BANSHEE,
+    UnitTypeId.BATTLECRUISER,
+
+    # TODO check
+    UnitTypeId.VIKINGFIGHTER
 }
+
+terran_military_units =  terran_military_units_mineral.union(terran_military_units_vepene)

@@ -48,9 +48,8 @@
 
 - if under attack --> defend with all units except workers (inc. MULE)
 
+- units requirements in buildorder
 
+- how do i build hellbat and viking
 
-# Think its done
-
-- increase workers after expand()
 

@@ -1,7 +1,7 @@
 import sc2
 from sc2 import run_game, maps, Race, Difficulty
 from sc2.build_orders.build_order import BuildOrder, train_unit
-from sc2.build_orders.commands import construct, expand, add_supply, add_gas
+from sc2.build_orders.commands import construct, expand, add_supply, add_gas, train_unit
 from sc2.constants import *
 from sc2.player import Bot, Computer
 from sc2.state_conditions.conditions import all_of, supply_at_least, minerals_at_least, unit_count

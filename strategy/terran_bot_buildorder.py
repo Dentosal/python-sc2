@@ -1,4 +1,3 @@
-
 from bot_ai_extended import *
 
 class Terran_Bot_Buildorder(Bot_AI_Extended):
@@ -30,7 +29,39 @@ class Terran_Bot_Buildorder(Bot_AI_Extended):
         # TODO can be improved significantly --> e.g. superclass units without SCV
         units_military = get_units_military(self)
 
+        # TODO shuffle or random order for different units
+        # build units if enough resources, check every second
+        if iteration % 16 == 0 and self.minerals > sufficently_enough_minerals and self.vespene > sufficently_enough_vespene:  
+            for unit in shuffle(terran_military_units_vepene):
+                building_required = unit_requirements[unit]
+                # find at least one idle building that can built the unit
+                for building in self.units(building_required):
+                    if building.noqueue and building.is_idle:
+                            print("Train unit {0} due to surplus of resources".format(unit))
+                            self.cum_supply = self.cum_supply + 1
+                            await self.do(building.train(unit))
 
+                            #await train_unit(unit, building_required, 1).execute(self) # increase only by one in order not to miss up the build order
+
+
+        # build units if enough resources, check every second
+        if iteration % 16 == 0 and self.minerals > sufficently_enough_minerals and self.vespene < sufficently_enough_vespene:  
+            for unit in terran_military_units_mineral: # shuffle(terran_military_units_mineral):
+                building_required = unit_requirements[unit]
+                # find at least one idle building that can built the unit
+                for building in self.units(building_required):
+                    if building.noqueue and building.is_idle:
+                            print("Train unit {0} due to surplus of minerals".format(unit))
+                            self.cum_supply = self.cum_supply + 1
+                            await self.do(building.train(unit))
+                           # await train_unit(unit, building_required, 1).execute(self) # increase only by one in order not to miss up the build order
+
+        # if much --> build new terran_military_buildings
+        if iteration % 16 == 0 and self.minerals > sufficently_much_minerals and self.vespene > sufficently_much_vespene:  
+            for building in terran_military_buildings:
+                print("Build {0} due to a large surplus of resources".format(building))
+                self.cum_supply = self.cum_supply + 2 # in case of stopped build order
+                await self.do(self.build(building))
 
         # TODO attack as group, or solution as in proxy_ray.py???
         if len(units_military)  >= 5 or self.attack:
