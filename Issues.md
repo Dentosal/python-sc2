@@ -11,18 +11,13 @@
 - auto rename+export replays p1vsp2-time.SC2Replay
 
 
-- export x,y coordinate to hash.csv and use info for placement?
-  - problem: what if different start position
-
 - do multiple commands in parallel if enough minerals/gas
 
-- add total supply, in case of dying units
 
-- rebuild dying unit/building
 
-- build random units after finishing build order
 
-- attack after reaching end of build order
+
+
 
 - Research in build order --> using train_unit
 	- check
@@ -46,14 +41,17 @@
   - not all upgrades have buildings
   - maybe export requires
 
-- if under attack --> defend with all units except workers (inc. MULE)
+- if under attack --> defend with all military units 
 
-- units requirements in buildorder
-
-- how do i build hellbat and viking
+- how do i build hellbat
 
 - fix cum supply by 1 too low despite init at 12
 
-- execzting multiple build order items in parallel
+- executing multiple build order items in parallel
 
 
+# Things that could work
+
+- rebuild dying unit/building
+- build random units after finishing build order <-- via sufficently enough resources
+- attack after reaching end of build order
