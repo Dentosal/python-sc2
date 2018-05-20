@@ -1,5 +1,5 @@
 from sc2 import Race, race_worker, ActionResult, race_townhalls
-from sc2.build_orders.commands import add_supply, morph, train_unit, construct
+from sc2.build_orders.commands import *
 from sc2.state_conditions.conditions import always_true, unit_count_at_least
 from sc2.constants import *
 
@@ -10,6 +10,8 @@ class BuildOrder(object):
         self.worker_count = worker_count
         self.auto_add_supply = auto_add_supply
         self.bot.cum_supply = init_supply
+     
+    
         
 
     async def execute_build(self):
@@ -33,13 +35,17 @@ class BuildOrder(object):
                     # required building currently constructing
                     require_condition = unit_count_at_least(command.requires, 1, True)
                     if require_condition(bot):       
-                        return e
+                        continue
+                        #return e
                     else:
                         if not bot.already_pending(command.requires) and bot.can_afford(command.requires):
+                            
+                            await build_required(self, bot, command.requires)
+
                             # TODO build new building
-                            print("Build new building {0} due to requirements".format(command.requires))
-                            await construct(command.requires).execute(bot)
-                            return e
+                            #print("Build new building {0} due to requirements".format(command.requires))
+                            #return await construct(command.requires).execute(bot)
+                            #return e
                     continue
                 else:
                     # Save up to be able to do this command and hold worker creation.

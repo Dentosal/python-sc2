@@ -54,4 +54,6 @@
 
 - fix cum supply by 1 too low despite init at 12
 
+- execzting multiple build order items in parallel
+
 

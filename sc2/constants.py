@@ -56,9 +56,21 @@ construct_requirements = {
     UnitTypeId.BARRACKSREACTOR:  UnitTypeId.BARRACKS,
     UnitTypeId.BARRACKSTECHLAB :  UnitTypeId.BARRACKS,
     UnitTypeId.FACTORYREACTOR:  UnitTypeId.FACTORY,
-    UnitTypeId.FACTORYTECHLAB :  UnitTypeId.FACTORY
+    UnitTypeId.FACTORYTECHLAB :  UnitTypeId.FACTORY,
+    UnitTypeId.SUPPLYDEPOT : None,
+    UnitTypeId.COMMANDCENTER : None,
+    UnitTypeId.REFINERY : None
 }
 
+
+building_addons = {
+    UnitTypeId.STARPORTREACTOR,
+    UnitTypeId.STARPORTTECHLAB,
+    UnitTypeId.BARRACKSREACTOR,
+    UnitTypeId.BARRACKSTECHLAB,
+    UnitTypeId.FACTORYREACTOR,
+    UnitTypeId.FACTORYTECHLAB
+}
 
 
 # List: https://liquipedia.net/starcraft2/Terran_Units_(Legacy_of_the_Void)

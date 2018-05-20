@@ -17,10 +17,10 @@ class Command(object):
         condition = unit_count_at_least(self.requires, 1, True)
         condition_done = unit_count_at_least(self.requires, 1, False)
 
-        if  self.requires is not None and not condition:
+        #if  self.requires is not None and not condition:
 
-            print("Required {0} is not pending. Therefore, schedule to built it".format(self.requires))
-            await construct(self.requires)
+        #    print("Required {0} is not pending. Therefore, schedule to built it".format(self.requires))
+        #    await construct(self.requires)
             # await bot.do(bot.build(self.requires))
             
          
@@ -141,3 +141,29 @@ def add_gas(prioritize=True, repeatable=False):
         return ActionResult.Error
 
     return Command(do_add_gas, priority=prioritize, repeatable=repeatable, increase_workers=worker_gas_increase)
+
+
+
+async def build_required(self, bot, command_requires):
+    """Builds required building"""
+
+    if command_requires is None:
+        return
+      
+    
+    #if not unit_count_at_least(command_requires, 1, True):
+    #   await build_required(self, bot, construct_requirements[command_requires])
+    
+    prerequires = construct_requirements[command_requires]
+
+    amount_requires = bot.units(command_requires).amount + bot.already_pending(command_requires) 
+    amount_prerequires = bot.units(prerequires).amount + bot.already_pending(prerequires)
+
+    if amount_prerequires == 0:
+        await build_required(self, bot, prerequires)
+    elif  bot.can_afford(command_requires): #amount_requires == 0 and
+        print("Build new building {0} due to requirements".format(command_requires))
+        if command_requires in building_addons:
+            await train_unit(command_requires, prerequires).execute(bot)
+        else:
+            await construct(command_requires).execute(bot)
