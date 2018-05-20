@@ -35,6 +35,8 @@ from .ids.ability_id import (
     TRAINWARP_ADEPT
 )
 
+CreateGameError = enum.Enum("CreateGameError", sc_pb.ResponseCreateGame.Error.items())
+
 PlayerType = enum.Enum("PlayerType", sc_pb.PlayerType.items())
 Difficulty = enum.Enum("Difficulty", sc_pb.Difficulty.items())
 Status = enum.Enum("Status", sc_pb.Status.items())
