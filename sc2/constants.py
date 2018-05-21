@@ -98,6 +98,8 @@ unit_requirements = {
 }
 
 
+build_progress_completed = 1
+
 # TODO reason why theses (fuzzy) limits
 # for units
 sufficently_enough_minerals = 800 # i.e. 2 times Battlecruiser or commandcenter

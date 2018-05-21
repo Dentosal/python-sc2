@@ -10,6 +10,30 @@ from sc2 import Race
 import re
 from random import uniform, randrange
 
+from math import isclose
+
+
+def can_build(building, unit):
+    return isclose(building.build_progress, build_progress_completed) and not building.is_enemy and building.noqueue and building.is_idle
+
+# TODO check
+def count_units(bot, unit, exclude_pending, exclude_enemy = True):
+
+    count = 0
+    for u in bot.units(unit):
+
+        if exclude_enemy and u.is_enemy:
+            continue
+
+        if not exclude_pending:
+            count += 1
+        else:
+            if isclose(u.build_progress, build_progress_completed):
+                count += 1
+
+    return count
+    
+
 
 def get_random_building_location(bot):
     return bot.townhalls.random.position.towards(bot.game_info.map_center, randrange(5, 20)).random_on_distance(randrange(5, 12))

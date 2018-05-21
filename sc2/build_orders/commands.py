@@ -144,6 +144,8 @@ def add_gas(prioritize=True, repeatable=False):
 
 
 
+
+
 async def build_required(self, bot, command_requires):
     """Builds required building"""
 
@@ -155,6 +157,8 @@ async def build_required(self, bot, command_requires):
     #   await build_required(self, bot, construct_requirements[command_requires])
     
     prerequires = construct_requirements[command_requires]
+
+    # TODO count units properly as in count_unit
 
     amount_requires = 0
     amount_prerequires = 0

@@ -41,13 +41,17 @@
   - not all upgrades have buildings
   - maybe export requires
 
-- if under attack --> defend with all military units 
+-  todo auto defend: if under attack --> defend with all military units  <- already in auto_attack?
 
 - how do i build hellbat
 
 - fix cum supply by 1 too low despite init at 12
 
 - executing multiple build order items in parallel
+
+- minimum distance between buildings --> addons must have space --> round + placement steps?
+
+
 
 
 # Things that could work

@@ -7,7 +7,7 @@ from sc2.player import Bot, Computer
 from sc2.state_conditions.conditions import all_of, supply_at_least, minerals_at_least, unit_count
 from bot_ai_extended import *
 
-class Strategy_Test(sc2.BotAI):
+class Strategy_Test(Bot_AI_Extended):
     """Only for testing purposes"""
    
     def __init__(self):
@@ -26,12 +26,7 @@ class Strategy_Test(sc2.BotAI):
        
       
 
-    async def on_step(self, iteration):
-        await self.distribute_workers()
-        await self.build_order.execute_build()
 
-        if iteration % gameloops_check_frequency*2 == 0: 
-            await auto_build(self)
         
             
 
