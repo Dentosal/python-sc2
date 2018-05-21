@@ -8,17 +8,22 @@ from sc2.data import *
 import sc2
 from sc2 import Race
 import re
-from random import uniform
+from random import uniform, randrange
+
+
+def get_random_building_location(bot):
+    return bot.townhalls.random.position.towards(bot.game_info.map_center, randrange(5, 20)).random_on_distance(randrange(5, 12))
+
 
 # TODO attack as group, or solution as in proxy_ray.py???
 # TODO for other races
 # TODO couldnt it be improved by adding new units automatically
 # TODO can be improved significantly --> e.g. superclass units without SCV
-def get_units_military(self):
+def get_units_military(bot):
     units_military = []
 
     for unit in terran_military_units:
-        units_military = units_military + self.units(unit)
+        units_military = units_military + bot.units(unit)
             
     return  units_military
 

@@ -113,11 +113,15 @@ terran_military_buildings = {
    UnitTypeId.BARRACKS
 }
 
+terran_military_buildings_sample = len(terran_military_buildings)
+
 terran_military_units_mineral = {
     UnitTypeId.MARINE,
     UnitTypeId.HELLION
      #TODO UnitTypeId.HELLBAT
 }
+
+terran_military_units_mineral_sample = len(terran_military_units_mineral)
 
 # note Viking == VIKINGFIGHTER
 terran_military_units_vepene = {
@@ -135,5 +139,7 @@ terran_military_units_vepene = {
     UnitTypeId.BATTLECRUISER,
     UnitTypeId.VIKINGFIGHTER
 }
+
+terran_military_units_vepene_sample = terran_military_buildings_sample + terran_military_units_mineral_sample
 
 terran_military_units =  terran_military_units_mineral.union(terran_military_units_vepene)
