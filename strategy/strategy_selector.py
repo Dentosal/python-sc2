@@ -47,7 +47,7 @@ def main():
 
     path = folder + hash + ending_csv
 
-
+    # mehrcriterellas clustering
     run_game(maps.get(map_name.replace(" ", "")), [
         Bot(self_race, bot_selector[self_race](path)),
         Computer(enemy_race, Difficulty.Easy)
