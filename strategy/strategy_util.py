@@ -1,6 +1,6 @@
 import csv
 import pandas as pd
-from sc2.build_orders.build_order import train_unit
+from sc2.build_orders.build_order import *
 from sc2.state_conditions.conditions import  supply_at_least, cum_supply_at_least, all_of, unit_count_at_least
 from sc2.build_orders.commands import construct, expand, add_supply, add_gas
 from sc2.constants import *
@@ -14,6 +14,7 @@ from math import isclose
 
 
 def can_build(building, unit):
+    # TODO check if unit requires addon
     return isclose(building.build_progress, build_progress_completed) and not building.is_enemy and building.noqueue and building.is_idle
 
 # TODO check

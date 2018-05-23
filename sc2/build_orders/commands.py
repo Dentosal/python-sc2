@@ -1,6 +1,7 @@
 from sc2 import ActionResult, Race
 from sc2.constants import *
 from sc2.state_conditions.conditions import  unit_count_at_least
+#from strategy_util import *
 
 class Command(object):
     def __init__(self, action, repeatable=False, priority=False, increase_workers = 0, increased_supply = 0, requires = None):
@@ -146,41 +147,57 @@ def add_gas(prioritize=True, repeatable=False):
 
 
 
-async def build_required(self, bot, command_requires):
+async def build_required(self, bot, required):
     """Builds required building"""
 
     if command_requires is None:
         return
       
     
+    
+
     #if not unit_count_at_least(command_requires, 1, True):
     #   await build_required(self, bot, construct_requirements[command_requires])
     
-    prerequires = construct_requirements[command_requires]
+    prerequired = construct_requirements[required]
 
+
+    if required in building_addons:
+        pass
+
+    if bot.units.owned(prerequired):
+        pass
+
+    
+
+
+
+
+    # deprecated
     # TODO count units properly as in count_unit
-
     amount_requires = 0
     amount_prerequires = 0
 
-    if command_requires in building_addons:
-        for building in bot.units(command_requires):
-            if not building.has_add_on:
-                amount_requires += 1
-        for building in bot.units(prerequires):
-            if not building.has_add_on:
-                amount_prerequires += 1
-    else:
-        amount_requires = bot.units(command_requires).amount 
-        amount_prerequires = bot.units(prerequires).amount  
-
-    if amount_requires + bot.already_pending(command_requires)  > 0:
-        return
-    elif amount_prerequires + bot.already_pending(prerequires) == 0:
-        await build_required(self, bot, prerequires)
-    elif amount_requires == 0 and amount_prerequires >= 1 and bot.can_afford(command_requires): 
-        print("Build new building {0} due to requirements".format(command_requires))
+    if False:
+        prerequires = prerequired
         if command_requires in building_addons:
-            await train_unit(command_requires, prerequires).execute(bot)
+            for building in bot.units(command_requires):
+                if not building.has_add_on:
+                    amount_requires += 1
+            for building in bot.units(prerequires):
+                if not building.has_add_on:
+                    amount_prerequires += 1
         else:
-            await construct(command_requires).execute(bot)
+            amount_requires = bot.units(command_requires).amount 
+            amount_prerequires = bot.units(prerequires).amount  
+
+        if amount_requires + bot.already_pending(command_requires)  > 0:
+            return
+        elif amount_prerequires + bot.already_pending(prerequires) == 0:
+            await build_required(self, bot, prerequires)
+        elif amount_requires == 0 and amount_prerequires >= 1 and bot.can_afford(command_requires): 
+            print("Build new building {0} due to requirements".format(command_requires))
+            if command_requires in building_addons:
+                await train_unit(command_requires, prerequires).execute(bot)
+            else:
+                await construct(command_requires).execute(bot)

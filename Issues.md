@@ -51,7 +51,7 @@
 
 - minimum distance between buildings --> addons must have space --> round + placement steps?
 
-
+- fix build_required with can_builds
 
 
 # Things that could work
