@@ -279,16 +279,27 @@ class BotAI(object):
         # TODO / FIXME: SCV building a structure might be counted as two units
 
         ability = self._game_data.units[unit_type.value].creation_ability
+        
+        # TODO check if branch already-pending-enhancement works
+        if self.units(unit_type).not_ready.exists:
+            return len(self.units(unit_type).not_ready)
+        elif any(o.ability == ability for w in self.workers for o in w.orders):
+            return sum([o.ability == ability for w in self.workers for o in w.orders])
+        elif any(egg.orders[0].ability == ability for egg in self.units(EGG)):
+            return sum([egg.orders[0].ability == ability for egg in self.units(EGG)])
+        return 0
 
-        amount = len(self.units(unit_type).not_ready)
+        # old code
+        #amount = len(self.units(unit_type).not_ready)
 
-        if all_units:
-            amount += sum([o.ability == ability for u in self.units for o in u.orders])
-        else:
-            amount += sum([o.ability == ability for w in self.workers for o in w.orders])
-            amount += sum([egg.orders[0].ability == ability for egg in self.units(EGG)])
+        #if all_units:
+        #    amount += sum([o.ability == ability for u in self.units for o in u.orders])
+        #else:
+        #    amount += sum([o.ability == ability for w in self.workers for o in w.orders])
+        #    amount += sum([egg.orders[0].ability == ability for egg in self.units(EGG)])
 
-        return amount
+        #return amount
+
 
     async def build(self, building, near, max_distance=20, unit=None, random_alternative=True, placement_step=2):
         """Build a building."""
