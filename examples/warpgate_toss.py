@@ -12,10 +12,18 @@ class WarpGateBot(sc2.BotAI):
         self.proxy_built = False
 
     def select_target(self, state):
+        if self.known_enemy_structures.exists:
+            return random.choice(self.known_enemy_structures)
+
         return self.enemy_start_locations[0]
 
+ 
+
     async def on_step(self, iteration):
+        if iteration == 0:
+            await self.chat_send("(glhf)")
         await self.distribute_workers()
+
 
         if not self.units(NEXUS).ready.exists:
             for worker in self.workers:
@@ -24,19 +32,34 @@ class WarpGateBot(sc2.BotAI):
         else:
             nexus = self.units(NEXUS).ready.random
 
+        for idle_worker in self.workers.idle:
+            mf = self.state.mineral_field.closest_to(idle_worker)
+            await self.do(idle_worker.gather(mf))
+
+
+        for a in self.units(ASSIMILATOR):
+            if a.assigned_harvesters < a.ideal_harvesters:
+                w = self.workers.closer_than(20, a)
+                if w.exists:
+                    await self.do(w.random.gather(a))
+
         if self.supply_left < 2 and not self.already_pending(PYLON):
             if self.can_afford(PYLON):
                 await self.build(PYLON, near=nexus)
             return
 
-        if self.workers.amount < self.units(NEXUS).amount*22 and nexus.noqueue:
+        if self.workers.amount < self.units(NEXUS).amount*15 and nexus.noqueue: # before merge 22 instead of 15
             if self.can_afford(PROBE):
                 await self.do(nexus.train(PROBE))
 
-        elif self.units(PYLON).amount < 5 and not self.already_pending(PYLON):
+        elif not self.units(PYLON).amount < 5 and not self.already_pending(PYLON):
             if self.can_afford(PYLON):
-                await self.build(PYLON, near=nexus.position.towards(self.game_info.map_center, 5))
+                await self.build(PYLON, near=nexus)
 
+        if self.units(NEXUS).amount < 3 and not self.already_pending(NEXUS):
+            if self.can_afford(NEXUS):
+                location = await self.get_next_expansion()
+                await self.build(NEXUS, near=location)
 
         if self.units(PYLON).ready.exists:
             proxy = self.units(PYLON).closest_to(self.enemy_start_locations[0])
@@ -45,13 +68,14 @@ class WarpGateBot(sc2.BotAI):
                 if not self.units(CYBERNETICSCORE).exists:
                     if self.can_afford(CYBERNETICSCORE) and not self.already_pending(CYBERNETICSCORE):
                         await self.build(CYBERNETICSCORE, near=pylon)
-            if self.can_afford(GATEWAY) and self.units(WARPGATE).amount < 4 and self.units(GATEWAY).amount < 4:
-                await self.build(GATEWAY, near=pylon)
+            else:
+                if self.can_afford(GATEWAY) and self.units(GATEWAY).amount < 4:
+                    await self.build(GATEWAY, near=pylon)
 
         for nexus in self.units(NEXUS).ready:
             vgs = self.state.vespene_geyser.closer_than(20.0, nexus)
             for vg in vgs:
-                if not self.can_afford(ASSIMILATOR):
+                if not self.can_afford(ASSIMILATOR) or self.units(ASSIMILATOR).ready.exists:
                     break
 
                 worker = self.select_build_worker(vg.position)
@@ -71,38 +95,55 @@ class WarpGateBot(sc2.BotAI):
             if AbilityId.MORPH_WARPGATE in abilities and self.can_afford(AbilityId.MORPH_WARPGATE):
                 await self.do(gateway(MORPH_WARPGATE))
 
-        if self.proxy_built:
-            for warpgate in self.units(WARPGATE).ready:
-                abilities = await self.get_available_abilities(warpgate)
-                # all the units have the same cooldown anyway so let's just look at ZEALOT
-                if AbilityId.WARPGATETRAIN_ZEALOT in abilities:
-                    placement = await self.find_placement(AbilityId.WARPGATETRAIN_STALKER, proxy.position.to2, placement_step=1)
-                    if placement is None:
-                        #return ActionResult.CantFindPlacementLocation
-                        print("can't place")
-                        break
-                    await self.do(warpgate.warp_in(STALKER, placement))
+        for warpgate in self.units(WARPGATE).ready:
+            abilities = await self.get_available_abilities(warpgate)
+            # all the units have the same cooldown anyway so let's just look at ZEALOT
+            if AbilityId.TRAINWARP_ZEALOT in abilities:
+                placement = await self.find_placement(AbilityId.TRAINWARP_STALKER, warpgate.position.to2, placement_step=1)
+                if placement is None:
+                    #return ActionResult.CantFindPlacementLocation
+                    print("can't place")
+                    break
+                await self.do(warpgate.warp_in(STALKER, placement))
 
-        if self.units(STALKER).amount > 3:
+        if self.units(STALKER).amount > 10 and iteration % 50 == 0:
             for vr in self.units(STALKER).idle:
                 await self.do(vr.attack(self.select_target(self.state)))
 
-        if self.units(CYBERNETICSCORE).amount >= 1 and not self.proxy_built and self.can_afford(PYLON):
-            p = self.game_info.map_center.towards(self.enemy_start_locations[0], 20)
-            await self.build(PYLON, near=p)
-            self.proxy_built = True
+        if False: # old code from merge conflict
+            if self.proxy_built:
+                for warpgate in self.units(WARPGATE).ready:
+                    abilities = await self.get_available_abilities(warpgate)
+                    # all the units have the same cooldown anyway so let's just look at ZEALOT
+                    if AbilityId.WARPGATETRAIN_ZEALOT in abilities:
+                        placement = await self.find_placement(AbilityId.WARPGATETRAIN_STALKER, proxy.position.to2, placement_step=1)
+                        if placement is None:
+                            #return ActionResult.CantFindPlacementLocation
+                            print("can't place")
+                            break
+                        await self.do(warpgate.warp_in(STALKER, placement))
 
-        if not self.units(CYBERNETICSCORE).ready.exists:
-            if not nexus.has_buff(BuffId.CHRONOBOOSTENERGYCOST):
-                abilities = await self.get_available_abilities(nexus)
-                if AbilityId.EFFECT_CHRONOBOOSTENERGYCOST in abilities:
-                    await self.do(nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, nexus))
-        else:
-            ccore = self.units(CYBERNETICSCORE).ready.first
-            if not ccore.has_buff(BuffId.CHRONOBOOSTENERGYCOST):
-                abilities = await self.get_available_abilities(nexus)
-                if AbilityId.EFFECT_CHRONOBOOSTENERGYCOST in abilities:
-                    await self.do(nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, ccore))
+            if self.units(STALKER).amount > 3:
+                for vr in self.units(STALKER).idle:
+                    await self.do(vr.attack(self.select_target(self.state)))
+
+            if self.units(CYBERNETICSCORE).amount >= 1 and not self.proxy_built and self.can_afford(PYLON):
+                p = self.game_info.map_center.towards(self.enemy_start_locations[0], 20)
+                await self.build(PYLON, near=p)
+                self.proxy_built = True
+
+            if not self.units(CYBERNETICSCORE).ready.exists:
+                if not nexus.has_buff(BuffId.CHRONOBOOSTENERGYCOST):
+                    abilities = await self.get_available_abilities(nexus)
+                    if AbilityId.EFFECT_CHRONOBOOSTENERGYCOST in abilities:
+                        await self.do(nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, nexus))
+            else:
+                ccore = self.units(CYBERNETICSCORE).ready.first
+                if not ccore.has_buff(BuffId.CHRONOBOOSTENERGYCOST):
+                    abilities = await self.get_available_abilities(nexus)
+                    if AbilityId.EFFECT_CHRONOBOOSTENERGYCOST in abilities:
+                        await self.do(nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, ccore))
+
 
 
 def main():
