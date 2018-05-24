@@ -1,0 +1,19 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Building";"SupplyDepot";NA;12;0
+"Unit";"SCV";"Command Center";12;1
+"Building";"Refinery";NA;14;0
+"Building";"Refinery";NA;14;0
+"Unit";"SCV";"Command Center";14;1
+"Building";"Barracks";NA;13;0
+"Unit";"SCV";"Command Center";14;1
+"Building";"Factory";NA;16;0
+"Building";"BarracksReactor";NA;16;0
+"Building";"SupplyDepot";NA;16;0
+"Unit";"Cyclone";"Factory";16;3
+"Unit";"Cyclone";"Factory";16;3
+"Unit";"Cyclone";"Factory";22;3
+"Unit";"Cyclone";"Factory";22;3
+"Unit";"SCV";"Command Center";28;1
+"Unit";"Cyclone";"Factory";28;3
+"Building";"BarracksTechLab";NA;29;0

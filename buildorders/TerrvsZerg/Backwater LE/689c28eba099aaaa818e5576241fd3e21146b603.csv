@@ -1,0 +1,37 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";14;1
+"Building";"SupplyDepot";NA;13;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";15;1
+"Building";"Barracks";NA;15;0
+"Unit";"SCV";"Command Center";16;1
+"Building";"Barracks";NA;15;0
+"Building";"SupplyDepot";NA;17;0
+"Unit";"Marine";"Barracks";17;1
+"Unit";"Marine";"Barracks";18;1
+"Building";"Refinery";NA;18;0
+"Unit";"Marine";"Barracks";18;1
+"Unit";"Marine";"Barracks";20;1
+"Building";"Bunker";NA;19;0
+"Unit";"SCV";"Command Center";21;1
+"Unit";"Marine";"Barracks";21;1
+"Building";"Bunker";NA;19;0
+"Unit";"Marine";"Barracks";21;1
+"Unit";"Marine";"Barracks";23;1
+"Unit";"Marine";"Barracks";24;1
+"Unit";"SCV";"Command Center";25;1
+"Unit";"Marine";"Barracks";25;1
+"Unit";"SCV";"Command Center";27;1
+"Unit";"Marine";"Barracks";26;1
+"Unit";"SCV";"Command Center";29;1
+"Unit";"Marine";"Barracks";29;1
+"Building";"Factory";NA;26;0
+"Building";"SupplyDepot";NA;30;0
+"Building";"SupplyDepot";NA;30;0
+"Building";"Bunker";NA;26;0
+"Building";"Refinery";NA;32;0
+"Unit";"SCV";"Command Center";33;1
+"Unit";"Marine";"Barracks";33;1
+"Unit";"SCV";"Command Center";33;1

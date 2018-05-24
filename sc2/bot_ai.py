@@ -1,3 +1,4 @@
+import math
 import random
 from functools import partial
 
@@ -7,7 +8,8 @@ logger = logging.getLogger(__name__)
 from .constants import EGG
 
 from .position import Point2, Point3
-from .data import Race, ActionResult, Attribute, race_worker, race_townhalls, race_gas
+from .data import Race, ActionResult, Attribute, race_worker, race_townhalls, race_gas, race_supply, \
+    race_basic_townhalls
 from .unit import Unit
 from .cache import property_cache_forever
 from .game_data import AbilityData, Cost
@@ -17,10 +19,12 @@ from .ids.upgrade_id import UpgradeId
 
 
 class BotAI(object):
+    """Base class for bots."""
 
     EXPANSION_GAP_THRESHOLD = 15
 
     def _prepare_start(self, client, player_id, game_info, game_data):
+        """Ran until game start to set game and player data."""
         self._client = client
         self._game_info = game_info
         self._game_data = game_data
@@ -28,36 +32,42 @@ class BotAI(object):
         self.player_id = player_id
         self.race = Race(self._game_info.player_races[self.player_id])
 
+        self.worker_type = race_worker[self.race]
+        self.basic_townhall_type = race_basic_townhalls[self.race]
+        self.geyser_type = race_gas[self.race]
+        self.supply_type = race_supply[self.race]
+
     @property
     def game_info(self):
         return self._game_info
 
     @property
     def enemy_start_locations(self):
+        """Possible start locations for enemies."""
         return self._game_info.start_locations
 
     @property
     def known_enemy_units(self):
+        """List of known enemy units, including structures."""
         return self.state.units.enemy
 
     @property
     def known_enemy_structures(self):
+        """List of known enemy units, structures only."""
         return self.state.units.enemy.structure
 
-    @property
     @property_cache_forever
     def expansion_locations(self):
+        """List of possible expansion locations."""
+
         RESOURCE_SPREAD_THRESHOLD = 8.0 # Tried with Abyssal Reef LE, this was fine
-        resources = [
-            r
-            for r in self.state.mineral_field | self.state.vespene_geyser
-        ]
+        resources = self.state.mineral_field | self.state.vespene_geyser
 
         # Group nearby minerals together to form expansion locations
         r_groups = []
         for mf in resources:
             for g in r_groups:
-                if any(mf.position.to2.distance_to(p) < RESOURCE_SPREAD_THRESHOLD for p in g):
+                if any(mf.position.to2.distance_to(p.position.to2) < RESOURCE_SPREAD_THRESHOLD for p in g):
                     g.add(mf)
                     break
             else: # not found
@@ -74,12 +84,16 @@ class BotAI(object):
         return centers
 
     async def get_available_abilities(self, unit):
+        """Returns available abilities of a unit."""
+
         # right know only checks cooldown, energy cost, and whether the ability has been researched
         return await self._client.query_available_abilities(unit)
 
     async def expand_now(self, building=None, max_distance=10, location=None):
+        """Takes new expansion."""
+
         if not building:
-            building = self.townhalls.first.type_id
+            building = self.basic_townhall_type
 
         assert isinstance(building, UnitTypeId)
 
@@ -90,11 +104,15 @@ class BotAI(object):
                          placement_step=1)
 
     async def get_next_expansion(self):
+        """Find next expansion location."""
+
         closest = None
-        distance = float("inf")
+        distance = math.inf
         for el in self.expansion_locations:
-            def is_near_to_expansion(t): return t.position.distance_to(el) < self.EXPANSION_GAP_THRESHOLD
-            if any([t for t in map(is_near_to_expansion, self.townhalls)]):
+            def is_near_to_expansion(t):
+                return t.position.distance_to(el) < self.EXPANSION_GAP_THRESHOLD
+
+            if any(map(is_near_to_expansion, self.townhalls)):
                 # already taken
                 continue
 
@@ -110,6 +128,8 @@ class BotAI(object):
         return closest
 
     async def distribute_workers(self):
+        """Distributes workers across all the bases taken."""
+
         expansion_locations = self.expansion_locations
         owned_expansions = self.owned_expansions
         worker_pool = []
@@ -166,6 +186,8 @@ class BotAI(object):
 
     @property
     def owned_expansions(self):
+        """List of expansions owned by the player."""
+
         owned = {}
         for el in self.expansion_locations:
             def is_near_to_expansion(t): return t.position.distance_to(el) < self.EXPANSION_GAP_THRESHOLD
@@ -176,6 +198,8 @@ class BotAI(object):
         return owned
 
     def can_afford(self, item_id):
+        """Tests if the player has enough resources to build a unit or cast an ability."""
+
         if isinstance(item_id, UnitTypeId):
             unit = self._game_data.units[item_id.value]
             cost = self._game_data.calculate_ability_cost(unit.creation_ability)
@@ -187,6 +211,8 @@ class BotAI(object):
         return CanAffordWrapper(cost.minerals <= self.minerals, cost.vespene <= self.vespene)
 
     def select_build_worker(self, pos, force=False):
+        """Select a worker to build a bulding with."""
+
         workers = self.workers.closer_than(20, pos) or self.workers
         for worker in workers.prefer_close_to(pos).prefer_idle:
             if not worker.orders or len(worker.orders) == 1 and worker.orders[0].ability.id in [AbilityId.MOVE, AbilityId.HARVEST_GATHER, AbilityId.HARVEST_RETURN]:
@@ -195,6 +221,8 @@ class BotAI(object):
         return workers.random if force else None
 
     async def can_place(self, building, position):
+        """Tests if a building can be placed in the given location."""
+
         assert isinstance(building, (AbilityData, AbilityId, UnitTypeId))
 
         if isinstance(building, UnitTypeId):
@@ -206,6 +234,8 @@ class BotAI(object):
         return r[0] == ActionResult.Success
 
     async def find_placement(self, building, near, max_distance=20, random_alternative=True, placement_step=2):
+        """Finds a placement location for building."""
+
         assert isinstance(building, (AbilityId, UnitTypeId))
         assert self.can_afford(building)
         assert isinstance(near, Point2)
@@ -236,8 +266,21 @@ class BotAI(object):
                 return min(possible, key=lambda p: p.distance_to(near))
         return None
 
-    def already_pending(self, unit_type):
+    def already_pending(self, unit_type, all_units=False) -> int:
+        """
+        Returns a number of buildings or units already in progress, or if a
+        worker is en route to build it. This also includes queued orders for
+        workers and build queues of buildings.
+
+        If all_units==True, then build queues of other units (such as Carriers
+        (Interceptors) or Oracles (Stasis Ward)) are also included.
+        """
+
+        # TODO / FIXME: SCV building a structure might be counted as two units
+
         ability = self._game_data.units[unit_type.value].creation_ability
+        
+        # TODO check if branch already-pending-enhancement works
         if self.units(unit_type).not_ready.exists:
             return len(self.units(unit_type).not_ready)
         elif any(o.ability == ability for w in self.workers for o in w.orders):
@@ -246,7 +289,21 @@ class BotAI(object):
             return sum([egg.orders[0].ability == ability for egg in self.units(EGG)])
         return 0
 
+        # old code
+        #amount = len(self.units(unit_type).not_ready)
+
+        #if all_units:
+        #    amount += sum([o.ability == ability for u in self.units for o in u.orders])
+        #else:
+        #    amount += sum([o.ability == ability for w in self.workers for o in w.orders])
+        #    amount += sum([egg.orders[0].ability == ability for egg in self.units(EGG)])
+
+        #return amount
+
+
     async def build(self, building, near, max_distance=20, unit=None, random_alternative=True, placement_step=2):
+        """Build a building."""
+
         if isinstance(near, Unit):
             near = near.position.to2
         elif near is not None:
@@ -276,13 +333,17 @@ class BotAI(object):
         return r
 
     async def chat_send(self, message):
+        """Send a chat message."""
+
         assert isinstance(message, str)
         await self._client.chat_send(message, False)
 
     def _prepare_step(self, state):
+        """Set attributes from new state before on_step."""
+
         self.state = state
         self.units = state.units.owned
-        self.workers = self.units(race_worker[self.race])
+        self.workers = self.units(self.worker_type)
         self.townhalls = self.units(race_townhalls[self.race])
         self.geysers = self.units(race_gas[self.race])
 
@@ -293,14 +354,15 @@ class BotAI(object):
         self.supply_left = self.supply_cap - self.supply_used
 
     def on_start(self):
+        """Allows initializing the bot when the game data is available."""
         pass
 
     async def on_step(self, iteration):
+        """Ran on every game step (looped in realtime mode)."""
         raise NotImplementedError
 
 
 class CanAffordWrapper(object):
-
     def __init__(self, can_afford_minerals, can_afford_vespene):
         self.can_afford_minerals = can_afford_minerals
         self.can_afford_vespene = can_afford_vespene

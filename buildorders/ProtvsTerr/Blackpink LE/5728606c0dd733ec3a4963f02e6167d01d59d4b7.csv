@@ -1,0 +1,62 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Pylon";NA;13;0
+"Building";"Assimilator";NA;15;0
+"Building";"Gateway";NA;15;0
+"Building";"Assimilator";NA;20;0
+"Building";"CyberneticsCore";NA;20;0
+"Building";"Pylon";NA;21;0
+"Building";"Nexus";NA;19;0
+"Unit";"Adept";"Gateway";22;2
+"Building";"TwilightCouncil";NA;23;0
+"Building";"RoboticsFacility";NA;27;0
+"Building";"ShieldBattery";NA;38;0
+"Unit";"Stalker";"Gateway";40;2
+"Building";"Assimilator";NA;38;0
+"Building";"DarkShrine";NA;31;0
+"Building";"Assimilator";NA;38;0
+"Building";"Gateway";NA;37;0
+"Building";"Gateway";NA;37;0
+"Building";"Pylon";NA;40;0
+"Building";"Gateway";NA;37;0
+"Unit";"Observer";"Robotics Facility";40;1
+"Building";"Pylon";NA;44;0
+"Unit";"Observer";"Robotics Facility";44;1
+"Building";"Pylon";NA;45;0
+"Building";"DarkTemplar";NA;50;0
+"Building";"DarkTemplar";NA;50;0
+"Building";"DarkTemplar";NA;50;0
+"Building";"DarkTemplar";NA;50;0
+"Unit";"Observer";"Robotics Facility";47;1
+"Unit";"Stalker";"Gateway";52;2
+"Unit";"Stalker";"Gateway";52;2
+"Unit";"Stalker";"Gateway";52;2
+"Unit";"Stalker";"Gateway";52;2
+"Building";"DarkTemplar";NA;65;0
+"Building";"DarkTemplar";NA;65;0
+"Building";"DarkTemplar";NA;66;0
+"Building";"DarkTemplar";NA;66;0
+"Unit";"Stalker";"Gateway";71;2
+"Unit";"Stalker";"Gateway";71;2
+"Building";"Pylon";NA;71;0
+"Building";"Pylon";NA;71;0
+"Building";"DarkTemplar";NA;75;0
+"Building";"DarkTemplar";NA;75;0
+"Unit";"Sentry";"Gateway";79;2
+"Unit";"Sentry";"Gateway";79;2
+"Unit";"Observer";"Robotics Facility";75;1
+"Unit";"Archon";"High Templar";80;0
+"Building";"Forge";NA;75;0
+"Unit";"Sentry";"Gateway";88;2
+"Building";"RoboticsBay";NA;75;0
+"Unit";"Adept";"Gateway";94;2
+"Building";"Pylon";NA;92;0
+"Building";"Nexus";NA;75;0
+"Building";"Pylon";NA;92;0
+"Unit";"Adept";"Gateway";98;2
+"Unit";"Adept";"Gateway";98;2
+"Building";"Pylon";NA;96;0
+"Unit";"Disruptor";"Robotics Facility";92;3
+"Unit";"Stalker";"Gateway";103;2
+"Unit";"Stalker";"Gateway";103;2
+"Unit";"Stalker";"Gateway";112;2
+"Unit";"Stalker";"Gateway";112;2

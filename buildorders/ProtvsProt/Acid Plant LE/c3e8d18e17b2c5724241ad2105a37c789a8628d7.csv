@@ -1,0 +1,89 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Pylon";NA;13;0
+"Building";"Assimilator";NA;16;0
+"Building";"Assimilator";NA;17;0
+"Building";"Gateway";NA;15;0
+"Building";"Pylon";NA;21;0
+"Building";"Gateway";NA;18;0
+"Building";"CyberneticsCore";NA;20;0
+"Building";"Pylon";NA;24;0
+"Unit";"Stalker";"Gateway";23;2
+"Unit";"Stalker";"Gateway";23;2
+"Unit";"Stalker";"Gateway";28;2
+"Unit";"Stalker";"Gateway";28;2
+"Building";"Stargate";NA;24;0
+"Unit";"Phoenix";"Stargate";32;2
+"Unit";"Phoenix";"Stargate";34;2
+"Building";"Pylon";NA;34;0
+"Building";"ShieldBattery";NA;34;0
+"Unit";"Phoenix";"Stargate";38;2
+"Building";"Nexus";NA;32;0
+"Unit";"Phoenix";"Stargate";40;2
+"Building";"Forge";NA;43;0
+"Building";"RoboticsFacility";NA;42;0
+"Unit";"Phoenix";"Stargate";47;2
+"Unit";"Observer";"Robotics Facility";55;1
+"Building";"Pylon";NA;57;0
+"Building";"Assimilator";NA;62;0
+"Building";"Assimilator";NA;62;0
+"Building";"Pylon";NA;62;0
+"Unit";"Immortal";"Robotics Facility";60;4
+"Upgrade";"ProtossGroundWeaponsLevel1";"Forge";57;0
+"Unit";"Immortal";"Robotics Facility";66;4
+"Building";"TwilightCouncil";NA;72;0
+"Building";"Gateway";NA;72;0
+"Building";"Pylon";NA;78;0
+"Unit";"Sentry";"Gateway";78;2
+"Building";"Gateway";NA;74;0
+"Building";"Pylon";NA;78;0
+"Building";"Gateway";NA;74;0
+"Unit";"Immortal";"Robotics Facility";74;4
+"Building";"Pylon";NA;78;0
+"Building";"Gateway";NA;74;0
+"Building";"Gateway";NA;74;0
+"Building";"Pylon";NA;78;0
+"Building";"Pylon";NA;78;0
+"Building";"Gateway";NA;74;0
+"Building";"Pylon";NA;80;0
+"Building";"TemplarArchive";NA;78;0
+"Building";"Nexus";NA;74;0
+"Unit";"Immortal";"Robotics Facility";80;4
+"Building";"PhotonCannon";NA;84;0
+"Unit";"Zealot";"Gateway";90;2
+"Unit";"Zealot";"Gateway";90;2
+"Unit";"Zealot";"Gateway";90;2
+"Unit";"Zealot";"Gateway";90;2
+"Unit";"Zealot";"Gateway";90;2
+"Unit";"Zealot";"Gateway";90;2
+"Unit";"Zealot";"Gateway";90;2
+"Building";"PhotonCannon";NA;84;0
+"Unit";"Zealot";"Gateway";94;2
+"Unit";"Zealot";"Gateway";106;2
+"Unit";"Zealot";"Gateway";106;2
+"Unit";"Zealot";"Gateway";106;2
+"Unit";"Zealot";"Gateway";106;2
+"Unit";"Zealot";"Gateway";106;2
+"Upgrade";"Charge";"TwilightCouncil";84;0
+"Unit";"Zealot";"Gateway";118;2
+"Unit";"Observer";"Robotics Facility";106;1
+"Unit";"Zealot";"Gateway";118;2
+"Unit";"Zealot";"Gateway";118;2
+"Building";"HighTemplar";NA;125;0
+"Building";"HighTemplar";NA;125;0
+"Building";"HighTemplar";NA;125;0
+"Building";"HighTemplar";NA;125;0
+"Building";"HighTemplar";NA;125;0
+"Building";"HighTemplar";NA;125;0
+"Unit";"Zealot";"Gateway";125;2
+"Unit";"Zealot";"Gateway";125;2
+"Unit";"Archon";"High Templar";125;0
+"Unit";"Archon";"High Templar";125;0
+"Unit";"Archon";"High Templar";125;0
+"Upgrade";"ProtossGroundWeaponsLevel2";"Forge";84;0
+"Unit";"Zealot";"Gateway";129;2
+"Unit";"Zealot";"Gateway";129;2
+"Unit";"Zealot";"Gateway";129;2
+"Unit";"Zealot";"Gateway";129;2
+"Unit";"Zealot";"Gateway";129;2
+"Unit";"Zealot";"Gateway";129;2
+"Unit";"Zealot";"Gateway";129;2

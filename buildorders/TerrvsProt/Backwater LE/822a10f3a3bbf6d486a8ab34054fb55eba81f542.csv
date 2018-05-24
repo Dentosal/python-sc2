@@ -1,0 +1,63 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";15;1
+"Building";"Refinery";NA;15;0
+"Unit";"SCV";"Command Center";17;1
+"Building";"Barracks";NA;15;0
+"Unit";"SCV";"Command Center";17;1
+"Unit";"SCV";"Command Center";18;1
+"Building";"Barracks";NA;16;0
+"Building";"SupplyDepot";NA;19;0
+"Building";"BarracksReactor";NA;19;0
+"Building";"BarracksTechLab";NA;20;0
+"Unit";"SCV";"Command Center";20;1
+"Unit";"Marine";"Barracks";20;1
+"Unit";"Marine";"Barracks";20;1
+"Unit";"Marauder";"Barracks";20;2
+"Unit";"SCV";"Command Center";21;1
+"Building";"SupplyDepot";NA;20;0
+"Unit";"Marine";"Barracks";21;1
+"Unit";"Marine";"Barracks";22;1
+"Unit";"Marauder";"Barracks";25;2
+"Unit";"SCV";"Command Center";28;1
+"Building";"Refinery";NA;26;0
+"Unit";"Marine";"Barracks";26;1
+"Unit";"Marine";"Barracks";27;1
+"Unit";"Marine";"Barracks";28;1
+"Unit";"SCV";"Command Center";33;1
+"Unit";"Marine";"Barracks";33;1
+"Unit";"Marine";"Barracks";33;1
+"Unit";"Marine";"Barracks";34;1
+"Building";"SupplyDepot";NA;33;0
+"Building";"Factory";NA;30;0
+"Unit";"Marine";"Barracks";35;1
+"Unit";"Marine";"Barracks";37;1
+"Unit";"SCV";"Command Center";38;1
+"Unit";"Marine";"Barracks";38;1
+"Unit";"Marine";"Barracks";38;1
+"Building";"FactoryTechLab";NA;39;0
+"Unit";"Marine";"Barracks";40;1
+"Building";"SupplyDepot";NA;40;0
+"Unit";"Marine";"Barracks";42;1
+"Building";"Starport";NA;40;0
+"Unit";"Marine";"Barracks";43;1
+"Unit";"Marine";"Barracks";44;1
+"Unit";"Marine";"Barracks";45;1
+"Building";"SupplyDepot";NA;44;0
+"Unit";"Marine";"Barracks";46;1
+"Unit";"Marine";"Barracks";46;1
+"Unit";"Marine";"Barracks";48;1
+"Unit";"Marine";"Barracks";48;1
+"Unit";"Liberator";"Starport";46;3
+"Building";"SupplyDepot";NA;50;0
+"Unit";"Marine";"Barracks";50;1
+"Unit";"Marine";"Barracks";52;1
+"Unit";"Marine";"Barracks";52;1
+"Unit";"Liberator";"Starport";56;3
+"Building";"Bunker";NA;58;0
+"Unit";"Marine";"Barracks";58;1
+"Building";"Bunker";NA;58;0

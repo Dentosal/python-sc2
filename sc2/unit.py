@@ -194,7 +194,7 @@ class Unit(object):
         normal_creation_ability = self._game_data.units[unit.value].creation_ability.id
         return self(warpgate_abilities[normal_creation_ability], placement, *args, **kwargs)
 
-      def attack(self, *args, **kwargs):
+    def attack(self, *args, **kwargs):
         return self(AbilityId.ATTACK, *args, **kwargs)
 
     def gather(self, *args, **kwargs):
