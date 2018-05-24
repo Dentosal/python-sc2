@@ -1,0 +1,30 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Pylon";NA;13;0
+"Building";"Assimilator";NA;16;0
+"Building";"Assimilator";NA;17;0
+"Building";"Gateway";NA;15;0
+"Building";"Pylon";NA;20;0
+"Building";"CyberneticsCore";NA;19;0
+"Building";"Gateway";NA;18;0
+"Unit";"Adept";"Gateway";22;2
+"Unit";"Adept";"Gateway";22;2
+"Building";"Pylon";NA;23;0
+"Building";"Pylon";NA;23;0
+"Building";"TwilightCouncil";NA;27;0
+"Unit";"Stalker";"Gateway";27;2
+"Unit";"Stalker";"Gateway";27;2
+"Building";"ShieldBattery";NA;27;0
+"Building";"RoboticsFacility";NA;27;0
+"Unit";"Observer";"Robotics Facility";32;1
+"Building";"DarkShrine";NA;27;0
+"Building";"Pylon";NA;32;0
+"Building";"Pylon";NA;32;0
+"Building";"DarkTemplar";NA;34;0
+"Building";"DarkTemplar";NA;34;0
+"Building";"Nexus";NA;32;0
+"Building";"DarkTemplar";NA;35;0
+"Unit";"Observer";"Robotics Facility";35;1
+"Building";"Assimilator";NA;37;0
+"Unit";"Zealot";"Gateway";41;2
+"Building";"Assimilator";NA;39;0
+"Unit";"Observer";"Robotics Facility";40;1

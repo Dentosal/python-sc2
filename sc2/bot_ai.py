@@ -8,7 +8,8 @@ logger = logging.getLogger(__name__)
 from .constants import EGG
 
 from .position import Point2, Point3
-from .data import Race, ActionResult, Attribute, race_worker, race_townhalls, race_gas
+from .data import Race, ActionResult, Attribute, race_worker, race_townhalls, race_gas, race_supply, \
+    race_basic_townhalls
 from .unit import Unit
 from .cache import property_cache_forever
 from .game_data import AbilityData, Cost
@@ -30,6 +31,11 @@ class BotAI(object):
 
         self.player_id = player_id
         self.race = Race(self._game_info.player_races[self.player_id])
+
+        self.worker_type = race_worker[self.race]
+        self.basic_townhall_type = race_basic_townhalls[self.race]
+        self.geyser_type = race_gas[self.race]
+        self.supply_type = race_supply[self.race]
 
     @property
     def game_info(self):
@@ -87,7 +93,7 @@ class BotAI(object):
         """Takes new expansion."""
 
         if not building:
-            building = self.townhalls.first.type_id
+            building = self.basic_townhall_type
 
         assert isinstance(building, UnitTypeId)
 
@@ -326,7 +332,7 @@ class BotAI(object):
 
         self.state = state
         self.units = state.units.owned
-        self.workers = self.units(race_worker[self.race])
+        self.workers = self.units(self.worker_type)
         self.townhalls = self.units(race_townhalls[self.race])
         self.geysers = self.units(race_gas[self.race])
 

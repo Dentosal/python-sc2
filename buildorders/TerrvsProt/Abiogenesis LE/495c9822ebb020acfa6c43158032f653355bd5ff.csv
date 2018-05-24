@@ -1,0 +1,66 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";15;1
+"Building";"Refinery";NA;15;0
+"Unit";"SCV";"Command Center";16;1
+"Unit";"SCV";"Command Center";18;1
+"Building";"Barracks";NA;15;0
+"Unit";"Reaper";"Barracks";19;1
+"Unit";"SCV";"Command Center";19;1
+"Unit";"Marine";"Barracks";19;1
+"Building";"SupplyDepot";NA;20;0
+"Unit";"SCV";"Command Center";21;1
+"Unit";"SCV";"Command Center";22;1
+"Building";"Refinery";NA;21;0
+"Unit";"SCV";"Command Center";23;1
+"Building";"Factory";NA;21;0
+"Building";"CommandCenter";NA;19;0
+"Building";"BarracksReactor";NA;23;0
+"Unit";"SCV";"Command Center";24;1
+"Building";"EngineeringBay";NA;24;0
+"Building";"Bunker";NA;24;0
+"Unit";"SCV";"Command Center";25;1
+"Building";"FactoryTechLab";NA;25;0
+"Unit";"Marine";"Barracks";26;1
+"Unit";"Marine";"Barracks";26;1
+"Unit";"SCV";"Command Center";29;1
+"Building";"SupplyDepot";NA;27;0
+"Unit";"SCV";"Command Center";30;1
+"Unit";"SCV";"Command Center";31;1
+"Unit";"Marine";"Barracks";30;1
+"Unit";"Marine";"Barracks";30;1
+"Unit";"SCV";"Command Center";31;1
+"Unit";"Marine";"Barracks";34;1
+"Unit";"Marine";"Barracks";34;1
+"Unit";"SCV";"Command Center";34;1
+"Building";"Starport";NA;31;0
+"Building";"SupplyDepot";NA;35;0
+"Building";"MissileTurret";NA;35;0
+"Unit";"Marine";"Barracks";35;1
+"Unit";"SCV";"Command Center";38;1
+"Unit";"SCV";"Command Center";38;1
+"Unit";"Marine";"Barracks";38;1
+"Unit";"SCV";"Command Center";42;1
+"Unit";"Marine";"Barracks";42;1
+"Unit";"Marine";"Barracks";42;1
+"Unit";"SCV";"Command Center";42;1
+"Unit";"Marine";"Barracks";46;1
+"Unit";"Marine";"Barracks";46;1
+"Building";"SupplyDepot";NA;46;0
+"Unit";"SCV";"Command Center";48;1
+"Unit";"SCV";"Command Center";49;1
+"Unit";"Marine";"Barracks";48;1
+"Unit";"Marine";"Barracks";48;1
+"Unit";"SCV";"Command Center";50;1
+"Unit";"Marine";"Barracks";50;1
+"Unit";"Marine";"Barracks";51;1
+"Unit";"SCV";"Command Center";52;1
+"Unit";"SCV";"Command Center";52;1
+"Unit";"SCV";"Command Center";55;1
+"Unit";"SCV";"Command Center";56;1
+"Unit";"Marine";"Barracks";53;1
+"Building";"Barracks";NA;52;0

@@ -1,0 +1,60 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Building";"Refinery";NA;14;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";16;1
+"Building";"Refinery";NA;16;0
+"Unit";"SCV";"Command Center";17;1
+"Building";"Barracks";NA;15;0
+"Unit";"SCV";"Command Center";18;1
+"Unit";"Reaper";"Barracks";19;1
+"Building";"SupplyDepot";NA;20;0
+"Building";"Factory";NA;19;0
+"Unit";"SCV";"Command Center";20;1
+"Unit";"SCV";"Command Center";21;1
+"Unit";"Reaper";"Barracks";20;1
+"Building";"SupplyDepot";NA;22;0
+"Unit";"SCV";"Command Center";23;1
+"Unit";"Cyclone";"Factory";22;3
+"Unit";"SCV";"Command Center";24;1
+"Building";"BarracksReactor";NA;24;0
+"Unit";"SCV";"Command Center";29;1
+"Unit";"Cyclone";"Factory";28;3
+"Unit";"SCV";"Command Center";29;1
+"Building";"CommandCenter";NA;29;0
+"Unit";"Cyclone";"Factory";34;3
+"Unit";"Cyclone";"Factory";34;3
+"Building";"SupplyDepot";NA;34;0
+"Unit";"SCV";"Command Center";34;1
+"Unit";"SCV";"Command Center";40;1
+"Unit";"Cyclone";"Factory";41;3
+"Unit";"Cyclone";"Factory";41;3
+"Unit";"SCV";"Command Center";42;1
+"Building";"Refinery";NA;41;0
+"Building";"Refinery";NA;41;0
+"Unit";"SCV";"Command Center";42;1
+"Unit";"SCV";"Command Center";48;1
+"Building";"CommandCenter";NA;34;0
+"Unit";"SCV";"Command Center";51;1
+"Unit";"SCV";"Command Center";51;1
+"Unit";"Cyclone";"Factory";49;3
+"Unit";"Cyclone";"Factory";49;3
+"Unit";"SCV";"Command Center";59;1
+"Unit";"SCV";"Command Center";59;1
+"Unit";"Cyclone";"Factory";59;3
+"Unit";"SCV";"Command Center";59;1
+"Unit";"SCV";"Command Center";60;1
+"Unit";"SCV";"Command Center";64;1
+"Unit";"SCV";"Command Center";64;1
+"Unit";"SCV";"Command Center";65;1
+"Building";"BarracksTechLab";NA;61;0
+"Building";"Factory";NA;59;0
+"Unit";"SCV";"Command Center";69;1
+"Unit";"SCV";"Command Center";69;1
+"Unit";"SCV";"Command Center";69;1
+"Unit";"Cyclone";"Factory";66;3
+"Unit";"Cyclone";"Factory";66;3

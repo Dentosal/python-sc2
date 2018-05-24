@@ -1,0 +1,56 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Pylon";NA;14;0
+"Building";"Assimilator";NA;14;0
+"Building";"Gateway";NA;15;0
+"Building";"Assimilator";NA;20;0
+"Building";"CyberneticsCore";NA;20;0
+"Building";"Pylon";NA;21;0
+"Unit";"Adept";"Gateway";22;2
+"Building";"Nexus";NA;19;0
+"Building";"Stargate";NA;22;0
+"Unit";"Adept";"Gateway";25;2
+"Building";"Pylon";NA;28;0
+"Unit";"Oracle";"Stargate";27;3
+"Building";"Assimilator";NA;32;0
+"Unit";"Adept";"Gateway";33;2
+"Building";"Assimilator";NA;39;0
+"Building";"Pylon";NA;47;0
+"Building";"RoboticsFacility";NA;43;0
+"Building";"Pylon";NA;51;0
+"Unit";"Sentry";"Gateway";52;2
+"Unit";"Observer";"Robotics Facility";56;1
+"Building";"RoboticsBay";NA;52;0
+"Building";"Pylon";NA;58;0
+"Building";"Pylon";NA;61;0
+"Building";"Pylon";NA;62;0
+"Building";"Nexus";NA;51;0
+"Building";"Stargate";NA;58;0
+"Unit";"Disruptor";"Robotics Facility";60;3
+"Building";"ShieldBattery";NA;63;0
+"Unit";"Zealot";"Gateway";73;2
+"Unit";"Disruptor";"Robotics Facility";69;3
+"Building";"Pylon";NA;79;0
+"Building";"Pylon";NA;79;0
+"Building";"Assimilator";NA;79;0
+"Building";"Assimilator";NA;79;0
+"Building";"RoboticsFacility";NA;77;0
+"Building";"OracleStasisTrap";NA;86;0
+"Unit";"Disruptor";"Robotics Facility";82;3
+"Building";"Forge";NA;85;0
+"Unit";"Zealot";"Gateway";91;2
+"Building";"ShieldBattery";NA;86;0
+"Unit";"Disruptor";"Robotics Facility";86;3
+"Building";"ShieldBattery";NA;88;0
+"Building";"ShieldBattery";NA;88;0
+"Unit";"Disruptor";"Robotics Facility";91;3
+"Building";"Pylon";NA;96;0
+"Building";"OracleStasisTrap";NA;96;0
+"Building";"PhotonCannon";NA;96;0
+"Building";"PhotonCannon";NA;96;0
+"Building";"PhotonCannon";NA;96;0
+"Building";"Pylon";NA;96;0
+"Building";"Pylon";NA;96;0
+"Unit";"Disruptor";"Robotics Facility";99;3
+"Unit";"Disruptor";"Robotics Facility";99;3
+"Upgrade";"ProtossAirWeaponsLevel1";"CyberneticsCore";88;0
+"Unit";"Observer";"Robotics Facility";102;1

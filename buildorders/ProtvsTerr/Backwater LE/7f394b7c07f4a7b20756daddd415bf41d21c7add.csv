@@ -1,0 +1,66 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Pylon";NA;13;0
+"Building";"Assimilator";NA;16;0
+"Building";"Gateway";NA;15;0
+"Building";"Pylon";NA;19;0
+"Unit";"Zealot";"Gateway";20;2
+"Building";"CyberneticsCore";NA;19;0
+"Building";"Assimilator";NA;21;0
+"Building";"Pylon";NA;21;0
+"Unit";"Stalker";"Gateway";21;2
+"Unit";"Stalker";"Gateway";28;2
+"Building";"Stargate";NA;27;0
+"Building";"Pylon";NA;30;0
+"Unit";"Oracle";"Stargate";30;3
+"Unit";"Stalker";"Gateway";34;2
+"Building";"ShieldBattery";NA;34;0
+"Building";"Gateway";NA;34;0
+"Building";"Pylon";NA;41;0
+"Building";"ShieldBattery";NA;41;0
+"Unit";"Stalker";"Gateway";42;2
+"Unit";"Zealot";"Gateway";42;2
+"Building";"Pylon";NA;42;0
+"Building";"Nexus";NA;41;0
+"Building";"RoboticsFacility";NA;41;0
+"Building";"Pylon";NA;49;0
+"Unit";"Observer";"Robotics Facility";49;1
+"Unit";"Sentry";"Gateway";52;2
+"Unit";"Sentry";"Gateway";52;2
+"Building";"Gateway";NA;48;0
+"Building";"Gateway";NA;49;0
+"Unit";"Immortal";"Robotics Facility";51;4
+"Building";"Pylon";NA;58;0
+"Building";"Pylon";NA;58;0
+"Unit";"Zealot";"Gateway";62;2
+"Unit";"Zealot";"Gateway";62;2
+"Unit";"Stalker";"Gateway";66;2
+"Unit";"Stalker";"Gateway";66;2
+"Building";"TwilightCouncil";NA;58;0
+"Building";"Pylon";NA;64;0
+"Building";"Pylon";NA;66;0
+"Unit";"Immortal";"Robotics Facility";58;4
+"Unit";"Zealot";"Gateway";74;2
+"Unit";"Sentry";"Gateway";76;2
+"Unit";"Stalker";"Gateway";76;2
+"Unit";"Stalker";"Gateway";76;2
+"Building";"Gateway";NA;66;0
+"Unit";"Immortal";"Robotics Facility";66;4
+"Unit";"Zealot";"Gateway";87;2
+"Unit";"Zealot";"Gateway";87;2
+"Building";"Pylon";NA;87;0
+"Building";"Pylon";NA;87;0
+"Unit";"Immortal";"Robotics Facility";82;4
+"Unit";"Zealot";"Gateway";95;2
+"Unit";"Zealot";"Gateway";95;2
+"Unit";"Zealot";"Gateway";95;2
+"Unit";"Zealot";"Gateway";95;2
+"Unit";"Zealot";"Gateway";95;2
+"Upgrade";"Charge";"TwilightCouncil";76;0
+"Unit";"Stalker";"Gateway";105;2
+"Unit";"Stalker";"Gateway";105;2
+"Building";"Assimilator";NA;105;0
+"Building";"Assimilator";NA;105;0
+"Unit";"Stalker";"Gateway";105;2
+"Unit";"Stalker";"Gateway";105;2
+"Unit";"Immortal";"Robotics Facility";95;4
+"Unit";"Zealot";"Gateway";113;2

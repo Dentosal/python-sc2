@@ -1,0 +1,60 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";15;1
+"Building";"Refinery";NA;15;0
+"Unit";"SCV";"Command Center";17;1
+"Building";"Barracks";NA;15;0
+"Unit";"SCV";"Command Center";18;1
+"Unit";"SCV";"Command Center";18;1
+"Building";"Barracks";NA;16;0
+"Building";"SupplyDepot";NA;19;0
+"Unit";"SCV";"Command Center";19;1
+"Building";"BarracksReactor";NA;18;0
+"Unit";"Marine";"Barracks";21;1
+"Unit";"Marine";"Barracks";21;1
+"Unit";"Marine";"Barracks";22;1
+"Building";"BarracksTechLab";NA;23;0
+"Unit";"Marine";"Barracks";23;1
+"Unit";"Marine";"Barracks";24;1
+"Unit";"Marauder";"Barracks";25;2
+"Unit";"Marine";"Barracks";26;1
+"Unit";"Marine";"Barracks";26;1
+"Unit";"Marine";"Barracks";30;1
+"Building";"SupplyDepot";NA;29;0
+"Unit";"Marine";"Barracks";30;1
+"Unit";"SCV";"Command Center";30;1
+"Building";"Factory";NA;26;0
+"Unit";"Marine";"Barracks";31;1
+"Building";"Refinery";NA;31;0
+"Unit";"Marauder";"Barracks";31;2
+"Unit";"Marine";"Barracks";33;1
+"Unit";"SCV";"Command Center";34;1
+"Building";"FactoryTechLab";NA;33;0
+"Building";"SupplyDepot";NA;36;0
+"Building";"Starport";NA;33;0
+"Unit";"Marine";"Barracks";38;1
+"Unit";"Marine";"Barracks";38;1
+"Unit";"Marine";"Barracks";38;1
+"Unit";"Marine";"Barracks";41;1
+"Unit";"Marine";"Barracks";41;1
+"Unit";"Marine";"Barracks";41;1
+"Unit";"SCV";"Command Center";41;1
+"Building";"SupplyDepot";NA;41;0
+"Unit";"Marine";"Barracks";41;1
+"Unit";"Marine";"Barracks";42;1
+"Unit";"Marine";"Barracks";44;1
+"Unit";"Liberator";"Starport";41;3
+"Unit";"Marine";"Barracks";47;1
+"Unit";"Marine";"Barracks";47;1
+"Unit";"Marine";"Barracks";47;1
+"Building";"SupplyDepot";NA;51;0
+"Unit";"Marine";"Barracks";51;1
+"Unit";"Marine";"Barracks";54;1
+"Unit";"Marine";"Barracks";54;1
+"Unit";"Marine";"Barracks";54;1
+"Unit";"Marine";"Barracks";57;1
+"Unit";"Marine";"Barracks";57;1

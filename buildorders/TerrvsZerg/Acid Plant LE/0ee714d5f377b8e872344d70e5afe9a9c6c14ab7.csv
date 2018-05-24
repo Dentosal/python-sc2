@@ -1,0 +1,73 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";15;1
+"Building";"Refinery";NA;15;0
+"Unit";"SCV";"Command Center";16;1
+"Building";"Barracks";NA;15;0
+"Unit";"SCV";"Command Center";17;1
+"Unit";"Reaper";"Barracks";19;1
+"Unit";"SCV";"Command Center";19;1
+"Building";"SupplyDepot";NA;19;0
+"Unit";"SCV";"Command Center";20;1
+"Unit";"Marine";"Barracks";21;1
+"Unit";"SCV";"Command Center";21;1
+"Building";"Refinery";NA;21;0
+"Unit";"SCV";"Command Center";23;1
+"Building";"Factory";NA;21;0
+"Building";"CommandCenter";NA;19;0
+"Unit";"SCV";"Command Center";24;1
+"Building";"BarracksReactor";NA;23;0
+"Unit";"SCV";"Command Center";25;1
+"Building";"Refinery";NA;26;0
+"Unit";"SCV";"Command Center";27;1
+"Unit";"Hellion";"Factory";27;2
+"Unit";"Hellion";"Factory";27;2
+"Unit";"SCV";"Command Center";27;1
+"Unit";"SCV";"Command Center";28;1
+"Building";"Armory";NA;26;0
+"Unit";"SCV";"Command Center";32;1
+"Unit";"SCV";"Command Center";34;1
+"Building";"BarracksReactor";NA;28;0
+"Unit";"Hellion";"Factory";34;2
+"Unit";"Hellion";"Factory";34;2
+"Building";"Factory";NA;27;0
+"Unit";"SCV";"Command Center";35;1
+"Unit";"SCV";"Command Center";36;1
+"Building";"SupplyDepot";NA;35;0
+"Unit";"SCV";"Command Center";42;1
+"Unit";"SCV";"Command Center";42;1
+"Unit";"SCV";"Command Center";42;1
+"Unit";"Cyclone";"Factory";42;3
+"Unit";"Hellion";"Factory";42;2
+"Unit";"SCV";"Command Center";43;1
+"Unit";"Cyclone";"Factory";42;3
+"Unit";"Cyclone";"Factory";43;3
+"Building";"SupplyDepot";NA;43;0
+"Unit";"SCV";"Command Center";57;1
+"Unit";"SCV";"Command Center";57;1
+"Building";"SupplyDepot";NA;54;0
+"Building";"SupplyDepot";NA;57;0
+"Unit";"SCV";"Command Center";59;1
+"Unit";"SCV";"Command Center";59;1
+"Unit";"Cyclone";"Factory";57;3
+"Unit";"Cyclone";"Factory";57;3
+"Building";"SupplyDepot";NA;59;0
+"Unit";"SCV";"Command Center";59;1
+"Unit";"SCV";"Command Center";59;1
+"Unit";"Cyclone";"Factory";59;3
+"Upgrade";"TerranVehicleWeaponsLevel1";"Armory";42;0
+"Unit";"Cyclone";"Factory";61;3
+"Unit";"SCV";"Command Center";67;1
+"Unit";"SCV";"Command Center";67;1
+"Building";"Refinery";NA;61;0
+"Unit";"Cyclone";"Factory";69;3
+"Unit";"SCV";"Command Center";77;1
+"Unit";"SCV";"Command Center";77;1
+"Unit";"Cyclone";"Factory";77;3
+"Building";"SupplyDepot";NA;77;0
+"Building";"SupplyDepot";NA;77;0
+"Unit";"Cyclone";"Factory";77;3

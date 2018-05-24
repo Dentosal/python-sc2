@@ -1,0 +1,163 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Pylon";NA;13;0
+"Building";"Assimilator";NA;15;0
+"Building";"Gateway";NA;15;0
+"Building";"Pylon";NA;20;0
+"Building";"CyberneticsCore";NA;20;0
+"Building";"Assimilator";NA;21;0
+"Unit";"Adept";"Gateway";22;2
+"Building";"Nexus";NA;19;0
+"Unit";"Stalker";"Gateway";27;2
+"Building";"RoboticsFacility";NA;24;0
+"Building";"ShieldBattery";NA;29;0
+"Building";"Pylon";NA;33;0
+"Unit";"Stalker";"Gateway";30;2
+"Building";"ShieldBattery";NA;33;0
+"Unit";"Immortal";"Robotics Facility";33;4
+"Unit";"Stalker";"Gateway";37;2
+"Unit";"Observer";"Robotics Facility";41;1
+"Building";"Pylon";NA;43;0
+"Building";"Gateway";NA;41;0
+"Unit";"Observer";"Robotics Facility";49;1
+"Building";"Gateway";NA;41;0
+"Building";"Pylon";NA;52;0
+"Building";"RoboticsBay";NA;47;0
+"Unit";"Observer";"Robotics Facility";54;1
+"Building";"Assimilator";NA;54;0
+"Building";"Assimilator";NA;54;0
+"Building";"Pylon";NA;60;0
+"Building";"Nexus";NA;52;0
+"Unit";"Colossus";"Robotics Facility";57;6
+"Building";"TwilightCouncil";NA;60;0
+"Building";"Pylon";NA;64;0
+"Building";"Forge";NA;62;0
+"Building";"Gateway";NA;60;0
+"Building";"Gateway";NA;60;0
+"Building";"Gateway";NA;63;0
+"Unit";"Zealot";"Gateway";75;2
+"Unit";"Zealot";"Gateway";75;2
+"Unit";"Zealot";"Gateway";75;2
+"Unit";"Zealot";"Gateway";75;2
+"Building";"ShieldBattery";NA;73;0
+"Unit";"Stalker";"Gateway";84;2
+"Unit";"Stalker";"Gateway";84;2
+"Building";"Pylon";NA;75;0
+"Unit";"Colossus";"Robotics Facility";71;6
+"Unit";"Stalker";"Gateway";95;2
+"Unit";"Stalker";"Gateway";95;2
+"Unit";"Stalker";"Gateway";95;2
+"Unit";"Stalker";"Gateway";95;2
+"Building";"Pylon";NA;84;0
+"Unit";"Zealot";"Gateway";106;2
+"Unit";"Zealot";"Gateway";106;2
+"Upgrade";"ExtendedThermalLance";"RoboticsBay";73;0
+"Unit";"Zealot";"Gateway";110;2
+"Unit";"Zealot";"Gateway";110;2
+"Unit";"Zealot";"Gateway";110;2
+"Unit";"Zealot";"Gateway";110;2
+"Unit";"Stalker";"Gateway";118;2
+"Unit";"Stalker";"Gateway";118;2
+"Building";"Pylon";NA;118;0
+"Building";"ShieldBattery";NA;118;0
+"Building";"ShieldBattery";NA;118;0
+"Upgrade";"ProtossGroundWeaponsLevel1";"Forge";89;0
+"Unit";"Colossus";"Robotics Facility";110;6
+"Building";"Forge";NA;123;0
+"Building";"PhotonCannon";NA;123;0
+"Building";"PhotonCannon";NA;124;0
+"Building";"Pylon";NA;127;0
+"Building";"Assimilator";NA;127;0
+"Building";"Assimilator";NA;135;0
+"Building";"TemplarArchive";NA;126;0
+"Building";"Pylon";NA;136;0
+"Building";"HighTemplar";NA;138;0
+"Building";"HighTemplar";NA;138;0
+"Unit";"Zealot";"Gateway";138;2
+"Unit";"Zealot";"Gateway";138;2
+"Unit";"Zealot";"Gateway";138;2
+"Unit";"Zealot";"Gateway";138;2
+"Unit";"Disruptor";"Robotics Facility";135;3
+"Unit";"Archon";"High Templar";138;0
+"Building";"Pylon";NA;138;0
+"Upgrade";"Charge";"TwilightCouncil";123;0
+"Building";"RoboticsFacility";NA;136;0
+"Building";"ShieldBattery";NA;137;0
+"Unit";"Stalker";"Gateway";149;2
+"Unit";"Stalker";"Gateway";149;2
+"Unit";"Stalker";"Gateway";149;2
+"Unit";"Stalker";"Gateway";149;2
+"Unit";"Zealot";"Gateway";157;2
+"Unit";"Disruptor";"Robotics Facility";146;3
+"Building";"Pylon";NA;157;0
+"Building";"Pylon";NA;162;0
+"Unit";"Stalker";"Gateway";162;2
+"Unit";"Stalker";"Gateway";162;2
+"Unit";"Stalker";"Gateway";162;2
+"Upgrade";"ProtossGroundWeaponsLevel2";"Forge";135;0
+"Unit";"Disruptor";"Robotics Facility";157;3
+"Building";"Gateway";NA;157;0
+"Building";"RoboticsFacility";NA;157;0
+"Building";"Gateway";NA;159;0
+"Building";"Pylon";NA;174;0
+"Unit";"Zealot";"Gateway";174;2
+"Unit";"Zealot";"Gateway";174;2
+"Unit";"Zealot";"Gateway";174;2
+"Unit";"Zealot";"Gateway";174;2
+"Unit";"Stalker";"Gateway";182;2
+"Unit";"Stalker";"Gateway";182;2
+"Unit";"Stalker";"Gateway";182;2
+"Unit";"Stalker";"Gateway";182;2
+"Unit";"Stalker";"Gateway";182;2
+"Unit";"Stalker";"Gateway";182;2
+"Unit";"Sentry";"Gateway";194;2
+"Building";"Pylon";NA;196;0
+"Building";"Pylon";NA;196;0
+"Building";"RoboticsFacility";NA;182;0
+"Building";"HighTemplar";NA;197;0
+"Building";"HighTemplar";NA;197;0
+"Upgrade";"ProtossGroundArmorsLevel1";"Forge";174;0
+"Unit";"Archon";"High Templar";197;0
+"Unit";"Disruptor";"Robotics Facility";196;3
+"Unit";"Stalker";"Gateway";199;2
+"Unit";"Stalker";"Gateway";199;2
+"Unit";"Stalker";"Gateway";202;2
+"Building";"RoboticsFacility";NA;196;0
+"Unit";"Disruptor";"Robotics Facility";208;3
+"Unit";"Stalker";"Gateway";208;2
+"Unit";"Stalker";"Gateway";208;2
+"Unit";"Stalker";"Gateway";208;2
+"Unit";"Stalker";"Gateway";211;2
+"Unit";"Stalker";"Gateway";211;2
+"Unit";"Stalker";"Gateway";221;2
+"Unit";"Stalker";"Gateway";221;2
+"Unit";"Stalker";"Gateway";225;2
+"Unit";"Disruptor";"Robotics Facility";208;3
+"Unit";"Stalker";"Gateway";230;2
+"Unit";"Disruptor";"Robotics Facility";208;3
+"Unit";"Disruptor";"Robotics Facility";232;3
+"Unit";"Stalker";"Gateway";238;2
+"Unit";"Stalker";"Gateway";238;2
+"Unit";"Stalker";"Gateway";238;2
+"Unit";"Stalker";"Gateway";238;2
+"Unit";"Stalker";"Gateway";238;2
+"Unit";"Disruptor";"Robotics Facility";235;3
+"Building";"Pylon";NA;251;0
+"Unit";"Disruptor";"Robotics Facility";248;3
+"Unit";"Stalker";"Gateway";254;2
+"Unit";"Stalker";"Gateway";254;2
+"Unit";"Stalker";"Gateway";254;2
+"Unit";"Stalker";"Gateway";254;2
+"Unit";"Stalker";"Gateway";254;2
+"Unit";"Stalker";"Gateway";254;2
+"Unit";"Stalker";"Gateway";266;2
+"Unit";"Stalker";"Gateway";266;2
+"Unit";"Stalker";"Gateway";266;2
+"Unit";"Stalker";"Gateway";272;2
+"Unit";"Disruptor";"Robotics Facility";266;3
+"Unit";"Disruptor";"Robotics Facility";266;3
+"Unit";"Disruptor";"Robotics Facility";280;3
+"Unit";"Stalker";"Gateway";280;2
+"Unit";"Stalker";"Gateway";283;2
+"Unit";"Stalker";"Gateway";283;2
+"Unit";"Stalker";"Gateway";283;2
+"Unit";"Observer";"Robotics Facility";291;1

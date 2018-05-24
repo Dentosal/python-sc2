@@ -1,0 +1,45 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Unit";"SCV";"Command Center";15;1
+"Building";"Refinery";NA;14;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";16;1
+"Unit";"SCV";"Command Center";18;1
+"Building";"Barracks";NA;15;0
+"Unit";"Reaper";"Barracks";19;1
+"Unit";"SCV";"Command Center";19;1
+"Unit";"SCV";"Command Center";21;1
+"Building";"Refinery";NA;20;0
+"Unit";"SCV";"Command Center";21;1
+"Building";"Factory";NA;19;0
+"Building";"SupplyDepot";NA;21;0
+"Building";"BarracksReactor";NA;21;0
+"Unit";"SCV";"Command Center";23;1
+"Building";"CommandCenter";NA;19;0
+"Unit";"SCV";"Command Center";23;1
+"Unit";"Hellion";"Factory";24;2
+"Unit";"Hellion";"Factory";24;2
+"Unit";"SCV";"Command Center";25;1
+"Building";"Starport";NA;23;0
+"Building";"BarracksTechLab";NA;29;0
+"Unit";"SCV";"Command Center";30;1
+"Unit";"SCV";"Command Center";30;1
+"Unit";"Hellion";"Factory";30;2
+"Unit";"Hellion";"Factory";30;2
+"Unit";"SCV";"Command Center";30;1
+"Unit";"Medivac";"Starport";30;2
+"Unit";"SCV";"Command Center";31;1
+"Building";"SupplyDepot";NA;31;0
+"Unit";"SCV";"Command Center";40;1
+"Unit";"SCV";"Command Center";40;1
+"Unit";"Cyclone";"Factory";40;3
+"Unit";"SCV";"Command Center";40;1
+"Unit";"Cyclone";"Factory";40;3
+"Building";"SupplyDepot";NA;40;0
+"Unit";"SCV";"Command Center";42;1
+"Unit";"Hellion";"Factory";42;2
+"Building";"Refinery";NA;45;0
+"Unit";"SCV";"Command Center";50;1

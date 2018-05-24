@@ -1,0 +1,27 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Pylon";NA;13;0
+"Building";"Assimilator";NA;16;0
+"Building";"Gateway";NA;15;0
+"Building";"Assimilator";NA;20;0
+"Building";"Pylon";NA;21;0
+"Building";"CyberneticsCore";NA;20;0
+"Unit";"Adept";"Gateway";21;2
+"Building";"Nexus";NA;20;0
+"Building";"RoboticsFacility";NA;23;0
+"Unit";"Sentry";"Gateway";26;2
+"Unit";"Immortal";"Robotics Facility";28;4
+"Unit";"Sentry";"Gateway";30;2
+"Building";"Gateway";NA;28;0
+"Building";"Gateway";NA;28;0
+"Building";"Pylon";NA;40;0
+"Unit";"Sentry";"Gateway";42;2
+"Unit";"Sentry";"Gateway";42;2
+"Unit";"Stalker";"Gateway";46;2
+"Building";"Pylon";NA;42;0
+"Unit";"Stalker";"Gateway";52;2
+"Unit";"Stalker";"Gateway";52;2
+"Unit";"Stalker";"Gateway";52;2
+"Unit";"Observer";"Robotics Facility";51;1
+"Unit";"Adept";"Gateway";62;2
+"Building";"Assimilator";NA;60;0
+"Building";"Assimilator";NA;60;0

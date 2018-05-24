@@ -1,0 +1,77 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Pylon";NA;13;0
+"Building";"Assimilator";NA;16;0
+"Building";"Gateway";NA;15;0
+"Building";"Assimilator";NA;22;0
+"Building";"Pylon";NA;22;0
+"Building";"CyberneticsCore";NA;21;0
+"Building";"Nexus";NA;20;0
+"Unit";"Adept";"Gateway";23;2
+"Building";"TwilightCouncil";NA;24;0
+"Building";"RoboticsFacility";NA;26;0
+"Building";"Gateway";NA;33;0
+"Building";"Assimilator";NA;34;0
+"Building";"Gateway";NA;34;0
+"Building";"Assimilator";NA;34;0
+"Building";"Gateway";NA;34;0
+"Building";"Pylon";NA;36;0
+"Building";"DarkShrine";NA;33;0
+"Building";"Pylon";NA;36;0
+"Building";"DarkTemplar";NA;40;0
+"Building";"DarkTemplar";NA;40;0
+"Building";"DarkTemplar";NA;40;0
+"Building";"DarkTemplar";NA;40;0
+"Building";"Pylon";NA;42;0
+"Unit";"Archon";"High Templar";42;0
+"Unit";"Archon";"High Templar";42;0
+"Unit";"Immortal";"Robotics Facility";42;4
+"Building";"Pylon";NA;42;0
+"Unit";"Sentry";"Gateway";50;2
+"Unit";"Sentry";"Gateway";50;2
+"Unit";"Sentry";"Gateway";50;2
+"Unit";"Sentry";"Gateway";50;2
+"Unit";"Immortal";"Robotics Facility";44;4
+"Building";"Pylon";NA;50;0
+"Building";"ShieldBattery";NA;50;0
+"Building";"ShieldBattery";NA;50;0
+"Unit";"Zealot";"Gateway";62;2
+"Building";"DarkTemplar";NA;62;0
+"Building";"DarkTemplar";NA;62;0
+"Unit";"Archon";"High Templar";64;0
+"Upgrade";"Charge";"TwilightCouncil";48;0
+"Unit";"Immortal";"Robotics Facility";62;4
+"Building";"Gateway";NA;58;0
+"Building";"Gateway";NA;62;0
+"Building";"DarkTemplar";NA;68;0
+"Building";"DarkTemplar";NA;68;0
+"Building";"Gateway";NA;62;0
+"Building";"Gateway";NA;62;0
+"Building";"Pylon";NA;64;0
+"Building";"Gateway";NA;62;0
+"Building";"Pylon";NA;64;0
+"Building";"Pylon";NA;64;0
+"Unit";"Archon";"High Templar";68;0
+"Unit";"Zealot";"Gateway";68;2
+"Unit";"Zealot";"Gateway";68;2
+"Unit";"Zealot";"Gateway";68;2
+"Unit";"Zealot";"Gateway";68;2
+"Unit";"Zealot";"Gateway";76;2
+"Unit";"Zealot";"Gateway";76;2
+"Unit";"Zealot";"Gateway";76;2
+"Unit";"Zealot";"Gateway";76;2
+"Unit";"Immortal";"Robotics Facility";68;4
+"Building";"Pylon";NA;76;0
+"Building";"DarkTemplar";NA;88;0
+"Building";"DarkTemplar";NA;88;0
+"Building";"DarkTemplar";NA;88;0
+"Building";"DarkTemplar";NA;88;0
+"Unit";"Archon";"High Templar";88;0
+"Unit";"Archon";"High Templar";88;0
+"Building";"Pylon";NA;88;0
+"Unit";"Zealot";"Gateway";88;2
+"Unit";"Zealot";"Gateway";88;2
+"Unit";"Zealot";"Gateway";88;2
+"Unit";"Zealot";"Gateway";88;2
+"Unit";"Zealot";"Gateway";88;2
+"Unit";"Zealot";"Gateway";88;2
+"Unit";"Zealot";"Gateway";88;2

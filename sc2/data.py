@@ -12,6 +12,11 @@ from .ids.unit_typeid import COMMANDCENTER, ORBITALCOMMAND, PLANETARYFORTRESS
 from .ids.unit_typeid import HATCHERY, LAIR, HIVE
 from .ids.unit_typeid import ASSIMILATOR, REFINERY, EXTRACTOR
 
+# TODO check merge conflict
+from .ids.unit_typeid import PYLON, OVERLORD, SUPPLYDEPOT
+
+
+
 from .ids.ability_id import (
     GATEWAYTRAIN_ZEALOT,
     GATEWAYTRAIN_STALKER,
@@ -30,6 +35,8 @@ from .ids.ability_id import (
     TRAINWARP_ADEPT
 )
 
+CreateGameError = enum.Enum("CreateGameError", sc_pb.ResponseCreateGame.Error.items())
+
 PlayerType = enum.Enum("PlayerType", sc_pb.PlayerType.items())
 Difficulty = enum.Enum("Difficulty", sc_pb.Difficulty.items())
 Status = enum.Enum("Status", sc_pb.Status.items())
@@ -47,10 +54,22 @@ Attribute = enum.Enum("Attribute", data_pb.Attribute.items())
 
 ActionResult = enum.Enum("ActionResult", error_pb.ActionResult.items())
 
+race_supply = {
+    Race.Protoss: PYLON,
+    Race.Terran: SUPPLYDEPOT,
+    Race.Zerg: OVERLORD
+}
+
 race_worker = {
     Race.Protoss: PROBE,
     Race.Terran: SCV,
     Race.Zerg: DRONE
+}
+
+race_basic_townhalls = {
+    Race.Protoss: NEXUS,
+    Race.Terran: COMMANDCENTER,
+    Race.Zerg: HATCHERY
 }
 
 race_townhalls = {

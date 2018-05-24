@@ -1,0 +1,45 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";16;1
+"Building";"Refinery";NA;15;0
+"Unit";"SCV";"Command Center";17;1
+"Building";"Barracks";NA;15;0
+"Unit";"SCV";"Command Center";17;1
+"Building";"BarracksTechLab";NA;18;0
+"Building";"Barracks";NA;16;0
+"Unit";"Marauder";"Barracks";19;2
+"Unit";"SCV";"Command Center";19;1
+"Building";"BarracksTechLab";NA;19;0
+"Building";"SupplyDepot";NA;19;0
+"Unit";"SCV";"Command Center";22;1
+"Unit";"Marauder";"Barracks";21;2
+"Unit";"Marauder";"Barracks";22;2
+"Unit";"SCV";"Command Center";22;1
+"Unit";"Marauder";"Barracks";23;2
+"Building";"Refinery";NA;25;0
+"Unit";"SCV";"Command Center";28;1
+"Building";"SupplyDepot";NA;27;0
+"Unit";"Marauder";"Barracks";28;2
+"Unit";"Marauder";"Barracks";30;2
+"Unit";"Marauder";"Barracks";31;2
+"Unit";"Marauder";"Barracks";33;2
+"Unit";"Marauder";"Barracks";35;2
+"Unit";"Marauder";"Barracks";37;2
+"Unit";"SCV";"Command Center";41;1
+"Unit";"Marauder";"Barracks";39;2
+"Building";"SupplyDepot";NA;41;0
+"Unit";"Marauder";"Barracks";41;2
+"Unit";"SCV";"Command Center";46;1
+"Unit";"Marauder";"Barracks";46;2
+"Unit";"SCV";"Command Center";49;1
+"Building";"Factory";NA;41;0
+"Unit";"Marauder";"Barracks";46;2
+"Unit";"Marauder";"Barracks";49;2
+"Unit";"Marauder";"Barracks";52;2
+"Unit";"Cyclone";"Factory";54;3
+"Unit";"SCV";"Command Center";56;1
+"Unit";"Marauder";"Barracks";56;2

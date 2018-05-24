@@ -1,0 +1,9 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Unit";"Overlord";"Larva";13;0
+"Building";"SpawningPool";NA;16;0
+"Building";"Extractor";NA;19;0
+"Unit";"Zergling";"Larva";19;1
+"Unit";"Zergling";"Larva";19;1
+"Unit";"Overlord";"Larva";23;0
+"Unit";"Queen";"Hatchery";19;2
+"Building";"Hatchery";NA;19;0
