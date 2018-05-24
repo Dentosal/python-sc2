@@ -1,0 +1,118 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Building";"Refinery";NA;14;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";17;1
+"Building";"Refinery";NA;16;0
+"Unit";"SCV";"Command Center";17;1
+"Building";"Barracks";NA;15;0
+"Unit";"Reaper";"Barracks";19;1
+"Unit";"SCV";"Command Center";19;1
+"Building";"SupplyDepot";NA;19;0
+"Building";"Factory";NA;19;0
+"Unit";"SCV";"Command Center";20;1
+"Unit";"SCV";"Command Center";22;1
+"Building";"BarracksReactor";NA;20;0
+"Building";"SupplyDepot";NA;22;0
+"Unit";"SCV";"Command Center";23;1
+"Unit";"SCV";"Command Center";23;1
+"Building";"BarracksTechLab";NA;23;0
+"Unit";"Cyclone";"Factory";23;3
+"Unit";"Cyclone";"Factory";23;3
+"Unit";"SCV";"Command Center";25;1
+"Unit";"SCV";"Command Center";32;1
+"Building";"SupplyDepot";NA;32;0
+"Building";"Starport";NA;31;0
+"Unit";"SCV";"Command Center";33;1
+"Unit";"Cyclone";"Factory";33;3
+"Unit";"Cyclone";"Factory";33;3
+"Building";"CommandCenter";NA;24;0
+"Unit";"SCV";"Command Center";40;1
+"Unit";"Cyclone";"Factory";40;3
+"Unit";"Cyclone";"Factory";40;3
+"Unit";"SCV";"Command Center";40;1
+"Unit";"SCV";"Command Center";48;1
+"Unit";"SCV";"Command Center";48;1
+"Unit";"SCV";"Command Center";48;1
+"Unit";"SCV";"Command Center";49;1
+"Building";"BarracksTechLab";NA;49;0
+"Unit";"SCV";"Command Center";50;1
+"Unit";"Banshee";"Starport";48;3
+"Unit";"SCV";"Command Center";52;1
+"Building";"SupplyDepot";NA;50;0
+"Unit";"SCV";"Command Center";52;1
+"Unit";"SCV";"Command Center";57;1
+"Unit";"SCV";"Command Center";57;1
+"Unit";"Marine";"Barracks";58;1
+"Unit";"Marine";"Barracks";58;1
+"Building";"SupplyDepot";NA;58;0
+"Unit";"SCV";"Command Center";58;1
+"Unit";"SCV";"Command Center";60;1
+"Unit";"SCV";"Command Center";62;1
+"Unit";"Banshee";"Starport";57;3
+"Unit";"SCV";"Command Center";63;1
+"Building";"EngineeringBay";NA;63;0
+"Unit";"SCV";"Command Center";69;1
+"Building";"Barracks";NA;63;0
+"Building";"Barracks";NA;63;0
+"Unit";"SCV";"Command Center";70;1
+"Unit";"SCV";"Command Center";70;1
+"Unit";"Marine";"Barracks";70;1
+"Unit";"Marine";"Barracks";70;1
+"Building";"BarracksTechLab";NA;70;0
+"Unit";"SCV";"Command Center";74;1
+"Unit";"SCV";"Command Center";74;1
+"Unit";"Marine";"Barracks";74;1
+"Building";"BarracksReactor";NA;70;0
+"Unit";"SCV";"Command Center";74;1
+"Unit";"Marine";"Barracks";74;1
+"Unit";"Marine";"Barracks";74;1
+"Building";"StarportReactor";NA;74;0
+"Unit";"Marine";"Barracks";77;1
+"Unit";"SCV";"Command Center";80;1
+"Unit";"Marine";"Barracks";78;1
+"Unit";"SCV";"Command Center";80;1
+"Unit";"Marine";"Barracks";80;1
+"Unit";"Marine";"Barracks";80;1
+"Building";"Barracks";NA;74;0
+"Unit";"SCV";"Command Center";81;1
+"Building";"Barracks";NA;74;0
+"Unit";"Marine";"Barracks";80;1
+"Unit";"SCV";"Command Center";86;1
+"Unit";"Marine";"Barracks";86;1
+"Unit";"Marine";"Barracks";86;1
+"Unit";"Marine";"Barracks";86;1
+"Unit";"SCV";"Command Center";87;1
+"Unit";"Marine";"Barracks";86;1
+"Unit";"Marine";"Barracks";86;1
+"Unit";"Marine";"Barracks";87;1
+"Unit";"Marine";"Barracks";87;1
+"Unit";"SCV";"Command Center";94;1
+"Building";"Refinery";NA;89;0
+"Unit";"Marine";"Barracks";94;1
+"Unit";"Marine";"Barracks";95;1
+"Unit";"Marine";"Barracks";95;1
+"Unit";"Marine";"Barracks";95;1
+"Unit";"SCV";"Command Center";98;1
+"Building";"Refinery";NA;97;0
+"Unit";"SCV";"Command Center";98;1
+"Unit";"Marine";"Barracks";99;1
+"Unit";"Marine";"Barracks";99;1
+"Unit";"Marine";"Barracks";99;1
+"Unit";"SCV";"Command Center";102;1
+"Building";"SupplyDepot";NA;99;0
+"Building";"SupplyDepot";NA;99;0
+"Building";"SupplyDepot";NA;99;0
+"Unit";"SCV";"Command Center";103;1
+"Building";"CommandCenter";NA;80;0
+"Unit";"Marine";"Barracks";105;1
+"Unit";"Marine";"Barracks";105;1
+"Upgrade";"Stimpack";"TechLab";83;0
+"Unit";"Marine";"Barracks";109;1
+"Unit";"Marine";"Barracks";109;1
+"Unit";"SCV";"Command Center";113;1
+"Unit";"SCV";"Command Center";113;1

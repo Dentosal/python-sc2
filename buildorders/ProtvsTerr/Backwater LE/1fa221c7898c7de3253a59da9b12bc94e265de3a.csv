@@ -1,0 +1,68 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Pylon";NA;13;0
+"Building";"Assimilator";NA;16;0
+"Building";"Assimilator";NA;16;0
+"Building";"Gateway";NA;14;0
+"Building";"Pylon";NA;20;0
+"Building";"Gateway";NA;18;0
+"Building";"CyberneticsCore";NA;19;0
+"Unit";"Stalker";"Gateway";21;2
+"Unit";"Stalker";"Gateway";21;2
+"Building";"Pylon";NA;22;0
+"Unit";"Stalker";"Gateway";27;2
+"Unit";"Stalker";"Gateway";27;2
+"Building";"Pylon";NA;28;0
+"Building";"Gateway";NA;28;0
+"Building";"Pylon";NA;32;0
+"Building";"RoboticsFacility";NA;32;0
+"Building";"ShieldBattery";NA;33;0
+"Unit";"Stalker";"Gateway";34;2
+"Building";"ShieldBattery";NA;33;0
+"Unit";"Observer";"Robotics Facility";34;1
+"Building";"Pylon";NA;34;0
+"Building";"Stargate";NA;33;0
+"Building";"ShieldBattery";NA;37;0
+"Unit";"Observer";"Robotics Facility";37;1
+"Building";"ShieldBattery";NA;38;0
+"Building";"Gateway";NA;37;0
+"Unit";"Sentry";"Gateway";40;2
+"Building";"Nexus";NA;39;0
+"Unit";"Immortal";"Robotics Facility";39;4
+"Building";"Pylon";NA;43;0
+"Building";"Pylon";NA;48;0
+"Unit";"Immortal";"Robotics Facility";49;4
+"Unit";"Stalker";"Gateway";57;2
+"Building";"Assimilator";NA;53;0
+"Building";"FleetBeacon";NA;53;0
+"Building";"ShieldBattery";NA;61;0
+"Unit";"Stalker";"Gateway";65;2
+"Unit";"Stalker";"Gateway";65;2
+"Building";"Assimilator";NA;63;0
+"Unit";"Tempest";"Stargate";63;4
+"Building";"Pylon";NA;77;0
+"Unit";"Observer";"Robotics Facility";77;1
+"Building";"Pylon";NA;78;0
+"Unit";"Tempest";"Stargate";77;4
+"Unit";"Observer";"Robotics Facility";78;1
+"Building";"Stargate";NA;77;0
+"Unit";"Tempest";"Stargate";84;4
+"Unit";"Stalker";"Gateway";89;2
+"Unit";"Stalker";"Gateway";89;2
+"Unit";"Stalker";"Gateway";89;2
+"Unit";"Stalker";"Gateway";89;2
+"Building";"ShieldBattery";NA;85;0
+"Building";"ShieldBattery";NA;85;0
+"Unit";"Stalker";"Gateway";97;2
+"Unit";"Stalker";"Gateway";97;2
+"Unit";"Stalker";"Gateway";97;2
+"Unit";"Stalker";"Gateway";97;2
+"Unit";"Tempest";"Stargate";89;4
+"Building";"Nexus";NA;89;0
+"Unit";"Tempest";"Stargate";97;4
+"Upgrade";"ProtossAirWeaponsLevel1";"CyberneticsCore";89;0
+"Building";"Pylon";NA;109;0
+"Building";"Pylon";NA;113;0
+"Unit";"Stalker";"Gateway";118;2
+"Unit";"Stalker";"Gateway";118;2
+"Unit";"Stalker";"Gateway";118;2
+"Unit";"Stalker";"Gateway";118;2

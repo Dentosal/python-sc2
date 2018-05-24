@@ -1,0 +1,68 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Building";"Refinery";NA;14;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";16;1
+"Building";"Refinery";NA;17;0
+"Building";"Barracks";NA;15;0
+"Unit";"SCV";"Command Center";17;1
+"Building";"SupplyDepot";NA;19;0
+"Unit";"SCV";"Command Center";19;1
+"Building";"Factory";NA;19;0
+"Building";"BarracksReactor";NA;19;0
+"Unit";"SCV";"Command Center";19;1
+"Building";"SupplyDepot";NA;20;0
+"Unit";"SCV";"Command Center";21;1
+"Unit";"SCV";"Command Center";21;1
+"Unit";"Cyclone";"Factory";21;3
+"Unit";"Cyclone";"Factory";21;3
+"Unit";"SCV";"Command Center";22;1
+"Unit";"SCV";"Command Center";29;1
+"Building";"SupplyDepot";NA;30;0
+"Unit";"Cyclone";"Factory";30;3
+"Unit";"Cyclone";"Factory";30;3
+"Unit";"SCV";"Command Center";37;1
+"Unit";"Hellion";"Factory";37;2
+"Unit";"Hellion";"Factory";37;2
+"Building";"SupplyDepot";NA;37;0
+"Unit";"Hellion";"Factory";38;2
+"Unit";"Hellion";"Factory";42;2
+"Building";"Armory";NA;37;0
+"Building";"CommandCenter";NA;31;0
+"Unit";"Hellion";"Factory";46;2
+"Unit";"Cyclone";"Factory";46;3
+"Building";"Factory";NA;42;0
+"Unit";"Hellion";"Factory";46;2
+"Unit";"Hellion";"Factory";48;2
+"Building";"FactoryTechLab";NA;51;0
+"Unit";"Hellion";"Factory";55;2
+"Unit";"Hellion";"Factory";55;2
+"Unit";"Cyclone";"Factory";55;3
+"Unit";"Hellion";"Factory";55;2
+"Unit";"Hellion";"Factory";57;2
+"Unit";"Hellion";"Factory";62;2
+"Unit";"Cyclone";"Factory";62;3
+"Unit";"Hellion";"Factory";64;2
+"Upgrade";"TerranVehicleWeaponsLevel1";"Armory";53;0
+"Building";"SupplyDepot";NA;73;0
+"Building";"SupplyDepot";NA;73;0
+"Building";"EngineeringBay";NA;73;0
+"Building";"SupplyDepot";NA;73;0
+"Unit";"SCV";"Command Center";73;1
+"Unit";"SCV";"Command Center";73;1
+"Unit";"Hellion";"Factory";73;2
+"Unit";"Hellion";"Factory";73;2
+"Building";"SupplyDepot";NA;73;0
+"Unit";"SCV";"Command Center";73;1
+"Unit";"SCV";"Command Center";74;1
+"Unit";"Cyclone";"Factory";73;3
+"Building";"Refinery";NA;73;0
+"Building";"Refinery";NA;74;0
+"Unit";"SCV";"Command Center";79;1
+"Unit";"SCV";"Command Center";80;1
+"Unit";"SCV";"Command Center";84;1
+"Unit";"SCV";"Command Center";85;1

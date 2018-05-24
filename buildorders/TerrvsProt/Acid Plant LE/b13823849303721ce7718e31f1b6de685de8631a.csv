@@ -1,0 +1,160 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";16;1
+"Building";"Refinery";NA;15;0
+"Unit";"SCV";"Command Center";17;1
+"Building";"Barracks";NA;15;0
+"Unit";"SCV";"Command Center";17;1
+"Unit";"Reaper";"Barracks";18;1
+"Unit";"SCV";"Command Center";19;1
+"Unit";"Marine";"Barracks";20;1
+"Unit";"SCV";"Command Center";20;1
+"Building";"Refinery";NA;21;0
+"Building";"SupplyDepot";NA;21;0
+"Building";"Factory";NA;20;0
+"Unit";"SCV";"Command Center";23;1
+"Building";"CommandCenter";NA;19;0
+"Building";"BarracksReactor";NA;23;0
+"Unit";"SCV";"Command Center";23;1
+"Unit";"SCV";"Command Center";25;1
+"Unit";"Hellion";"Factory";25;2
+"Unit";"Hellion";"Factory";25;2
+"Unit";"SCV";"Command Center";25;1
+"Unit";"SCV";"Command Center";26;1
+"Building";"SupplyDepot";NA;25;0
+"Unit";"SCV";"Command Center";30;1
+"Unit";"SCV";"Command Center";31;1
+"Building";"BarracksReactor";NA;25;0
+"Unit";"Hellion";"Factory";30;2
+"Building";"Factory";NA;25;0
+"Unit";"SCV";"Command Center";32;1
+"Unit";"Cyclone";"Factory";31;3
+"Unit";"SCV";"Command Center";33;1
+"Building";"SupplyDepot";NA;32;0
+"Unit";"SCV";"Command Center";36;1
+"Unit";"SCV";"Command Center";40;1
+"Building";"Refinery";NA;37;0
+"Unit";"SCV";"Command Center";41;1
+"Unit";"SCV";"Command Center";43;1
+"Unit";"Hellion";"Factory";41;2
+"Unit";"Cyclone";"Factory";41;3
+"Unit";"Cyclone";"Factory";41;3
+"Unit";"SCV";"Command Center";43;1
+"Unit";"SCV";"Command Center";44;1
+"Unit";"SCV";"Command Center";53;1
+"Unit";"Hellion";"Factory";47;2
+"Building";"SupplyDepot";NA;53;0
+"Building";"SupplyDepot";NA;53;0
+"Unit";"Cyclone";"Factory";54;3
+"Unit";"SCV";"Command Center";58;1
+"Unit";"SCV";"Command Center";61;1
+"Building";"SupplyDepot";NA;58;0
+"Unit";"Hellion";"Factory";58;2
+"Unit";"SCV";"Command Center";61;1
+"Unit";"Cyclone";"Factory";61;3
+"Building";"Refinery";NA;61;0
+"Unit";"Cyclone";"Factory";61;3
+"Unit";"SCV";"Command Center";66;1
+"Unit";"SCV";"Command Center";66;1
+"Unit";"Hellion";"Factory";66;2
+"Unit";"Hellion";"Factory";66;2
+"Building";"Armory";NA;61;0
+"Unit";"SCV";"Command Center";78;1
+"Unit";"SCV";"Command Center";78;1
+"Building";"Starport";NA;66;0
+"Unit";"SCV";"Command Center";80;1
+"Unit";"SCV";"Command Center";80;1
+"Building";"SupplyDepot";NA;80;0
+"Unit";"Cyclone";"Factory";80;3
+"Building";"SupplyDepot";NA;80;0
+"Building";"SupplyDepot";NA;80;0
+"Unit";"SCV";"Command Center";85;1
+"Unit";"SCV";"Command Center";85;1
+"Building";"SupplyDepot";NA;85;0
+"Building";"BarracksTechLab";NA;85;0
+"Unit";"Medivac";"Starport";82;2
+"Unit";"Cyclone";"Factory";85;3
+"Unit";"Cyclone";"Factory";85;3
+"Building";"CommandCenter";NA;78;0
+"Unit";"Cyclone";"Factory";85;3
+"Unit";"Cyclone";"Factory";87;3
+"Building";"Factory";NA;85;0
+"Unit";"Hellion";"Factory";95;2
+"Unit";"Hellion";"Factory";95;2
+"Unit";"SCV";"Command Center";101;1
+"Unit";"SCV";"Command Center";101;1
+"Unit";"Medivac";"Starport";95;2
+"Building";"Refinery";NA;107;0
+"Unit";"Cyclone";"Factory";107;3
+"Unit";"Cyclone";"Factory";107;3
+"Unit";"Hellion";"Factory";109;2
+"Upgrade";"TerranVehicleWeaponsLevel1";"Armory";85;0
+"Building";"Refinery";NA;109;0
+"Unit";"SCV";"Command Center";109;1
+"Unit";"SCV";"Command Center";109;1
+"Unit";"SCV";"Command Center";109;1
+"Unit";"Cyclone";"Factory";109;3
+"Unit";"Hellion";"Factory";112;2
+"Unit";"SCV";"Command Center";123;1
+"Unit";"SCV";"Command Center";123;1
+"Unit";"Cyclone";"Factory";117;3
+"Unit";"Hellion";"Factory";123;2
+"Unit";"SCV";"Command Center";123;1
+"Unit";"Hellion";"Factory";123;2
+"Unit";"SCV";"Command Center";125;1
+"Unit";"SCV";"Command Center";130;1
+"Building";"CommandCenter";NA;105;0
+"Building";"StarportReactor";NA;123;0
+"Unit";"Hellion";"Factory";136;2
+"Unit";"Hellion";"Factory";136;2
+"Unit";"Hellion";"Factory";136;2
+"Unit";"Hellion";"Factory";136;2
+"Unit";"SCV";"Command Center";145;1
+"Unit";"SCV";"Command Center";145;1
+"Unit";"SCV";"Command Center";145;1
+"Unit";"Medivac";"Starport";137;2
+"Building";"SupplyDepot";NA;145;0
+"Unit";"Medivac";"Starport";137;2
+"Unit";"SCV";"Command Center";145;1
+"Building";"Factory";NA;137;0
+"Building";"EngineeringBay";NA;145;0
+"Building";"Factory";NA;137;0
+"Building";"Armory";NA;137;0
+"Building";"FactoryTechLab";NA;153;0
+"Building";"FactoryTechLab";NA;153;0
+"Upgrade";"TerranVehicleWeaponsLevel2";"Armory";137;0
+"Building";"MissileTurret";NA;153;0
+"Unit";"SCV";"Command Center";153;1
+"Unit";"SCV";"Command Center";153;1
+"Unit";"Cyclone";"Factory";153;3
+"Unit";"Cyclone";"Factory";153;3
+"Unit";"Cyclone";"Factory";153;3
+"Unit";"Cyclone";"Factory";153;3
+"Unit";"Liberator";"Starport";153;3
+"Unit";"SCV";"Command Center";167;1
+"Unit";"SCV";"Command Center";167;1
+"Unit";"SCV";"Command Center";172;1
+"Unit";"SCV";"Command Center";172;1
+"Unit";"SCV";"Command Center";174;1
+"Unit";"SCV";"Command Center";174;1
+"Unit";"Hellion";"Factory";172;2
+"Unit";"Hellion";"Factory";172;2
+"Building";"SupplyDepot";NA;174;0
+"Unit";"SCV";"Command Center";180;1
+"Unit";"SCV";"Command Center";180;1
+"Upgrade";"TerranVehicleAndShipArmorsLevel1";"Armory";153;0
+"Unit";"Thor";"Factory";172;6
+"Unit";"Thor";"Factory";172;6
+"Unit";"Thor";"Factory";172;6
+"Unit";"Hellion";"Factory";180;2
+"Unit";"Hellion";"Factory";180;2
+"Building";"Refinery";NA;181;0
+"Unit";"Hellion";"Factory";181;2
+"Unit";"Hellion";"Factory";182;2
+"Building";"Refinery";NA;200;0
+"Unit";"Hellion";"Factory";200;2
+"Unit";"Hellion";"Factory";200;2

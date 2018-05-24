@@ -1,0 +1,59 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Unit";"SCV";"Command Center";15;1
+"Building";"Refinery";NA;14;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";16;1
+"Unit";"SCV";"Command Center";17;1
+"Building";"Barracks";NA;15;0
+"Unit";"Reaper";"Barracks";19;1
+"Unit";"SCV";"Command Center";19;1
+"Unit";"Marine";"Barracks";20;1
+"Unit";"SCV";"Command Center";21;1
+"Unit";"SCV";"Command Center";23;1
+"Building";"SupplyDepot";NA;21;0
+"Building";"Factory";NA;20;0
+"Building";"Refinery";NA;23;0
+"Unit";"SCV";"Command Center";24;1
+"Building";"BarracksReactor";NA;23;0
+"Unit";"SCV";"Command Center";24;1
+"Building";"CommandCenter";NA;19;0
+"Unit";"SCV";"Command Center";25;1
+"Unit";"Marine";"Barracks";25;1
+"Unit";"Marine";"Barracks";25;1
+"Unit";"Cyclone";"Factory";25;3
+"Unit";"SCV";"Command Center";32;1
+"Building";"SupplyDepot";NA;27;0
+"Unit";"SCV";"Command Center";32;1
+"Unit";"SCV";"Command Center";33;1
+"Unit";"Cyclone";"Factory";33;3
+"Unit";"Cyclone";"Factory";33;3
+"Unit";"SCV";"Command Center";34;1
+"Unit";"SCV";"Command Center";34;1
+"Unit";"SCV";"Command Center";41;1
+"Unit";"SCV";"Command Center";43;1
+"Unit";"SCV";"Command Center";44;1
+"Unit";"SCV";"Command Center";44;1
+"Unit";"SCV";"Command Center";45;1
+"Unit";"Cyclone";"Factory";44;3
+"Unit";"Cyclone";"Factory";44;3
+"Unit";"SCV";"Command Center";46;1
+"Building";"BarracksTechLab";NA;46;0
+"Unit";"SCV";"Command Center";47;1
+"Building";"Refinery";NA;47;0
+"Building";"SupplyDepot";NA;47;0
+"Unit";"SCV";"Command Center";54;1
+"Building";"CommandCenter";NA;34;0
+"Unit";"SCV";"Command Center";56;1
+"Unit";"SCV";"Command Center";56;1
+"Unit";"SCV";"Command Center";57;1
+"Unit";"SCV";"Command Center";58;1
+"Unit";"SCV";"Command Center";58;1
+"Unit";"SCV";"Command Center";60;1
+"Unit";"Cyclone";"Factory";59;3
+"Unit";"Cyclone";"Factory";59;3
+"Unit";"SCV";"Command Center";62;1
+"Unit";"SCV";"Command Center";62;1

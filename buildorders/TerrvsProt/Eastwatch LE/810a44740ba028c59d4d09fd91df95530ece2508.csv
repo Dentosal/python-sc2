@@ -1,0 +1,60 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Building";"Refinery";NA;14;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";16;1
+"Building";"Refinery";NA;16;0
+"Unit";"SCV";"Command Center";16;1
+"Unit";"SCV";"Command Center";17;1
+"Building";"Barracks";NA;15;0
+"Unit";"Reaper";"Barracks";19;1
+"Building";"SupplyDepot";NA;19;0
+"Unit";"SCV";"Command Center";19;1
+"Building";"Factory";NA;19;0
+"Unit";"Marine";"Barracks";19;1
+"Unit";"SCV";"Command Center";21;1
+"Unit";"SCV";"Command Center";23;1
+"Building";"FactoryTechLab";NA;22;0
+"Unit";"Marine";"Barracks";22;1
+"Building";"Barracks";NA;21;0
+"Unit";"SCV";"Command Center";25;1
+"Building";"Starport";NA;23;0
+"Building";"SupplyDepot";NA;25;0
+"Unit";"SCV";"Command Center";26;1
+"Unit";"Marine";"Barracks";26;1
+"Building";"BarracksReactor";NA;25;0
+"Unit";"SCV";"Command Center";26;1
+"Unit";"SCV";"Command Center";28;1
+"Building";"SupplyDepot";NA;28;0
+"Unit";"Marine";"Barracks";28;1
+"Unit";"Marine";"Barracks";28;1
+"Unit";"SCV";"Command Center";30;1
+"Unit";"Liberator";"Starport";27;3
+"Unit";"Marine";"Barracks";30;1
+"Unit";"Marine";"Barracks";32;1
+"Unit";"Marine";"Barracks";32;1
+"Unit";"SCV";"Command Center";32;1
+"Building";"SupplyDepot";NA;32;0
+"Building";"StarportTechLab";NA;36;0
+"Unit";"Marine";"Barracks";37;1
+"Unit";"Marine";"Barracks";37;1
+"Unit";"Marine";"Barracks";38;1
+"Unit";"SCV";"Command Center";40;1
+"Unit";"Marine";"Barracks";43;1
+"Building";"SupplyDepot";NA;40;0
+"Unit";"SCV";"Command Center";44;1
+"Unit";"Marine";"Barracks";44;1
+"Unit";"Marine";"Barracks";44;1
+"Unit";"Marine";"Barracks";45;1
+"Unit";"Raven";"Starport";43;2
+"Unit";"Marine";"Barracks";49;1
+"Unit";"Marine";"Barracks";49;1
+"Unit";"Marine";"Barracks";49;1
+"Unit";"Marine";"Barracks";51;1
+"Unit";"Marine";"Barracks";54;1
+"Unit";"Marine";"Barracks";54;1
+"Unit";"SCV";"Command Center";55;1
+"Unit";"Raven";"Starport";51;2

@@ -7,7 +7,7 @@ from sc2.ids.buff_id import BuffId
 from sc2.player import Bot, Computer
 
 class ThreebaseVoidrayBot(sc2.BotAI):
-    def select_target(self, state):
+    def select_target(self):
         if self.known_enemy_structures.exists:
             return random.choice(self.known_enemy_structures)
 

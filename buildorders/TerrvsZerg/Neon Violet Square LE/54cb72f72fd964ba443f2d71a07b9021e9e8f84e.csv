@@ -1,0 +1,66 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";15;1
+"Building";"Refinery";NA;15;0
+"Unit";"SCV";"Command Center";16;1
+"Building";"Barracks";NA;15;0
+"Unit";"SCV";"Command Center";17;1
+"Unit";"Reaper";"Barracks";19;1
+"Unit";"SCV";"Command Center";19;1
+"Building";"SupplyDepot";NA;19;0
+"Unit";"SCV";"Command Center";20;1
+"Unit";"Marine";"Barracks";19;1
+"Unit";"SCV";"Command Center";23;1
+"Unit";"Marine";"Barracks";22;1
+"Unit";"SCV";"Command Center";23;1
+"Building";"Refinery";NA;23;0
+"Unit";"SCV";"Command Center";25;1
+"Building";"Factory";NA;23;0
+"Unit";"SCV";"Command Center";26;1
+"Building";"BarracksReactor";NA;25;0
+"Unit";"SCV";"Command Center";27;1
+"Building";"CommandCenter";NA;21;0
+"Unit";"SCV";"Command Center";28;1
+"Unit";"Hellion";"Factory";28;2
+"Building";"BarracksTechLab";NA;29;0
+"Building";"SupplyDepot";NA;29;0
+"Unit";"SCV";"Command Center";30;1
+"Building";"Starport";NA;28;0
+"Unit";"Cyclone";"Factory";30;3
+"Unit";"Hellion";"Factory";30;2
+"Unit";"SCV";"Command Center";33;1
+"Unit";"Marine";"Barracks";33;1
+"Unit";"SCV";"Command Center";40;1
+"Unit";"Hellion";"Factory";33;2
+"Unit";"Marine";"Barracks";40;1
+"Unit";"SCV";"Command Center";40;1
+"Unit";"SCV";"Command Center";43;1
+"Unit";"SCV";"Command Center";45;1
+"Unit";"SCV";"Command Center";46;1
+"Unit";"Marine";"Barracks";44;1
+"Unit";"Hellion";"Factory";44;2
+"Unit";"Hellion";"Factory";44;2
+"Unit";"SCV";"Command Center";46;1
+"Unit";"SCV";"Command Center";54;1
+"Unit";"SCV";"Command Center";54;1
+"Unit";"Hellion";"Factory";53;2
+"Unit";"Hellion";"Factory";53;2
+"Unit";"SCV";"Command Center";54;1
+"Unit";"SCV";"Command Center";55;1
+"Unit";"Marine";"Barracks";56;1
+"Unit";"SCV";"Command Center";60;1
+"Building";"CommandCenter";NA;43;0
+"Unit";"Hellion";"Factory";56;2
+"Unit";"Hellion";"Factory";58;2
+"Unit";"SCV";"Command Center";64;1
+"Unit";"SCV";"Command Center";64;1
+"Building";"SupplyDepot";NA;62;0
+"Upgrade";"Stimpack";"TechLab";43;0
+"Building";"SupplyDepot";NA;63;0
+"Unit";"Marine";"Barracks";64;1
+"Building";"StarportReactor";NA;62;0
+"Building";"Barracks";NA;61;0

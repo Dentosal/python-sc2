@@ -1,0 +1,60 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Unit";"SCV";"Command Center";15;1
+"Building";"Refinery";NA;15;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";16;1
+"Unit";"SCV";"Command Center";18;1
+"Building";"Barracks";NA;15;0
+"Building";"Refinery";NA;18;0
+"Unit";"Marine";"Barracks";19;1
+"Building";"SupplyDepot";NA;19;0
+"Unit";"Marine";"Barracks";20;1
+"Unit";"SCV";"Command Center";20;1
+"Unit";"SCV";"Command Center";21;1
+"Building";"Bunker";NA;20;0
+"Building";"Factory";NA;19;0
+"Unit";"SCV";"Command Center";22;1
+"Building";"BarracksReactor";NA;21;0
+"Building";"FactoryTechLab";NA;23;0
+"Unit";"SCV";"Command Center";23;1
+"Unit";"SCV";"Command Center";25;1
+"Building";"SupplyDepot";NA;24;0
+"Unit";"Marine";"Barracks";24;1
+"Unit";"Marine";"Barracks";24;1
+"Building";"Starport";NA;23;0
+"Unit";"SCV";"Command Center";25;1
+"Unit";"Marine";"Barracks";26;1
+"Unit";"Marine";"Barracks";27;1
+"Building";"SupplyDepot";NA;29;0
+"Unit";"SCV";"Command Center";31;1
+"Building";"SupplyDepot";NA;31;0
+"Unit";"Banshee";"Starport";28;3
+"Unit";"Cyclone";"Factory";31;3
+"Unit";"Marine";"Barracks";31;1
+"Unit";"Marine";"Barracks";31;1
+"Unit";"Marine";"Barracks";40;1
+"Building";"SupplyDepot";NA;40;0
+"Unit";"SCV";"Command Center";40;1
+"Unit";"Marine";"Barracks";40;1
+"Unit";"Cyclone";"Factory";40;3
+"Unit";"Marine";"Barracks";41;1
+"Unit";"Banshee";"Starport";40;3
+"Unit";"Marine";"Barracks";42;1
+"Building";"SupplyDepot";NA;46;0
+"Unit";"Marine";"Barracks";46;1
+"Unit";"Cyclone";"Factory";46;3
+"Unit";"Marine";"Barracks";50;1
+"Unit";"Marine";"Barracks";51;1
+"Unit";"SCV";"Command Center";56;1
+"Unit";"Marine";"Barracks";55;1
+"Unit";"Banshee";"Starport";47;3
+"Building";"SupplyDepot";NA;56;0
+"Unit";"Cyclone";"Factory";56;3
+"Unit";"Marine";"Barracks";56;1
+"Unit";"Marine";"Barracks";58;1
+"Unit";"Cyclone";"Factory";67;3
+"Unit";"Banshee";"Starport";59;3

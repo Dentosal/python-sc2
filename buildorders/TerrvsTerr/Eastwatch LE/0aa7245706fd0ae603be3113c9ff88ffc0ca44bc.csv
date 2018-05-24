@@ -1,0 +1,67 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Building";"Refinery";NA;14;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";15;1
+"Building";"Refinery";NA;15;0
+"Unit";"SCV";"Command Center";16;1
+"Building";"Barracks";NA;15;0
+"Unit";"SCV";"Command Center";17;1
+"Unit";"Reaper";"Barracks";18;1
+"Building";"SupplyDepot";NA;19;0
+"Building";"Factory";NA;19;0
+"Unit";"SCV";"Command Center";20;1
+"Unit";"SCV";"Command Center";20;1
+"Unit";"Reaper";"Barracks";19;1
+"Unit";"Hellion";"Factory";20;2
+"Unit";"SCV";"Command Center";21;1
+"Building";"SupplyDepot";NA;21;0
+"Building";"Starport";NA;20;0
+"Unit";"SCV";"Command Center";25;1
+"Unit";"SCV";"Command Center";27;1
+"Unit";"Cyclone";"Factory";26;3
+"Unit";"SCV";"Command Center";28;1
+"Unit";"Medivac";"Starport";27;2
+"Building";"BarracksReactor";NA;27;0
+"Unit";"SCV";"Command Center";34;1
+"Building";"StarportTechLab";NA;34;0
+"Unit";"Cyclone";"Factory";34;3
+"Unit";"SCV";"Command Center";34;1
+"Unit";"Marine";"Barracks";35;1
+"Building";"CommandCenter";NA;31;0
+"Unit";"SCV";"Command Center";40;1
+"Building";"FactoryReactor";NA;40;0
+"Unit";"SCV";"Command Center";40;1
+"Unit";"Marine";"Barracks";40;1
+"Unit";"Marine";"Barracks";40;1
+"Unit";"SCV";"Command Center";41;1
+"Unit";"Raven";"Starport";40;2
+"Unit";"Cyclone";"Factory";44;3
+"Unit";"Cyclone";"Factory";44;3
+"Unit";"SCV";"Command Center";47;1
+"Unit";"Marine";"Barracks";47;1
+"Unit";"Marine";"Barracks";47;1
+"Unit";"Medivac";"Starport";47;2
+"Building";"SupplyDepot";NA;47;0
+"Building";"SupplyDepot";NA;47;0
+"Unit";"SCV";"Command Center";58;1
+"Unit";"SCV";"Command Center";58;1
+"Unit";"Marine";"Barracks";58;1
+"Unit";"Marine";"Barracks";58;1
+"Unit";"SCV";"Command Center";58;1
+"Building";"Barracks";NA;47;0
+"Building";"Barracks";NA;47;0
+"Building";"SupplyDepot";NA;58;0
+"Building";"SupplyDepot";NA;58;0
+"Unit";"SCV";"Command Center";60;1
+"Unit";"Cyclone";"Factory";58;3
+"Unit";"Cyclone";"Factory";58;3
+"Unit";"SCV";"Command Center";62;1
+"Building";"Refinery";NA;60;0
+"Building";"Refinery";NA;62;0
+"Unit";"SCV";"Command Center";63;1
+"Unit";"Medivac";"Starport";60;2
+"Unit";"SCV";"Command Center";70;1

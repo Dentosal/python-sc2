@@ -1,0 +1,31 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Pylon";NA;13;0
+"Building";"Assimilator";NA;16;0
+"Building";"Assimilator";NA;17;0
+"Building";"Gateway";NA;14;0
+"Unit";"Zealot";"Gateway";18;2
+"Building";"Pylon";NA;19;0
+"Building";"CyberneticsCore";NA;19;0
+"Unit";"Stalker";"Gateway";21;2
+"Unit";"Stalker";"Gateway";23;2
+"Unit";"Stalker";"Gateway";24;2
+"Building";"Gateway";NA;32;0
+"Unit";"Sentry";"Gateway";35;2
+"Building";"RoboticsFacility";NA;33;0
+"Building";"Pylon";NA;36;0
+"Building";"Pylon";NA;37;0
+"Unit";"Observer";"Robotics Facility";39;1
+"Unit";"Sentry";"Gateway";40;2
+"Unit";"Sentry";"Gateway";40;2
+"Building";"Forge";NA;39;0
+"Unit";"Phoenix";"Stargate";45;2
+"Building";"ShieldBattery";NA;46;0
+"Building";"Nexus";NA;39;0
+"Building";"ShieldBattery";NA;46;0
+"Unit";"Immortal";"Robotics Facility";46;4
+"Unit";"Stalker";"Gateway";55;2
+"Unit";"Stalker";"Gateway";55;2
+"Building";"Gateway";NA;49;0
+"Unit";"Phoenix";"Stargate";59;2
+"Building";"TwilightCouncil";NA;61;0
+"Upgrade";"ProtossGroundWeaponsLevel1";"Forge";49;0

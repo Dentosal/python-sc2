@@ -1,0 +1,65 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Unit";"SCV";"Command Center";15;1
+"Building";"Refinery";NA;14;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";16;1
+"Building";"Refinery";NA;16;0
+"Unit";"SCV";"Command Center";17;1
+"Building";"Barracks";NA;15;0
+"Unit";"Reaper";"Barracks";19;1
+"Building";"SupplyDepot";NA;19;0
+"Unit";"SCV";"Command Center";19;1
+"Building";"Factory";NA;19;0
+"Unit";"SCV";"Command Center";20;1
+"Unit";"SCV";"Command Center";21;1
+"Unit";"Reaper";"Barracks";19;1
+"Unit";"SCV";"Command Center";23;1
+"Unit";"Cyclone";"Factory";22;3
+"Building";"SupplyDepot";NA;22;0
+"Building";"Starport";NA;21;0
+"Unit";"SCV";"Command Center";24;1
+"Building";"BarracksTechLab";NA;25;0
+"Unit";"SCV";"Command Center";29;1
+"Unit";"SCV";"Command Center";29;1
+"Unit";"Cyclone";"Factory";29;3
+"Unit";"SCV";"Command Center";34;1
+"Building";"SupplyDepot";NA;34;0
+"Unit";"SCV";"Command Center";35;1
+"Building";"BarracksReactor";NA;31;0
+"Unit";"Raven";"Starport";31;2
+"Unit";"Marine";"Barracks";36;1
+"Unit";"Marine";"Barracks";36;1
+"Unit";"SCV";"Command Center";38;1
+"Unit";"Cyclone";"Factory";36;3
+"Building";"CommandCenter";NA;30;0
+"Building";"SupplyDepot";NA;38;0
+"Unit";"Marine";"Barracks";40;1
+"Unit";"Marine";"Barracks";44;1
+"Unit";"SCV";"Command Center";44;1
+"Unit";"Banshee";"Starport";38;3
+"Building";"SupplyDepot";NA;45;0
+"Unit";"Cyclone";"Factory";45;3
+"Unit";"Marine";"Barracks";45;1
+"Unit";"Marine";"Barracks";46;1
+"Unit";"SCV";"Command Center";50;1
+"Unit";"SCV";"Command Center";55;1
+"Unit";"SCV";"Command Center";56;1
+"Unit";"SCV";"Command Center";56;1
+"Unit";"Cyclone";"Factory";56;3
+"Unit";"SCV";"Command Center";58;1
+"Unit";"Marine";"Barracks";57;1
+"Unit";"Marine";"Barracks";57;1
+"Unit";"SCV";"Command Center";58;1
+"Unit";"SCV";"Command Center";65;1
+"Unit";"SCV";"Command Center";66;1
+"Unit";"SCV";"Command Center";66;1
+"Unit";"SCV";"Command Center";67;1
+"Unit";"Marine";"Barracks";66;1
+"Unit";"Marine";"Barracks";66;1
+"Unit";"SCV";"Command Center";68;1
+"Unit";"SCV";"Command Center";69;1
+"Unit";"Cyclone";"Factory";68;3

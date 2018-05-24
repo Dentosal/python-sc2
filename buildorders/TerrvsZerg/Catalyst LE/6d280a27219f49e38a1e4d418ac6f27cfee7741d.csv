@@ -1,0 +1,61 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";15;1
+"Building";"Refinery";NA;15;0
+"Unit";"SCV";"Command Center";16;1
+"Building";"Refinery";NA;16;0
+"Unit";"SCV";"Command Center";17;1
+"Building";"Barracks";NA;15;0
+"Unit";"Marine";"Barracks";19;1
+"Building";"SupplyDepot";NA;19;0
+"Unit";"SCV";"Command Center";20;1
+"Building";"Factory";NA;19;0
+"Unit";"SCV";"Command Center";20;1
+"Building";"BarracksReactor";NA;20;0
+"Unit";"SCV";"Command Center";21;1
+"Unit";"SCV";"Command Center";22;1
+"Building";"SupplyDepot";NA;22;0
+"Unit";"SCV";"Command Center";24;1
+"Unit";"Hellion";"Factory";23;2
+"Unit";"Hellion";"Factory";24;2
+"Building";"Factory";NA;22;0
+"Building";"Armory";NA;23;0
+"Unit";"SCV";"Command Center";29;1
+"Building";"BarracksReactor";NA;24;0
+"Unit";"Cyclone";"Factory";29;3
+"Unit";"SCV";"Command Center";29;1
+"Unit";"Cyclone";"Factory";29;3
+"Building";"SupplyDepot";NA;30;0
+"Unit";"SCV";"Command Center";33;1
+"Unit";"SCV";"Command Center";38;1
+"Unit";"Hellion";"Factory";37;2
+"Building";"SupplyDepot";NA;38;0
+"Unit";"Cyclone";"Factory";38;3
+"Unit";"Cyclone";"Factory";38;3
+"Unit";"SCV";"Command Center";41;1
+"Unit";"Hellion";"Factory";41;2
+"Building";"SupplyDepot";NA;41;0
+"Unit";"Hellion";"Factory";48;2
+"Unit";"Cyclone";"Factory";48;3
+"Unit";"SCV";"Command Center";50;1
+"Unit";"Hellion";"Factory";50;2
+"Building";"SupplyDepot";NA;50;0
+"Unit";"Hellion";"Factory";52;2
+"Unit";"SCV";"Command Center";56;1
+"Unit";"Cyclone";"Factory";56;3
+"Unit";"Hellion";"Factory";56;2
+"Building";"SupplyDepot";NA;61;0
+"Unit";"Hellion";"Factory";64;2
+"Building";"SupplyDepot";NA;66;0
+"Unit";"Cyclone";"Factory";66;3
+"Unit";"Cyclone";"Factory";66;3
+"Unit";"Hellion";"Factory";66;2
+"Upgrade";"TerranVehicleWeaponsLevel1";"Armory";56;0
+"Unit";"Hellion";"Factory";74;2
+"Unit";"Cyclone";"Factory";74;3
+"Unit";"Cyclone";"Factory";76;3
+"Building";"FactoryTechLab";NA;84;0

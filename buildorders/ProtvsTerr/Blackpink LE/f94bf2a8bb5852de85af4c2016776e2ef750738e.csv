@@ -1,0 +1,75 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Pylon";NA;13;0
+"Building";"Assimilator";NA;16;0
+"Building";"Gateway";NA;15;0
+"Building";"Assimilator";NA;20;0
+"Building";"Pylon";NA;21;0
+"Building";"CyberneticsCore";NA;20;0
+"Building";"Nexus";NA;20;0
+"Unit";"Adept";"Gateway";22;2
+"Building";"ShieldBattery";NA;22;0
+"Building";"RoboticsFacility";NA;22;0
+"Unit";"Immortal";"Robotics Facility";27;4
+"Building";"Pylon";NA;31;0
+"Building";"ShieldBattery";NA;31;0
+"Unit";"Observer";"Robotics Facility";35;1
+"Building";"Gateway";NA;30;0
+"Building";"ShieldBattery";NA;35;0
+"Building";"Gateway";NA;35;0
+"Unit";"Immortal";"Robotics Facility";35;4
+"Unit";"Adept";"Gateway";44;2
+"Unit";"Adept";"Gateway";44;2
+"Unit";"Adept";"Gateway";44;2
+"Building";"Pylon";NA;44;0
+"Unit";"Adept";"Gateway";50;2
+"Unit";"Adept";"Gateway";50;2
+"Unit";"Adept";"Gateway";50;2
+"Building";"ShieldBattery";NA;44;0
+"Unit";"Adept";"Gateway";58;2
+"Unit";"Adept";"Gateway";58;2
+"Unit";"Immortal";"Robotics Facility";50;4
+"Building";"Pylon";NA;62;0
+"Building";"Pylon";NA;62;0
+"Building";"Pylon";NA;62;0
+"Unit";"Sentry";"Gateway";69;2
+"Unit";"Sentry";"Gateway";69;2
+"Unit";"Sentry";"Gateway";69;2
+"Building";"Gateway";NA;62;0
+"Building";"Gateway";NA;67;0
+"Building";"Gateway";NA;67;0
+"Building";"Gateway";NA;67;0
+"Unit";"Stalker";"Gateway";80;2
+"Unit";"Stalker";"Gateway";80;2
+"Unit";"Stalker";"Gateway";80;2
+"Building";"Assimilator";NA;88;0
+"Building";"Pylon";NA;88;0
+"Building";"Pylon";NA;88;0
+"Building";"Assimilator";NA;88;0
+"Unit";"Observer";"Robotics Facility";88;1
+"Building";"Forge";NA;88;0
+"Building";"TwilightCouncil";NA;88;0
+"Building";"Nexus";NA;88;0
+"Building";"RoboticsBay";NA;88;0
+"Unit";"Stalker";"Gateway";97;2
+"Unit";"Stalker";"Gateway";97;2
+"Unit";"Stalker";"Gateway";97;2
+"Building";"Assimilator";NA;97;0
+"Building";"Assimilator";NA;103;0
+"Unit";"Zealot";"Gateway";109;2
+"Unit";"Zealot";"Gateway";109;2
+"Unit";"Zealot";"Gateway";109;2
+"Unit";"Zealot";"Gateway";109;2
+"Unit";"Zealot";"Gateway";109;2
+"Unit";"Zealot";"Gateway";109;2
+"Unit";"Zealot";"Gateway";109;2
+"Building";"Pylon";NA;124;0
+"Building";"Pylon";NA;124;0
+"Building";"Pylon";NA;124;0
+"Unit";"Colossus";"Robotics Facility";105;6
+"Unit";"Adept";"Gateway";130;2
+"Unit";"Adept";"Gateway";130;2
+"Unit";"Adept";"Gateway";130;2
+"Unit";"Adept";"Gateway";130;2
+"Unit";"Adept";"Gateway";130;2
+"Unit";"Adept";"Gateway";130;2
+"Unit";"Adept";"Gateway";130;2

@@ -33,8 +33,9 @@ class ZergRushBot(sc2.BotAI):
 
         for queen in self.units(QUEEN).idle:
             abilities = await self.get_available_abilities(queen)
-            if AbilityId.INJECTLARVA in abilities:
-                await self.do(queen(INJECTLARVA, hatchery))
+            if AbilityId.INJECTLARVA in abilities: # conflict: old: EFFECT_INJECTLARVA
+                await self.do(queen(INJECTLARVA, hatchery)) #EFFECT_INJECTLARVA
+
 
         if self.vespene >= 100:
             sp = self.units(SPAWNINGPOOL).ready

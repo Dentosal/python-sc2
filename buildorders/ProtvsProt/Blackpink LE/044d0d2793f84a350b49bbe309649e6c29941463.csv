@@ -1,0 +1,61 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Pylon";NA;13;0
+"Building";"Assimilator";NA;16;0
+"Building";"Assimilator";NA;18;0
+"Building";"Gateway";NA;15;0
+"Building";"CyberneticsCore";NA;19;0
+"Building";"Gateway";NA;19;0
+"Building";"Pylon";NA;21;0
+"Unit";"Adept";"Gateway";22;2
+"Unit";"Adept";"Gateway";22;2
+"Building";"Pylon";NA;27;0
+"Building";"Stargate";NA;23;0
+"Unit";"Stalker";"Gateway";28;2
+"Unit";"Stalker";"Gateway";28;2
+"Unit";"Oracle";"Stargate";28;3
+"Unit";"Stalker";"Gateway";30;2
+"Building";"Pylon";NA;32;0
+"Building";"ShieldBattery";NA;32;0
+"Unit";"Oracle";"Stargate";37;3
+"Building";"Pylon";NA;40;0
+"Building";"RoboticsFacility";NA;37;0
+"Unit";"Oracle";"Stargate";37;3
+"Building";"ShieldBattery";NA;40;0
+"Unit";"Stalker";"Gateway";43;2
+"Unit";"Stalker";"Gateway";43;2
+"Building";"Gateway";NA;40;0
+"Unit";"Observer";"Robotics Facility";43;1
+"Unit";"Observer";"Robotics Facility";48;1
+"Building";"TwilightCouncil";NA;48;0
+"Building";"Pylon";NA;49;0
+"Unit";"Observer";"Robotics Facility";48;1
+"Building";"Gateway";NA;48;0
+"Building";"Pylon";NA;49;0
+"Unit";"Stalker";"Gateway";50;2
+"Unit";"Stalker";"Gateway";50;2
+"Unit";"Stalker";"Gateway";50;2
+"Building";"ShieldBattery";NA;50;0
+"Building";"ShieldBattery";NA;50;0
+"Unit";"Immortal";"Robotics Facility";49;4
+"Unit";"Stalker";"Gateway";61;2
+"Unit";"Stalker";"Gateway";61;2
+"Building";"Nexus";NA;48;0
+"Unit";"Stalker";"Gateway";65;2
+"Unit";"Zealot";"Gateway";65;2
+"Unit";"Stalker";"Gateway";71;2
+"Unit";"Stalker";"Gateway";71;2
+"Unit";"Stalker";"Gateway";71;2
+"Unit";"Stalker";"Gateway";71;2
+"Unit";"Stalker";"Gateway";79;2
+"Unit";"Stalker";"Gateway";79;2
+"Unit";"Stalker";"Gateway";79;2
+"Unit";"Zealot";"Gateway";79;2
+"Unit";"Immortal";"Robotics Facility";79;4
+"Unit";"Adept";"Gateway";91;2
+"Unit";"Adept";"Gateway";91;2
+"Unit";"Adept";"Gateway";91;2
+"Unit";"Adept";"Gateway";91;2
+"Unit";"Adept";"Gateway";99;2
+"Unit";"Adept";"Gateway";99;2
+"Unit";"Adept";"Gateway";99;2
+"Unit";"Adept";"Gateway";99;2

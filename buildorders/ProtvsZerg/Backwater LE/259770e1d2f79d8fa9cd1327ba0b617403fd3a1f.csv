@@ -1,0 +1,13 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Pylon";NA;13;0
+"Building";"Assimilator";NA;16;0
+"Building";"Gateway";NA;15;0
+"Building";"Assimilator";NA;20;0
+"Building";"Pylon";NA;20;0
+"Building";"CyberneticsCore";NA;20;0
+"Unit";"Adept";"Gateway";21;2
+"Building";"Nexus";NA;20;0
+"Unit";"Adept";"Gateway";23;2
+"Building";"Stargate";NA;22;0
+"Unit";"Adept";"Gateway";27;2
+"Unit";"Oracle";"Stargate";31;3

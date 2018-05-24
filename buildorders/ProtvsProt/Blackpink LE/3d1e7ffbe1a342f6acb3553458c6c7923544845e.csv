@@ -1,0 +1,114 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Pylon";NA;13;0
+"Building";"Assimilator";NA;16;0
+"Building";"Assimilator";NA;17;0
+"Building";"Gateway";NA;15;0
+"Building";"Pylon";NA;21;0
+"Building";"CyberneticsCore";NA;21;0
+"Building";"Gateway";NA;20;0
+"Building";"Pylon";NA;25;0
+"Unit";"Stalker";"Gateway";24;2
+"Unit";"Stalker";"Gateway";24;2
+"Building";"Stargate";NA;24;0
+"Unit";"Phoenix";"Stargate";25;2
+"Unit";"Phoenix";"Stargate";29;2
+"Unit";"Stalker";"Gateway";31;2
+"Unit";"Stalker";"Gateway";31;2
+"Unit";"Phoenix";"Stargate";33;2
+"Building";"Pylon";NA;40;0
+"Building";"Pylon";NA;40;0
+"Building";"Nexus";NA;31;0
+"Building";"Stargate";NA;41;0
+"Unit";"Phoenix";"Stargate";41;2
+"Building";"ShieldBattery";NA;44;0
+"Unit";"Phoenix";"Stargate";48;2
+"Unit";"Phoenix";"Stargate";48;2
+"Unit";"Phoenix";"Stargate";51;2
+"Building";"Assimilator";NA;52;0
+"Building";"Assimilator";NA;53;0
+"Unit";"Phoenix";"Stargate";60;2
+"Building";"Pylon";NA;66;0
+"Unit";"Zealot";"Gateway";73;2
+"Unit";"Zealot";"Gateway";73;2
+"Building";"RoboticsFacility";NA;66;0
+"Building";"RoboticsFacility";NA;66;0
+"Building";"Pylon";NA;77;0
+"Unit";"Zealot";"Gateway";81;2
+"Unit";"Immortal";"Robotics Facility";73;4
+"Building";"Nexus";NA;68;0
+"Unit";"Immortal";"Robotics Facility";79;4
+"Building";"Pylon";NA;88;0
+"Unit";"Immortal";"Robotics Facility";81;4
+"Building";"RoboticsBay";NA;87;0
+"Unit";"Observer";"Robotics Facility";93;1
+"Building";"Pylon";NA;97;0
+"Unit";"Immortal";"Robotics Facility";93;4
+"Building";"Forge";NA;97;0
+"Unit";"Zealot";"Gateway";105;2
+"Unit";"Zealot";"Gateway";105;2
+"Unit";"Disruptor";"Robotics Facility";101;3
+"Upgrade";"ProtossAirWeaponsLevel1";"CyberneticsCore";87;0
+"Unit";"Disruptor";"Robotics Facility";105;3
+"Unit";"Phoenix";"Stargate";105;2
+"Unit";"Phoenix";"Stargate";105;2
+"Building";"Pylon";NA;105;0
+"Building";"PhotonCannon";NA;105;0
+"Building";"PhotonCannon";NA;105;0
+"Building";"ShieldBattery";NA;105;0
+"Building";"PhotonCannon";NA;105;0
+"Building";"Assimilator";NA;115;0
+"Building";"Assimilator";NA;119;0
+"Unit";"Disruptor";"Robotics Facility";109;3
+"Unit";"Disruptor";"Robotics Facility";109;3
+"Building";"FleetBeacon";NA;119;0
+"Unit";"Disruptor";"Robotics Facility";119;3
+"Unit";"Disruptor";"Robotics Facility";125;3
+"Building";"PhotonCannon";NA;125;0
+"Building";"PhotonCannon";NA;125;0
+"Building";"PhotonCannon";NA;125;0
+"Building";"ShieldBattery";NA;125;0
+"Building";"ShieldBattery";NA;125;0
+"Building";"ShieldBattery";NA;125;0
+"Unit";"Zealot";"Gateway";134;2
+"Building";"Pylon";NA;134;0
+"Building";"Pylon";NA;136;0
+"Building";"Pylon";NA;136;0
+"Building";"Pylon";NA;136;0
+"Building";"Pylon";NA;136;0
+"Building";"Pylon";NA;136;0
+"Unit";"Carrier";"Stargate";134;6
+"Unit";"Carrier";"Stargate";134;6
+"Building";"PhotonCannon";NA;139;0
+"Unit";"Disruptor";"Robotics Facility";139;3
+"Unit";"Disruptor";"Robotics Facility";139;3
+"Upgrade";"ProtossAirWeaponsLevel2";"CyberneticsCore";134;0
+"Building";"ShieldBattery";NA;139;0
+"Building";"Stargate";NA;139;0
+"Unit";"Observer";"Robotics Facility";159;1
+"Unit";"Observer";"Robotics Facility";159;1
+"Unit";"Observer";"Robotics Facility";160;1
+"Unit";"Mothership";"Mothership Core";151;6
+"Building";"Pylon";NA;170;0
+"Unit";"Carrier";"Stargate";159;6
+"Building";"Pylon";NA;170;0
+"Building";"Assimilator";NA;170;0
+"Building";"Assimilator";NA;170;0
+"Unit";"Carrier";"Stargate";163;6
+"Unit";"Carrier";"Stargate";164;6
+"Building";"Nexus";NA;170;0
+"Building";"PhotonCannon";NA;176;0
+"Building";"PhotonCannon";NA;176;0
+"Building";"PhotonCannon";NA;176;0
+"Building";"PhotonCannon";NA;182;0
+"Building";"ShieldBattery";NA;182;0
+"Building";"ShieldBattery";NA;182;0
+"Building";"ShieldBattery";NA;182;0
+"Upgrade";"ProtossAirWeaponsLevel3";"CyberneticsCore";164;0
+"Unit";"Carrier";"Stargate";176;6
+"Unit";"Observer";"Robotics Facility";188;1
+"Unit";"Observer";"Robotics Facility";188;1
+"Building";"Stargate";NA;188;0
+"Building";"Stargate";NA;188;0
+"Building";"TwilightCouncil";NA;188;0
+"Unit";"Carrier";"Stargate";176;6
+"Unit";"Carrier";"Stargate";182;6

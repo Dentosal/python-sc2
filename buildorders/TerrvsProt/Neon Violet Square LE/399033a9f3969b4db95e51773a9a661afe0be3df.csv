@@ -1,0 +1,52 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Building";"Refinery";NA;14;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";16;1
+"Unit";"SCV";"Command Center";17;1
+"Building";"Barracks";NA;15;0
+"Unit";"SCV";"Command Center";18;1
+"Unit";"Marine";"Barracks";19;1
+"Building";"Refinery";NA;19;0
+"Building";"Factory";NA;19;0
+"Building";"SupplyDepot";NA;21;0
+"Unit";"SCV";"Command Center";21;1
+"Building";"BarracksReactor";NA;21;0
+"Unit";"SCV";"Command Center";22;1
+"Unit";"SCV";"Command Center";22;1
+"Unit";"Cyclone";"Factory";22;3
+"Building";"BarracksTechLab";NA;23;0
+"Building";"Starport";NA;23;0
+"Unit";"SCV";"Command Center";27;1
+"Unit";"Cyclone";"Factory";27;3
+"Unit";"Cyclone";"Factory";27;3
+"Unit";"SCV";"Command Center";31;1
+"Unit";"SCV";"Command Center";35;1
+"Building";"SupplyDepot";NA;35;0
+"Building";"CommandCenter";NA;27;0
+"Unit";"SCV";"Command Center";35;1
+"Unit";"SCV";"Command Center";36;1
+"Unit";"Banshee";"Starport";35;3
+"Unit";"Cyclone";"Factory";37;3
+"Unit";"SCV";"Command Center";44;1
+"Unit";"Cyclone";"Factory";41;3
+"Unit";"SCV";"Command Center";48;1
+"Unit";"SCV";"Command Center";49;1
+"Building";"Factory";NA;48;0
+"Building";"Factory";NA;48;0
+"Unit";"Cyclone";"Factory";50;3
+"Unit";"SCV";"Command Center";50;1
+"Unit";"SCV";"Command Center";53;1
+"Unit";"Cyclone";"Factory";50;3
+"Unit";"SCV";"Command Center";53;1
+"Unit";"Cyclone";"Factory";53;3
+"Unit";"Cyclone";"Factory";62;3
+"Unit";"Hellion";"Factory";62;2
+"Building";"BarracksTechLab";NA;65;0
+"Unit";"SCV";"Command Center";65;1
+"Unit";"Banshee";"Starport";62;3
+"Building";"GhostAcademy";NA;65;0

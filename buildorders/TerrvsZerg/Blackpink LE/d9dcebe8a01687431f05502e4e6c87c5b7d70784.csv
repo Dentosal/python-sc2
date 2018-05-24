@@ -1,0 +1,115 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";15;1
+"Building";"Barracks";NA;15;0
+"Building";"Refinery";NA;16;0
+"Unit";"SCV";"Command Center";16;1
+"Building";"Barracks";NA;15;0
+"Unit";"SCV";"Command Center";18;1
+"Unit";"Marine";"Barracks";17;1
+"Unit";"Marine";"Barracks";18;1
+"Building";"SupplyDepot";NA;18;0
+"Unit";"SCV";"Command Center";20;1
+"Unit";"Marine";"Barracks";19;1
+"Building";"Bunker";NA;18;0
+"Building";"Bunker";NA;20;0
+"Unit";"Marine";"Barracks";21;1
+"Unit";"Marine";"Barracks";23;1
+"Unit";"SCV";"Command Center";23;1
+"Unit";"Marine";"Barracks";24;1
+"Unit";"Marine";"Barracks";25;1
+"Building";"Factory";NA;23;0
+"Unit";"Marine";"Barracks";28;1
+"Unit";"SCV";"Command Center";28;1
+"Building";"SupplyDepot";NA;28;0
+"Building";"Refinery";NA;29;0
+"Building";"Starport";NA;28;0
+"Unit";"SCV";"Command Center";30;1
+"Building";"StarportTechLab";NA;30;0
+"Unit";"SCV";"Command Center";31;1
+"Unit";"Cyclone";"Factory";30;3
+"Unit";"SCV";"Command Center";32;1
+"Unit";"SCV";"Command Center";35;1
+"Unit";"Banshee";"Starport";31;3
+"Unit";"SCV";"Command Center";37;1
+"Unit";"Hellion";"Factory";36;2
+"Building";"CommandCenter";NA;31;0
+"Building";"BarracksTechLab";NA;43;0
+"Unit";"SCV";"Command Center";43;1
+"Building";"FactoryTechLab";NA;43;0
+"Unit";"Banshee";"Starport";37;3
+"Building";"BarracksReactor";NA;43;0
+"Unit";"SCV";"Command Center";44;1
+"Building";"Barracks";NA;43;0
+"Unit";"Marine";"Barracks";47;1
+"Unit";"Marine";"Barracks";47;1
+"Building";"SupplyDepot";NA;48;0
+"Unit";"SCV";"Command Center";50;1
+"Unit";"SCV";"Command Center";50;1
+"Building";"Barracks";NA;48;0
+"Building";"Barracks";NA;48;0
+"Building";"BarracksReactor";NA;49;0
+"Unit";"SCV";"Command Center";52;1
+"Unit";"SCV";"Command Center";52;1
+"Building";"StarportReactor";NA;50;0
+"Unit";"Marine";"Barracks";52;1
+"Unit";"Marine";"Barracks";52;1
+"Unit";"Marine";"Barracks";52;1
+"Building";"SupplyDepot";NA;52;0
+"Unit";"Marine";"Barracks";54;1
+"Unit";"Marine";"Barracks";54;1
+"Unit";"Marine";"Barracks";54;1
+"Unit";"Marine";"Barracks";55;1
+"Unit";"Marine";"Barracks";56;1
+"Unit";"SCV";"Command Center";57;1
+"Building";"SupplyDepot";NA;57;0
+"Unit";"Marine";"Barracks";57;1
+"Unit";"Marine";"Barracks";58;1
+"Unit";"Marine";"Barracks";59;1
+"Unit";"SCV";"Command Center";63;1
+"Unit";"SCV";"Command Center";63;1
+"Unit";"Marine";"Barracks";63;1
+"Unit";"Marine";"Barracks";63;1
+"Unit";"Marine";"Barracks";63;1
+"Building";"BarracksReactor";NA;57;0
+"Building";"SupplyDepot";NA;63;0
+"Unit";"Marine";"Barracks";65;1
+"Upgrade";"Stimpack";"TechLab";51;0
+"Unit";"Marine";"Barracks";70;1
+"Unit";"Marine";"Barracks";71;1
+"Unit";"Marine";"Barracks";71;1
+"Unit";"SCV";"Command Center";71;1
+"Unit";"SCV";"Command Center";71;1
+"Building";"Refinery";NA;68;0
+"Unit";"Marine";"Barracks";71;1
+"Unit";"Medivac";"Starport";68;2
+"Building";"SupplyDepot";NA;71;0
+"Unit";"Medivac";"Starport";68;2
+"Unit";"SCV";"Command Center";77;1
+"Unit";"Marine";"Barracks";78;1
+"Unit";"Marine";"Barracks";78;1
+"Unit";"Marine";"Barracks";78;1
+"Unit";"Marine";"Barracks";78;1
+"Unit";"Marine";"Barracks";78;1
+"Unit";"Marine";"Barracks";78;1
+"Unit";"Marine";"Barracks";78;1
+"Unit";"Marine";"Barracks";80;1
+"Unit";"Marine";"Barracks";83;1
+"Unit";"Marine";"Barracks";84;1
+"Unit";"Marine";"Barracks";85;1
+"Unit";"Marine";"Barracks";86;1
+"Building";"SupplyDepot";NA;90;0
+"Building";"SupplyDepot";NA;91;0
+"Unit";"Marine";"Barracks";95;1
+"Unit";"Marine";"Barracks";95;1
+"Unit";"Marine";"Barracks";95;1
+"Unit";"Marine";"Barracks";95;1
+"Unit";"Marine";"Barracks";95;1
+"Unit";"Marine";"Barracks";95;1
+"Unit";"Marine";"Barracks";95;1
+"Unit";"Marine";"Barracks";95;1
+"Building";"SupplyDepot";NA;95;0
