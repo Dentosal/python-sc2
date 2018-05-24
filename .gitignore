@@ -1,7 +1,10 @@
+# Misc
 .DS_Store
 
+# Python + mypy
 __pycache__/
 *.pyc
+.mypy_cache/
 
 build/
 dist/
@@ -9,7 +12,11 @@ dist/
 
 .cache/
 
+# SC2 things
 maps/
 mini_games/
 
 *.SC2Replay
+
+.idea
+*.iml

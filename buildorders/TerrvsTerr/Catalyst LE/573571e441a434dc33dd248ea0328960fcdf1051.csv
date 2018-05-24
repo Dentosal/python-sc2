@@ -1,0 +1,32 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";14;1
+"Building";"SupplyDepot";NA;13;0
+"Building";"Refinery";NA;14;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";17;1
+"Unit";"SCV";"Command Center";17;1
+"Building";"Barracks";NA;15;0
+"Unit";"Reaper";"Barracks";19;1
+"Unit";"SCV";"Command Center";19;1
+"Building";"Refinery";NA;19;0
+"Building";"SupplyDepot";NA;19;0
+"Building";"SupplyDepot";NA;19;0
+"Unit";"SCV";"Command Center";21;1
+"Unit";"SCV";"Command Center";21;1
+"Building";"Factory";NA;19;0
+"Unit";"SCV";"Command Center";22;1
+"Unit";"Reaper";"Barracks";21;1
+"Unit";"Hellion";"Factory";23;2
+"Unit";"SCV";"Command Center";25;1
+"Building";"Starport";NA;23;0
+"Unit";"SCV";"Command Center";27;1
+"Unit";"Reaper";"Barracks";25;1
+"Unit";"Hellion";"Factory";27;2
+"Unit";"SCV";"Command Center";28;1
+"Building";"StarportTechLab";NA;29;0
+"Unit";"SCV";"Command Center";32;1
+"Unit";"SCV";"Command Center";33;1
+"Building";"SupplyDepot";NA;33;0

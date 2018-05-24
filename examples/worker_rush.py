@@ -3,7 +3,7 @@ from sc2 import run_game, maps, Race, Difficulty
 from sc2.player import Bot, Computer
 
 class WorkerRushBot(sc2.BotAI):
-    async def on_step(self, state, iteration):
+    async def on_step(self, iteration):
         if iteration == 0:
             for worker in self.workers:
                 await self.do(worker.attack(self.enemy_start_locations[0]))

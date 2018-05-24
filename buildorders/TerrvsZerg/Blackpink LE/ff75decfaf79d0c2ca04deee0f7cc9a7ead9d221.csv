@@ -1,0 +1,293 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";15;1
+"Building";"Refinery";NA;15;0
+"Unit";"SCV";"Command Center";16;1
+"Building";"Barracks";NA;15;0
+"Unit";"SCV";"Command Center";17;1
+"Unit";"Reaper";"Barracks";19;1
+"Unit";"SCV";"Command Center";19;1
+"Building";"Refinery";NA;19;0
+"Unit";"SCV";"Command Center";21;1
+"Unit";"SCV";"Command Center";21;1
+"Building";"SupplyDepot";NA;21;0
+"Unit";"SCV";"Command Center";23;1
+"Building";"Factory";NA;20;0
+"Building";"CommandCenter";NA;19;0
+"Building";"BarracksReactor";NA;22;0
+"Unit";"SCV";"Command Center";23;1
+"Unit";"SCV";"Command Center";24;1
+"Building";"GhostAcademy";NA;23;0
+"Building";"BarracksTechLab";NA;25;0
+"Unit";"SCV";"Command Center";25;1
+"Unit";"Hellion";"Factory";26;2
+"Unit";"Hellion";"Factory";26;2
+"Unit";"SCV";"Command Center";27;1
+"Unit";"SCV";"Command Center";31;1
+"Unit";"Ghost";"Barracks";27;2
+"Unit";"Hellion";"Factory";27;2
+"Unit";"Hellion";"Factory";29;2
+"Building";"SupplyDepot";NA;32;0
+"Unit";"SCV";"Command Center";39;1
+"Unit";"Hellion";"Factory";35;2
+"Unit";"Hellion";"Factory";37;2
+"Unit";"SCV";"Command Center";39;1
+"Unit";"Ghost";"Barracks";33;2
+"Building";"Armory";NA;31;0
+"Unit";"SCV";"Command Center";39;1
+"Building";"SupplyDepot";NA;39;0
+"Unit";"SCV";"Command Center";44;1
+"Unit";"SCV";"Command Center";47;1
+"Unit";"Hellion";"Factory";44;2
+"Unit";"Hellion";"Factory";44;2
+"Unit";"SCV";"Command Center";48;1
+"Unit";"SCV";"Command Center";49;1
+"Building";"SupplyDepot";NA;48;0
+"Building";"SupplyDepot";NA;49;0
+"Unit";"SCV";"Command Center";54;1
+"Unit";"Ghost";"Barracks";48;2
+"Unit";"SCV";"Command Center";59;1
+"Unit";"SCV";"Command Center";59;1
+"Building";"Refinery";NA;59;0
+"Unit";"SCV";"Command Center";59;1
+"Building";"Refinery";NA;59;0
+"Unit";"Hellion";"Factory";61;2
+"Unit";"Hellion";"Factory";61;2
+"Unit";"Ghost";"Barracks";61;2
+"Building";"Factory";NA;59;0
+"Building";"Factory";NA;59;0
+"Unit";"SCV";"Command Center";66;1
+"Unit";"SCV";"Command Center";66;1
+"Unit";"Hellion";"Factory";62;2
+"Unit";"Hellion";"Factory";64;2
+"Unit";"SCV";"Command Center";68;1
+"Unit";"SCV";"Command Center";70;1
+"Building";"FactoryTechLab";NA;68;0
+"Building";"FactoryTechLab";NA;68;0
+"Unit";"Ghost";"Barracks";66;2
+"Building";"CommandCenter";NA;59;0
+"Unit";"SCV";"Command Center";74;1
+"Building";"EngineeringBay";NA;69;0
+"Unit";"SCV";"Command Center";76;1
+"Unit";"SCV";"Command Center";78;1
+"Unit";"Hellion";"Factory";76;2
+"Unit";"Hellion";"Factory";76;2
+"Unit";"SCV";"Command Center";79;1
+"Unit";"SCV";"Command Center";80;1
+"Unit";"SCV";"Command Center";85;1
+"Unit";"Ghost";"Barracks";79;2
+"Building";"SupplyDepot";NA;80;0
+"Unit";"SCV";"Command Center";86;1
+"Unit";"Hellion";"Factory";91;2
+"Unit";"Hellion";"Factory";91;2
+"Unit";"SCV";"Command Center";91;1
+"Unit";"SCV";"Command Center";91;1
+"Unit";"SCV";"Command Center";91;1
+"Unit";"Ghost";"Barracks";91;2
+"Unit";"SCV";"Command Center";95;1
+"Building";"SupplyDepot";NA;91;0
+"Unit";"SCV";"Command Center";98;1
+"Unit";"SCV";"Command Center";100;1
+"Upgrade";"TerranVehicleWeaponsLevel1";"Armory";80;0
+"Unit";"SCV";"Command Center";100;1
+"Unit";"SCV";"Command Center";102;1
+"Building";"CommandCenter";NA;90;0
+"Building";"SupplyDepot";NA;102;0
+"Unit";"SCV";"Command Center";104;1
+"Unit";"SCV";"Command Center";104;1
+"Building";"Barracks";NA;95;0
+"Unit";"SCV";"Command Center";104;1
+"Building";"SupplyDepot";NA;104;0
+"Building";"Refinery";NA;104;0
+"Building";"Barracks";NA;98;0
+"Unit";"SCV";"Command Center";105;1
+"Building";"Refinery";NA;104;0
+"Upgrade";"TerranInfantryArmorsLevel1";"EngineeringBay";91;0
+"Unit";"SCV";"Command Center";106;1
+"Unit";"SCV";"Command Center";107;1
+"Unit";"SCV";"Command Center";108;1
+"Building";"BarracksTechLab";NA;109;0
+"Building";"BarracksTechLab";NA;109;0
+"Unit";"SCV";"Command Center";112;1
+"Unit";"Ghost";"Barracks";109;2
+"Building";"CommandCenter";NA;103;0
+"Building";"Barracks";NA;109;0
+"Building";"SensorTower";NA;113;0
+"Unit";"SCV";"Command Center";115;1
+"Unit";"SCV";"Command Center";115;1
+"Building";"MissileTurret";NA;115;0
+"Building";"Refinery";NA;115;0
+"Building";"Refinery";NA;115;0
+"Building";"MissileTurret";NA;115;0
+"Building";"MissileTurret";NA;115;0
+"Building";"MissileTurret";NA;115;0
+"Building";"SensorTower";NA;115;0
+"Unit";"SCV";"Command Center";117;1
+"Unit";"SCV";"Command Center";117;1
+"Building";"BarracksTechLab";NA;117;0
+"Unit";"Hellion";"Factory";117;2
+"Unit";"Hellion";"Factory";117;2
+"Unit";"SCV";"Command Center";117;1
+"Unit";"SCV";"Command Center";117;1
+"Unit";"Ghost";"Barracks";117;2
+"Unit";"Ghost";"Barracks";117;2
+"Unit";"SCV";"Command Center";119;1
+"Unit";"SCV";"Command Center";119;1
+"Unit";"SCV";"Command Center";125;1
+"Unit";"SCV";"Command Center";125;1
+"Building";"SupplyDepot";NA;119;0
+"Building";"SupplyDepot";NA;119;0
+"Unit";"SCV";"Command Center";129;1
+"Unit";"SCV";"Command Center";130;1
+"Building";"MissileTurret";NA;131;0
+"Unit";"Ghost";"Barracks";123;2
+"Unit";"Ghost";"Barracks";123;2
+"Upgrade";"TerranVehicleWeaponsLevel2";"Armory";112;0
+"Unit";"Hellion";"Factory";131;2
+"Unit";"Ghost";"Barracks";125;2
+"Unit";"Ghost";"Barracks";127;2
+"Unit";"SCV";"Command Center";139;1
+"Building";"SupplyDepot";NA;135;0
+"Building";"MissileTurret";NA;146;0
+"Building";"Refinery";NA;146;0
+"Building";"Refinery";NA;146;0
+"Unit";"Ghost";"Barracks";146;2
+"Unit";"Ghost";"Barracks";146;2
+"Unit";"Ghost";"Barracks";146;2
+"Unit";"Ghost";"Barracks";146;2
+"Upgrade";"PersonalCloaking";"GhostAcademy";145;0
+"Unit";"SCV";"Command Center";154;1
+"Unit";"SCV";"Command Center";154;1
+"Unit";"SCV";"Command Center";154;1
+"Unit";"SCV";"Command Center";154;1
+"Unit";"Ghost";"Barracks";146;2
+"Unit";"SCV";"Command Center";154;1
+"Upgrade";"TerranInfantryArmorsLevel2";"EngineeringBay";131;0
+"Unit";"SCV";"Command Center";154;1
+"Unit";"SCV";"Command Center";155;1
+"Unit";"SCV";"Command Center";156;1
+"Unit";"Hellion";"Factory";154;2
+"Unit";"Hellion";"Factory";154;2
+"Unit";"SCV";"Command Center";161;1
+"Unit";"SCV";"Command Center";161;1
+"Unit";"Hellion";"Factory";154;2
+"Unit";"SCV";"Command Center";161;1
+"Unit";"Ghost";"Barracks";154;2
+"Unit";"SCV";"Command Center";162;1
+"Unit";"Ghost";"Barracks";154;2
+"Unit";"Ghost";"Barracks";154;2
+"Unit";"Ghost";"Barracks";158;2
+"Unit";"SCV";"Command Center";182;1
+"Unit";"SCV";"Command Center";182;1
+"Building";"MissileTurret";NA;182;0
+"Building";"MissileTurret";NA;182;0
+"Building";"MissileTurret";NA;182;0
+"Unit";"Hellion";"Factory";182;2
+"Unit";"Hellion";"Factory";182;2
+"Unit";"Hellion";"Factory";182;2
+"Unit";"Ghost";"Barracks";173;2
+"Unit";"Ghost";"Barracks";176;2
+"Unit";"Ghost";"Barracks";176;2
+"Building";"SensorTower";NA;182;0
+"Unit";"SCV";"Command Center";182;1
+"Unit";"SCV";"Command Center";182;1
+"Unit";"SCV";"Command Center";182;1
+"Building";"MissileTurret";NA;182;0
+"Unit";"Ghost";"Barracks";180;2
+"Building";"CommandCenter";NA;154;0
+"Building";"SupplyDepot";NA;182;0
+"Building";"SupplyDepot";NA;182;0
+"Building";"SupplyDepot";NA;182;0
+"Building";"CommandCenter";NA;154;0
+"Unit";"Ghost";"Barracks";190;2
+"Unit";"Ghost";"Barracks";192;2
+"Unit";"Ghost";"Barracks";201;2
+"Unit";"SCV";"Command Center";207;1
+"Unit";"Hellion";"Factory";207;2
+"Unit";"Hellion";"Factory";207;2
+"Unit";"Hellion";"Factory";207;2
+"Unit";"Ghost";"Barracks";207;2
+"Unit";"Ghost";"Barracks";207;2
+"Unit";"Ghost";"Barracks";207;2
+"Unit";"Ghost";"Barracks";207;2
+"Building";"GhostAcademy";NA;207;0
+"Building";"GhostAcademy";NA;207;0
+"Building";"GhostAcademy";NA;207;0
+"Building";"MissileTurret";NA;222;0
+"Building";"SensorTower";NA;222;0
+"Unit";"Hellion";"Factory";222;2
+"Unit";"Hellion";"Factory";222;2
+"Unit";"Ghost";"Barracks";214;2
+"Unit";"Ghost";"Barracks";222;2
+"Unit";"Ghost";"Barracks";222;2
+"Unit";"Ghost";"Barracks";222;2
+"Unit";"SCV";"Command Center";222;1
+"Building";"Barracks";NA;208;0
+"Building";"Barracks";NA;208;0
+"Building";"Barracks";NA;208;0
+"Building";"Barracks";NA;208;0
+"Upgrade";"TerranInfantryArmorsLevel3";"EngineeringBay";201;0
+"Unit";"Ghost";"Barracks";226;2
+"Unit";"Ghost";"Barracks";228;2
+"Unit";"Ghost";"Barracks";230;2
+"Building";"BarracksTechLab";NA;235;0
+"Building";"BarracksTechLab";NA;235;0
+"Building";"BarracksTechLab";NA;235;0
+"Building";"BarracksTechLab";NA;235;0
+"Building";"MissileTurret";NA;235;0
+"Building";"SensorTower";NA;235;0
+"Building";"MissileTurret";NA;235;0
+"Unit";"Hellion";"Factory";235;2
+"Unit";"Hellion";"Factory";235;2
+"Building";"SupplyDepot";NA;235;0
+"Unit";"Ghost";"Barracks";235;2
+"Unit";"Marine";"Barracks";239;1
+"Unit";"Ghost";"Barracks";235;2
+"Unit";"Ghost";"Barracks";237;2
+"Building";"CommandCenter";NA;234;0
+"Unit";"Ghost";"Barracks";252;2
+"Unit";"Ghost";"Barracks";252;2
+"Unit";"Ghost";"Barracks";252;2
+"Unit";"Ghost";"Barracks";252;2
+"Unit";"Ghost";"Barracks";252;2
+"Unit";"Ghost";"Barracks";252;2
+"Unit";"Ghost";"Barracks";252;2
+"Unit";"Hellion";"Factory";266;2
+"Unit";"Hellion";"Factory";266;2
+"Unit";"Ghost";"Barracks";266;2
+"Unit";"Ghost";"Barracks";266;2
+"Unit";"Ghost";"Barracks";266;2
+"Building";"CommandCenter";NA;252;0
+"Upgrade";"TerranInfantryWeaponsLevel1";"EngineeringBay";248;0
+"Unit";"Hellion";"Factory";266;2
+"Unit";"Ghost";"Barracks";278;2
+"Unit";"Ghost";"Barracks";278;2
+"Building";"SensorTower";NA;278;0
+"Building";"MissileTurret";NA;278;0
+"Unit";"Hellion";"Factory";282;2
+"Unit";"Hellion";"Factory";282;2
+"Unit";"Hellion";"Factory";282;2
+"Unit";"Hellion";"Factory";282;2
+"Unit";"SCV";"Command Center";282;1
+"Unit";"Ghost";"Barracks";282;2
+"Unit";"Ghost";"Barracks";282;2
+"Unit";"Ghost";"Barracks";282;2
+"Unit";"Ghost";"Barracks";282;2
+"Unit";"Ghost";"Barracks";282;2
+"Unit";"Ghost";"Barracks";282;2
+"Unit";"Ghost";"Barracks";282;2
+"Unit";"Ghost";"Barracks";282;2
+"Unit";"Hellion";"Factory";282;2
+"Unit";"Hellion";"Factory";284;2
+"Unit";"Ghost";"Barracks";291;2
+"Unit";"Ghost";"Barracks";293;2
+"Unit";"Ghost";"Barracks";293;2
+"Unit";"Ghost";"Barracks";297;2
+"Unit";"Ghost";"Barracks";297;2
+"Building";"Refinery";NA;307;0
+"Building";"Refinery";NA;307;0
+"Building";"CommandCenter";NA;282;0

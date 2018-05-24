@@ -79,7 +79,6 @@ class UnitTypeData(object):
     def attributes(self):
         return self._proto.attributes
 
-    @property
     def has_attribute(self, attr):
         assert isinstance(attr, Attribute)
         return attr in self.attributes

@@ -1,0 +1,36 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Pylon";NA;13;0
+"Building";"Forge";NA;15;0
+"Building";"Pylon";NA;17;0
+"Building";"PhotonCannon";NA;19;0
+"Building";"Assimilator";NA;19;0
+"Building";"Assimilator";NA;20;0
+"Building";"Gateway";NA;19;0
+"Building";"Assimilator";NA;21;0
+"Building";"PhotonCannon";NA;21;0
+"Building";"CyberneticsCore";NA;23;0
+"Building";"Pylon";NA;25;0
+"Building";"PhotonCannon";NA;25;0
+"Building";"PhotonCannon";NA;25;0
+"Building";"ShieldBattery";NA;25;0
+"Building";"ShieldBattery";NA;25;0
+"Unit";"Adept";"Gateway";25;2
+"Building";"RoboticsFacility";NA;25;0
+"Building";"Pylon";NA;25;0
+"Building";"PhotonCannon";NA;25;0
+"Unit";"Sentry";"Gateway";25;2
+"Unit";"Immortal";"Robotics Facility";27;4
+"Unit";"Immortal";"Robotics Facility";29;4
+"Building";"Nexus";NA;29;0
+"Unit";"Immortal";"Robotics Facility";33;4
+"Building";"RoboticsBay";NA;33;0
+"Building";"ShieldBattery";NA;37;0
+"Unit";"Disruptor";"Robotics Facility";37;3
+"Building";"RoboticsFacility";NA;37;0
+"Unit";"Disruptor";"Robotics Facility";47;3
+"Building";"Pylon";NA;49;0
+"Building";"Assimilator";NA;49;0
+"Building";"Assimilator";NA;49;0
+"Unit";"Disruptor";"Robotics Facility";54;3
+"Unit";"Disruptor";"Robotics Facility";54;3
+"Building";"Pylon";NA;56;0

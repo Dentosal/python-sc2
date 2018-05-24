@@ -3,16 +3,17 @@ import random
 import sc2
 from sc2 import Race, Difficulty
 from sc2.constants import *
+from sc2.ids.buff_id import BuffId
 from sc2.player import Bot, Computer
 
 class ThreebaseVoidrayBot(sc2.BotAI):
-    def select_target(self, state):
+    def select_target(self):
         if self.known_enemy_structures.exists:
             return random.choice(self.known_enemy_structures)
 
         return self.enemy_start_locations[0]
 
-    async def on_step(self, state, iteration):
+    async def on_step(self, iteration):
         if iteration == 0:
             await self.chat_send("(glhf)")
 
@@ -23,13 +24,18 @@ class ThreebaseVoidrayBot(sc2.BotAI):
         else:
             nexus = self.units(NEXUS).ready.random
 
+        if not nexus.has_buff(BuffId.CHRONOBOOSTENERGYCOST):
+            abilities = await self.get_available_abilities(nexus)
+            if AbilityId.EFFECT_CHRONOBOOSTENERGYCOST in abilities:
+                await self.do(nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, nexus))
+
         for idle_worker in self.workers.idle:
-            mf = state.mineral_field.closest_to(idle_worker)
+            mf = self.state.mineral_field.closest_to(idle_worker)
             await self.do(idle_worker.gather(mf))
 
         if self.units(VOIDRAY).amount > 10 and iteration % 50 == 0:
             for vr in self.units(VOIDRAY).idle:
-                await self.do(vr.attack(self.select_target(state)))
+                await self.do(vr.attack(self.select_target(self.state)))
 
         for a in self.units(ASSIMILATOR):
             if a.assigned_harvesters < a.ideal_harvesters:
@@ -66,7 +72,7 @@ class ThreebaseVoidrayBot(sc2.BotAI):
                     await self.build(GATEWAY, near=pylon)
 
         for nexus in self.units(NEXUS).ready:
-            vgs = state.vespene_geyser.closer_than(20.0, nexus)
+            vgs = self.state.vespene_geyser.closer_than(20.0, nexus)
             for vg in vgs:
                 if not self.can_afford(ASSIMILATOR):
                     break

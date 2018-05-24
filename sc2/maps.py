@@ -5,6 +5,12 @@ logger = logging.getLogger(__name__)
 
 def get(name=None):
     maps = []
+
+    # consider also mapfiles without subdir
+    for mapfile in (p for p in Paths.MAPS.iterdir() if p.is_file()):
+        if mapfile.suffix == ".SC2Map":
+                maps.append(Map(mapfile))
+
     for mapdir in (p for p in Paths.MAPS.iterdir() if p.is_dir()):
         for mapfile in (p for p in mapdir.iterdir() if p.is_file()):
             if mapfile.suffix == ".SC2Map":

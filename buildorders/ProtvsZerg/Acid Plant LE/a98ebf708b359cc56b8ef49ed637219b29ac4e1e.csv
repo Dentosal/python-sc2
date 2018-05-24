@@ -1,0 +1,44 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Pylon";NA;14;0
+"Building";"Forge";NA;15;0
+"Building";"Pylon";NA;16;0
+"Building";"PhotonCannon";NA;18;0
+"Building";"Assimilator";NA;18;0
+"Building";"Assimilator";NA;19;0
+"Building";"Assimilator";NA;19;0
+"Building";"Gateway";NA;18;0
+"Building";"PhotonCannon";NA;20;0
+"Building";"Pylon";NA;22;0
+"Building";"CyberneticsCore";NA;21;0
+"Building";"PhotonCannon";NA;22;0
+"Building";"PhotonCannon";NA;22;0
+"Unit";"Stalker";"Gateway";22;2
+"Building";"ShieldBattery";NA;23;0
+"Unit";"Stalker";"Gateway";26;2
+"Building";"Pylon";NA;26;0
+"Building";"RoboticsFacility";NA;26;0
+"Building";"ShieldBattery";NA;26;0
+"Unit";"Stalker";"Gateway";26;2
+"Unit";"Immortal";"Robotics Facility";28;4
+"Unit";"Stalker";"Gateway";30;2
+"Building";"ShieldBattery";NA;30;0
+"Building";"ShieldBattery";NA;30;0
+"Building";"ShieldBattery";NA;30;0
+"Building";"ShieldBattery";NA;30;0
+"Unit";"Immortal";"Robotics Facility";36;4
+"Building";"ShieldBattery";NA;36;0
+"Unit";"Stalker";"Gateway";36;2
+"Building";"ShieldBattery";NA;40;0
+"Unit";"Immortal";"Robotics Facility";40;4
+"Unit";"Stalker";"Gateway";42;2
+"Building";"ShieldBattery";NA;42;0
+"Unit";"Stalker";"Gateway";48;2
+"Unit";"Immortal";"Robotics Facility";46;4
+"Building";"ShieldBattery";NA;48;0
+"Unit";"Stalker";"Gateway";54;2
+"Unit";"Immortal";"Robotics Facility";50;4
+"Building";"Pylon";NA;54;0
+"Unit";"Immortal";"Robotics Facility";54;4
+"Unit";"Stalker";"Gateway";64;2
+"Unit";"Immortal";"Robotics Facility";64;4
+"Building";"Pylon";NA;70;0

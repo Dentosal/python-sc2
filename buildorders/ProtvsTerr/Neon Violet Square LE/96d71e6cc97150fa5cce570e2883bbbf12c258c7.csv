@@ -1,0 +1,19 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Pylon";NA;13;0
+"Building";"Assimilator";NA;16;0
+"Building";"Assimilator";NA;17;0
+"Building";"Gateway";NA;15;0
+"Building";"Pylon";NA;18;0
+"Building";"CyberneticsCore";NA;19;0
+"Unit";"Adept";"Gateway";21;2
+"Unit";"Adept";"Gateway";22;2
+"Building";"Pylon";NA;24;0
+"Building";"RoboticsFacility";NA;22;0
+"Building";"RoboticsFacility";NA;22;0
+"Unit";"Immortal";"Robotics Facility";24;4
+"Unit";"Immortal";"Robotics Facility";26;4
+"Building";"Pylon";NA;26;0
+"Building";"Pylon";NA;34;0
+"Unit";"Immortal";"Robotics Facility";34;4
+"Building";"ShieldBattery";NA;34;0
+"Unit";"Immortal";"Robotics Facility";34;4

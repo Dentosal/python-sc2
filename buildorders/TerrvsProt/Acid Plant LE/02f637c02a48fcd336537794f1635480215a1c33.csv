@@ -1,0 +1,61 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Building";"Refinery";NA;14;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";16;1
+"Unit";"SCV";"Command Center";17;1
+"Building";"Barracks";NA;15;0
+"Unit";"Marine";"Barracks";19;1
+"Unit";"SCV";"Command Center";20;1
+"Unit";"Marine";"Barracks";20;1
+"Building";"Factory";NA;19;0
+"Unit";"SCV";"Command Center";20;1
+"Building";"SupplyDepot";NA;20;0
+"Unit";"SCV";"Command Center";23;1
+"Unit";"Marine";"Barracks";23;1
+"Unit";"SCV";"Command Center";23;1
+"Unit";"Cyclone";"Factory";23;3
+"Unit";"Marine";"Barracks";24;1
+"Building";"CommandCenter";NA;20;0
+"Unit";"SCV";"Command Center";25;1
+"Unit";"SCV";"Command Center";30;1
+"Unit";"Cyclone";"Factory";31;3
+"Building";"Barracks";NA;29;0
+"Building";"BarracksReactor";NA;31;0
+"Building";"Barracks";NA;30;0
+"Unit";"SCV";"Command Center";35;1
+"Unit";"SCV";"Command Center";35;1
+"Building";"Refinery";NA;35;0
+"Building";"EngineeringBay";NA;35;0
+"Unit";"SCV";"Command Center";37;1
+"Unit";"Marine";"Barracks";37;1
+"Unit";"Marine";"Barracks";37;1
+"Building";"BarracksTechLab";NA;37;0
+"Unit";"SCV";"Command Center";38;1
+"Unit";"SCV";"Command Center";38;1
+"Building";"BarracksReactor";NA;37;0
+"Unit";"SCV";"Command Center";40;1
+"Unit";"SCV";"Command Center";41;1
+"Unit";"Cyclone";"Factory";38;3
+"Building";"Bunker";NA;38;0
+"Building";"MissileTurret";NA;40;0
+"Unit";"Marine";"Barracks";42;1
+"Unit";"Marine";"Barracks";42;1
+"Unit";"Marine";"Barracks";42;1
+"Unit";"Marine";"Barracks";47;1
+"Unit";"Marine";"Barracks";47;1
+"Building";"Barracks";NA;38;0
+"Unit";"SCV";"Command Center";50;1
+"Unit";"SCV";"Command Center";52;1
+"Unit";"Marine";"Barracks";53;1
+"Unit";"Marine";"Barracks";53;1
+"Unit";"SCV";"Command Center";56;1
+"Unit";"Hellion";"Factory";56;2
+"Building";"SupplyDepot";NA;57;0
+"Upgrade";"Stimpack";"TechLab";50;0
+"Unit";"SCV";"Command Center";59;1
+"Unit";"SCV";"Command Center";59;1

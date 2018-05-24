@@ -15,7 +15,7 @@ class ZergRushBot(sc2.BotAI):
         self.queeen_started = False
         self.mboost_started = False
 
-    async def on_step(self, state, iteration):
+    async def on_step(self, iteration):
         if iteration == 0:
             await self.chat_send("(glhf)")
 
@@ -32,8 +32,9 @@ class ZergRushBot(sc2.BotAI):
             await self.do(zl.attack(target))
 
         for queen in self.units(QUEEN).idle:
-            if queen.energy >= 25: # Hard coded, since this is not (yet) available
-                await self.do(queen(INJECTLARVA, hatchery))
+            abilities = await self.get_available_abilities(queen)
+            if AbilityId.EFFECT_INJECTLARVA in abilities:
+                await self.do(queen(EFFECT_INJECTLARVA, hatchery))
 
         if self.vespene >= 100:
             sp = self.units(SPAWNINGPOOL).ready
@@ -44,7 +45,7 @@ class ZergRushBot(sc2.BotAI):
             if not self.moved_workers_from_gas:
                 self.moved_workers_from_gas = True
                 for drone in self.workers:
-                    m = state.mineral_field.closer_than(10, drone.position)
+                    m = self.state.mineral_field.closer_than(10, drone.position)
                     await self.do(drone.gather(m.random, queue=True))
 
         if self.supply_left < 2:
@@ -77,7 +78,7 @@ class ZergRushBot(sc2.BotAI):
         if not self.extractor_started:
             if self.can_afford(EXTRACTOR):
                 drone = self.workers.random
-                target = state.vespene_geyser.closest_to(drone.position)
+                target = self.state.vespene_geyser.closest_to(drone.position)
                 err = await self.do(drone.build(EXTRACTOR, target))
                 if not err:
                     self.extractor_started = True
@@ -103,7 +104,7 @@ def main():
     sc2.run_game(sc2.maps.get("Abyssal Reef LE"), [
         Bot(Race.Zerg, ZergRushBot()),
         Computer(Race.Terran, Difficulty.Medium)
-    ], realtime=True)
+    ], realtime=False, save_replay_as="ZvT.SC2Replay")
 
 if __name__ == '__main__':
     main()

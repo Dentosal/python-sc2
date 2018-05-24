@@ -1,0 +1,61 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Pylon";NA;13;0
+"Building";"Assimilator";NA;16;0
+"Building";"Gateway";NA;15;0
+"Building";"Assimilator";NA;20;0
+"Building";"CyberneticsCore";NA;20;0
+"Building";"Pylon";NA;21;0
+"Unit";"Stalker";"Gateway";22;2
+"Building";"Nexus";NA;19;0
+"Building";"Pylon";NA;27;0
+"Unit";"Stalker";"Gateway";24;2
+"Building";"RoboticsFacility";NA;24;0
+"Building";"ShieldBattery";NA;28;0
+"Unit";"Stalker";"Gateway";31;2
+"Building";"ShieldBattery";NA;34;0
+"Unit";"Immortal";"Robotics Facility";32;4
+"Unit";"Observer";"Robotics Facility";36;1
+"Building";"Pylon";NA;42;0
+"Unit";"Sentry";"Gateway";47;2
+"Building";"Pylon";NA;45;0
+"Building";"Gateway";NA;36;0
+"Unit";"Observer";"Robotics Facility";45;1
+"Building";"Gateway";NA;36;0
+"Building";"Assimilator";NA;45;0
+"Unit";"Adept";"Gateway";54;2
+"Unit";"Adept";"Gateway";54;2
+"Unit";"Adept";"Gateway";54;2
+"Building";"Assimilator";NA;52;0
+"Unit";"Adept";"Gateway";62;2
+"Unit";"Adept";"Gateway";62;2
+"Building";"RoboticsBay";NA;50;0
+"Building";"ShieldBattery";NA;60;0
+"Unit";"Immortal";"Robotics Facility";60;4
+"Building";"Pylon";NA;66;0
+"Building";"Pylon";NA;66;0
+"Unit";"Stalker";"Gateway";70;2
+"Unit";"Stalker";"Gateway";70;2
+"Unit";"Stalker";"Gateway";70;2
+"Unit";"Colossus";"Robotics Facility";66;6
+"Unit";"Adept";"Gateway";76;2
+"Unit";"Adept";"Gateway";76;2
+"Unit";"Adept";"Gateway";76;2
+"Building";"Gateway";NA;70;0
+"Building";"Gateway";NA;70;0
+"Unit";"Stalker";"Gateway";88;2
+"Unit";"Stalker";"Gateway";88;2
+"Unit";"Stalker";"Gateway";88;2
+"Unit";"Adept";"Gateway";94;2
+"Unit";"Adept";"Gateway";94;2
+"Building";"Pylon";NA;94;0
+"Building";"Pylon";NA;94;0
+"Building";"Gateway";NA;82;0
+"Building";"Gateway";NA;88;0
+"Unit";"Stalker";"Gateway";98;2
+"Unit";"Stalker";"Gateway";98;2
+"Unit";"Stalker";"Gateway";98;2
+"Unit";"Colossus";"Robotics Facility";88;6
+"Unit";"Stalker";"Gateway";110;2
+"Unit";"Stalker";"Gateway";110;2
+"Unit";"Stalker";"Gateway";110;2
+"Unit";"Stalker";"Gateway";110;2

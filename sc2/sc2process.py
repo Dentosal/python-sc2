@@ -13,7 +13,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 from .paths import Paths
-from .protocol import Protocol
 from .controller import Controller
 
 class kill_switch(object):
@@ -70,14 +69,19 @@ class SC2Process(object):
         return f"ws://{self._host}:{self._port}/sc2api"
 
     def _launch(self):
-        return subprocess.Popen([
-                str(Paths.EXECUTABLE),
-                "-listen", self._host,
-                "-port", str(self._port),
-                "-displayMode", "1" if self._fullscreen else "0",
-                "-dataDir", str(Paths.BASE),
-                "-tempDir", self._tmp_dir
-            ],
+        args = [
+            str(Paths.EXECUTABLE),
+            "-listen", self._host,
+            "-port", str(self._port),
+            "-displayMode", "1" if self._fullscreen else "0",
+            "-dataDir", str(Paths.BASE),
+            "-tempDir", self._tmp_dir
+        ]
+
+        if logger.getEffectiveLevel() <= logging.DEBUG:
+            args.append("-verbose")
+
+        return subprocess.Popen(args,
             cwd=(str(Paths.CWD) if Paths.CWD else None),
             #, env=run_config.env
         )

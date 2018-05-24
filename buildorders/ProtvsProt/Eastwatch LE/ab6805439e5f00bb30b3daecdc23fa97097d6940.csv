@@ -1,0 +1,118 @@
+"type";"unit_name";"on_building";"total_supply";"supply"
+"Building";"Pylon";NA;13;0
+"Building";"Assimilator";NA;17;0
+"Building";"Pylon";NA;18;0
+"Building";"Gateway";NA;17;0
+"Building";"Gateway";NA;17;0
+"Building";"Nexus";NA;17;0
+"Building";"CyberneticsCore";NA;20;0
+"Building";"Assimilator";NA;22;0
+"Unit";"Stalker";"Gateway";23;2
+"Unit";"Stalker";"Gateway";24;2
+"Unit";"Stalker";"Gateway";33;2
+"Unit";"Stalker";"Gateway";34;2
+"Building";"Pylon";NA;44;0
+"Building";"RoboticsFacility";NA;38;0
+"Building";"Assimilator";NA;46;0
+"Building";"Pylon";NA;48;0
+"Unit";"Stalker";"Gateway";47;2
+"Unit";"Stalker";"Gateway";47;2
+"Unit";"Observer";"Robotics Facility";48;1
+"Unit";"Immortal";"Robotics Facility";49;4
+"Unit";"Observer";"Robotics Facility";56;1
+"Unit";"Stalker";"Gateway";66;2
+"Unit";"Stalker";"Gateway";66;2
+"Unit";"Observer";"Robotics Facility";66;1
+"Building";"TwilightCouncil";NA;66;0
+"Building";"Pylon";NA;77;0
+"Building";"Pylon";NA;77;0
+"Building";"Assimilator";NA;77;0
+"Building";"Pylon";NA;78;0
+"Building";"Pylon";NA;78;0
+"Unit";"Immortal";"Robotics Facility";78;4
+"Building";"Nexus";NA;78;0
+"Building";"Gateway";NA;82;0
+"Building";"Gateway";NA;82;0
+"Building";"Gateway";NA;82;0
+"Building";"Pylon";NA;90;0
+"Unit";"Immortal";"Robotics Facility";88;4
+"Building";"Forge";NA;90;0
+"Building";"Forge";NA;92;0
+"Building";"TemplarArchive";NA;93;0
+"Unit";"Zealot";"Gateway";104;2
+"Unit";"Zealot";"Gateway";104;2
+"Building";"Pylon";NA;101;0
+"Building";"Gateway";NA;92;0
+"Building";"Gateway";NA;92;0
+"Building";"Assimilator";NA;104;0
+"Building";"Assimilator";NA;104;0
+"Unit";"Immortal";"Robotics Facility";99;4
+"Unit";"Zealot";"Gateway";119;2
+"Unit";"Zealot";"Gateway";119;2
+"Unit";"Zealot";"Gateway";119;2
+"Unit";"Zealot";"Gateway";119;2
+"Unit";"Zealot";"Gateway";119;2
+"Unit";"Immortal";"Robotics Facility";111;4
+"Unit";"Stalker";"Gateway";130;2
+"Unit";"Stalker";"Gateway";130;2
+"Upgrade";"Charge";"TwilightCouncil";101;0
+"Building";"Gateway";NA;117;0
+"Building";"Gateway";NA;118;0
+"Unit";"Observer";"Robotics Facility";130;1
+"Building";"Pylon";NA;138;0
+"Upgrade";"ProtossGroundArmorsLevel1";"Forge";108;0
+"Building";"Pylon";NA;138;0
+"Building";"Pylon";NA;138;0
+"Building";"Pylon";NA;138;0
+"Building";"PhotonCannon";NA;138;0
+"Building";"PhotonCannon";NA;138;0
+"Building";"HighTemplar";NA;140;0
+"Building";"HighTemplar";NA;140;0
+"Building";"HighTemplar";NA;140;0
+"Building";"HighTemplar";NA;140;0
+"Building";"HighTemplar";NA;140;0
+"Building";"HighTemplar";NA;140;0
+"Building";"HighTemplar";NA;140;0
+"Building";"HighTemplar";NA;140;0
+"Upgrade";"ProtossGroundWeaponsLevel1";"Forge";111;0
+"Unit";"Archon";"High Templar";140;0
+"Unit";"Archon";"High Templar";140;0
+"Unit";"Archon";"High Templar";140;0
+"Unit";"Archon";"High Templar";140;0
+"Unit";"Zealot";"Gateway";140;2
+"Building";"Pylon";NA;140;0
+"Building";"Pylon";NA;140;0
+"Unit";"Immortal";"Robotics Facility";140;4
+"Unit";"Zealot";"Gateway";142;2
+"Unit";"Zealot";"Gateway";146;2
+"Unit";"Zealot";"Gateway";146;2
+"Unit";"Zealot";"Gateway";146;2
+"Unit";"Zealot";"Gateway";146;2
+"Unit";"Zealot";"Gateway";146;2
+"Unit";"Zealot";"Gateway";146;2
+"Unit";"Zealot";"Gateway";160;2
+"Building";"Assimilator";NA;146;0
+"Building";"Assimilator";NA;160;0
+"Building";"Pylon";NA;160;0
+"Unit";"Zealot";"Gateway";162;2
+"Unit";"Zealot";"Gateway";162;2
+"Unit";"Zealot";"Gateway";162;2
+"Unit";"Zealot";"Gateway";162;2
+"Unit";"Zealot";"Gateway";162;2
+"Unit";"Zealot";"Gateway";162;2
+"Unit";"Zealot";"Gateway";162;2
+"Unit";"Zealot";"Gateway";162;2
+"Building";"Nexus";NA;140;0
+"Building";"Pylon";NA;178;0
+"Upgrade";"ProtossGroundWeaponsLevel2";"Forge";140;0
+"Upgrade";"ProtossGroundArmorsLevel2";"Forge";142;0
+"Unit";"Zealot";"Gateway";180;2
+"Unit";"Zealot";"Gateway";180;2
+"Unit";"Zealot";"Gateway";180;2
+"Unit";"Zealot";"Gateway";180;2
+"Unit";"Zealot";"Gateway";180;2
+"Unit";"Zealot";"Gateway";180;2
+"Unit";"Zealot";"Gateway";180;2
+"Unit";"Zealot";"Gateway";180;2
+"Unit";"Zealot";"Gateway";180;2
+"Unit";"Immortal";"Robotics Facility";180;4

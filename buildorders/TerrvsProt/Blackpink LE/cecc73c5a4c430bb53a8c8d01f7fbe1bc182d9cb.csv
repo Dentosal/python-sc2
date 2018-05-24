@@ -1,0 +1,118 @@
+"Type";"UnitName";"OnBuilding";"TotalSupply";"Supply"
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";12;1
+"Unit";"SCV";"Command Center";13;1
+"Building";"SupplyDepot";NA;13;0
+"Unit";"SCV";"Command Center";15;1
+"Building";"Refinery";NA;14;0
+"Unit";"SCV";"Command Center";15;1
+"Unit";"SCV";"Command Center";16;1
+"Unit";"SCV";"Command Center";17;1
+"Building";"Barracks";NA;15;0
+"Unit";"Marine";"Barracks";19;1
+"Building";"SupplyDepot";NA;19;0
+"Unit";"SCV";"Command Center";20;1
+"Building";"Factory";NA;19;0
+"Unit";"SCV";"Command Center";21;1
+"Unit";"SCV";"Command Center";21;1
+"Building";"BarracksReactor";NA;20;0
+"Building";"SupplyDepot";NA;21;0
+"Unit";"SCV";"Command Center";22;1
+"Building";"BarracksTechLab";NA;23;0
+"Unit";"SCV";"Command Center";24;1
+"Unit";"Hellion";"Factory";23;2
+"Unit";"Hellion";"Factory";24;2
+"Building";"Barracks";NA;22;0
+"Unit";"SCV";"Command Center";25;1
+"Building";"Refinery";NA;24;0
+"Unit";"Marine";"Barracks";24;1
+"Building";"Barracks";NA;23;0
+"Unit";"Cyclone";"Factory";31;3
+"Unit";"Marine";"Barracks";31;1
+"Unit";"SCV";"Command Center";31;1
+"Building";"CommandCenter";NA;21;0
+"Unit";"SCV";"Command Center";35;1
+"Building";"BarracksReactor";NA;31;0
+"Unit";"Marine";"Barracks";35;1
+"Unit";"SCV";"Command Center";36;1
+"Unit";"Marine";"Barracks";36;1
+"Unit";"Marine";"Barracks";36;1
+"Building";"SupplyDepot";NA;36;0
+"Unit";"SCV";"Command Center";38;1
+"Building";"FactoryReactor";NA;36;0
+"Unit";"Marine";"Barracks";38;1
+"Unit";"Marine";"Barracks";38;1
+"Unit";"Marine";"Barracks";39;1
+"Unit";"Marine";"Barracks";41;1
+"Unit";"Marine";"Barracks";41;1
+"Unit";"SCV";"Command Center";41;1
+"Building";"SupplyDepot";NA;41;0
+"Unit";"Marine";"Barracks";42;1
+"Unit";"SCV";"Command Center";47;1
+"Unit";"Marine";"Barracks";46;1
+"Unit";"Marine";"Barracks";46;1
+"Unit";"Marine";"Barracks";47;1
+"Upgrade";"Stimpack";"TechLab";31;0
+"Unit";"SCV";"Command Center";48;1
+"Unit";"Marine";"Barracks";48;1
+"Unit";"SCV";"Command Center";49;1
+"Building";"Starport";NA;41;0
+"Building";"FactoryTechLab";NA;48;0
+"Unit";"SCV";"Command Center";53;1
+"Unit";"Marine";"Barracks";48;1
+"Unit";"Marine";"Barracks";54;1
+"Building";"EngineeringBay";NA;48;0
+"Unit";"SCV";"Command Center";57;1
+"Building";"SupplyDepot";NA;54;0
+"Unit";"Marine";"Barracks";57;1
+"Unit";"Marine";"Barracks";57;1
+"Unit";"Marine";"Barracks";58;1
+"Unit";"Marine";"Barracks";58;1
+"Unit";"SCV";"Command Center";60;1
+"Unit";"Marine";"Barracks";59;1
+"Unit";"SCV";"Command Center";64;1
+"Unit";"Medivac";"Starport";59;2
+"Unit";"Marine";"Barracks";62;1
+"Unit";"Marine";"Barracks";62;1
+"Unit";"Medivac";"Starport";59;2
+"Unit";"SCV";"Command Center";66;1
+"Unit";"Marine";"Barracks";66;1
+"Unit";"Marine";"Barracks";66;1
+"Unit";"Marine";"Barracks";66;1
+"Unit";"Marine";"Barracks";69;1
+"Unit";"SCV";"Command Center";73;1
+"Unit";"Marine";"Barracks";70;1
+"Unit";"SCV";"Command Center";73;1
+"Building";"Refinery";NA;74;0
+"Building";"Refinery";NA;74;0
+"Unit";"Marine";"Barracks";77;1
+"Unit";"Marine";"Barracks";77;1
+"Building";"SupplyDepot";NA;81;0
+"Building";"SupplyDepot";NA;81;0
+"Unit";"Marine";"Barracks";81;1
+"Unit";"Liberator";"Starport";73;3
+"Unit";"SCV";"Command Center";83;1
+"Unit";"SCV";"Command Center";83;1
+"Unit";"Marine";"Barracks";83;1
+"Unit";"Marine";"Barracks";83;1
+"Unit";"Marine";"Barracks";83;1
+"Unit";"Marine";"Barracks";83;1
+"Unit";"Marine";"Barracks";83;1
+"Building";"SupplyDepot";NA;84;0
+"Unit";"Marine";"Barracks";94;1
+"Unit";"Marine";"Barracks";94;1
+"Unit";"Marine";"Barracks";94;1
+"Unit";"Marine";"Barracks";94;1
+"Unit";"Marine";"Barracks";94;1
+"Unit";"SCV";"Command Center";94;1
+"Unit";"SCV";"Command Center";94;1
+"Upgrade";"TerranInfantryWeaponsLevel1";"EngineeringBay";76;0
+"Unit";"Medivac";"Starport";94;2
+"Unit";"Marine";"Barracks";94;1
+"Unit";"Medivac";"Starport";94;2
+"Unit";"Marine";"Barracks";95;1
+"Unit";"Marine";"Barracks";96;1
+"Unit";"Marine";"Barracks";97;1
+"Unit";"SCV";"Command Center";99;1
+"Unit";"SCV";"Command Center";100;1
+"Unit";"Marine";"Barracks";101;1
