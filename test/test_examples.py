@@ -4,9 +4,9 @@ import sc2
 from sc2 import Race, Difficulty
 from sc2.player import Bot, Computer
 
-from examples.proxy_rax import ProxyRaxBot
-from examples.cannon_rush import CannonRushBot
-from examples.zerg_rush import ZergRushBot
+from examples.terran.proxy_rax import ProxyRaxBot
+from examples.protoss.cannon_rush import CannonRushBot
+from examples.zerg.zerg_rush import ZergRushBot
 
 def run_example(race, bot):
     result = sc2.run_game(sc2.maps.get("Sequencer LE"), [
