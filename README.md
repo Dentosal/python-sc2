@@ -31,7 +31,7 @@ Finally, you'll need to download some maps. Official map downloads are available
 After installing the library, a StarCraft II executable, and some maps, you're ready to get started. Simply run a bot file to fire up an instance of StarCraft II with the bot running. For example:
 
 ```
-python3 examples/cannon_rush.py
+python3 examples/protoss/cannon_rush.py
 ```
 
 ## Example
