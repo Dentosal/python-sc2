@@ -28,8 +28,7 @@ def main():
 
     self_race_string =  race_to_string[self_race]
     enemy_race_string = race_to_string[enemy_race]
-    time = strftime("%Y-%m-%d-%H:%M:%S", gmtime())
-    output_replay = map_name + self_race_string + race_bot_separator + enemy_race_string + ending_sc2replay
+    
 
     bot_selector = {
         Race.Terran:  Terran_Bot_Buildorder,
@@ -49,6 +48,10 @@ def main():
         print("Selected buildorder: {0}".format(hash))
 
         path = folder + hash + ending_csv
+
+        time = strftime("%Y-%m-%d-%H:%M:%S", gmtime())
+        output_replay = map_name + self_race_string + race_bot_separator + enemy_race_string + time + hash + ending_sc2replay
+
 
         run_game(maps.get(map_name.replace(" ", "")), [
             Bot(self_race, bot_selector[self_race](path)),

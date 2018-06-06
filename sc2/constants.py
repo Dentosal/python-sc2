@@ -8,7 +8,8 @@ from os.path import dirname
 import os
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-max_iterations = 10000 # TODO set value
+eval_number_games = 1
+max_iterations = 10000 # TODO set value # TODO test if cancels
 
 min_units_attack = 15
 

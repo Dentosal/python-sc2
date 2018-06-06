@@ -1,5 +1,5 @@
 from sc2 import Race, race_worker, ActionResult, race_townhalls
-from sc2.build_orders.commands import train_unit, add_supply, morph
+from sc2.build_orders.commands import train_unit, add_supply, morph, build_required
 from sc2.state_conditions.conditions import always_true, unit_count_at_least
 from sc2.constants import *
 

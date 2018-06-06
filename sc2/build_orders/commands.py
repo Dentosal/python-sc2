@@ -150,7 +150,7 @@ def add_gas(prioritize=True, repeatable=False):
 async def build_required(self, bot, required):
     """Builds required building"""
 
-    if command_requires is None:
+    if required is None:
         return
       
     
