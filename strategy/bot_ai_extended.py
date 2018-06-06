@@ -21,6 +21,9 @@ class Bot_AI_Extended(sc2.BotAI):
         self.build_order = BuildOrder(self, build_order, worker_count=init_worker_count)
 
     async def on_step(self, iteration):
+        if iteration >= max_iterations:
+            raise TimeoutError
+
         await self.distribute_workers()
         await self.build_order.execute_build()
 

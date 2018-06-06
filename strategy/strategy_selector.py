@@ -41,17 +41,19 @@ def main():
     folder = folder_buildorder + self_race_string + race_bot_separator + enemy_race_string + ending_folder + map_name + ending_folder
     path_strategy = folder + file_strategy 
     
-    hash = get_buildorder_hash(path_strategy, method)
+    
 
-    print("Selected buildorder: {0}".format(hash))
+    for i in range(eval_number_games):    
+        
+        hash = get_buildorder_hash(path_strategy, method)
+        print("Selected buildorder: {0}".format(hash))
 
-    path = folder + hash + ending_csv
+        path = folder + hash + ending_csv
 
-    # mehrcriterellas clustering
-    run_game(maps.get(map_name.replace(" ", "")), [
-        Bot(self_race, bot_selector[self_race](path)),
-        Computer(enemy_race, Difficulty.Easy)
-    ], realtime=False, save_replay_as= output_replay)
+        run_game(maps.get(map_name.replace(" ", "")), [
+            Bot(self_race, bot_selector[self_race](path)),
+            Computer(enemy_race, Difficulty.Easy)
+        ], realtime=False, save_replay_as= output_replay)
 
 if __name__ == '__main__':
     main()

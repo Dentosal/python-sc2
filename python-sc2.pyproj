@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{23c2358d-e06f-4628-ae1e-6cfe980ab822}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>strategy\strategy_test.py</StartupFile>
+    <StartupFile>strategy\strategy_selector.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -98,6 +98,10 @@
     <Folder Include="sc2\state_conditions" />
     <Folder Include="strategy" />
     <Folder Include="test" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Issues.md" />
+    <Content Include="README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
 </Project>

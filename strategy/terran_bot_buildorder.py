@@ -19,6 +19,10 @@ class Terran_Bot_Buildorder(Bot_AI_Extended):
        
        
     async def on_step(self, iteration):
+        
+        if iteration >= max_iterations:
+            raise TimeoutError
+
         await self.distribute_workers()
         await self.build_order.execute_build()
         

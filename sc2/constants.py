@@ -4,9 +4,11 @@ from .ids.effect_id import *
 from .ids.unit_typeid import *
 from .ids.upgrade_id import *
 
+from os.path import dirname
 import os
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+max_iterations = 10000 # TODO set value
 
 min_units_attack = 15
 
@@ -32,13 +34,13 @@ ending_folder = "/"
 ending_csv = ".csv"
 ending_sc2replay = ".SC2Replay"
 
-race_terran_string = "Terr"
-race_protoss_string = "Prot"
+race_terran_string = "Terr" # TODO fix R
+race_protoss_string = "Prot" # TODO
 race_zerg_string = "Zerg"
 
 race_bot_separator = "vs"
 
-folder_buildorder = os.path.dirname(ROOT_DIR) + "/buildorders/"
+folder_buildorder = dirname(dirname(ROOT_DIR)) + "/SC2-replays/SC2ReplayStats/buildorders-csv/"
 file_strategy = "strategy"+ending_csv
 
 # http://liquipedia.net/starcraft2/Terran_Building_Statistics_(Legacy_of_the_Void)
