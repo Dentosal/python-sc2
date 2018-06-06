@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{23c2358d-e06f-4628-ae1e-6cfe980ab822}</ProjectGuid>
+    <ProjectHome />
+    <StartupFile>strategy\strategy_test.py</StartupFile>
+    <SearchPath />
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterId />
+    <IsWindowsApplication>True</IsWindowsApplication>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="examples\bot_vs_bot.py" />
+    <Compile Include="examples\cannon_rush.py" />
+    <Compile Include="examples\distributed_workers.py" />
+    <Compile Include="examples\observer_easy_vs_easy.py" />
+    <Compile Include="examples\onebase_battlecruiser.py" />
+    <Compile Include="examples\play_tvz.py" />
+    <Compile Include="examples\proxy_rax.py" />
+    <Compile Include="examples\run_external.py" />
+    <Compile Include="examples\terran_marine_rush_build_order.py" />
+    <Compile Include="examples\threebase_voidray.py" />
+    <Compile Include="examples\too_slow_bot.py" />
+    <Compile Include="examples\warpgate_toss.py" />
+    <Compile Include="examples\worker_rush.py" />
+    <Compile Include="examples\zerg_rush.py" />
+    <Compile Include="examples\zerg_rush_build_order.py" />
+    <Compile Include="examples\__init__.py" />
+    <Compile Include="generate_id_constants.py" />
+    <Compile Include="generate_id_constants_from_stableid.py" />
+    <Compile Include="sc2\action.py" />
+    <Compile Include="sc2\bot_ai.py" />
+    <Compile Include="sc2\build_orders\build_order.py" />
+    <Compile Include="sc2\build_orders\commands.py" />
+    <Compile Include="sc2\build_orders\__init__.py" />
+    <Compile Include="sc2\cache.py" />
+    <Compile Include="sc2\client.py" />
+    <Compile Include="sc2\constants.py" />
+    <Compile Include="sc2\controller.py" />
+    <Compile Include="sc2\data.py" />
+    <Compile Include="sc2\game_data.py" />
+    <Compile Include="sc2\game_info.py" />
+    <Compile Include="sc2\game_state.py" />
+    <Compile Include="sc2\helpers\control_group.py" />
+    <Compile Include="sc2\helpers\__init__.py" />
+    <Compile Include="sc2\ids\ability_id.py" />
+    <Compile Include="sc2\ids\buff_id.py" />
+    <Compile Include="sc2\ids\effect_id.py" />
+    <Compile Include="sc2\ids\unit_typeid.py" />
+    <Compile Include="sc2\ids\upgrade_id.py" />
+    <Compile Include="sc2\ids\__init__.py" />
+    <Compile Include="sc2\main.py" />
+    <Compile Include="sc2\maps.py" />
+    <Compile Include="sc2\paths.py" />
+    <Compile Include="sc2\pixel_map.py" />
+    <Compile Include="sc2\player.py" />
+    <Compile Include="sc2\portconfig.py" />
+    <Compile Include="sc2\position.py" />
+    <Compile Include="sc2\power_source.py" />
+    <Compile Include="sc2\protocol.py" />
+    <Compile Include="sc2\sc2process.py" />
+    <Compile Include="sc2\state_conditions\conditions.py" />
+    <Compile Include="sc2\state_conditions\__init__.py" />
+    <Compile Include="sc2\tmpfix.py" />
+    <Compile Include="sc2\unit.py" />
+    <Compile Include="sc2\units.py" />
+    <Compile Include="sc2\unit_command.py" />
+    <Compile Include="sc2\__init__.py" />
+    <Compile Include="setup.py" />
+    <Compile Include="strategy\111expand.py" />
+    <Compile Include="strategy\bot_ai_extended.py" />
+    <Compile Include="strategy\protoss_bot_buildorder.py" />
+    <Compile Include="strategy\strategy_selector.py" />
+    <Compile Include="strategy\strategy_test.py" />
+    <Compile Include="strategy\strategy_util.py" />
+    <Compile Include="strategy\terran_bot_buildorder.py" />
+    <Compile Include="strategy\zerg_bot_buildorder.py" />
+    <Compile Include="test\conftest.py" />
+    <Compile Include="test\test_directions.py" />
+    <Compile Include="test\test_examples.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="examples" />
+    <Folder Include="sc2" />
+    <Folder Include="sc2\build_orders" />
+    <Folder Include="sc2\helpers" />
+    <Folder Include="sc2\ids" />
+    <Folder Include="sc2\state_conditions" />
+    <Folder Include="strategy" />
+    <Folder Include="test" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+</Project>

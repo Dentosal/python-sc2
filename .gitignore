@@ -20,3 +20,15 @@ mini_games/
 
 .idea
 *.iml
+
+
+
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# VS
+.vs/
