@@ -147,7 +147,7 @@ def add_gas(prioritize=True, repeatable=False):
 
 
 
-
+# HS
 async def build_required(self, bot, required):
     """Builds required building"""
 
@@ -178,7 +178,7 @@ async def build_required(self, bot, required):
             elif bot.can_afford(prerequired):
                 # rebuild building, since no empty add_on place
                 await build_required(self, bot, prerequired)
-         else:
+         elif bot.already_pending(required) == 0 or bot.units(required).owned.pending.amount == 0:
              print("Build new building {0} due to requirements".format(required))
              await construct(required).execute(bot)
     elif bot.already_pending(prerequired) > 0 or bot.units(prerequired).owned.pending.amount > 0:  

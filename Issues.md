@@ -20,6 +20,9 @@
 
 - minimum distance between buildings --> addons must have space --> round + placement steps?
 
+- mark my contribution with HS
+
+- duplicate building requiredbuilding due to already pending not counting 
 
 # CHECK
 
