@@ -150,25 +150,36 @@ def add_gas(prioritize=True, repeatable=False):
 async def build_required(self, bot, required):
     """Builds required building"""
 
-    if required is None:
-        return
-      
-    
-    
+ 
 
-    #if not unit_count_at_least(command_requires, 1, True):
-    #   await build_required(self, bot, construct_requirements[command_requires])
     
+    if required is None or bot.units(required).amount > 0 or not bot.can_afford(required):
+        # If no required building or its available (soon) or cannot afford
+        return
+  
+    # Whether the requirement itself has a dependency   
     prerequired = construct_requirements[required]
 
+   
+    if prerequired is None or bot.units(prerequired).completed.amount > 0:
+        # If prequired fullfilled, just build required
 
-    if required in building_addons:
-        pass
-
-    if bot.units.owned(prerequired):
-        pass
-
-    
+         if required in building_addons:
+            if bot.units(prerequired).completed.no_add_on.amount > 0:
+                print("Build new addon {0} due to requirements".format(required))
+                await train_unit(required, prerequires).execute(bot)
+            elif bot.units(prerequired).pending.amount > 0:
+                return
+            elif bot.can_afford(prerequired):
+                
+                await build_required(self, bot, prerequired)
+         else:
+             print("Build new building {0} due to requirements".format(required))
+             await construct(required).execute(bot)
+    elif bot.already_pending(prerequired) > 0 or bot.units(prerequired).pending.amount > 0:  
+        return
+  
+     
 
 
 

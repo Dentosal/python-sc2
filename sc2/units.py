@@ -1,5 +1,6 @@
 import random
 
+from math import isclose
 from .unit import Unit
 from .ids.unit_typeid import UnitTypeId
 
@@ -140,6 +141,21 @@ class Units(list):
     @property
     def not_structure(self):
         return self.filter(lambda unit: not unit.is_structure)
+
+    #HS
+    @property
+    def no_add_on(self):
+        return self.filter(lambda unit: not unit.has_add_on)
+
+    #HS
+    @property
+    def completed(self):
+        return self.filter(lambda unit: isclose(unit.build_progress, 1))
+
+    #HS
+    @property
+    def pending(self):
+        return self.filter(lambda unit: not isclose(unit.build_progress, 1))
 
     @property
     def mineral_field(self):
