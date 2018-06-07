@@ -18,6 +18,8 @@ eval_number_games = 1
 max_iterations = 10000 # TODO set value # TODO test if cancels
 
 min_units_attack = 15
+min_units_defend = 5
+
 
 gameloops_check_frequency = 16
 
@@ -35,6 +37,9 @@ worker_gas_increase = 3
 worker_supply = 1
 
 init_supply = 12
+
+# if more less auto_build_idle_limit idle buildings, build new ones
+auto_build_idle_limit = 3
 
 # 16 only mineral, will be increased automatically for gas
 init_worker_count = 16

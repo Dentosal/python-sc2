@@ -13,10 +13,13 @@ from random import uniform, randrange
 from math import isclose
 
 
+
 def can_build(building, unit):
     # TODO check if unit requires addon
-    return isclose(building.build_progress, build_progress_completed) and not building.is_enemy and building.noqueue and building.is_idle
-
+    if unit_requirements[unit] in building_addons and building.has_add_on:
+        return isclose(building.build_progress, build_progress_completed) and building.is_mine and building.noqueue and building.is_idle
+    else:
+        return isclose(building.build_progress, build_progress_completed) and building.is_mine and building.noqueue and building.is_idle
 
 def get_random_building_location(bot):
     return bot.townhalls.random.position.towards(bot.game_info.map_center, randrange(5, 20)).random_on_distance(randrange(5, 12))

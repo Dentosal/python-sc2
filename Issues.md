@@ -17,19 +17,18 @@
   - not all upgrades have buildings
   - maybe export requires
 
--  todo auto defend: if under attack --> defend with all military units  <- already in auto_attack?
-
-- fix cum supply by 1 too low despite init at 12
-
-- executing multiple build order items in parallel
+- todo attack in groups instead of sending single units
+- when defending, dont move to opponest area
 
 - minimum distance between buildings --> addons must have space --> round + placement steps?
 
-- fix build_required with can_builds
 
 # CHECK
 
 - poor building location placement --> trying to build addons failed due to missing space --> more distance to other buildings
+
+- fix cum supply by 1 too low despite init at 12
+- executing multiple build order items in parallel
 
 
 # Still persists?
