@@ -28,8 +28,8 @@ class Bot_AI_Extended(sc2.BotAI):
         await self.build_order.execute_build()
 
         # check every 2 seconds
-        if iteration % gameloops_check_frequency*2 == 0: 
-            await auto_build(self)
+        #if iteration % gameloops_check_frequency*2 == 0: 
+        #    await auto_build(self)
 
         if iteration % gameloops_check_frequency == 0:
             await auto_attack(self)

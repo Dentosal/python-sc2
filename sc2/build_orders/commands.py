@@ -1,7 +1,7 @@
 from sc2 import ActionResult, Race
 from sc2.constants import *
 from sc2.state_conditions.conditions import  unit_count_at_least
-#from strategy_util import *
+from random import uniform, randrange
 
 class Command(object):
     def __init__(self, action, repeatable=False, priority=False, increase_workers = 0, increased_supply = 0, requires = None):
@@ -94,7 +94,8 @@ def construct(building, placement=None, prioritize=True, repeatable=False):
 
 
         if not placement:
-            location = bot.townhalls.first.position.towards(bot.game_info.map_center, 5)
+            location = bot.townhalls.random.position.towards(bot.game_info.map_center, randrange(5, 20)).random_on_distance(randrange(5, 12))
+            # get_random_building_location(bot) # bot.townhalls.first.position.towards(bot.game_info.map_center, 5)
         else:
             location = placement
 
@@ -160,7 +161,11 @@ async def build_required(self, bot, required):
     # Whether the requirement itself has a dependency   
     prerequired = construct_requirements[required]
 
+
+    #if not prerequired is None and bot.units(prerequired).amount == 0:
+    #    await build_required(self, bot, prerequired)
    
+
     if prerequired is None or bot.units(prerequired).completed.amount > 0:
         # If prequired fullfilled, just build required
 
@@ -171,14 +176,16 @@ async def build_required(self, bot, required):
             elif bot.units(prerequired).pending.amount > 0:
                 return
             elif bot.can_afford(prerequired):
-                
+                # rebuild building, since no empty add_on place
                 await build_required(self, bot, prerequired)
          else:
              print("Build new building {0} due to requirements".format(required))
              await construct(required).execute(bot)
     elif bot.already_pending(prerequired) > 0 or bot.units(prerequired).pending.amount > 0:  
         return
-  
+    else:
+        await build_required(self, bot, prerequired)
+        
      
 
 
