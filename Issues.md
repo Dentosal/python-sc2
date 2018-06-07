@@ -1,12 +1,8 @@
 # TODO
 
-- poor building location placement --> trying to build addons failed due to missing space --> more distance to other buildings
-- include_pending --> doesnt work for buildings, e.g. cant build Starport, since requirement factory + factory not completed
+
+
 - Add condition: supply_left
-
-- auto expand in mid/lategame
-
-
 
 - auto rename+export replays p1vsp2-time.SC2Replay
 
@@ -53,9 +49,19 @@
 
 - fix build_required with can_builds
 
+# CHECK
+
+- poor building location placement --> trying to build addons failed due to missing space --> more distance to other buildings
+
+
+# Still persists?
+
+- include_pending --> doesnt work for buildings, e.g. cant build Starport, since requirement factory + factory not completed
+
 
 # Things that could work
 
 - rebuild dying unit/building
 - build random units after finishing build order <-- via sufficently enough resources
 - attack after reaching end of build order
+- auto expand in mid/lategame

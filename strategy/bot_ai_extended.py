@@ -28,9 +28,10 @@ class Bot_AI_Extended(sc2.BotAI):
         await self.build_order.execute_build()
 
         # check every 2 seconds
-        #if iteration % gameloops_check_frequency*2 == 0: 
-        #    await auto_build(self)
+        if iteration % gameloops_check_frequency*2 == 0: 
+            await auto_build(self)
 
+        # check every second
         if iteration % gameloops_check_frequency == 0:
             await auto_attack(self)
 
@@ -53,7 +54,8 @@ async def auto_attack(bot):
 
 
 async def auto_build(bot):
-    
+
+        
      # if much --> build new terran_military_buildings
     if bot.minerals > sufficently_much_minerals and bot.vespene > sufficently_much_vespene:  
         for building in sample(terran_military_buildings, terran_military_buildings_sample):
@@ -62,6 +64,9 @@ async def auto_build(bot):
                 print("Build {0} due to a large surplus of resources".format(building))
                 bot.cum_supply = bot.cum_supply + 2 # in case of stopped build order
                 await bot.build(building, near = get_random_building_location(bot))
+    elif bot.minerals > sufficently_much_minerals and bot.units(bot.basic_townhall_type).pending.amount == 0:
+        print("Auto expand due to a large surplus of resources")
+        await expand().execute(bot)
         
 
     # sample order for different units
