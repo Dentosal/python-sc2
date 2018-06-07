@@ -22,6 +22,14 @@ You'll also need an StarCraft II executable. If you are running Windows or macOS
 
 You probably want some maps too. Official map downloads are available from [Blizzard/s2client-proto](https://github.com/Blizzard/s2client-proto#downloads). Notice: the map files are to be extracted into *subdirectories* of the `install-dir/Maps` directory.
 
+### Running
+
+After installing the library, a StarCraft II executable, and some maps, you're ready to get started. Simply run a bot file to fire up an instance of StarCraft II with the bot running. For example:
+
+```
+python3 examples/protoss/cannon_rush.py
+```
+
 ## Example
 
 As promised, worker rush in less than twenty lines:
