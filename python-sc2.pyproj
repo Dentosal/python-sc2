@@ -79,12 +79,19 @@
     <Compile Include="setup.py" />
     <Compile Include="strategy\111expand.py" />
     <Compile Include="strategy\bot_ai_extended.py" />
-    <Compile Include="strategy\protoss_bot_buildorder.py" />
+    <Compile Include="strategy\protoss_bot_buildorder.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="strategy\strategy_constants.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="strategy\strategy_selector.py" />
     <Compile Include="strategy\strategy_test.py" />
     <Compile Include="strategy\strategy_util.py" />
     <Compile Include="strategy\terran_bot_buildorder.py" />
-    <Compile Include="strategy\zerg_bot_buildorder.py" />
+    <Compile Include="strategy\zerg_bot_buildorder.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="test\conftest.py" />
     <Compile Include="test\test_directions.py" />
     <Compile Include="test\test_examples.py" />

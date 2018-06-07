@@ -3,7 +3,7 @@ import pandas as pd
 from sc2.build_orders.build_order import *
 from sc2.state_conditions.conditions import  supply_at_least, cum_supply_at_least, all_of, unit_count_at_least
 from sc2.build_orders.commands import construct, expand, add_supply, add_gas
-from sc2.constants import *
+from strategy_constants import *
 from sc2.data import *
 import sc2
 from sc2 import Race
@@ -16,24 +16,6 @@ from math import isclose
 def can_build(building, unit):
     # TODO check if unit requires addon
     return isclose(building.build_progress, build_progress_completed) and not building.is_enemy and building.noqueue and building.is_idle
-
-# TODO check
-def count_units(bot, unit, exclude_pending, exclude_enemy = True):
-
-    count = 0
-    for u in bot.units(unit):
-
-        if exclude_enemy and u.is_enemy:
-            continue
-
-        if not exclude_pending:
-            count += 1
-        else:
-            if isclose(u.build_progress, build_progress_completed):
-                count += 1
-
-    return count
-    
 
 
 def get_random_building_location(bot):

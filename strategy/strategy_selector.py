@@ -1,11 +1,11 @@
 import sc2
 from sc2 import run_game, maps, Race, Difficulty
 from time import gmtime, strftime
-from sc2.constants import *
+from strategy_constants import *
 from sc2.player import Bot, Computer
 
 from strategy_util import get_buildorder_hash
-
+import time
 from zerg_bot_buildorder import Zerg_Bot_Buildorder
 from protoss_bot_buildorder import Protoss_Bot_Buildorder
 from terran_bot_buildorder import Terran_Bot_Buildorder
@@ -49,9 +49,10 @@ def main():
 
         path = folder + hash + ending_csv
 
-        time = strftime("%Y-%m-%d-%H:%M:%S", gmtime())
-        output_replay = map_name + self_race_string + race_bot_separator + enemy_race_string + time + hash + ending_sc2replay
+        time_string = str(round(time.time())) #strftime("%Y-%m-%d-%H:%M:%S", gmtime())
+        output_replay = folder_bot_replays + map_name + self_race_string + race_bot_separator + enemy_race_string + time_string + "_" + hash + ending_sc2replay
 
+        print("Outputfile will be {0}".format(output_replay))
 
         run_game(maps.get(map_name.replace(" ", "")), [
             Bot(self_race, bot_selector[self_race](path)),

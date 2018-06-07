@@ -17,27 +17,7 @@ class Terran_Bot_Buildorder(Bot_AI_Extended):
 
     
        
-       
-    async def on_step(self, iteration):
-        
-        if iteration >= max_iterations:
-            raise TimeoutError
-
-        await self.distribute_workers()
-        await self.build_order.execute_build()
-        
-        # to avoid conflicts with build order
-        #if self.supply_left < 3 and  self.supply_used >30:
-        #    add_supply()
-          
-        # TODO research in build order
-
-
-        if iteration % gameloops_check_frequency*2 == 0: 
-            await auto_build(self)
-        
-        if iteration % gameloops_check_frequency == 0:
-            await auto_attack(self)
+      
              
            
             

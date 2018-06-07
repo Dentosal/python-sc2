@@ -1,19 +1,6 @@
 # TODO
 
-
-
-- Add condition: supply_left
-
-- auto rename+export replays p1vsp2-time.SC2Replay
-
-
 - do multiple commands in parallel if enough minerals/gas
-
-
-
-
-
-
 
 - Research in build order --> using train_unit
 	- check
@@ -26,20 +13,11 @@
 		return research_spec
 	- only execute respearch if not currently researching or research done 
 
-- cant reproduce buildings switching places (addon swapping)
-  - e.g. solve via: if enough units simple build an addon? what if a different one is build later
-  - better: why upgrade/addon/unit cant be build 
-    - check if building not pending / exists --> if not build building
-    - check if addon can be build --> if not create new building
-    - check if unit cant be build due to missing add on --> build add on
-
 - improve export of csv
   - not all upgrades have buildings
   - maybe export requires
 
 -  todo auto defend: if under attack --> defend with all military units  <- already in auto_attack?
-
-- how do i build hellbat
 
 - fix cum supply by 1 too low despite init at 12
 
@@ -57,11 +35,20 @@
 # Still persists?
 
 - include_pending --> doesnt work for buildings, e.g. cant build Starport, since requirement factory + factory not completed
+- Add condition: supply_left
 
-
-# Things that could work
+# Things that should/could work
 
 - rebuild dying unit/building
 - build random units after finishing build order <-- via sufficently enough resources
 - attack after reaching end of build order
 - auto expand in mid/lategame
+- auto rename+export replays p1vsp2-time.SC2Replay
+
+
+- cant reproduce buildings switching places (addon swapping)
+  - e.g. solve via: if enough units simple build an addon? what if a different one is build later
+  - better: why upgrade/addon/unit cant be build 
+    - check if building not pending / exists --> if not build building
+    - check if addon can be build --> if not create new building
+    - check if unit cant be build due to missing add on --> build add on

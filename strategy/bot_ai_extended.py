@@ -2,7 +2,7 @@ import sc2
 from sc2 import run_game, maps, Race, Difficulty
 from sc2.build_orders.build_order import BuildOrder, train_unit
 from sc2.build_orders.commands import construct, expand, add_supply, add_gas, train_unit
-from sc2.constants import *
+from strategy_constants import *
 from sc2.player import Bot, Computer
 from sc2.state_conditions.conditions import all_of, supply_at_least, minerals_at_least, unit_count
 
@@ -54,13 +54,12 @@ async def auto_attack(bot):
 
 
 async def auto_build(bot):
-
-        
+            
      # if much --> build new terran_military_buildings
     if bot.minerals > sufficently_much_minerals and bot.vespene > sufficently_much_vespene:  
         for building in sample(terran_military_buildings, terran_military_buildings_sample):
             building_required = construct_requirements[building]
-            if count_units(bot, building_required, True) > 0:      
+            if bot.units(building_required).owned.completed.amount > 0:      
                 print("Build {0} due to a large surplus of resources".format(building))
                 bot.cum_supply = bot.cum_supply + 2 # in case of stopped build order
                 await bot.build(building, near = get_random_building_location(bot))

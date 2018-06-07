@@ -154,7 +154,7 @@ async def build_required(self, bot, required):
  
 
     
-    if required is None or bot.units(required).amount > 0 or not bot.can_afford(required):
+    if required is None or bot.units(required).owned.amount > 0 or not bot.can_afford(required):
         # If no required building or its available (soon) or cannot afford
         return
   
@@ -166,14 +166,14 @@ async def build_required(self, bot, required):
     #    await build_required(self, bot, prerequired)
    
 
-    if prerequired is None or bot.units(prerequired).completed.amount > 0:
+    if prerequired is None or bot.units(prerequired).owned.completed.amount > 0:
         # If prequired fullfilled, just build required
 
          if required in building_addons:
-            if bot.units(prerequired).completed.no_add_on.amount > 0:
+            if bot.units(prerequired).owned.completed.no_add_on.amount > 0:
                 print("Build new addon {0} due to requirements".format(required))
-                await train_unit(required, prerequires).execute(bot)
-            elif bot.units(prerequired).pending.amount > 0:
+                await train_unit(required, prerequired).execute(bot)
+            elif bot.units(prerequired).owned.pending.amount > 0:
                 return
             elif bot.can_afford(prerequired):
                 # rebuild building, since no empty add_on place
@@ -181,41 +181,8 @@ async def build_required(self, bot, required):
          else:
              print("Build new building {0} due to requirements".format(required))
              await construct(required).execute(bot)
-    elif bot.already_pending(prerequired) > 0 or bot.units(prerequired).pending.amount > 0:  
+    elif bot.already_pending(prerequired) > 0 or bot.units(prerequired).owned.pending.amount > 0:  
         return
     else:
         await build_required(self, bot, prerequired)
-        
-     
-
-
-
-
-    # deprecated
-    # TODO count units properly as in count_unit
-    amount_requires = 0
-    amount_prerequires = 0
-
-    if False:
-        prerequires = prerequired
-        if command_requires in building_addons:
-            for building in bot.units(command_requires):
-                if not building.has_add_on:
-                    amount_requires += 1
-            for building in bot.units(prerequires):
-                if not building.has_add_on:
-                    amount_prerequires += 1
-        else:
-            amount_requires = bot.units(command_requires).amount 
-            amount_prerequires = bot.units(prerequires).amount  
-
-        if amount_requires + bot.already_pending(command_requires)  > 0:
-            return
-        elif amount_prerequires + bot.already_pending(prerequires) == 0:
-            await build_required(self, bot, prerequires)
-        elif amount_requires == 0 and amount_prerequires >= 1 and bot.can_afford(command_requires): 
-            print("Build new building {0} due to requirements".format(command_requires))
-            if command_requires in building_addons:
-                await train_unit(command_requires, prerequires).execute(bot)
-            else:
-                await construct(command_requires).execute(bot)
+  
