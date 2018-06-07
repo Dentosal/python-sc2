@@ -19,7 +19,7 @@ max_iterations = 10000 # TODO set value # TODO test if cancels
 
 min_units_attack = 15
 min_units_defend = 5
-
+distance_defend = 15
 
 gameloops_check_frequency = 16
 

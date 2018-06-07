@@ -37,26 +37,28 @@ class Bot_AI_Extended(sc2.BotAI):
             await auto_attack(self)
             await auto_defend(self)
 
-  
+# TODO check if works  
 async def auto_defend(bot):
-    if not bot.attack and bot.known_enemy_units.amount > 0:
-        print("Enemy detected")
-        bot.defending = True 
+    if bot.defending or bot.known_enemy_units.amount > 0:
+        units_military = get_units_military(bot)
+        units_military_amount = len(units_military)
+        close_enemies =  bot.known_enemy_units.closer_than(distance_defend, bot.townhalls.random)
+        if close_enemies.amount > 0 and units_military_amount >= min_units_attack and bot.known_enemy_units.amount <= units_military_amount*2:          
+            print("Enemy detected")
+            bot.defending = True 
+
+            for unit in filter(lambda u: u.is_idle, units_military):  
+                enemy = close_enemies.random # attack random unit
+                if enemy.distance_to(bot.townhalls.random) < distance_defend:
+                    await bot.do(unit.attack(enemy.position.to2, queue=True))
 
 
 
 async def auto_attack(bot):
     units_military = get_units_military(bot)
     units_military_amount = len(units_military)
-    if (bot.defending and units_military_amount >= min_units_defend) or bot.attack or units_military_amount >= min_units_attack:
-        
-
-        if units_military_amount < min_units_attack and bot.known_enemy_units.amount > units_military_amount:
-            # Not enough units to defend
-            bot.attack = False
-            bot.defending = False
-            return
-        
+    if bot.attack or units_military_amount >= min_units_attack:
+                   
         bot.attack = True
                
         for unit in filter(lambda u: u.is_idle, units_military):   

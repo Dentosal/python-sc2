@@ -13,12 +13,10 @@
 		return research_spec
 	- only execute respearch if not currently researching or research done 
 
-- improve export of csv
-  - not all upgrades have buildings
-  - maybe export requires
 
-- todo attack in groups instead of sending single units
-- when defending, dont move to opponest area
+
+- attack in groups instead of sending single units
+- when defending, dont move to opponent area
 
 - minimum distance between buildings --> addons must have space --> round + placement steps?
 
@@ -35,6 +33,10 @@
 
 - include_pending --> doesnt work for buildings, e.g. cant build Starport, since requirement factory + factory not completed
 - Add condition: supply_left
+
+- improve export of csv
+  - not all upgrades have buildings
+  - maybe export requires
 
 # Things that should/could work
 

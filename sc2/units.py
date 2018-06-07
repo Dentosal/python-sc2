@@ -101,6 +101,8 @@ class Units(list):
             position = position.position
         return self.filter(lambda unit: unit.position.to2.distance_to(position.to2) < distance)
 
+
+
     def subgroup(self, units):
         return Units(list(units), self.game_data)
 

@@ -15,6 +15,7 @@ class Strategy_Test(Bot_AI_Extended):
             (supply_at_least(15), train_unit(UnitTypeId.VIKINGFIGHTER, on_building = UnitTypeId.STARPORT))         
         ]
         self.attack = False
+        self.defending = False
         self.build_order = BuildOrder(self, build_order, worker_count=init_worker_count) 
        
  
