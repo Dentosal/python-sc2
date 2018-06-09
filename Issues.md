@@ -16,6 +16,7 @@
 
 
 - attack in groups instead of sending single units
+  - no not attack opponent base directly, but react if enemy units found
 - when defending, dont move to opponent area
 
 - minimum distance between buildings --> addons must have space --> round + placement steps?

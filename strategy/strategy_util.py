@@ -22,7 +22,7 @@ def can_build(building, unit):
         return isclose(building.build_progress, build_progress_completed) and building.is_mine and building.noqueue and building.is_idle
 
 def get_random_building_location(bot):
-    return bot.townhalls.random.position.towards(bot.game_info.map_center, randrange(5, 20)).random_on_distance(randrange(5, 12))
+    return bot.townhalls.random.position.towards(bot.game_info.map_center, randrange(5, 16)).random_on_distance(randrange(5, 12))
 
 
 # TODO attack as group, or solution as in proxy_ray.py???
@@ -54,12 +54,11 @@ def get_buildorder_hash(path_strategy, method):
 
 
 
-
 def init_build_order(path):
 
     build_order = []
     df = pd.read_csv(path, sep=";")
-    #supply_previous = init_supply
+
     for index, row in df.iterrows():
         supply = row['TotalSupply']
         type = row['Type']
@@ -101,23 +100,38 @@ def init_build_order(path):
             unit_building = unit_building.upper()
             build_order.append((all_of(cum_supply_at_least(supply), unit_count_at_least(UnitTypeId[unit_building], 1, include_pending=False)), train_unit(UnitTypeId[unit_name], on_building = UnitTypeId[unit_building], increased_supply = unit_supply)))
         elif(type == "Upgrade"):
-            # ignore spray
-            #if(unit_name[0:5] == "SPRAY"):
-            #    continue
+           
+            unit_building = unit_building.upper()
+            upgrade = ""
+            building = ""
+            prefix_buildings = ["BARRACKS", "STARPORT", "FACTORY", ""]
+            unit_name = unit_name.replace("ARMORSLEVEL", "ARMORLEVEL")
+            RAVENCORVIDREACTOR
+            RESEARCH_RAVENCORVIDREACTOR
+            if not unit_building == "TECHLAB":
+                prefix_buildings = [""]
+           
+            for option_building in prefix_buildings:
                 
-            # TODO check if it works
- #           try:
-                unit_building = unit_building.upper()
-                build_order.append((all_of(supply_at_least(supply), unit_count_at_least(UnitTypeId[unit_building], 1, include_pending=False)), 
-                                    research(UpgradeId[unit_name], on_building = UnitTypeId[unit_building])))
-  #          except (NameError, KeyError):
-   #             print("Error appending Upgrade {0}".format(unit_name))
-               # pass
-    #        except AttributeError:
-     #           print("Error appending Upgrade {0}, building {1} not found".format(unit_name, unit_building))
-      #          pass
+                if option_building+unit_building+"RESEARCH_"+unit_name in AbilityId.__members__:
+                    upgrade = unit_building+"RESEARCH_"+unit_name
+                    building = option_building + unit_building
+                    break
+                elif option_building+"RESEARCH_"+unit_name in AbilityId.__members__:
+                    upgrade = "RESEARCH_"+unit_name
+                    building = option_building + unit_building
+                    break
+            
+            if upgrade == "":
+                print("Upgrade {0} not found".format(unit_name))
+                continue
+            else:
+                print("Upgrade {0} found".format(unit_name))
 
-        #supply_previous = supply
+
+            build_order.append((all_of(supply_at_least(supply), unit_count_at_least_completed(UnitTypeId[unit_building], 1)), 
+                                    research(upgrade, on_building = UnitTypeId[unit_building])))
+
             
     return build_order
         
