@@ -29,6 +29,9 @@ def _pxmap_sub_scale(map1, map2, map3):
 
 class GameInfo(object):
     def __init__(self, proto):
+        # Note: Added by Davey for pysc2
+        self.raw_game_info = proto
+
         self.players = [Player.from_proto(p) for p in proto.player_info]
         self.map_size = Size.from_proto(proto.start_raw.map_size)
         self.pathing_grid = PixelMap(proto.start_raw.pathing_grid)

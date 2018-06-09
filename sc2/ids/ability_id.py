@@ -4,6 +4,9 @@
 import enum
 
 class AbilityId(enum.Enum):
+    CHRONOBOOSTENERGYCOST = 3755 # temporary > please see PR#24
+    NEXUSMASSRECALL = 3757 # temporary > please see PR#24
+    INVALID = 0
     NULL_NULL = 0
     SMART = 1
     TAUNT_TAUNT = 2
