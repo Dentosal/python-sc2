@@ -84,7 +84,9 @@ construct_requirements = {
     UnitTypeId.FACTORYTECHLAB :  UnitTypeId.FACTORY,
     UnitTypeId.SUPPLYDEPOT : None,
     UnitTypeId.COMMANDCENTER : None,
-    UnitTypeId.REFINERY : None
+    UnitTypeId.REFINERY : None,
+    UnitTypeId.ENGINEERINGBAY : None,
+    UnitTypeId.ARMORY:  UnitTypeId.FACTORY
 }
 
 
@@ -120,6 +122,8 @@ unit_requirements = {
 
 
 build_progress_completed = 1
+
+min_resource_upgrades = 300 # i.e. ShipPlatingLevel3
 
 # TODO reason why theses (fuzzy) limits
 # for units

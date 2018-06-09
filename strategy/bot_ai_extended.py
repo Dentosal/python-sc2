@@ -5,7 +5,6 @@ from sc2.build_orders.commands import construct, expand, add_supply, add_gas, tr
 from strategy_constants import *
 from sc2.player import Bot, Computer
 from sc2.state_conditions.conditions import all_of, supply_at_least, minerals_at_least, unit_count, unit_count_at_least_completed
-
 from math import isclose
 from random import sample, randrange
 from abc import ABCMeta, abstractmethod, abstractproperty
