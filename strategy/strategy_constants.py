@@ -48,8 +48,8 @@ ending_folder = "/"
 ending_csv = ".csv"
 ending_sc2replay = ".SC2Replay"
 
-race_terran_string = "Terr" # TODO fix R
-race_protoss_string = "Prot" # TODO
+race_terran_string = "Terran"
+race_protoss_string = "Protoss"
 race_zerg_string = "Zerg"
 
 race_bot_separator = "vs"

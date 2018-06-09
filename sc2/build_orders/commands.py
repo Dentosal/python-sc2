@@ -145,7 +145,22 @@ def add_gas(prioritize=True, repeatable=False):
     return Command(do_add_gas, priority=prioritize, repeatable=repeatable, increase_workers=worker_gas_increase)
 
 
+# HS
+def research(upgrade, on_building, prioritize=True):
+    async def research_spec(bot):
+        buildings = bot.units(on_building).completed.noqueue.idle
+        if buildings.exists and not upgrade in bot.researched: # already pending wont work with upgrades
+            can_afford = bot.can_afford(upgrade)
+            if can_afford:
+                print("Research {0}".format(upgrade))
+                bot.researched.append(upgrade)
+                await bot.do(buildings.first(upgrade))
+            else:
+                return can_afford.action_result 
+        else:
+            return ActionResult.Error
 
+    return Command(research_spec, priority=prioritize, repeatable=False)
 
 # HS
 async def build_required(self, bot, required):

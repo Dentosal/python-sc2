@@ -10,8 +10,7 @@ class BuildOrder(object):
         self.worker_count = worker_count
         self.auto_add_supply = auto_add_supply
         self.bot.cum_supply = init_supply
-     
-    
+         
         
 
     async def execute_build(self):

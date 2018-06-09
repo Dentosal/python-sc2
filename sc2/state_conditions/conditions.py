@@ -76,12 +76,20 @@ def unit_count_at_least(unit, n, include_pending=False):
 
     return condition
 
-
 def unit_count_less_than(unit, n, include_pending=False):
     def condition(bot):
         actual_amount = bot.units(unit).amount
         if include_pending:
             actual_amount += bot.already_pending(unit)
         return actual_amount < n
+
+    return condition
+
+
+
+# HS
+def unit_count_at_least_completed(unit, n):
+    def condition(bot):
+        return bot.units(unit).completed.amount >= n
 
     return condition

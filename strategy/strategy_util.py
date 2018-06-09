@@ -2,7 +2,7 @@ import csv
 import pandas as pd
 from sc2.build_orders.build_order import *
 from sc2.state_conditions.conditions import  supply_at_least, cum_supply_at_least, all_of, unit_count_at_least
-from sc2.build_orders.commands import construct, expand, add_supply, add_gas
+from sc2.build_orders.commands import construct, expand, add_supply, add_gas, research
 from strategy_constants import *
 from sc2.data import *
 import sc2
@@ -102,20 +102,20 @@ def init_build_order(path):
             build_order.append((all_of(cum_supply_at_least(supply), unit_count_at_least(UnitTypeId[unit_building], 1, include_pending=False)), train_unit(UnitTypeId[unit_name], on_building = UnitTypeId[unit_building], increased_supply = unit_supply)))
         elif(type == "Upgrade"):
             # ignore spray
-            if(unit_name[0:5] == "SPRAY"):
-                continue
-
-    
+            #if(unit_name[0:5] == "SPRAY"):
+            #    continue
+                
             # TODO check if it works
-            try:
+ #           try:
                 unit_building = unit_building.upper()
-                build_order.append((all_of(supply_at_least(supply), unit_count_at_least(UnitTypeId[unit_building], 1, include_pending=False)), train_unit(UpgradeId[unit_name], on_building = UnitTypeId[unit_building])))
-            except (NameError, KeyError):
-                print("Error appending Upgrade {0}".format(unit_name))
+                build_order.append((all_of(supply_at_least(supply), unit_count_at_least(UnitTypeId[unit_building], 1, include_pending=False)), 
+                                    research(UpgradeId[unit_name], on_building = UnitTypeId[unit_building])))
+  #          except (NameError, KeyError):
+   #             print("Error appending Upgrade {0}".format(unit_name))
                # pass
-            except AttributeError:
-                print("Error appending Upgrade {0}, building {1} not found".format(unit_name, unit_building))
-                pass
+    #        except AttributeError:
+     #           print("Error appending Upgrade {0}, building {1} not found".format(unit_name, unit_building))
+      #          pass
 
         #supply_previous = supply
             

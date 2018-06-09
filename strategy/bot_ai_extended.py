@@ -4,7 +4,7 @@ from sc2.build_orders.build_order import BuildOrder, train_unit
 from sc2.build_orders.commands import construct, expand, add_supply, add_gas, train_unit
 from strategy_constants import *
 from sc2.player import Bot, Computer
-from sc2.state_conditions.conditions import all_of, supply_at_least, minerals_at_least, unit_count
+from sc2.state_conditions.conditions import all_of, supply_at_least, minerals_at_least, unit_count, unit_count_at_least_completed
 
 from math import isclose
 from random import sample, randrange
@@ -19,7 +19,9 @@ class Bot_AI_Extended(sc2.BotAI):
         build_order = init_build_order(path)
         self.attack = False
         self.defending = False
+        self.researched = []
         self.build_order = BuildOrder(self, build_order, worker_count=init_worker_count)
+        
 
     async def on_step(self, iteration):
         if iteration >= max_iterations:
@@ -77,7 +79,7 @@ async def auto_attack(bot):
 async def auto_build(bot):
             
      # if much --> build new terran_military_buildings
-    if bot.minerals > sufficently_much_minerals and bot.vespene > sufficently_much_vespene and bot.units.structure.idle < auto_build_idle_limit:  
+    if bot.minerals > sufficently_much_minerals and bot.vespene > sufficently_much_vespene and bot.units.structure.idle.amount < auto_build_idle_limit:  
         for building in sample(terran_military_buildings, terran_military_buildings_sample):
             building_required = construct_requirements[building]
             if bot.units(building_required).owned.completed.amount > 0:      
