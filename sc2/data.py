@@ -12,17 +12,6 @@ from .ids.unit_typeid import COMMANDCENTER, ORBITALCOMMAND, PLANETARYFORTRESS
 from .ids.unit_typeid import HATCHERY, LAIR, HIVE
 from .ids.unit_typeid import ASSIMILATOR, REFINERY, EXTRACTOR
 
-# merge begin
-from .ids.ability_id import TRAIN_ZEALOT, TRAIN_STALKER, TRAIN_HIGHTEMPLAR, TRAIN_DARKTEMPLAR, TRAIN_SENTRY, \
-    TRAIN_ADEPT
-from .ids.ability_id import \
-    TRAINWARP_ZEALOT, \
-    TRAINWARP_STALKER, \
-    TRAINWARP_HIGHTEMPLAR, \
-    TRAINWARP_DARKTEMPLAR, \
-    TRAINWARP_SENTRY, \
-    TRAINWARP_ADEPT
-
 # TODO check merge conflict
 from .ids.unit_typeid import PYLON, OVERLORD, SUPPLYDEPOT
 
@@ -33,7 +22,8 @@ from .ids.ability_id import (
     GATEWAYTRAIN_STALKER,
     GATEWAYTRAIN_HIGHTEMPLAR,
     GATEWAYTRAIN_DARKTEMPLAR,
-    GATEWAYTRAIN_SENTRY
+    GATEWAYTRAIN_SENTRY,
+    TRAIN_ADEPT
 )
 
 from .ids.ability_id import (
@@ -41,11 +31,11 @@ from .ids.ability_id import (
     WARPGATETRAIN_STALKER,
     WARPGATETRAIN_HIGHTEMPLAR,
     WARPGATETRAIN_DARKTEMPLAR,
-    WARPGATETRAIN_SENTRY
+    WARPGATETRAIN_SENTRY,
+    TRAINWARP_ADEPT
 )
 
 CreateGameError = enum.Enum("CreateGameError", sc_pb.ResponseCreateGame.Error.items())
-# merge end
 
 PlayerType = enum.Enum("PlayerType", sc_pb.PlayerType.items())
 Difficulty = enum.Enum("Difficulty", sc_pb.Difficulty.items())
@@ -63,7 +53,6 @@ CloakState = enum.Enum("CloakState", raw_pb.CloakState.items())
 Attribute = enum.Enum("Attribute", data_pb.Attribute.items())
 
 ActionResult = enum.Enum("ActionResult", error_pb.ActionResult.items())
-
 
 race_supply = {
     Race.Protoss: PYLON,
@@ -90,18 +79,12 @@ race_townhalls = {
 }
 
 warpgate_abilities = {
-    TRAIN_ADEPT: TRAINWARP_ADEPT,   
-    TRAIN_ZEALOT: TRAINWARP_ZEALOT,
-    TRAIN_STALKER: TRAINWARP_STALKER,
-    TRAIN_HIGHTEMPLAR: TRAINWARP_HIGHTEMPLAR,
-    TRAIN_DARKTEMPLAR: TRAINWARP_DARKTEMPLAR,
-    TRAIN_SENTRY: TRAINWARP_SENTRY,
-    # TODO check if required, from merging conflicts
     GATEWAYTRAIN_ZEALOT: WARPGATETRAIN_ZEALOT,
     GATEWAYTRAIN_STALKER: WARPGATETRAIN_STALKER,
     GATEWAYTRAIN_HIGHTEMPLAR: WARPGATETRAIN_HIGHTEMPLAR,
     GATEWAYTRAIN_DARKTEMPLAR: WARPGATETRAIN_DARKTEMPLAR,
-    GATEWAYTRAIN_SENTRY: WARPGATETRAIN_SENTRY    
+    GATEWAYTRAIN_SENTRY: WARPGATETRAIN_SENTRY,
+    TRAIN_ADEPT: TRAINWARP_ADEPT
 }
 
 race_gas = {

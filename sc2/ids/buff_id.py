@@ -4,8 +4,6 @@
 import enum
 
 class BuffId(enum.Enum):
-    CHRONOBOOSTENERGYCOST = 281 # temporary > please see PR#24
-    INVALID = 0
     NULL = 0
     RADAR25 = 1
     TAUNTB = 2

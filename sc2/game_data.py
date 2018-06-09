@@ -10,8 +10,6 @@ from .constants import ZERGLING
 
 class GameData(object):
     def __init__(self, data):
-        # Note added by Davey for pysc2
-        self.raw_data = data
         self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities}
         self.units = {u.unit_id: UnitTypeData(self, u) for u in data.units if u.available}
         self.upgrades = {u.upgrade_id: UpgradeData(self, u) for u in data.upgrades}
