@@ -15,7 +15,7 @@ class BuildOrder(object):
 
     async def execute_build(self):
         bot = self.bot
-        if bot.supply_left <= ((bot.supply_cap+50) / 50) and not bot.already_pending(bot.supply_type) \
+        if bot.supply_left <= ((bot.supply_cap+40) / 40) and not bot.already_pending(bot.supply_type) \
                 and self.auto_add_supply:
             return await add_supply().execute(bot)
 

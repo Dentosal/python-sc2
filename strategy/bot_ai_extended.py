@@ -24,11 +24,20 @@ class Bot_AI_Extended(sc2.BotAI):
         
 
     async def on_step(self, iteration):
-        if iteration >= max_iterations:
-            raise TimeoutError
+        #if iteration >= max_iterations:
+        # TODO tie
+        #    raise TimeoutError
+
+        if iteration % gameloops_check_frequency*2 == 0 and self.units(race_basic_townhalls[self.race]).amount == 0 and len(get_units_military(self)) < 10:
+             # TODO give up
+             # e.g. write chat gg
+             raise UnicodeError
+
+         # If opponent write gg --> win
 
         await self.distribute_workers()
-        await self.build_order.execute_build()
+        if iteration % gameloops_check_frequency / 2 == 0:
+            await self.build_order.execute_build()
 
         # check every 2 seconds
         if iteration % gameloops_check_frequency*2 == 0: 

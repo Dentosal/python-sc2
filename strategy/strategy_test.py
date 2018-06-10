@@ -29,7 +29,7 @@ class Strategy_Test(Bot_AI_Extended):
     """Only for testing purposes"""
 
     def __init__(self):
-        build_order = get_test_buildorder_research()
+        build_order = get_test_buildorder_build_required()
         self.attack = False
         self.defending = False
         self.researched = []

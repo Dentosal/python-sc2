@@ -15,7 +15,7 @@ folder_sc2replays = dirname(dirname(ROOT_DIR)) + "/SC2-replays/" + dataset
 
 
 eval_number_games = 1
-max_iterations = 10000 # TODO set value # TODO test if cancels
+max_gametime = 600 # TODO set value in seconds
 
 min_units_attack = 15
 min_units_defend = 5

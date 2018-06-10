@@ -23,7 +23,8 @@
 
 - mark my contribution with HS
 
-- duplicate building requiredbuilding due to already pending not counting 
+
+- accept victory / create defeat event
 
 # CHECK
 
@@ -44,6 +45,8 @@
 
 # Things that should/could work
 
+
+- duplicate building requiredbuilding due to already pending not counting -> fix via less frequent execute_build calls
 - rebuild dying unit/building
 - build random units after finishing build order <-- via sufficently enough resources
 - attack after reaching end of build order
