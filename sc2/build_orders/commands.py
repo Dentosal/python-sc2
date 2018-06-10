@@ -150,9 +150,8 @@ def research(upgrade, on_building, prioritize=True):
     async def research_spec(bot):
         buildings = bot.units(on_building).completed.noqueue.idle
         if buildings.exists and not upgrade in bot.researched: # already pending wont work with upgrades
-            # can_afford occasionally crashed when using for research # bot.can_afford(upgrade)
-            # e.g. for ARMORYRESEARCH_TERRANVEHICLEWEAPONSLEVEL1
-            can_afford = (bot.minerals  > min_resource_upgrades) and (bot.vespene > min_resource_upgrades)  
+       
+            can_afford = bot.can_afford(upgrade)
             if can_afford:
                 print("Research {0}".format(upgrade))
                 bot.researched.append(upgrade)

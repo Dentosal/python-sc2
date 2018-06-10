@@ -200,13 +200,31 @@ class BotAI(object):
     def can_afford(self, item_id):
         """Tests if the player has enough resources to build a unit or cast an ability."""
 
+        # TODO check
+        # HS
+        #reserve = 1.1
+
+
+
         if isinstance(item_id, UnitTypeId):
             unit = self._game_data.units[item_id.value]
             cost = self._game_data.calculate_ability_cost(unit.creation_ability)
         elif isinstance(item_id, UpgradeId):
             cost = self._game_data.upgrades[item_id.value].cost
         else:
-            cost = self._game_data.calculate_ability_cost(item_id)
+            try:
+                cost = self._game_data.calculate_ability_cost(item_id)
+            except :
+                pass
+            
+            if cost is None:
+               # TODO check if it works  
+               # can_afford occasionally crashed when using for research # 
+               # e.g. for ARMORYRESEARCH_TERRANVEHICLEWEAPONSLEVEL1
+               min_resource_upgrades = 300
+               return CanAffordWrapper(min_resource_upgrades <= self.minerals, min_resource_upgrades <= self.vespene)
+               #costs = (bot.minerals  > min_resource_upgrades) and (bot.vespene > min_resource_upgrades)  
+
 
         return CanAffordWrapper(cost.minerals <= self.minerals, cost.vespene <= self.vespene)
 

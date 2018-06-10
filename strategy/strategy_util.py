@@ -106,8 +106,8 @@ def init_build_order(path):
             building = ""
             prefix_buildings = ["BARRACKS", "STARPORT", "FACTORY", ""]
             unit_name = unit_name.replace("ARMORSLEVEL", "ARMORLEVEL")
-            RAVENCORVIDREACTOR
-            RESEARCH_RAVENCORVIDREACTOR
+            
+            
             if not unit_building == "TECHLAB":
                 prefix_buildings = [""]
            

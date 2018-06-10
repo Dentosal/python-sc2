@@ -14,6 +14,7 @@ from strategy_util import *
 class Bot_AI_Extended(sc2.BotAI):
     """Extends BotAI with specific methods for the strategy"""
 
+
     def __init__(self, path):
         build_order = init_build_order(path)
         self.attack = False
