@@ -23,7 +23,7 @@
 
 - mark my contribution with HS
 
-
+- why do I get INFO:root:Result for player id: 1: Result.Tie instead of Win
 - accept victory / create defeat event
 
 # CHECK
