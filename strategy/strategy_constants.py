@@ -66,13 +66,13 @@ sufficently_much_vespene = sufficently_enough_vespene + 150 # additional Planeta
 eval_number_games = 1
 # Maximum time in seconds until game result is Tie
 max_gametime = 600 # TODO set value in seconds
-# Maximum military units when giving up
-max_units_giveup = 10
 
 # Minimum amount of units to attack
 min_units_attack = 15
 # Minimum amount of units to defend
 min_units_defend = 5
+# Maximum military units when giving up
+max_units_giveup = min_units_defend
 # Maximum distance to defend against enemy units
 distance_defend = 15
 

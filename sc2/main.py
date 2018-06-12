@@ -37,6 +37,9 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
         state = await client.observation()
         if client._game_result:
             return client._game_result[player_id]
+        
+        #a = client.messages
+        #if Client.chat is Null
 
         gs = GameState(state.observation, game_data)
 

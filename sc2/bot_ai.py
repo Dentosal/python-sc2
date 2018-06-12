@@ -343,6 +343,7 @@ class BotAI(object):
         """Send a chat message."""
 
         assert isinstance(message, str)
+
         await self._client.chat_send(message, False)
 
     def _prepare_step(self, state):

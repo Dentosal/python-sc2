@@ -25,11 +25,14 @@ class Bot_AI_Extended(sc2.BotAI):
 
     async def on_step(self, iteration):
 
+        if iteration == 100:
+            await self.chat_send("gg")
+
         if iteration % gameloops_check_frequency*2 == 0:
            cc = (self.units(UnitTypeId.COMMANDCENTER) | self.units(UnitTypeId.ORBITALCOMMAND))
            if cc.amount == 0 and len(get_units_military(self)) < max_units_giveup:
              # TODO give up
-             self.chat_send("(gg)")
+             await self.chat_send("(gg)")
 
          # If opponent write gg --> win
 
