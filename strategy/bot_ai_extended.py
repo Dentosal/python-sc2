@@ -24,14 +24,12 @@ class Bot_AI_Extended(sc2.BotAI):
         
 
     async def on_step(self, iteration):
-        #if iteration >= max_iterations:
-        # TODO tie
-        #    raise TimeoutError
 
-        if iteration % gameloops_check_frequency*2 == 0 and self.units(race_basic_townhalls[self.race]).amount == 0 and len(get_units_military(self)) < 10:
+        if iteration % gameloops_check_frequency*2 == 0:
+           cc = (self.units(UnitTypeId.COMMANDCENTER) | self.units(UnitTypeId.ORBITALCOMMAND))
+           if cc.amount == 0 and len(get_units_military(self)) < max_units_giveup:
              # TODO give up
-             # e.g. write chat gg
-             raise UnicodeError
+             self.chat_send("(gg)")
 
          # If opponent write gg --> win
 
@@ -65,6 +63,7 @@ async def auto_defend(bot):
 
 
 
+# TODO attack as group
 async def auto_attack(bot):
     units_military = get_units_military(bot)
     units_military_amount = len(units_military)
@@ -79,6 +78,7 @@ async def auto_attack(bot):
             if bot.known_enemy_units.exists:
                 enemy = bot.known_enemy_units.random # attack random unit
                 await bot.do(unit.attack(enemy.position.to2, queue=True))
+            # Not that good: since moves to it ignoring other opponents
             await bot.do(unit.attack(bot.enemy_start_locations[0]))
     return           
  

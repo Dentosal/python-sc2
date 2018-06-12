@@ -2,7 +2,7 @@ from bot_ai_extended import *
 
 
 class Strategy_111Expand(Bot_AI_Extended):
-
+    """Implementation of the 111 Expand Strategy"""
    
     def __init__(self):
         
