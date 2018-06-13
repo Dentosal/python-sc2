@@ -14,6 +14,20 @@ class WarpGateBot(sc2.BotAI):
     def select_target(self, state):
         return self.enemy_start_locations[0]
 
+    async def warp_new_units(self, proxy):
+        for warpgate in self.units(WARPGATE).ready:
+            abilities = await self.get_available_abilities(warpgate)
+            # all the units have the same cooldown anyway so let's just look at ZEALOT
+            if AbilityId.WARPGATETRAIN_ZEALOT in abilities:
+                pos = proxy.position.to2.random_on_distance(4)
+                placement = await self.find_placement(AbilityId.WARPGATETRAIN_STALKER, pos, placement_step=1)
+                if placement is None:
+                    #return ActionResult.CantFindPlacementLocation
+                    print("can't place")
+                    return
+                await self.do(warpgate.warp_in(STALKER, placement))
+
+
     async def on_step(self, iteration):
         await self.distribute_workers()
 
@@ -72,19 +86,10 @@ class WarpGateBot(sc2.BotAI):
                 await self.do(gateway(MORPH_WARPGATE))
 
         if self.proxy_built:
-            for warpgate in self.units(WARPGATE).ready:
-                abilities = await self.get_available_abilities(warpgate)
-                # all the units have the same cooldown anyway so let's just look at ZEALOT
-                if AbilityId.WARPGATETRAIN_ZEALOT in abilities:
-                    placement = await self.find_placement(AbilityId.WARPGATETRAIN_STALKER, proxy.position.to2, placement_step=1)
-                    if placement is None:
-                        #return ActionResult.CantFindPlacementLocation
-                        print("can't place")
-                        break
-                    await self.do(warpgate.warp_in(STALKER, placement))
+            await self.warp_new_units(proxy)
 
         if self.units(STALKER).amount > 3:
-            for vr in self.units(STALKER).idle:
+            for vr in self.units(STALKER).ready.idle:
                 await self.do(vr.attack(self.select_target(self.state)))
 
         if self.units(CYBERNETICSCORE).amount >= 1 and not self.proxy_built and self.can_afford(PYLON):
