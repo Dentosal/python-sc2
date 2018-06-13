@@ -2,7 +2,7 @@ import sc2
 from sc2 import Race
 from sc2.player import Bot
 
-from zerg_rush import ZergRushBot
+from zerg.zerg_rush import ZergRushBot
 
 def main():
     sc2.run_game(sc2.maps.get("Abyssal Reef LE"), [
