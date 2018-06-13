@@ -124,7 +124,14 @@ class BotAI(object):
         return closest
 
     async def distribute_workers(self):
-        """Distributes workers across all the bases taken."""
+        """
+        Distributes workers across all the bases taken.
+        WARNING: This is quite slow when there are lots of workers or multiple bases.
+        """
+
+        # TODO:
+        # OPTIMIZE: Assign idle workers smarter
+        # OPTIMIZE: Never use same worker mutltiple times
 
         expansion_locations = self.expansion_locations
         owned_expansions = self.owned_expansions
