@@ -87,7 +87,12 @@ class Client(Protocol):
 
     async def observation(self):
         result = await self._execute(observation=sc_pb.RequestObservation())
-        if len(result.observation.player_result) > 0:
+        if (not self.in_game) or len(result.observation.player_result) > 0:
+            # Sometimes game ends one step before results are available
+            if len(result.observation.player_result) == 0:
+                result = await self._execute(observation=sc_pb.RequestObservation())
+                assert len(result.observation.player_result) > 0
+
             player_id_to_result = {}
             for pr in result.observation.player_result:
                 player_id_to_result[pr.player_id] = Result(pr.result)
