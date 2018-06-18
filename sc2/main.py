@@ -89,6 +89,18 @@ async def _play_game(player, client, realtime, portconfig, step_time_limit=None,
     logging.info(f"Result for player id: {player_id}: {result}")
     return result
 
+async def _setup_host_game(server, map_settings, players, realtime):
+    r = await server.create_game(map_settings, players, realtime)
+    if r.create_game.HasField("error"):
+        err = f"Could not create game: {CreateGameError(r.create_game.error)}"
+        if r.create_game.HasField("error_details"):
+            err += f": {r.create_game.error_details}"
+        logger.critical(err)
+        raise RuntimeError(err)
+
+    return Client(server._ws)
+
+
 async def _host_game(map_settings, players, realtime, portconfig=None, save_replay_as=None, step_time_limit=None, game_time_limit=None):
     assert len(players) > 0, "Can't create a game without players"
 
@@ -97,15 +109,7 @@ async def _host_game(map_settings, players, realtime, portconfig=None, save_repl
     async with SC2Process() as server:
         await server.ping()
 
-        r = await server.create_game(map_settings, players, realtime)
-        if r.create_game.HasField("error"):
-            err = f"Could not create game: {CreateGameError(r.create_game.error)}"
-            if r.create_game.HasField("error_details"):
-                err += f": {r.create_game.error_details}"
-            logger.critical(err)
-            return None
-
-        client = Client(server._ws)
+        client = await _setup_host_game(server, map_settings, players, realtime)
 
         try:
             result = await _play_game(players[0], client, realtime, portconfig, step_time_limit, game_time_limit)
@@ -119,9 +123,42 @@ async def _host_game(map_settings, players, realtime, portconfig=None, save_repl
 
         return result
 
+async def _host_game_aiter(map_settings, players, realtime, portconfig=None, save_replay_as=None, step_time_limit=None, game_time_limit=None):
+    assert len(players) > 0, "Can't create a game without players"
+
+    assert any(isinstance(p, (Human, Bot)) for p in players)
+
+    async with SC2Process() as server:
+        while True:
+            await server.ping()
+
+            client = await _setup_host_game(server, map_settings, players, realtime)
+
+            try:
+                result = await _play_game(players[0], client, realtime, portconfig, step_time_limit, game_time_limit)
+
+                if save_replay_as is not None:
+                    await client.save_replay(save_replay_as)
+                await client.leave()
+            except ConnectionAlreadyClosed:
+                logging.error(f"Connection was closed before the game ended")
+                return
+
+            new_players = yield result
+            if new_players is not None:
+                players = new_players
+
+def _host_game_iter(*args, **kwargs):
+    game = _host_game_aiter(*args, **kwargs)
+    new_playerconfig = None
+    while True:
+        new_playerconfig = yield asyncio.get_event_loop().run_until_complete(game.asend(new_playerconfig))
+
+
 async def _join_game(players, realtime, portconfig, save_replay_as=None, step_time_limit=None, game_time_limit=None):
     async with SC2Process() as server:
         await server.ping()
+
         client = Client(server._ws)
 
         try:

@@ -1,5 +1,3 @@
-# Usage: python run_external.py [--host]
-
 import argparse
 
 import sys
@@ -9,7 +7,7 @@ import sc2
 from sc2 import Race
 from sc2.player import Bot
 
-from zerg_rush import ZergRushBot
+from zerg.zerg_rush import ZergRushBot
 
 def main(is_host, pc):
     if args.portconfig:
@@ -30,23 +28,23 @@ def main(is_host, pc):
         g = sc2.main._host_game(
             sc2.maps.get("Abyssal Reef LE"),
             player_config,
-            realtime=True,
+            realtime=False,
             portconfig=portconfig
         )
     else:
         g = sc2.main._join_game(
             player_config,
-            realtime=True,
+            realtime=False,
             portconfig=portconfig
         )
 
     result = asyncio.get_event_loop().run_until_complete(g)
     print(result)
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--host', action='store_true', help='host a game')
-    parser.add_argument('portconfig', type=str, nargs="?", help='port configuration as json')
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run an external game")
+    parser.add_argument("--host", action="store_true", help="host a game")
+    parser.add_argument("portconfig", type=str, nargs="?", help="port configuration as json")
     args = parser.parse_args()
 
     main(args.host, args.portconfig)
