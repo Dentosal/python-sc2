@@ -29,38 +29,51 @@ FILE_TRANSLATE = {
 }
 
 
-def clike_enum_parse(data):
+def make_key(key):
+    if key[0].isdigit():
+        key = "_" + key
+    return key.upper().replace(" ", "_")
+
+def parse_data(data):
     # for d in data:  # Units, Abilities, Upgrades, Buffs, Effects
 
-    units = parse_simple('Units', data)
-    upgrades = parse_simple('Upgrades', data)
-    effects = parse_simple('Effects', data)
-    buffs = parse_simple('Buffs', data)
+    units = parse_simple("Units", data)
+    upgrades = parse_simple("Upgrades", data)
+    effects = parse_simple("Effects", data)
+    buffs = parse_simple("Buffs", data)
 
     abilities = {}
-    for v in data['Abilities']:
-        key = v['buttonname']
+    for v in data["Abilities"]:
+        key = v["buttonname"]
+        remapid = v.get("remapid")
+
+        if (not key) and (remapid is None):
+            assert v["buttonname"] == ""
+            continue
 
         if not key:
-            continue
+            if v["friendlyname"] != "":
+                key = v["friendlyname"]
+            else:
+                exit(f"Not mapped: {v !r}")
 
         key = key.upper().replace(" ", "_")
 
-        if 'name' in v:
-            key = "{}_{}".format(v['name'].upper().replace(" ", "_"), key)
+        if "name" in v:
+            key = "{}_{}".format(v["name"].upper().replace(" ", "_"), key)
 
-        if 'friendlyname' in v:
-            key = v['friendlyname'].upper().replace(" ", "_")
+        if "friendlyname" in v:
+            key = v["friendlyname"].upper().replace(" ", "_")
 
         if key[0].isdigit():
             key = "_" + key
 
-        if key in abilities and v['index'] == 0:
+        if key in abilities and v["index"] == 0:
             print(key)
             raise ValueError
-        abilities[key] = v['id']
+        abilities[key] = v["id"]
 
-    abilities['SMART'] = 1
+    abilities["SMART"] = 1
 
     enums = {}
     enums["Units"] = units
@@ -75,16 +88,13 @@ def clike_enum_parse(data):
 def parse_simple(d, data):
     units = {}
     for v in data[d]:
-        key = v['name']
+        key = v["name"]
 
         if not key:
             continue
 
-        if key[0].isdigit():
-            key = "_" + key
+        units[make_key(key)] = v["id"]
 
-        key = key.upper().replace(" ", "_")
-        units[key] = v['id']
     return units
 
 
@@ -126,7 +136,7 @@ def generate_python_code(enums):
             f.write("\n".join(code))
 
 
-if __name__ == '__main__':
-    with open(DATA_JSON[PF], encoding='utf-8') as data_file:
+if __name__ == "__main__":
+    with open(DATA_JSON[PF], encoding="utf-8") as data_file:
         data = json.loads(data_file.read())
-        generate_python_code(clike_enum_parse(data))
+        generate_python_code(parse_data(data))
