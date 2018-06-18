@@ -179,6 +179,24 @@ class Unit(object):
         return self._proto.vespene_contents > 0
 
     @property
+    def can_attack_ground(self):
+        # See data_pb2.py line 141 for info on weapon data
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            weapon = next((weapon for weapon in weapons if weapon.type in [1, 3]), None)
+            return weapon is not None
+        return False
+
+    @property
+    def can_attack_air(self):
+        # See data_pb2.py line 141 for info on weapon data
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            weapon = next((weapon for weapon in weapons if weapon.type in [2, 3]), None)
+            return weapon is not None
+        return False
+
+    @property
     def is_selected(self):
         return self._proto.is_selected
 
