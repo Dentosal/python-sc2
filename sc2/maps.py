@@ -21,7 +21,7 @@ def get(name=None):
         if m.matches(name):
             return m
 
-    raise KeyError(f"Map '{name}' was not found. Please put the map file in /StarCraft II/Maps/ !")
+    raise KeyError(f"Map '{name}' was not found. Please put the map file in \"/StarCraft II/Maps/\".")
 
 class Map(object):
     def __init__(self, path):
