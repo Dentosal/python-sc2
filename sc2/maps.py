@@ -5,10 +5,14 @@ logger = logging.getLogger(__name__)
 
 def get(name=None):
     maps = []
-    for mapdir in (p for p in Paths.MAPS.iterdir() if p.is_dir()):
-        for mapfile in (p for p in mapdir.iterdir() if p.is_file()):
-            if mapfile.suffix == ".SC2Map":
-                maps.append(Map(mapfile))
+    for mapdir in (p for p in Paths.MAPS.iterdir()):
+        if mapdir.is_dir():
+            for mapfile in (p for p in mapdir.iterdir() if p.is_file()):
+                if mapfile.suffix == ".SC2Map":
+                    maps.append(Map(mapfile))
+        elif mapdir.is_file():
+            if mapdir.suffix == ".SC2Map":
+                maps.append(Map(mapdir))
 
     if name is None:
         return maps
@@ -17,7 +21,7 @@ def get(name=None):
         if m.matches(name):
             return m
 
-    raise KeyError(f"Map '{name}' was not found")
+    raise KeyError(f"Map '{name}' was not found. Please put the map file in \"/StarCraft II/Maps/\".")
 
 class Map(object):
     def __init__(self, path):
