@@ -192,20 +192,20 @@ class Unit(object):
 
     @property
     def is_moving(self):
-        return len(self.orders) > 0 and self.orders[0] in [AbilityId.MOVE]
+        return len(self.orders) > 0 and self.orders[0].ability.id in [AbilityId.MOVE]
 
     @property
     def is_attacking(self):
-        return len(self.orders) > 0 and self.orders[0] in [AbilityId.ATTACK]
+        return len(self.orders) > 0 and self.orders[0].ability.id in [AbilityId.ATTACK]
 
     @property
     def is_gathering(self):
         """ Checks if a unit is on its way to a mineral field / vespene geyser to mine """
-        return len(self.orders) > 0 and self.orders[0] in [AbilityId.HARVEST_GATHER]
+        return len(self.orders) > 0 and self.orders[0].ability.id in [AbilityId.HARVEST_GATHER]
 
     @property
     def order_target(self):
-        """ returns the target tag from the first order """
+        """ Returns the target tag from the first order """
         if len(self.orders) > 0:
             return self.orders[0].target
         return None
@@ -232,7 +232,7 @@ class Unit(object):
 
     @property
     def surplus_harvesters(self):
-        """ returns a positive number if it has too many harvesters mining, a negative number if it has too few mining """
+        """ Returns a positive number if it has too many harvesters mining, a negative number if it has too few mining """
         return self._proto.assigned_harvesters - self._proto.ideal_harvesters
 
     @property
