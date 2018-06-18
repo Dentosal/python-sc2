@@ -109,6 +109,34 @@ class Units(list):
     def sorted(self, keyfn, reverse=False):
         return self.subgroup(sorted(self, key=keyfn, reverse=reverse))
 
+    def tags_in(self, other):
+        """ Filters all units that have their tags in the 'other' set/list/dict """
+        # example: self.queens.tags_in(self.queens_tags_assigned_to_do_injects)
+        return self.filter(lambda unit: unit.tag in other)
+
+    def tags_not_in(self, other):
+        """ Filters all units that have their tags not in the 'other' set/list/dict """
+        # example: self.queens.tags_not_in(self.queens_tags_assigned_to_do_injects)
+        return self.filter(lambda unit: unit.tag not in other)
+
+    def of_type(self, other):
+        """ Filters all units that are of a specific type """
+        # example: self.townhalls.of_type([HIVE])
+        if not isinstance(other, (tuple, list, set, dict)):
+            other = [other]
+        return self.filter(lambda unit: unit.type_id in other)
+
+    def exclude_type(self, other):
+        """ Filters all units that are not of a specific type """
+        # example: self.known_enemy_units.exclude_type([OVERLORD])
+        if not isinstance(other, (tuple, list, set, dict)):
+            other = [other]
+        return self.filter(lambda unit: unit.type_id not in other)
+
+    @property
+    def tags(self):
+        return {unit.tag for unit in self}
+
     @property
     def ready(self):
         return self.filter(lambda unit: unit.is_ready)
@@ -132,6 +160,14 @@ class Units(list):
     @property
     def enemy(self):
         return self.filter(lambda unit: unit.is_enemy)
+
+    @property
+    def flying(self):
+        return self.filter(lambda unit: unit.is_flying)
+
+    @property
+    def not_flying(self):
+        return self.filter(lambda unit: not unit.is_flying)
 
     @property
     def structure(self):
