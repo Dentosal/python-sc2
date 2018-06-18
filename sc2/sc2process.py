@@ -59,7 +59,7 @@ class SC2Process(object):
             self._clean()
             raise
 
-        return Controller(self._ws)
+        return Controller(self._ws, self)
 
     async def __aexit__(self, *args):
         kill_switch.kill_all()

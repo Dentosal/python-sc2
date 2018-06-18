@@ -6,8 +6,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 class Controller(Protocol):
-    def __init__(self, ws):
+    def __init__(self, ws, process):
         super().__init__(ws)
+        self.__process = process
+
+    @property
+    def running(self):
+        return self.__process._process is not None
 
     async def create_game(self, game_map, players, realtime):
         assert isinstance(realtime, bool)
