@@ -53,6 +53,12 @@ class Unit(object):
 
     @property
     def position(self):
+        """2d position of the unit."""
+        return self.position3d.to2
+
+    @property
+    def position3d(self):
+        """3d position of the unit."""
         return Point3.from_proto(self._proto.pos)
 
     def distance_to(self, p):
@@ -124,6 +130,12 @@ class Unit(object):
         return self._proto.health_max
 
     @property
+    def health_percentage(self):
+        if self._proto.health_max == 0:
+            return 0
+        return self._proto.health / self._proto.health_max
+
+    @property
     def shield(self):
         return self._proto.shield
 
@@ -132,16 +144,39 @@ class Unit(object):
         return self._proto.shield_max
 
     @property
+    def shield_percentage(self):
+        if self._proto.shield_max == 0:
+            return 0
+        return self._proto.shield / self._proto.shield_max
+
+    @property
     def energy(self):
         return self._proto.energy
 
     @property
+    def energy_max(self):
+        return self._proto.energy_max
+
+    @property
+    def energy_percentage(self):
+        if self._proto.energy_max == 0:
+            return 0
+        return self._proto.energy / self._proto.energy_max
+
+    @property
     def mineral_contents(self):
+        """ How many minerals a mineral field has left to mine from """
         return self._proto.mineral_contents
 
     @property
     def vespene_contents(self):
+        """ How much gas is remaining in a geyser """
         return self._proto.vespene_contents
+
+    @property
+    def has_vespene(self):
+        """ Checks if a geyser has gas remaining (cant build extractors on empty geysers), useful for lategame """
+        return self._proto.vespene_contents > 0
 
     @property
     def is_selected(self):
@@ -154,6 +189,26 @@ class Unit(object):
     @property
     def noqueue(self):
         return len(self.orders) == 0
+
+    @property
+    def is_moving(self):
+        return len(self.orders) > 0 and self.orders[0] in [AbilityId.MOVE]
+
+    @property
+    def is_attacking(self):
+        return len(self.orders) > 0 and self.orders[0] in [AbilityId.ATTACK]
+
+    @property
+    def is_gathering(self):
+        """ Checks if a unit is on its way to a mineral field / vespene geyser to mine """
+        return len(self.orders) > 0 and self.orders[0] in [AbilityId.HARVEST_GATHER]
+
+    @property
+    def order_target(self):
+        """ returns the target tag from the first order """
+        if len(self.orders) > 0:
+            return self.orders[0].target
+        return None
 
     @property
     def is_idle(self):
@@ -174,6 +229,11 @@ class Unit(object):
     @property
     def ideal_harvesters(self):
         return self._proto.ideal_harvesters
+
+    @property
+    def surplus_harvesters(self):
+        """ returns a positive number if it has too many harvesters mining, a negative number if it has too few mining """
+        return self._proto.assigned_harvesters - self._proto.ideal_harvesters
 
     @property
     def name(self):
