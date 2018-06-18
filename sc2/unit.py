@@ -223,7 +223,7 @@ class Unit(object):
 
     @property
     def order_target(self):
-        """ Returns the target tag from the first order """
+        """ Returns the target tag (if it is a Unit) or Point2 (if it is a Position) from the first order """
         if len(self.orders) > 0:
             return self.orders[0].target
         return None
