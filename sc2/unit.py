@@ -53,6 +53,12 @@ class Unit(object):
 
     @property
     def position(self):
+        """2d position of the unit."""
+        return self.position3d.to2
+
+    @property
+    def position3d(self):
+        """3d position of the unit."""
         return Point3.from_proto(self._proto.pos)
 
     def distance_to(self, p):
