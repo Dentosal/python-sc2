@@ -2,6 +2,7 @@ import random
 
 from .unit import Unit
 from .ids.unit_typeid import UnitTypeId
+from .position import Point2
 
 class Units(list):
     """A collection for units. Makes it easy to select units by selectors."""
@@ -137,9 +138,8 @@ class Units(list):
     def center(self):
         """ Returns the central point of all units in this list """
         assert self.exists
-        pos = self.random.position
-        pos.x = sum([unit.position.x for unit in self]) / self.amount
-        pos.y = sum([unit.position.y for unit in self]) / self.amount
+        pos = Point2((sum([unit.position.x for unit in self]) / self.amount, \
+            sum([unit.position.y for unit in self]) / self.amount))
         return pos
 
     @property
