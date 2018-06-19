@@ -32,6 +32,9 @@ class Pointlike(tuple):
     def closest(self, ps):
         return min(ps, key=lambda p: self.distance_to(p))
 
+    def furthest(self, ps):
+        return max(ps, key=lambda p: self.distance_to(p))
+
     def offset(self, p):
         return self.__class__(a+b for a, b in itertools.zip_longest(self, p[:len(self)], fillvalue=0))
 
