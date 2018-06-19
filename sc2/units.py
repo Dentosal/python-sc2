@@ -188,7 +188,7 @@ class Units(list):
 
     @property
     def gathering(self):
-        return self.filter(lambda unit: not unit.is_gathering)
+        return self.filter(lambda unit: unit.is_gathering)
 
     @property
     def mineral_field(self):
