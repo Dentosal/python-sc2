@@ -134,6 +134,15 @@ class Units(list):
         return self.filter(lambda unit: unit.type_id not in other)
 
     @property
+    def center(self):
+        """ Returns the central point of all units in this list """
+        assert self.exists
+        pos = self.random.position
+        pos.x = sum([unit.position.x for unit in self]) / self.amount
+        pos.y = sum([unit.position.y for unit in self]) / self.amount
+        return pos
+
+    @property
     def tags(self):
         return {unit.tag for unit in self}
 
@@ -176,6 +185,10 @@ class Units(list):
     @property
     def not_structure(self):
         return self.filter(lambda unit: not unit.is_structure)
+
+    @property
+    def gathering(self):
+        return self.filter(lambda unit: not unit.is_gathering)
 
     @property
     def mineral_field(self):
