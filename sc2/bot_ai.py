@@ -327,7 +327,12 @@ class BotAI(object):
 
         return r
 
-    async def do_actions(self, actions):
+    async def do_actions(self, actions):     
+        for action in actions:
+            cost = self._game_data.calculate_ability_cost(action.ability)
+            self.minerals -= cost.minerals
+            self.vespene -= cost.vespene
+
         r = await self._client.actions(actions, game_data=self._game_data)
         return r
 
