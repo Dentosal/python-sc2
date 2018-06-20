@@ -327,6 +327,10 @@ class BotAI(object):
 
         return r
 
+    async def do_actions(self, actions):
+        r = await self._client.actions(actions, game_data=self._game_data)
+        return r
+
     async def chat_send(self, message):
         """Send a chat message."""
 
