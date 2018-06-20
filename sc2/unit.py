@@ -179,6 +179,19 @@ class Unit(object):
         return self._proto.vespene_contents > 0
 
     @property
+    def weapon_cooldown(self):
+        """ Returns time in game loops (self.state.game_loop) until the unit can fire again 
+        Usage: 
+        if unit.weapon_cooldown == 0:
+            await self.do(unit.attack(target))
+        else:
+            await self.do(unit.move(retreatPosition))
+        """
+        if self.can_attack_ground or self.can_attack_air:
+            return self._proto.weapon_cooldown
+        return 1000
+
+    @property
     def can_attack_ground(self):
         # See data_pb2.py line 141 for info on weapon data
         if hasattr(self._type_data._proto, "weapons"):
