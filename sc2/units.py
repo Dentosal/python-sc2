@@ -101,6 +101,11 @@ class Units(list):
             position = position.position
         return self.filter(lambda unit: unit.position.to2.distance_to(position.to2) < distance)
 
+    def further_than(self, distance, position):
+        if isinstance(position, Unit):
+            position = position.position
+        return self.filter(lambda unit: unit.position.to2.distance_to(position.to2) > distance)
+
     def subgroup(self, units):
         return Units(list(units), self.game_data)
 
@@ -112,17 +117,17 @@ class Units(list):
 
     def tags_in(self, other):
         """ Filters all units that have their tags in the 'other' set/list/dict """
-        # example: self.queens.tags_in(self.queens_tags_assigned_to_do_injects)
+        # example: self.units(QUEEN).tags_in(self.queen_tags_assigned_to_do_injects)
         return self.filter(lambda unit: unit.tag in other)
 
     def tags_not_in(self, other):
         """ Filters all units that have their tags not in the 'other' set/list/dict """
-        # example: self.queens.tags_not_in(self.queens_tags_assigned_to_do_injects)
+        # example: self.units(QUEEN).tags_not_in(self.queen_tags_assigned_to_do_injects)
         return self.filter(lambda unit: unit.tag not in other)
 
     def of_type(self, other):
         """ Filters all units that are of a specific type """
-        # example: self.townhalls.of_type([HIVE])
+        # example: self.units.of_type([ZERGLING, ROACH, HYDRALISK, BROODLORD])
         if not isinstance(other, (tuple, list, set, dict)):
             other = [other]
         return self.filter(lambda unit: unit.type_id in other)
