@@ -34,6 +34,9 @@ class GameState(object):
         self.units = Units.from_proto(visibleUnits, game_data)
         # self.blips = Units.from_proto(hiddenUnits, game_data) # TODO: fix me
 
+        self.visibility = PixelMap(observation.observation.raw_data.map_state.visibility)
+        self.creep = PixelMap(observation.observation.raw_data.map_state.creep)
+
     @property
     def mineral_field(self):
         return self.units.mineral_field
