@@ -1,6 +1,8 @@
 from .units import Units
 from .power_source import PsionicMatrix
 from .pixel_map import PixelMap
+from .ids.upgrade_id import UpgradeId
+from .ids.effect_id import EffectId
 
 class Common(object):
     ATTRIBUTES = [
@@ -27,7 +29,7 @@ class GameState(object):
         destructables = [x for x in observation.observation.raw_data.units if x.alliance == 3 and x.radius > 1.5] # all destructable rocks except the one below the main base ramps
         self.destructables = Units.from_proto(destructables, game_data)
 
-        # fix for enemy units detected by sensor tower
+        # fix for enemy units detected by my sensor tower
         visibleUnits, hiddenUnits = [], []
         for u in observation.observation.raw_data.units:
             hiddenUnits.append(u) if u.is_blip else visibleUnits.append(u)
@@ -36,6 +38,10 @@ class GameState(object):
 
         self.visibility = PixelMap(observation.observation.raw_data.map_state.visibility)
         self.creep = PixelMap(observation.observation.raw_data.map_state.creep)
+
+        self.dead_units = {dead_unit_tag for dead_unit_tag in observation.observation.raw_data.event.dead_units} # set of unit tags that died this step - sometimes has multiple entries
+        self.effects = {EffectId(effect) for effect in observation.observation.raw_data.effects} # effects like ravager bile shot, lurker attack, everything in effect_id.py # usage: if RAVAGERCORROSIVEBILECP in self.state.effects: do stuff
+        self.upgrades = {UpgradeId(upgrade) for upgrade in observation.observation.raw_data.player.upgrade_ids} # usage: if TERRANINFANTRYWEAPONSLEVEL1 in self.state.upgrades: do stuff
 
     @property
     def mineral_field(self):
