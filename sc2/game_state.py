@@ -3,6 +3,7 @@ from .power_source import PsionicMatrix
 from .pixel_map import PixelMap
 from .ids.upgrade_id import UpgradeId
 from .ids.effect_id import EffectId
+from .position import Point2
 
 class Common(object):
     ATTRIBUTES = [
@@ -19,6 +20,18 @@ class Common(object):
     def __getattr__(self, attr):
         assert attr in self.ATTRIBUTES, f"'{attr}' is not a valid attribute"
         return int(getattr(self._proto, attr))
+
+class EffectData(object):
+    def __init__(self, proto):
+        self._proto = proto
+
+    @property
+    def id(self):
+        return EffectId(self._proto.effect_id)
+
+    @property
+    def positions(self):
+        return [Point2.from_proto(p) for p in self._proto.pos]
 
 class GameState(object):
     def __init__(self, observation, game_data):
@@ -40,7 +53,14 @@ class GameState(object):
         self.creep = PixelMap(observation.observation.raw_data.map_state.creep)
 
         self.dead_units = {dead_unit_tag for dead_unit_tag in observation.observation.raw_data.event.dead_units} # set of unit tags that died this step - sometimes has multiple entries
-        self.effects = {effect for effect in observation.observation.raw_data.effects} # effects like ravager bile shot, lurker attack, everything in effect_id.py # usage: if RAVAGERCORROSIVEBILECP.value in self.state.effects: do stuff
+        self.effects = {EffectData(effect) for effect in observation.observation.raw_data.effects} # effects like ravager bile shot, lurker attack, everything in effect_id.py 
+        """ Usage:
+        for effect in self.state.effects:
+            if effect.id == EffectId.RAVAGERCORROSIVEBILECP:
+                positions = effect.positions
+                # dodge the ravager biles
+        """
+
         self.upgrades = {UpgradeId(upgrade) for upgrade in observation.observation.raw_data.player.upgrade_ids} # usage: if TERRANINFANTRYWEAPONSLEVEL1 in self.state.upgrades: do stuff
 
     @property
