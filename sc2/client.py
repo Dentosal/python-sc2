@@ -8,6 +8,7 @@ from s2clientprotocol import (
 import logging
 
 from sc2.ids.ability_id import AbilityId
+from sc2.ids.unit_typeid import UnitTypeId
 
 logger = logging.getLogger(__name__)
 
@@ -208,3 +209,20 @@ class Client(Protocol):
             ))
         else:
             await self.debug_text([texts], [positions], color)
+
+    async def debug_create_unit(self, unit_type, amount_of_units, position, owner_id):
+        # example:
+        # await self._client.debug_create_unit(MARINE, 1, self._game_info.map_center, 1)
+        assert isinstance(unit_type, UnitTypeId)
+        assert 0 < amount_of_units # careful, in realtime=True mode, as of now units get created the double amount
+        assert isinstance(position, (Point2, Point3))
+        assert 1 <= owner_id <= 2
+
+        await self._execute(debug=sc_pb.RequestDebug(
+            debug=[debug_pb.DebugCommand(create_unit=debug_pb.DebugCreateUnit(
+                unit_type=unit_type.value,
+                owner=owner_id,
+                pos=common_pb.Point2D(x=position.x, y=position.y),
+                quantity=(amount_of_units)
+            ))]
+        ))
