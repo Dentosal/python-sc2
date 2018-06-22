@@ -40,7 +40,7 @@ class GameState(object):
         self.creep = PixelMap(observation.observation.raw_data.map_state.creep)
 
         self.dead_units = {dead_unit_tag for dead_unit_tag in observation.observation.raw_data.event.dead_units} # set of unit tags that died this step - sometimes has multiple entries
-        self.effects = {EffectId(effect) for effect in observation.observation.raw_data.effects} # effects like ravager bile shot, lurker attack, everything in effect_id.py # usage: if RAVAGERCORROSIVEBILECP in self.state.effects: do stuff
+        self.effects = {effect for effect in observation.observation.raw_data.effects} # effects like ravager bile shot, lurker attack, everything in effect_id.py # usage: if RAVAGERCORROSIVEBILECP.value in self.state.effects: do stuff
         self.upgrades = {UpgradeId(upgrade) for upgrade in observation.observation.raw_data.player.upgrade_ids} # usage: if TERRANINFANTRYWEAPONSLEVEL1 in self.state.upgrades: do stuff
 
     @property
