@@ -1,5 +1,5 @@
 import sc2
-from sc2 import run_game, maps, Race, Difficulty
+from sc2 import run_game, maps, Race, Difficulty, sc_pb
 from sc2.build_orders.build_order import BuildOrder, train_unit
 from sc2.build_orders.commands import construct, expand, add_supply, add_gas, train_unit
 from strategy_constants import *
@@ -9,6 +9,7 @@ from math import isclose
 from random import sample, randrange
 from abc import ABCMeta, abstractmethod, abstractproperty
 
+from sc2.data import Result
 from strategy_util import *
 
 class Bot_AI_Extended(sc2.BotAI):
@@ -25,14 +26,14 @@ class Bot_AI_Extended(sc2.BotAI):
 
     async def on_step(self, iteration):
 
-        if iteration == 100:
-            await self.chat_send("gg")
-
-        if iteration % gameloops_check_frequency*2 == 0:
+                
+       
+        if iteration % gameloops_check_frequency*10 == 0:
            cc = (self.units(UnitTypeId.COMMANDCENTER) | self.units(UnitTypeId.ORBITALCOMMAND))
            if cc.amount == 0 and len(get_units_military(self)) < max_units_giveup:
-             # TODO give up
-             await self.chat_send("(gg)")
+             await self.chat_send("gg")
+             self.final_result = result_lost
+             return
 
          # If opponent write gg --> win
 
@@ -70,19 +71,35 @@ async def auto_defend(bot):
 async def auto_attack(bot):
     units_military = get_units_military(bot)
     units_military_amount = len(units_military)
-    if bot.attack or units_military_amount >= min_units_attack:
+
+    if units_military_amount <= min_units_defend:
+        bot.attack = False
+    elif bot.attack or units_military_amount >= min_units_attack:
                    
         bot.attack = True
-               
-        for unit in filter(lambda u: u.is_idle, units_military):   
-            if bot.known_enemy_structures.exists:
-                enemy = bot.known_enemy_structures.first # focus on building
-                await bot.do(unit.attack(enemy.position.to2, queue=True))
-            if bot.known_enemy_units.exists:
+        
+        if bot.known_enemy_units.exists:
                 enemy = bot.known_enemy_units.random # attack random unit
-                await bot.do(unit.attack(enemy.position.to2, queue=True))
-            # Not that good: since moves to it ignoring other opponents
-            await bot.do(unit.attack(bot.enemy_start_locations[0]))
+                enemy_position = enemy.position.to2
+        elif bot.known_enemy_structures.exists:
+                enemy = bot.known_enemy_structures.first # focus on building
+                enemy_position = enemy.position.to2
+        else: # TODO check # Not that good: since moves to it ignoring other opponents
+                enemy_position = bot.enemy_start_locations[0]
+
+                               
+        for unit in filter(lambda u: u.is_idle, units_military):   
+                await bot.do(unit.attack(enemy_position, queue=True))
+        
+        if enemy_position == bot.enemy_start_locations[0]:
+            
+            for unit in filter(lambda u: u.is_idle, units_military):   
+                if unit.position.distance_to(bot.enemy_start_locations[0]) < 1:
+                    bot.final_result = result_won
+                    return
+
+            
+
     return           
  
 

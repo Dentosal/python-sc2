@@ -65,7 +65,7 @@ sufficently_much_vespene = sufficently_enough_vespene + 150 # additional Planeta
 # Number of games to play
 eval_number_games = 1
 # Maximum time in seconds until game result is Tie
-max_gametime = 600 # TODO set value in seconds
+max_gametime = 900 # TODO set value in seconds
 
 # Minimum amount of units to attack
 min_units_attack = 15
@@ -99,6 +99,10 @@ init_worker_count = 16
 
 # Check for isclose if build is completed
 build_progress_completed = 1
+
+
+result_won = "won"
+result_lost = "lost"
 
 # Terran buildings and units --------------------------------------------------
 

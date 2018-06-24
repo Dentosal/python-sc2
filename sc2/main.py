@@ -20,6 +20,7 @@ async def _play_game_human(client, player_id, realtime, game_time_limit):
 
         if game_time_limit and (state.observation.observation.game_loop * 0.725 * (1/16)) > game_time_limit:
             print(state.observation.game_loop, state.observation.game_loop*0.14)
+            logger.info(f"Time limit exceeded: Tie")
             return Result.Tie
 
         if not realtime:
@@ -38,12 +39,11 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
         if client._game_result:
             return client._game_result[player_id]
         
-        #a = client.messages
-        #if Client.chat is Null
-
+       
         gs = GameState(state.observation, game_data)
 
         if game_time_limit and (gs.game_loop * 0.725 * (1/16)) > game_time_limit:
+            logger.info(f"Time limit exceeded: Tie")
             return Result.Tie
 
         ai._prepare_step(gs)
@@ -70,6 +70,16 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
         if not realtime:
             if not client.in_game: # Client left (resigned) the game
                 return client._game_result[player_id]
+
+            # HS added
+            if ai.final_result is not None:
+                if ai.final_result == "won":
+                    return Result.Victory
+                elif ai.final_result == "lost":
+                    return Result.Defeat
+                else:
+                    logger.warning(f"Unknown result in ai.final_result")
+                    return Result.Tie
 
             await client.step()
 

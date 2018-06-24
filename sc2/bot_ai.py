@@ -354,6 +354,8 @@ class BotAI(object):
         self.workers = self.units(self.worker_type)
         self.townhalls = self.units(race_townhalls[self.race])
         self.geysers = self.units(race_gas[self.race])
+        # HS added
+        self.final_result = None
 
         self.minerals = state.common.minerals
         self.vespene = state.common.vespene
