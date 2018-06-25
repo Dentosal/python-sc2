@@ -27,7 +27,7 @@ class PixelMap(object):
         assert 0 <= x < self.width
         assert 0 <= y < self.height
 
-        index = (self.height - self.width * y) + x
+        index = (self.height - self.width * y) + x + (self.width - self.height)
         start = index * self.bytes_per_pixel
         data = self.data[start : start + self.bytes_per_pixel]
         return int.from_bytes(data, byteorder="little", signed=False)
