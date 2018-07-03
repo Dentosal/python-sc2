@@ -29,6 +29,10 @@ class Client(Protocol):
         super().__init__(ws)
         self._player_id = None
         self._game_result = None
+        self._debug_texts = list()
+        self._debug_lines = list()
+        self._debug_boxes = list()
+        self._debug_spheres = list()
 
     @property
     def in_game(self):
@@ -212,7 +216,50 @@ class Client(Protocol):
         else:
             await self.debug_text([texts], [positions], color)
 
-    async def debug_create_unit(self, unit_type, amount_of_units, position, owner_id):
+    def debug_text_simple(self, text, color=None):
+        self._debug_texts.append(to_debug_message(text, color))
+
+    def debug_text_2d(self, text, pos, color=None, size=8):
+        self._debug_texts.append(to_debug_message(text, color, pos, False, size))
+
+    def debug_text_3d(self, text, pos, color=None, size=8):
+        self._debug_texts.append(to_debug_message(text, color, pos, True, size))
+
+    def debug_line_out(self, p0, p1, color=None):
+        self._debug_lines.append(debug_pb.DebugLine(
+            line=debug_pb.Line(p0=to_debug_point(p0), p1=to_debug_point(p1)),
+            color=to_debug_color(color)))
+
+    def debug_box_out(self, p_min, p_max, color=None):
+        self._debug_boxes.append(debug_pb.DebugBox(
+            min=to_debug_point(p_min),
+            max=to_debug_point(p_max),
+            color=to_debug_color(color)
+        ))
+		
+    def debug_sphere_out(self, p, r, color=None):
+        self._debug_spheres.append(debug_pb.DebugSphere(
+            p=to_debug_point(p),
+            r=r,
+            color=to_debug_color(color)
+        ))
+
+    async def send_debug(self):
+		await self._execute(debug=sc_pb.RequestDebug(
+            debug=[debug_pb.DebugCommand(draw=debug_pb.DebugDraw(
+                text=self._debug_texts if len(self._debug_texts) > 0 else None,
+                lines=self._debug_lines if len(self._debug_lines) > 0 else None,
+                boxes=self._debug_boxes if len(self._debug_boxes) > 0 else None,
+                spheres=self._debug_spheres if len(self._debug_spheres) > 0 else None
+            ))]
+
+        ))
+        self._debug_texts.clear()
+        self._debug_lines.clear()
+        self._debug_boxes.clear()
+        self._debug_spheres.clear()
+		
+	async def debug_create_unit(self, unit_type, amount_of_units, position, owner_id):
         # example:
         # await self._client.debug_create_unit(MARINE, 1, self._game_info.map_center, 1)
         assert isinstance(unit_type, UnitTypeId)
@@ -228,14 +275,44 @@ class Client(Protocol):
                 quantity=(amount_of_units)
             ))]
         ))
-    async def debug_text_simple(self, texts):
-        if not isinstance(texts, list):
-            texts = [texts]
-        await self._execute(debug=sc_pb.RequestDebug(
-            debug=[debug_pb.DebugCommand(draw=debug_pb.DebugDraw(
-                text=[debug_pb.DebugText(
-                    text=text,
-                    color=debug_pb.Color(r=1, g=1, b=1),
-                ) for text in texts]
-            ))]
-        ))
+		
+    
+
+def to_debug_color(color):
+    if color is None:
+        return debug_pb.Color(r=255, g=255, b=255)
+    else:
+        r = getattr(color, "r", getattr(color, "x", 255))
+        g = getattr(color, "g", getattr(color, "y", 255))
+        b = getattr(color, "b", getattr(color, "z", 255))
+        if r + g + b <= 3:
+            r *= 255
+            g *= 255
+            b *= 255
+
+        return debug_pb.Color(r=int(r), g=int(g), b=int(b))
+
+
+def to_debug_point(point):
+    return common_pb.Point(x=point.x, y=point.y, z=getattr(point, "z", 0))
+
+
+def to_debug_message(text, color=None, pos=None, is3d=False, size=8):
+    text = text
+    color = to_debug_color(color)
+    size = size
+    pt3d = None
+    virtual_pos = None
+
+    if pos is not None:
+        if is3d:
+            pt3d = to_debug_point(pos)
+        else:
+            virtual_pos = to_debug_point(pos)
+    return debug_pb.DebugText(
+        color=color,
+        text=text,
+        virtual_pos=virtual_pos,
+        world_pos=pt3d,
+        size=size
+    )
