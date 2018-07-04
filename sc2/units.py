@@ -4,8 +4,10 @@ from .unit import Unit
 from .ids.unit_typeid import UnitTypeId
 from .position import Point2
 
+
 class Units(list):
     """A collection for units. Makes it easy to select units by selectors."""
+
     @classmethod
     def from_proto(cls, units, game_data):
         return cls(
@@ -57,7 +59,7 @@ class Units(list):
         return None
 
     def by_tag(self, tag):
-        unit = find_by_tag(tag)
+        unit = self.find_by_tag(tag)
         if unit is None:
             raise KeyError("Unit not found")
         return unit
@@ -222,6 +224,7 @@ class Units(list):
 
     def prefer_close_to(self, p):
         return self.sorted(lambda unit: unit.distance_to(p))
+
 
 class UnitSelection(Units):
     def __init__(self, parent, unit_type_id=None):
