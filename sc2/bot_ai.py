@@ -3,9 +3,8 @@ import random
 from functools import partial
 
 import logging
-logger = logging.getLogger(__name__)
 
-from .constants import EGG
+logger = logging.getLogger(__name__)
 
 from .position import Point2, Point3
 from .data import Race, ActionResult, Attribute, race_worker, race_townhalls, race_gas
@@ -15,6 +14,7 @@ from .game_data import AbilityData, Cost
 from .ids.unit_typeid import UnitTypeId
 from .ids.ability_id import AbilityId
 from .ids.upgrade_id import UpgradeId
+from .units import Units
 
 
 class BotAI(object):
@@ -56,7 +56,7 @@ class BotAI(object):
     def expansion_locations(self):
         """List of possible expansion locations."""
 
-        RESOURCE_SPREAD_THRESHOLD = 8.0 # Tried with Abyssal Reef LE, this was fine
+        RESOURCE_SPREAD_THRESHOLD = 8.0  # Tried with Abyssal Reef LE, this was fine
         resources = self.state.mineral_field | self.state.vespene_geyser
 
         # Group nearby minerals together to form expansion locations
@@ -66,7 +66,7 @@ class BotAI(object):
                 if any(mf.position.to2.distance_to(p.position.to2) < RESOURCE_SPREAD_THRESHOLD for p in g):
                     g.add(mf)
                     break
-            else: # not found
+            else:  # not found
                 r_groups.append({mf})
 
         # Filter out bases with only one mineral field
@@ -75,15 +75,15 @@ class BotAI(object):
         # Find centers
         avg = lambda l: sum(l) / len(l)
         pos = lambda u: u.position.to2
-        centers = {Point2(tuple(map(avg, zip(*map(pos,g))))).rounded: g for g in r_groups}
+        centers = {Point2(tuple(map(avg, zip(*map(pos, g))))).rounded: g for g in r_groups}
 
         return centers
 
-    async def get_available_abilities(self, unit):
+    async def get_available_abilities(self, unit, ignore_resource_requirements=False):
         """Returns available abilities of a unit."""
 
         # right know only checks cooldown, energy cost, and whether the ability has been researched
-        return await self._client.query_available_abilities(unit)
+        return await self._client.query_available_abilities(unit, ignore_resource_requirements)
 
     async def expand_now(self, building=None, max_distance=10, location=None):
         """Takes new expansion."""
@@ -144,7 +144,7 @@ class BotAI(object):
             workers = self.workers.closer_than(20, location)
             actual = townhall.assigned_harvesters
             ideal = townhall.ideal_harvesters
-            excess = actual-ideal
+            excess = actual - ideal
             if actual > ideal:
                 worker_pool.extend(workers.random_group_of(min(excess, len(workers))))
                 continue
@@ -193,7 +193,9 @@ class BotAI(object):
 
         owned = {}
         for el in self.expansion_locations:
-            def is_near_to_expansion(t): return t.position.distance_to(el) < self.EXPANSION_GAP_THRESHOLD
+            def is_near_to_expansion(t):
+                return t.position.distance_to(el) < self.EXPANSION_GAP_THRESHOLD
+
             th = next((x for x in self.townhalls if is_near_to_expansion(x)), None)
             if th:
                 owned[el] = th
@@ -244,7 +246,9 @@ class BotAI(object):
 
         workers = self.workers.closer_than(20, pos) or self.workers
         for worker in workers.prefer_close_to(pos).prefer_idle:
-            if not worker.orders or len(worker.orders) == 1 and worker.orders[0].ability.id in [AbilityId.MOVE, AbilityId.HARVEST_GATHER, AbilityId.HARVEST_RETURN]:
+            if not worker.orders or len(worker.orders) == 1 and worker.orders[0].ability.id in [AbilityId.MOVE,
+                                                                                                AbilityId.HARVEST_GATHER,
+                                                                                                AbilityId.HARVEST_RETURN]:
                 return worker
 
         return workers.random if force else None
@@ -271,7 +275,7 @@ class BotAI(object):
 
         if isinstance(building, UnitTypeId):
             building = self._game_data.units[building.value].creation_ability
-        else: # AbilityId
+        else:  # AbilityId
             building = self._game_data.abilities[building.value]
 
         if await self.can_place(building, near):
@@ -282,10 +286,10 @@ class BotAI(object):
 
         for distance in range(placement_step, max_distance, placement_step):
             possible_positions = [Point2(p).offset(near).to2 for p in (
-                [(dx, -distance) for dx in range(-distance, distance+1, placement_step)] +
-                [(dx,  distance) for dx in range(-distance, distance+1, placement_step)] +
-                [(-distance, dy) for dy in range(-distance, distance+1, placement_step)] +
-                [( distance, dy) for dy in range(-distance, distance+1, placement_step)]
+                    [(dx, -distance) for dx in range(-distance, distance + 1, placement_step)] +
+                    [(dx, distance) for dx in range(-distance, distance + 1, placement_step)] +
+                    [(-distance, dy) for dy in range(-distance, distance + 1, placement_step)] +
+                    [(distance, dy) for dy in range(-distance, distance + 1, placement_step)]
             )]
             res = await self._client.query_building_placement(building, possible_positions)
             possible = [p for r, p in zip(res, possible_positions) if r == ActionResult.Success]
@@ -318,7 +322,7 @@ class BotAI(object):
             amount += sum([o.ability == ability for u in self.units for o in u.orders])
         else:
             amount += sum([o.ability == ability for w in self.workers for o in w.orders])
-            amount += sum([egg.orders[0].ability == ability for egg in self.units(EGG)])
+            amount += sum([egg.orders[0].ability == ability for egg in self.units(UnitTypeId.EGG)])
 
         return amount
 
@@ -343,7 +347,7 @@ class BotAI(object):
         assert self.can_afford(action)
         r = await self._client.actions(action, game_data=self._game_data)
 
-        if not r: # success
+        if not r:  # success
             cost = self._game_data.calculate_ability_cost(action.ability)
             self.minerals -= cost.minerals
             self.vespene -= cost.vespene
@@ -376,6 +380,8 @@ class BotAI(object):
 
         self.player_id = player_id
         self.race = Race(self._game_info.player_races[self.player_id])
+        self._units_previous_map = dict()
+        self.units = Units([], game_data)
 
     def _prepare_first_step(self):
         """First step extra preparations. Must not be called before _prepare_step."""
@@ -385,6 +391,11 @@ class BotAI(object):
     def _prepare_step(self, state):
         """Set attributes from new state before on_step."""
         self.state = state
+        # need this for checking for new units
+        self._units_previous_map.clear()
+        for unit in self.units:
+            self._units_previous_map[unit.tag] = unit
+
         self.units = state.units.owned
         self.workers = self.units(race_worker[self.race])
         self.townhalls = self.units(race_townhalls[self.race])
@@ -396,6 +407,34 @@ class BotAI(object):
         self.supply_cap = state.common.food_cap
         self.supply_left = self.supply_cap - self.supply_used
 
+    def issue_events(self):
+        self._issue_unit_dead_events()
+        self._issue_unit_added_events()
+        for unit in self.unis:
+            self._issue_building_complete_event(unit)
+
+    def _issue_unit_added_events(self):
+        for unit in self.units:
+            if unit.tag not in self._units_previous_map:
+                self.on_unit_created(unit)
+
+    def _issue_building_complete_event(self, unit):
+        if unit.build_progress < 1:
+            return
+        if unit.tag in self._units_previous_map:
+            return
+        unit_prev = self._units_previous_map[unit.tag]
+        if unit_prev.build_progress < 1:
+            self.on_building_construction_complete(unit)
+
+    def _issue_unit_dead_events(self):
+        event = self.state.rawObservation.raw_data.event
+        if event is not None:
+            for tag in event.dead_units:
+                unit = self.units.by_tag(tag)
+                if unit is not None:
+                    self.on_unit_destroyed(unit)
+
     def on_start(self):
         """Allows initializing the bot when the game data is available."""
         pass
@@ -403,6 +442,15 @@ class BotAI(object):
     async def on_step(self, iteration):
         """Ran on every game step (looped in realtime mode)."""
         raise NotImplementedError
+
+    def on_unit_destroyed(self, unit):
+        pass
+
+    def on_unit_created(self, unit):
+        pass
+
+    def on_building_construction_complete(self, unit):
+        pass
 
 
 class CanAffordWrapper(object):

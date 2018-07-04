@@ -18,8 +18,8 @@ async def _play_game_human(client, player_id, realtime, game_time_limit):
         if client._game_result:
             return client._game_result[player_id]
 
-        if game_time_limit and (state.observation.observation.game_loop * 0.725 * (1/16)) > game_time_limit:
-            print(state.observation.game_loop, state.observation.game_loop*0.14)
+        if game_time_limit and (state.observation.observation.game_loop * 0.725 * (1 / 16)) > game_time_limit:
+            print(state.observation.game_loop, state.observation.game_loop * 0.14)
             return Result.Tie
 
         if not realtime:
@@ -40,7 +40,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
 
         gs = GameState(state.observation, game_data)
 
-        if game_time_limit and (gs.game_loop * 0.725 * (1/16)) > game_time_limit:
+        if game_time_limit and (gs.game_loop * 0.725 * (1 / 16)) > game_time_limit:
             return Result.Tie
 
         ai._prepare_step(gs)
@@ -51,6 +51,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
         logger.debug(f"Running AI step, realtime={realtime}")
 
         try:
+            ai.issue_events()
             if realtime:
                 await ai.on_step(iteration)
             else:
@@ -69,7 +70,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
         logger.debug(f"Running AI step: done")
 
         if not realtime:
-            if not client.in_game: # Client left (resigned) the game
+            if not client.in_game:  # Client left (resigned) the game
                 return client._game_result[player_id]
 
             await client.step()
@@ -176,7 +177,7 @@ async def _join_game(players, realtime, portconfig, save_replay_as=None, step_ti
 
 def run_game(map_settings, players, **kwargs):
     if sum(isinstance(p, (Human, Bot)) for p in players) > 1:
-        join_kwargs = {k: v for k,v in kwargs.items() if k != "save_replay_as"}
+        join_kwargs = {k: v for k, v in kwargs.items() if k != "save_replay_as"}
 
         portconfig = Portconfig()
         result = asyncio.get_event_loop().run_until_complete(asyncio.gather(
