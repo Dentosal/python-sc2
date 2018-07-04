@@ -63,6 +63,20 @@ class Ramp(object):
         p2 = Point2((maxx, maxy))
 
         return p2 if p1 in self._points else p1
+    
+    @property
+    def bottom_center(self):
+        lower = self.lower
+
+        minx = min(p.x for p in lower)
+        miny = min(p.y for p in lower)
+        maxx = max(p.x for p in lower)
+        maxy = max(p.y for p in lower)
+
+        p1 = Point2((minx, miny))
+        p2 = Point2((maxx, maxy))
+
+        return p2 if p1 in self._points else p1
 
     @property
     def _nearby(self):
