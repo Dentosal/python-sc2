@@ -410,7 +410,7 @@ class BotAI(object):
     def issue_events(self):
         self._issue_unit_dead_events()
         self._issue_unit_added_events()
-        for unit in self.unis:
+        for unit in self.units:
             self._issue_building_complete_event(unit)
 
     def _issue_unit_added_events(self):
@@ -421,19 +421,17 @@ class BotAI(object):
     def _issue_building_complete_event(self, unit):
         if unit.build_progress < 1:
             return
-        if unit.tag in self._units_previous_map:
+        if unit.tag not in self._units_previous_map:
             return
         unit_prev = self._units_previous_map[unit.tag]
         if unit_prev.build_progress < 1:
             self.on_building_construction_complete(unit)
 
     def _issue_unit_dead_events(self):
-        event = self.state.rawObservation.raw_data.event
+        event = self.state.responseObservation.observation.raw_data.event
         if event is not None:
             for tag in event.dead_units:
-                unit = self.units.by_tag(tag)
-                if unit is not None:
-                    self.on_unit_destroyed(unit)
+                self.on_unit_destroyed(tag)
 
     def on_start(self):
         """Allows initializing the bot when the game data is available."""
@@ -443,7 +441,7 @@ class BotAI(object):
         """Ran on every game step (looped in realtime mode)."""
         raise NotImplementedError
 
-    def on_unit_destroyed(self, unit):
+    def on_unit_destroyed(self, unit_tag):
         pass
 
     def on_unit_created(self, unit):
