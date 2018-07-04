@@ -38,6 +38,9 @@ class GameState(object):
         self.common = Common(observation.observation.player_common)
         self.psionic_matrix = PsionicMatrix.from_proto(observation.observation.raw_data.player.power_sources)
         self.game_loop = observation.observation.game_loop
+        self.chat = observation.chat
+        self.responseObservation = observation
+        self.actions = observation.actions
 
         destructables = [x for x in observation.observation.raw_data.units if x.alliance == 3 and x.radius > 1.5] # all destructable rocks except the one below the main base ramps
         self.destructables = Units.from_proto(destructables, game_data)
