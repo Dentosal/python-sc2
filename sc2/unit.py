@@ -199,15 +199,69 @@ class Unit(object):
             weapon = next((weapon for weapon in weapons if weapon.type in [1, 3]), None)
             return weapon is not None
         return False
+    
+    @property
+    def ground_dps(self):
+        """ Does not include upgrades """
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            weapon = next((weapon for weapon in weapons if weapon.type in [1, 3]), None)
+            if weapon:
+                return (weapon.damage * weapon.attacks) / weapon.speed
+        return 0
+
+    @property
+    def ground_range(self):
+        """ Does not include upgrades """
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            weapon = next((weapon for weapon in weapons if weapon.type in [1, 3]), None)
+            if weapon:
+                return weapon.range
+        return 0
 
     @property
     def can_attack_air(self):
+        """ Does not include upgrades """
         # See data_pb2.py line 141 for info on weapon data
         if hasattr(self._type_data._proto, "weapons"):
             weapons = self._type_data._proto.weapons
             weapon = next((weapon for weapon in weapons if weapon.type in [2, 3]), None)
             return weapon is not None
         return False
+
+    @property
+    def air_dps(self):
+        """ Does not include upgrades """
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            weapon = next((weapon for weapon in weapons if weapon.type in [2, 3]), None)
+            if weapon:
+                return (weapon.damage * weapon.attacks) / weapon.speed
+        return 0
+
+    @property
+    def air_range(self):
+        """ Does not include upgrades """
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            weapon = next((weapon for weapon in weapons if weapon.type in [2, 3]), None)
+            if weapon:
+                return weapon.range
+        return 0
+
+    @property
+    def armor(self):
+        """ Does not include upgrades """
+        return self._type_data._proto.armor
+
+    @property
+    def is_carrying_minerals(self):
+        return self.has_buff(BuffId.CARRYMINERALFIELDMINERALS) or self.has_buff(BuffId.CARRYHIGHYIELDMINERALFIELDMINERALS)
+
+    @property
+    def is_carrying_vespene(self):
+        return self.has_buff(BuffId.CARRYHARVESTABLEVESPENEGEYSERGAS) or self.has_buff(BuffId.CARRYHARVESTABLEVESPENEGEYSERGASPROTOSS) or self.has_buff(BuffId.CARRYHARVESTABLEVESPENEGEYSERGASZERG)
 
     @property
     def is_selected(self):
@@ -227,7 +281,7 @@ class Unit(object):
 
     @property
     def is_attacking(self):
-        return len(self.orders) > 0 and self.orders[0].ability.id in [AbilityId.ATTACK]
+        return len(self.orders) > 0 and self.orders[0].ability.id in [AbilityId.ATTACK, AbilityId.ATTACK_ATTACK, AbilityId.ATTACK_ATTACKTOWARDS, AbilityId.ATTACK_ATTACKBARRAGE, AbilityId.SCAN_MOVE]
 
     @property
     def is_gathering(self):
@@ -264,7 +318,7 @@ class Unit(object):
     @property
     def surplus_harvesters(self):
         """ Returns a positive number if it has too many harvesters mining, a negative number if it has too few mining """
-        return self._proto.assigned_harvesters - self._proto.ideal_harvesters
+        return -(self._proto.ideal_harvesters - self._proto.assigned_harvesters)
 
     @property
     def name(self):
@@ -275,6 +329,10 @@ class Unit(object):
 
     def build(self, unit, *args, **kwargs):
         return self(self._game_data.units[unit.value].creation_ability.id, *args, **kwargs)
+
+    def research(self, upgrade, *args, **kwargs):
+        """ Requires UpgradeId to be passed instead of AbilityId """
+        return self(self._game_data.upgrades[upgrade.value].research_ability.id, *args, **kwargs)
 
     def has_buff(self, buff):
         assert isinstance(buff, BuffId)
