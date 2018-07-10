@@ -91,12 +91,20 @@ class Units(list):
         else:
             return self.subgroup(random.sample(self, n))
 
+    def closest_distance_to(self, position):
+        assert self.exists
+        if isinstance(position, Unit):
+            position = position.position
+        return min({unit.position.to2.distance_to(position.to2) for unit in self})
+
     def closest_to(self, position):
+        assert self.exists
         if isinstance(position, Unit):
             position = position.position
         return min(self, key=lambda unit: unit.position.to2.distance_to(position.to2))
 
     def furthest_to(self, position):
+        assert self.exists
         if isinstance(position, Unit):
             position = position.position
         return max(self, key=lambda unit: unit.position.to2.distance_to(position.to2))
