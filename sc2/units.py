@@ -156,8 +156,8 @@ class Units(list):
     def center(self):
         """ Returns the central point of all units in this list """
         assert self.exists
-        pos = Point2((sum({unit.position.x for unit in self}) / self.amount, \
-            sum({unit.position.y for unit in self}) / self.amount))
+        pos = Point2((sum([unit.position.x for unit in self]) / self.amount, \
+            sum([unit.position.y for unit in self]) / self.amount))
         return pos
 
     @property
