@@ -1,3 +1,5 @@
+from typing import Optional
+
 import sys
 import signal
 import time
@@ -7,7 +9,7 @@ import shutil
 import tempfile
 import subprocess
 import portpicker
-import websockets
+import aiohttp
 
 import logging
 logger = logging.getLogger(__name__)
@@ -29,8 +31,8 @@ class kill_switch(object):
         for p in cls._to_kill:
             p._clean()
 
-class SC2Process(object):
-    def __init__(self, host="127.0.0.1", port=None, fullscreen=False):
+class SC2Process:
+    def __init__(self, host: str = "127.0.0.1", port: Optional[int] = None, fullscreen: bool = False):
         assert isinstance(host, str)
         assert isinstance(port, int) or port is None
 
@@ -42,6 +44,7 @@ class SC2Process(object):
             self._port = port
         self._tmp_dir = tempfile.mkdtemp(prefix="SC2_")
         self._process = None
+        self._session = None
         self._ws = None
 
     async def __aenter__(self):
@@ -56,6 +59,7 @@ class SC2Process(object):
             self._process = self._launch()
             self._ws = await self._connect()
         except:
+            await self._close_connection()
             self._clean()
             raise
 
@@ -96,20 +100,29 @@ class SC2Process(object):
 
             await asyncio.sleep(1)
             try:
-                ws = await websockets.connect(self.ws_url, timeout=120)
+                self._session = aiohttp.ClientSession()
+                ws = await self._session.ws_connect(self.ws_url, timeout=120)
                 logger.debug("Websocket connection ready")
                 return ws
-            except ConnectionRefusedError:
+            except aiohttp.client_exceptions.ClientConnectorError:
+                await self._session.close()
                 if i > 15:
                     logger.debug("Connection refused (startup not complete (yet))")
 
         logger.debug("Websocket connection to SC2 process timed out")
         raise TimeoutError("Websocket")
 
+    async def _close_connection(self):
+        logger.info("Closing connection...")
+
+        if self._ws is not None:
+            await self._ws.close()
+
+        if self._session is not None:
+            await self._session.close()
+
     def _clean(self):
         logger.info("Cleaning up...")
-        if self._ws is not None:
-            self._ws.close()
 
         if self._process is not None:
             if self._process.poll() is None:

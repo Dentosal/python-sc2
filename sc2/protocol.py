@@ -1,4 +1,4 @@
-import websockets
+import aiohttp
 
 import logging
 logger = logging.getLogger(__name__)
@@ -23,16 +23,16 @@ class Protocol(object):
     async def __request(self, request):
         logger.debug(f"Sending request: {request !r}")
         try:
-            await self._ws.send(request.SerializeToString())
-        except websockets.exceptions.ConnectionClosed:
+            await self._ws.send_bytes(request.SerializeToString())
+        except TypeError:
             logger.exception("Cannot send: Connection already closed.")
             raise ConnectionAlreadyClosed("Connection already closed.")
         logger.debug(f"Request sent")
 
         response = sc_pb.Response()
         try:
-            response_bytes = await self._ws.recv()
-        except websockets.exceptions.ConnectionClosed:
+            response_bytes = await self._ws.receive_bytes()
+        except TypeError:
             logger.exception("Cannot receive: Connection already closed.")
             raise ConnectionAlreadyClosed("Connection already closed.")
         response.ParseFromString(response_bytes)
@@ -62,7 +62,4 @@ class Protocol(object):
         return result
 
     async def quit(self):
-        try:
-            await self._execute(quit=sc_pb.RequestQuit())
-        except websockets.exceptions.ConnectionClosed:
-            pass
+        await self._execute(quit=sc_pb.RequestQuit())
