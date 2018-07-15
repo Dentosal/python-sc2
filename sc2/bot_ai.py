@@ -213,6 +213,32 @@ class BotAI(object):
 
         return CanAffordWrapper(cost.minerals <= self.minerals, cost.vespene <= self.vespene)
 
+    async def can_cast(self, unit, ability_id, target=None, only_check_energy_and_cooldown=False, cached_abilities_of_unit=None):
+        """Tests if a unit has an ability available and enough energy to cast it.
+        See data_pb2.py (line 161) for the numbers 1-5 to make sense"""
+        assert isinstance(unit, Unit)
+        assert isinstance(ability_id, AbilityId)
+        assert isinstance(target, (type(None), Unit, Point2, Point3))
+        # check if unit has enough energy to cast or if ability is on cooldown
+        if cached_abilities_of_unit:
+            abilities = cached_abilities_of_unit
+        else:
+            abilities = await self.get_available_abilities(unit) 
+        
+        if ability_id in abilities:
+            if only_check_energy_and_cooldown:
+                return True
+            cast_range = self._game_data.abilities[ability_id.value]._proto.cast_range
+            ability_target = self._game_data.abilities[ability_id.value]._proto.target
+            # check if target is in range (or is a self cast like stimpack)
+            if ability_target == 1 or ability_target == 5 and isinstance(target, (Point2, Point3)) and unit.distance_to(target) <= cast_range: # TODO: replace numbers with enums
+                return True
+            elif ability_target in [3, 4] and isinstance(target, Unit) and unit.distance_to(target) <= cast_range:
+                return True
+            elif ability_target in [2, 4] and isinstance(target, (Point2, Point3)) and unit.distance_to(target) <= cast_range:
+                return True
+        return False
+
     def select_build_worker(self, pos, force=False):
         """Select a worker to build a bulding with."""
 
@@ -325,6 +351,15 @@ class BotAI(object):
         else:
             logger.error(f"Error: {r} (action: {action})")
 
+        return r
+
+    async def do_actions(self, actions):     
+        for action in actions:
+            cost = self._game_data.calculate_ability_cost(action.ability)
+            self.minerals -= cost.minerals
+            self.vespene -= cost.vespene
+
+        r = await self._client.actions(actions, game_data=self._game_data)
         return r
 
     async def chat_send(self, message):

@@ -2,6 +2,7 @@ import random
 
 from .unit import Unit
 from .ids.unit_typeid import UnitTypeId
+from .position import Point2
 
 class Units(list):
     """A collection for units. Makes it easy to select units by selectors."""
@@ -90,15 +91,33 @@ class Units(list):
         else:
             return self.subgroup(random.sample(self, n))
 
+    def closest_distance_to(self, position):
+        assert self.exists
+        if isinstance(position, Unit):
+            position = position.position
+        return min({unit.position.to2.distance_to(position.to2) for unit in self})
+
     def closest_to(self, position):
+        assert self.exists
         if isinstance(position, Unit):
             position = position.position
         return min(self, key=lambda unit: unit.position.to2.distance_to(position.to2))
+
+    def furthest_to(self, position):
+        assert self.exists
+        if isinstance(position, Unit):
+            position = position.position
+        return max(self, key=lambda unit: unit.position.to2.distance_to(position.to2))
 
     def closer_than(self, distance, position):
         if isinstance(position, Unit):
             position = position.position
         return self.filter(lambda unit: unit.position.to2.distance_to(position.to2) < distance)
+
+    def further_than(self, distance, position):
+        if isinstance(position, Unit):
+            position = position.position
+        return self.filter(lambda unit: unit.position.to2.distance_to(position.to2) > distance)
 
     def subgroup(self, units):
         return Units(list(units), self.game_data)
@@ -108,6 +127,42 @@ class Units(list):
 
     def sorted(self, keyfn, reverse=False):
         return self.subgroup(sorted(self, key=keyfn, reverse=reverse))
+
+    def tags_in(self, other):
+        """ Filters all units that have their tags in the 'other' set/list/dict """
+        # example: self.units(QUEEN).tags_in(self.queen_tags_assigned_to_do_injects)
+        return self.filter(lambda unit: unit.tag in other)
+
+    def tags_not_in(self, other):
+        """ Filters all units that have their tags not in the 'other' set/list/dict """
+        # example: self.units(QUEEN).tags_not_in(self.queen_tags_assigned_to_do_injects)
+        return self.filter(lambda unit: unit.tag not in other)
+
+    def of_type(self, other):
+        """ Filters all units that are of a specific type """
+        # example: self.units.of_type([ZERGLING, ROACH, HYDRALISK, BROODLORD])
+        if not isinstance(other, (tuple, list, set, dict)):
+            other = [other]
+        return self.filter(lambda unit: unit.type_id in other)
+
+    def exclude_type(self, other):
+        """ Filters all units that are not of a specific type """
+        # example: self.known_enemy_units.exclude_type([OVERLORD])
+        if not isinstance(other, (tuple, list, set, dict)):
+            other = [other]
+        return self.filter(lambda unit: unit.type_id not in other)
+
+    @property
+    def center(self):
+        """ Returns the central point of all units in this list """
+        assert self.exists
+        pos = Point2((sum([unit.position.x for unit in self]) / self.amount, \
+            sum([unit.position.y for unit in self]) / self.amount))
+        return pos
+
+    @property
+    def tags(self):
+        return {unit.tag for unit in self}
 
     @property
     def ready(self):
@@ -134,12 +189,24 @@ class Units(list):
         return self.filter(lambda unit: unit.is_enemy)
 
     @property
+    def flying(self):
+        return self.filter(lambda unit: unit.is_flying)
+
+    @property
+    def not_flying(self):
+        return self.filter(lambda unit: not unit.is_flying)
+
+    @property
     def structure(self):
         return self.filter(lambda unit: unit.is_structure)
 
     @property
     def not_structure(self):
         return self.filter(lambda unit: not unit.is_structure)
+
+    @property
+    def gathering(self):
+        return self.filter(lambda unit: unit.is_gathering)
 
     @property
     def mineral_field(self):
