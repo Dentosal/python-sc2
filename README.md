@@ -16,7 +16,7 @@ You'll need Python 3.6 or newer.
 pip3 install --user --upgrade sc2
 ```
 
-Please note that not all commits are not released to PyPI. Releases are tagged with version number. You can see latest released versions from [tags page](https://github.com/Dentosal/python-sc2/tags).
+Please note that not all commits are released to PyPI. Releases are tagged with version number. You can see latest released versions from [tags page](https://github.com/Dentosal/python-sc2/tags).
 
 You'll also need an StarCraft II executable. If you are running Windows or macOS, just install the normal SC2 from blizzard app. [The free starter edition works too.](https://us.battle.net/account/sc2/starter-edition/). Linux users must use the [Linux binary](https://github.com/Blizzard/s2client-proto#downloads).
 
@@ -55,6 +55,11 @@ This is probably the simplest bot that has any realistic chances of winning the 
 
 You can find more examples in the [`examples/`](/examples) folder.
 
-## Bug reports, ideas and contributing
+## Bug reports, feature requests and ideas
 
 If you have any issues, ideas or feedback, please create [a new issue](https://github.com/Dentosal/python-sc2/issues/new). Pull requests are also welcome!
+
+
+## Contributing & style guidelines
+
+Git commit messages use [imperative-style messages](https://stackoverflow.com/a/3580764/2867076), start with capital letter and do not have trailing commas.
