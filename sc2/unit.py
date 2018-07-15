@@ -130,6 +130,12 @@ class Unit(object):
         return self._proto.health_max
 
     @property
+    def health_percentage(self):
+        if self._proto.health_max == 0:
+            return 0
+        return self._proto.health / self._proto.health_max
+
+    @property
     def shield(self):
         return self._proto.shield
 
@@ -138,16 +144,124 @@ class Unit(object):
         return self._proto.shield_max
 
     @property
+    def shield_percentage(self):
+        if self._proto.shield_max == 0:
+            return 0
+        return self._proto.shield / self._proto.shield_max
+
+    @property
     def energy(self):
         return self._proto.energy
 
     @property
+    def energy_max(self):
+        return self._proto.energy_max
+
+    @property
+    def energy_percentage(self):
+        if self._proto.energy_max == 0:
+            return 0
+        return self._proto.energy / self._proto.energy_max
+
+    @property
     def mineral_contents(self):
+        """ How many minerals a mineral field has left to mine from """
         return self._proto.mineral_contents
 
     @property
     def vespene_contents(self):
+        """ How much gas is remaining in a geyser """
         return self._proto.vespene_contents
+
+    @property
+    def has_vespene(self):
+        """ Checks if a geyser has gas remaining (cant build extractors on empty geysers), useful for lategame """
+        return self._proto.vespene_contents > 0
+
+    @property
+    def weapon_cooldown(self):
+        """ Returns time in game loops (self.state.game_loop) until the unit can fire again 
+        Usage: 
+        if unit.weapon_cooldown == 0:
+            await self.do(unit.attack(target))
+        else:
+            await self.do(unit.move(retreatPosition))
+        """
+        if self.can_attack_ground or self.can_attack_air:
+            return self._proto.weapon_cooldown
+        return 1000
+
+    @property
+    def can_attack_ground(self):
+        # See data_pb2.py line 141 for info on weapon data
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            weapon = next((weapon for weapon in weapons if weapon.type in [1, 3]), None)
+            return weapon is not None
+        return False
+    
+    @property
+    def ground_dps(self):
+        """ Does not include upgrades """
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            weapon = next((weapon for weapon in weapons if weapon.type in [1, 3]), None)
+            if weapon:
+                return (weapon.damage * weapon.attacks) / weapon.speed
+        return 0
+
+    @property
+    def ground_range(self):
+        """ Does not include upgrades """
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            weapon = next((weapon for weapon in weapons if weapon.type in [1, 3]), None)
+            if weapon:
+                return weapon.range
+        return 0
+
+    @property
+    def can_attack_air(self):
+        """ Does not include upgrades """
+        # See data_pb2.py line 141 for info on weapon data
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            weapon = next((weapon for weapon in weapons if weapon.type in [2, 3]), None)
+            return weapon is not None
+        return False
+
+    @property
+    def air_dps(self):
+        """ Does not include upgrades """
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            weapon = next((weapon for weapon in weapons if weapon.type in [2, 3]), None)
+            if weapon:
+                return (weapon.damage * weapon.attacks) / weapon.speed
+        return 0
+
+    @property
+    def air_range(self):
+        """ Does not include upgrades """
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            weapon = next((weapon for weapon in weapons if weapon.type in [2, 3]), None)
+            if weapon:
+                return weapon.range
+        return 0
+
+    @property
+    def armor(self):
+        """ Does not include upgrades """
+        return self._type_data._proto.armor
+
+    @property
+    def is_carrying_minerals(self):
+        return self.has_buff(BuffId.CARRYMINERALFIELDMINERALS) or self.has_buff(BuffId.CARRYHIGHYIELDMINERALFIELDMINERALS)
+
+    @property
+    def is_carrying_vespene(self):
+        return self.has_buff(BuffId.CARRYHARVESTABLEVESPENEGEYSERGAS) or self.has_buff(BuffId.CARRYHARVESTABLEVESPENEGEYSERGASPROTOSS) or self.has_buff(BuffId.CARRYHARVESTABLEVESPENEGEYSERGASZERG)
 
     @property
     def is_selected(self):
@@ -160,6 +274,26 @@ class Unit(object):
     @property
     def noqueue(self):
         return len(self.orders) == 0
+
+    @property
+    def is_moving(self):
+        return len(self.orders) > 0 and self.orders[0].ability.id in [AbilityId.MOVE]
+
+    @property
+    def is_attacking(self):
+        return len(self.orders) > 0 and self.orders[0].ability.id in [AbilityId.ATTACK, AbilityId.ATTACK_ATTACK, AbilityId.ATTACK_ATTACKTOWARDS, AbilityId.ATTACK_ATTACKBARRAGE, AbilityId.SCAN_MOVE]
+
+    @property
+    def is_gathering(self):
+        """ Checks if a unit is on its way to a mineral field / vespene geyser to mine """
+        return len(self.orders) > 0 and self.orders[0].ability.id in [AbilityId.HARVEST_GATHER]
+
+    @property
+    def order_target(self):
+        """ Returns the target tag (if it is a Unit) or Point2 (if it is a Position) from the first order """
+        if len(self.orders) > 0:
+            return self.orders[0].target
+        return None
 
     @property
     def is_idle(self):
@@ -182,6 +316,11 @@ class Unit(object):
         return self._proto.ideal_harvesters
 
     @property
+    def surplus_harvesters(self):
+        """ Returns a positive number if it has too many harvesters mining, a negative number if it has too few mining """
+        return -(self._proto.ideal_harvesters - self._proto.assigned_harvesters)
+
+    @property
     def name(self):
         return self._type_data.name
 
@@ -190,6 +329,10 @@ class Unit(object):
 
     def build(self, unit, *args, **kwargs):
         return self(self._game_data.units[unit.value].creation_ability.id, *args, **kwargs)
+
+    def research(self, upgrade, *args, **kwargs):
+        """ Requires UpgradeId to be passed instead of AbilityId """
+        return self(self._game_data.upgrades[upgrade.value].research_ability.id, *args, **kwargs)
 
     def has_buff(self, buff):
         assert isinstance(buff, BuffId)

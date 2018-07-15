@@ -32,6 +32,9 @@ class Pointlike(tuple):
     def closest(self, ps):
         return min(ps, key=lambda p: self.distance_to(p))
 
+    def furthest(self, ps):
+        return max(ps, key=lambda p: self.distance_to(p))
+
     def offset(self, p):
         return self.__class__(a+b for a, b in itertools.zip_longest(self, p[:len(self)], fillvalue=0))
 
@@ -46,7 +49,8 @@ class Pointlike(tuple):
         return self.__class__(a + (b - a) / d * distance for a, b in itertools.zip_longest(self, p[:len(self)], fillvalue=0))
 
     def __eq__(self, other):
-        assert isinstance(other, tuple)
+        if not isinstance(other, tuple):
+            return False
         return all(abs(a - b) < EPSILON for a, b in itertools.zip_longest(self, other, fillvalue=0))
 
     def __hash__(self):
