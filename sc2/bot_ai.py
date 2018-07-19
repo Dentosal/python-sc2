@@ -428,7 +428,7 @@ class BotAI(object):
             self.on_building_construction_complete(unit)
 
     def _issue_unit_dead_events(self):
-        event = self.state.responseObservation.observation.raw_data.event
+        event = self.state.observation.raw_data.event
         if event is not None:
             for tag in event.dead_units:
                 self.on_unit_destroyed(tag)
