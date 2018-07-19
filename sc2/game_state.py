@@ -5,6 +5,7 @@ from .ids.upgrade_id import UpgradeId
 from .ids.effect_id import EffectId
 from .position import Point2
 
+
 class Common(object):
     ATTRIBUTES = [
         "player_id",
@@ -14,6 +15,7 @@ class Common(object):
         "idle_worker_count", "army_count",
         "warp_gate_count", "larva_count"
     ]
+
     def __init__(self, proto):
         self._proto = proto
 
@@ -34,13 +36,16 @@ class EffectData(object):
         return [Point2.from_proto(p) for p in self._proto.pos]
 
 class GameState(object):
-    def __init__(self, observation, game_data):
-        self.common = Common(observation.observation.player_common)
-        self.psionic_matrix = PsionicMatrix.from_proto(observation.observation.raw_data.player.power_sources)
-        self.game_loop = observation.observation.game_loop
-        self.chat = observation.chat
-        self.responseObservation = observation
-        self.actions = observation.actions
+    def __init__(self, response_observation, game_data):
+        self.actions = response_observation.actions
+        self.action_errors = response_observation.action_errors
+        self.observation = response_observation.observation
+        self.player_result = response_observation.player_result
+        self.chat = response_observation.chat
+        self.common = Common(self.observation.player_common)
+        self.units = Units.from_proto(self.observation.raw_data.units, game_data)
+        self.psionic_matrix = PsionicMatrix.from_proto(self.observation.raw_data.player.power_sources)
+        self.game_loop = self.observation.game_loop
 
         destructables = [x for x in observation.observation.raw_data.units if x.alliance == 3 and x.radius > 1.5] # all destructable rocks except the one below the main base ramps
         self.destructables = Units.from_proto(destructables, game_data)
