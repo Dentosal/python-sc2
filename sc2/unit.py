@@ -361,6 +361,15 @@ class Unit(object):
     def stop(self, *args, **kwargs):
         return self(AbilityId.STOP, *args, **kwargs)
 
+    def __eq__(self, other):
+        return self.tag == other.tag
+
+    def __ne__(self, other):
+        return self.tag != other.tag
+
+    def __hash__(self):
+        return hash(self.tag)
+
     def __call__(self, ability, *args, **kwargs):
         return unit_command.UnitCommand(ability, self, *args, **kwargs)
 
