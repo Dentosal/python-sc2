@@ -1,0 +1,19 @@
+language: python
+
+# sudo false implies containerized builds
+sudo: false
+
+# python 3.7 not yet available on linux
+python:
+  - 3.6
+
+# add the cloned directory to python path
+env: PYTHONPATH=$PYTHONPATH:$TRAVIS_BUILD_DIR
+
+# install libraries needed to run
+install:
+    - pip install s2clientprotocol async-timeout portpicker websockets
+
+# run my unit tests
+script: 
+  python test/test_stuff.py
