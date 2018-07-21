@@ -4,7 +4,7 @@ import sc2
 from sc2 import Race, Difficulty
 from sc2.constants import *
 from sc2.player import Bot, Computer
-from sc2.position import Point2
+from sc2.position import Point2, Point3
 
 
 class RampWallBot(sc2.BotAI):
@@ -35,9 +35,14 @@ class RampWallBot(sc2.BotAI):
                     break
 
         depos = [
-            Point2((max({p.x for p in d}), min({p.y for p in d})))
+            Point2((min({p.x for p in d}), max({p.y for p in d})))
             for d in self.main_base_ramp.top_wall_depos
         ]
+
+        txt_p = [Point3(p.x, p.y, 100) for p in depos]
+        txt_s = [f"({p.x}, {p.y})" for p in depos]
+
+        await self.debug_text(txt_s, txt_p)
 
         depo_count = (self.units(SUPPLYDEPOT) | self.units(SUPPLYDEPOTLOWERED)).amount
 

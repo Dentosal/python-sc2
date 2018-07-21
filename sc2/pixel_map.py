@@ -1,3 +1,7 @@
+from typing import Callable, Set, FrozenSet, List
+
+from .position import Point2
+
 class PixelMap(object):
     def __init__(self, proto):
         self._proto = proto
@@ -28,6 +32,7 @@ class PixelMap(object):
         assert 0 <= y < self.height
 
         index = (self.height - self.width * y) + x + (self.width - self.height)
+        # print(f"INDEX IS {index} FOR {pos}")
         start = index * self.bytes_per_pixel
         data = self.data[start : start + self.bytes_per_pixel]
         return int.from_bytes(data, byteorder="little", signed=False)
@@ -51,9 +56,9 @@ class PixelMap(object):
     def invert(self):
         raise NotImplementedError
 
-    def flood_fill(self, start_point, pred):
-        nodes = set()
-        queue = [start_point]
+    def flood_fill(self, start_point: Point2, pred: Callable[[int], bool]) -> Set[Point2]:
+        nodes: Set[Point2] = set()
+        queue: List[Point2] = [start_point]
 
         while queue:
             x, y = queue.pop()
@@ -61,21 +66,21 @@ class PixelMap(object):
             if not (0 <= x < self.width and 0 <= y < self.height):
                 continue
 
-            if (x, y) in nodes:
+            if Point2((x, y)) in nodes:
                 continue
 
             if pred(self[x, y]):
-                nodes.add((x, y))
+                nodes.add(Point2((x, y)))
 
-                queue.append((x+1, y))
-                queue.append((x-1, y))
-                queue.append((x, y+1))
-                queue.append((x, y-1))
+                queue.append(Point2((x+1, y)))
+                queue.append(Point2((x-1, y)))
+                queue.append(Point2((x, y+1)))
+                queue.append(Point2((x, y-1)))
 
         return nodes
 
-    def flood_fill_all(self, pred):
-        groups = set()
+    def flood_fill_all(self, pred: Callable[[int], bool]) -> Set[FrozenSet[Point2]]:
+        groups: Set[FrozenSet[Point2]] = set()
 
         for x in range(self.width):
             for y in range(self.height):
@@ -83,7 +88,7 @@ class PixelMap(object):
                     continue
 
                 if pred(self[x, y]):
-                    groups.add(frozenset(self.flood_fill((x, y), pred)))
+                    groups.add(frozenset(self.flood_fill(Point2((x, y)), pred)))
 
         return groups
 

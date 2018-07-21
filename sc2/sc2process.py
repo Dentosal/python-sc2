@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional, List
 
 import sys
 import signal
@@ -18,7 +18,7 @@ from .paths import Paths
 from .controller import Controller
 
 class kill_switch(object):
-    _to_kill = []
+    _to_kill: List[Any] = []
 
     @classmethod
     def add(cls, value):
@@ -32,7 +32,7 @@ class kill_switch(object):
             p._clean()
 
 class SC2Process:
-    def __init__(self, host: str = "127.0.0.1", port: Optional[int] = None, fullscreen: bool = False):
+    def __init__(self, host: str = "127.0.0.1", port: Optional[int] = None, fullscreen: bool = False) -> None:
         assert isinstance(host, str)
         assert isinstance(port, int) or port is None
 

@@ -61,7 +61,8 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                 except asyncio.TimeoutError:
                     logger.warning(f"Running AI step: out of time")
         except Exception as e:
-            logger.exception(f"AI step threw an error")
+            # NOTE: this message is caught by pytest suite
+            logger.exception(f"AI step threw an error") # DO NOT EDIT!
             logger.error(f"resigning due to previous error")
             return Result.Defeat
 

@@ -1,3 +1,5 @@
+from typing import Tuple, Set, FrozenSet, Sequence, Generator
+
 from copy import deepcopy
 import itertools
 
@@ -5,9 +7,9 @@ from .position import Point2, Size, Rect
 from .pixel_map import PixelMap
 from .player import Player
 
-class Ramp(object):
-    def __init__(self, points, game_info):
-        self._points = set(points) # not translated
+class Ramp:
+    def __init__(self, points: Sequence[Point2], game_info: "GameInfo") -> None:
+        self._points: Set[Point2] = set(points)
         self.__game_info = game_info
 
     @property
@@ -19,39 +21,36 @@ class Ramp(object):
         return self.__game_info.placement_grid
 
     @property
-    def size(self):
+    def size(self) -> int:
         return len(self._points)
 
-    def height_at(self, p):
+    def height_at(self, p: Point2) -> int:
         return self._height_map[p]
 
     @property
-    def points(self):
-        return {
-            Point2((p[0], self._height_map.height - p[1]))
-            for p in self._points
-        }
+    def points(self) -> Set[Point2]:
+        return self._points.copy()
 
     @property
-    def upper(self):
+    def upper(self) -> Set[Point2]:
         max_height = max([self.height_at(p) for p in self._points])
         return {
-            Point2((p[0], self._height_map.height - p[1]))
+            p
             for p in self._points
             if self.height_at(p) == max_height
         }
 
     @property
-    def lower(self):
+    def lower(self) -> Set[Point2]:
         min_height = max([self.height_at(p) for p in self._points])
         return {
-            Point2((p[0], self._height_map.height - p[1]))
+            p
             for p in self._points
             if self.height_at(p) == min_height
         }
 
     @property
-    def top_center(self):
+    def top_center(self) -> Point2:
         upper = self.upper
 
         minx = min(p.x for p in upper)
@@ -65,7 +64,7 @@ class Ramp(object):
         return p2 if p1 in self._points else p1
 
     @property
-    def _nearby(self):
+    def _nearby(self) -> Generator[Point2, None, None]:
         minx = min(p.x for p in self.upper)
         miny = min(p.y for p in self.upper)
         maxx = max(p.x for p in self.upper)
@@ -81,34 +80,31 @@ class Ramp(object):
                 yield Point2((rect_x + x, rect_y + y))
 
     @property
-    def _top_edge_12(self):
+    def _top_edge_12(self) -> Tuple[Set[Point2], Set[Point2]]:
         """Top edge, with tiles on distances 1 and 2."""
-
-        def placement_allowed(p):
-            return self._placement_grid.is_set(
-                Point2((p.x, self._height_map.height - p.y))
-            )
 
         edge_p1s = set()
         edge_p2s = set()
         for up in self.upper:
             for p1 in up.neighbors8:
-                if placement_allowed(p1):
+                if self._placement_grid.is_set(p1):
                     edge_p1s.add(p1)
 
                 for p2 in p1.neighbors4:
-                    if placement_allowed(p2):
+                    if self._placement_grid.is_set(p2):
                         edge_p2s.add(p2)
 
         edge_p2s -= edge_p1s
+        print("EDGE 1:", edge_p1s)
+        print("EDGE 2:", edge_p2s)
         return (edge_p1s, edge_p2s)
 
     @property
-    def top_wall_depos(self):
-        """Supply depo positions (top-left) to wall the top of this ramp."""
+    def top_wall_depos(self) -> Generator[FrozenSet[Point2], None, None]:
+        """Supply depo positions (all four points)."""
         cover_p1s, cover_p2s = self._top_edge_12
 
-        depos = set()
+        depos: Set[Point2] = set()
         depo_cover_p1s = cover_p1s.copy()
 
         # Select end of cover line for cursor
@@ -145,7 +141,7 @@ class Ramp(object):
 
             assert len(depo) == 4
 
-            yield  frozenset(depo) # Point2((min(depo).x, min(depo).y))
+            yield frozenset(depo)
             depo_cover_p1s -= frozenset(depo)
 
 
