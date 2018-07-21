@@ -11,6 +11,8 @@ aiohttp = "*"
 
 [dev-packages]
 pytest = "*"
+mypy = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.7"
