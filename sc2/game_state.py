@@ -23,6 +23,7 @@ class Common(object):
         assert attr in self.ATTRIBUTES, f"'{attr}' is not a valid attribute"
         return int(getattr(self._proto, attr))
 
+
 class EffectData(object):
     def __init__(self, proto):
         self._proto = proto
@@ -34,6 +35,7 @@ class EffectData(object):
     @property
     def positions(self):
         return [Point2.from_proto(p) for p in self._proto.pos]
+
 
 class GameState(object):
     def __init__(self, response_observation, game_data):
@@ -47,7 +49,8 @@ class GameState(object):
         self.psionic_matrix = PsionicMatrix.from_proto(self.observation.raw_data.player.power_sources)
         self.game_loop = self.observation.game_loop
 
-        destructables = [x for x in observation.observation.raw_data.units if x.alliance == 3 and x.radius > 1.5] # all destructable rocks except the one below the main base ramps
+        destructables = [x for x in observation.observation.raw_data.units if
+                         x.alliance == 3 and x.radius > 1.5]  # all destructable rocks except the one below the main base ramps
         self.destructables = Units.from_proto(destructables, game_data)
 
         # fix for enemy units detected by my sensor tower
@@ -60,8 +63,10 @@ class GameState(object):
         self.visibility = PixelMap(observation.observation.raw_data.map_state.visibility)
         self.creep = PixelMap(observation.observation.raw_data.map_state.creep)
 
-        self.dead_units = {dead_unit_tag for dead_unit_tag in observation.observation.raw_data.event.dead_units} # set of unit tags that died this step - sometimes has multiple entries
-        self.effects = {EffectData(effect) for effect in observation.observation.raw_data.effects} # effects like ravager bile shot, lurker attack, everything in effect_id.py 
+        self.dead_units = {dead_unit_tag for dead_unit_tag in
+                           observation.observation.raw_data.event.dead_units}  # set of unit tags that died this step - sometimes has multiple entries
+        self.effects = {EffectData(effect) for effect in
+                        observation.observation.raw_data.effects}  # effects like ravager bile shot, lurker attack, everything in effect_id.py
         """ Usage:
         for effect in self.state.effects:
             if effect.id == EffectId.RAVAGERCORROSIVEBILECP:
@@ -69,7 +74,8 @@ class GameState(object):
                 # dodge the ravager biles
         """
 
-        self.upgrades = {UpgradeId(upgrade) for upgrade in observation.observation.raw_data.player.upgrade_ids} # usage: if TERRANINFANTRYWEAPONSLEVEL1 in self.state.upgrades: do stuff
+        self.upgrades = {UpgradeId(upgrade) for upgrade in
+                         observation.observation.raw_data.player.upgrade_ids}  # usage: if TERRANINFANTRYWEAPONSLEVEL1 in self.state.upgrades: do stuff
 
     @property
     def mineral_field(self):
