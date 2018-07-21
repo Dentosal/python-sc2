@@ -16,4 +16,6 @@ install:
 
 # run my unit tests
 script: 
-  python test/test_stuff.py
+  python test/test_position.py
+  python test/test_unit.py
+  python test/test_units.py
