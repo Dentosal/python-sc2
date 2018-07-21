@@ -13,7 +13,7 @@ class ControlGroup(set):
 
     @property
     def empty(self):
-        return self.amount == 0
+        return len(self)
 
     def add_unit(self, unit):
         self.add(unit.tag)

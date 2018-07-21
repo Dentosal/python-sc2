@@ -1,6 +1,7 @@
 from math import sqrt, pi, sin, cos, atan2
 import random
 import itertools
+from typing import List, Dict, Set, Tuple, Any, Optional, Union # for mypy type checking
 
 FLOAT_DIGITS = 8
 EPSILON = 10**(-FLOAT_DIGITS)
@@ -12,14 +13,14 @@ def _sign(num):
 
 class Pointlike(tuple):
     @property
-    def rounded(self):
+    def rounded(self) -> "Pointlike":
         return self.__class__(round(q) for q in self)
 
     @property
-    def position(self):
+    def position(self) -> "Pointlike":
         return self
 
-    def distance_to(self, p):
+    def distance_to(self, p: Union["Unit", "Pointlike"]) -> Union[int, float]:
         p = p.position
         assert isinstance(p, Pointlike)
         if self == p:
@@ -29,19 +30,29 @@ class Pointlike(tuple):
     def sort_by_distance(self, ps):
         return sorted(ps, key=lambda p: self.distance_to(p))
 
-    def closest(self, ps):
+    def closest(self, ps) -> Union["Unit", "Pointlike"]:
+        assert len(ps) > 0
         return min(ps, key=lambda p: self.distance_to(p))
 
-    def furthest(self, ps):
+    def distance_to_closest(self, ps) -> Union[int, float]:
+        assert len(ps) > 0
+        return min(ps, key=lambda p: self.distance_to(p)).distance_to(self)
+
+    def furthest(self, ps) -> Union["Unit", "Pointlike"]:
+        assert len(ps) > 0
         return max(ps, key=lambda p: self.distance_to(p))
 
-    def offset(self, p):
+    def distance_to_furthest(self, ps) -> Union[int, float]:
+        assert len(ps) > 0
+        return max(ps, key=lambda p: self.distance_to(p)).distance_to(self)
+
+    def offset(self, p) -> "Pointlike":
         return self.__class__(a+b for a, b in itertools.zip_longest(self, p[:len(self)], fillvalue=0))
 
     def unit_axes_towards(self, p):
         return self.__class__(_sign(b - a) for a, b in itertools.zip_longest(self, p[:len(self)], fillvalue=0))
 
-    def towards(self, p, distance=1, limit=False):
+    def towards(self, p: Union["Unit", "Pointlike"], distance: int=1, limit: bool=False) -> "Pointlike":
         assert self != p
         d = self.distance_to(p)
         if limit:
@@ -63,19 +74,19 @@ class Point2(Pointlike):
         return cls((data.x, data.y))
 
     @property
-    def x(self):
+    def x(self) -> Union[int, float]:
         return self[0]
 
     @property
-    def y(self):
+    def y(self) -> Union[int, float]:
         return self[1]
 
     @property
-    def to2(self):
+    def to2(self) -> "Point2":
         return Point2(self[:2])
 
     @property
-    def to3(self):
+    def to3(self) -> "Point3":
         return Point3((*self, 0))
 
     def random_on_distance(self, distance):
@@ -95,7 +106,7 @@ class Point2(Pointlike):
         return Point2((self.x + cos(angle) * distance, self.y + sin(angle) * distance))
 
     @property
-    def neighbors4(self):
+    def neighbors4(self) -> set:
         return {
             Point2((self.x - 1, self.y)),
             Point2((self.x + 1, self.y)),
@@ -104,7 +115,7 @@ class Point2(Pointlike):
         }
 
     @property
-    def neighbors8(self):
+    def neighbors8(self) -> set:
         return self.neighbors4 | {
             Point2((self.x - 1, self.y - 1)),
             Point2((self.x - 1, self.y + 1)),
@@ -119,11 +130,11 @@ class Point3(Point2):
         return cls((data.x, data.y, data.z))
 
     @property
-    def z(self):
+    def z(self) -> Union[int, float]:
         return self[2]
 
     @property
-    def to3(self):
+    def to3(self) -> "Point3":
         return Point3(self)
 
 class Size(Point2):

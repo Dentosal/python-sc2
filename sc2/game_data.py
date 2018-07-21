@@ -133,6 +133,10 @@ class UnitTypeData(object):
         return self._proto.has_vespene
 
     @property
+    def requirement(self):
+        return self._game_data.units[self._proto.tech_requirement].id
+
+    @property
     def cost(self):
         return Cost(
             self._proto.mineral_cost,
