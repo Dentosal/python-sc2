@@ -55,6 +55,10 @@ This is probably the simplest bot that has any realistic chances of winning the 
 
 You can find more examples in the [`examples/`](/examples) folder.
 
+## Help and support
+
+You have questions but don't want to create an issue? Join the [Starcraft 2 AI Discord](https://discord.gg/qTZ65sh). Questions about this repository can be asked in channel #python-sc2.
+
 ## Bug reports, feature requests and ideas
 
 If you have any issues, ideas or feedback, please create [a new issue](https://github.com/Dentosal/python-sc2/issues/new). Pull requests are also welcome!
