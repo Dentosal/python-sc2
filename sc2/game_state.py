@@ -49,24 +49,24 @@ class GameState(object):
         self.psionic_matrix = PsionicMatrix.from_proto(self.observation.raw_data.player.power_sources)
         self.game_loop = self.observation.game_loop
 
-        destructables = [x for x in observation.observation.raw_data.units if
+        destructables = [x for x in self.observation.raw_data.units if
                          x.alliance == 3 and x.radius > 1.5]  # all destructable rocks except the one below the main base ramps
         self.destructables = Units.from_proto(destructables, game_data)
 
         # fix for enemy units detected by my sensor tower
         visibleUnits, hiddenUnits = [], []
-        for u in observation.observation.raw_data.units:
+        for u in self.observation.raw_data.units:
             hiddenUnits.append(u) if u.is_blip else visibleUnits.append(u)
         self.units = Units.from_proto(visibleUnits, game_data)
         # self.blips = Units.from_proto(hiddenUnits, game_data) # TODO: fix me
 
-        self.visibility = PixelMap(observation.observation.raw_data.map_state.visibility)
-        self.creep = PixelMap(observation.observation.raw_data.map_state.creep)
+        self.visibility = PixelMap(self.observation.raw_data.map_state.visibility)
+        self.creep = PixelMap(self.observation.raw_data.map_state.creep)
 
         self.dead_units = {dead_unit_tag for dead_unit_tag in
-                           observation.observation.raw_data.event.dead_units}  # set of unit tags that died this step - sometimes has multiple entries
+                           self.observation.raw_data.event.dead_units}  # set of unit tags that died this step - sometimes has multiple entries
         self.effects = {EffectData(effect) for effect in
-                        observation.observation.raw_data.effects}  # effects like ravager bile shot, lurker attack, everything in effect_id.py
+                        self.observation.raw_data.effects}  # effects like ravager bile shot, lurker attack, everything in effect_id.py
         """ Usage:
         for effect in self.state.effects:
             if effect.id == EffectId.RAVAGERCORROSIVEBILECP:
@@ -75,7 +75,7 @@ class GameState(object):
         """
 
         self.upgrades = {UpgradeId(upgrade) for upgrade in
-                         observation.observation.raw_data.player.upgrade_ids}  # usage: if TERRANINFANTRYWEAPONSLEVEL1 in self.state.upgrades: do stuff
+                         self.observation.raw_data.player.upgrade_ids}  # usage: if TERRANINFANTRYWEAPONSLEVEL1 in self.state.upgrades: do stuff
 
     @property
     def mineral_field(self):
