@@ -237,7 +237,7 @@ class Client(Protocol):
             max=to_debug_point(p_max),
             color=to_debug_color(color)
         ))
-		
+
     def debug_sphere_out(self, p, r, color=None):
         self._debug_spheres.append(debug_pb.DebugSphere(
             p=to_debug_point(p),
@@ -246,25 +246,24 @@ class Client(Protocol):
         ))
 
     async def send_debug(self):
-		await self._execute(debug=sc_pb.RequestDebug(
+        await self._execute(debug=sc_pb.RequestDebug(
             debug=[debug_pb.DebugCommand(draw=debug_pb.DebugDraw(
                 text=self._debug_texts if len(self._debug_texts) > 0 else None,
                 lines=self._debug_lines if len(self._debug_lines) > 0 else None,
                 boxes=self._debug_boxes if len(self._debug_boxes) > 0 else None,
                 spheres=self._debug_spheres if len(self._debug_spheres) > 0 else None
-            ))]
+            ))]))
 
-        ))
         self._debug_texts.clear()
         self._debug_lines.clear()
         self._debug_boxes.clear()
         self._debug_spheres.clear()
-		
-	async def debug_create_unit(self, unit_type, amount_of_units, position, owner_id):
+
+    async def debug_create_unit(self, unit_type, amount_of_units, position, owner_id):
         # example:
         # await self._client.debug_create_unit(MARINE, 1, self._game_info.map_center, 1)
         assert isinstance(unit_type, UnitTypeId)
-        assert 0 < amount_of_units # careful, in realtime=True mode, as of now units get created the double amount
+        assert 0 < amount_of_units  # careful, in realtime=True mode, as of now units get created the double amount
         assert isinstance(position, (Point2, Point3))
         assert 1 <= owner_id <= 2
 
@@ -276,8 +275,7 @@ class Client(Protocol):
                 quantity=(amount_of_units)
             ))]
         ))
-		
-    
+
 
 def to_debug_color(color):
     if color is None:
