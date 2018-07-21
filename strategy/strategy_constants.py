@@ -51,29 +51,29 @@ buildorder_excluded = ("SCV", "DRONE", "PROBE", "SUPPLYDEPOT", "PYLON", "OVERLOR
 min_resource_upgrades = 300 
 
 # Minimum number of resources to autobuild units
-sufficently_enough_minerals = 800 # i.e. 2 times Battlecruiser or commandcenter
-sufficently_enough_vespene = 600 # i.e. 2 times Battlecruiser
+sufficently_enough_minerals = 600 # i.e. 2 times Battlecruiser or commandcenter == 800
+sufficently_enough_vespene = 400 # i.e. 2 times Battlecruiser == 600
 
 # Minimum number of resources to autobuild buildings
-sufficently_much_minerals = sufficently_enough_minerals + 400 # i.e. 3 times commandcenter
+sufficently_much_minerals = sufficently_enough_minerals + 400 # additional commandcenter
 sufficently_much_vespene = sufficently_enough_vespene + 150 # additional Planetary Fortress
 
 
 # Game settings ---------------------------------------------------------------
 
 # Number of games to play
-eval_number_games = 1
+eval_number_games = 10
 # Maximum time in seconds until game result is Tie
-max_gametime = 900 # TODO set value in seconds
+max_gametime = 1200 # 900 = 15 min, 1200 = 20 min 
 
 # Minimum amount of units to attack
-min_units_attack = 15
+min_units_attack = 25
 # Minimum amount of units to defend
-min_units_defend = 5
+min_units_defend = 10
 # Maximum military units when giving up
 max_units_giveup = min_units_defend
 # Maximum distance to defend against enemy units
-distance_defend = 15
+distance_defend = 30
 
 # 16 iterations == 1 second
 gameloops_check_frequency = 16
@@ -105,11 +105,12 @@ result_lost = "lost"
 
 # Terran buildings and units --------------------------------------------------
 
-
-# Requirements for buildings
 # Sources:
 # http://liquipedia.net/starcraft2/Terran_Building_Statistics_(Legacy_of_the_Void)
 # https://liquipedia.net/starcraft2/Terran_Units_(Legacy_of_the_Void)
+
+
+# Requirements for buildings
 construct_requirements = {
     UnitTypeId.BARRACKS : UnitTypeId.SUPPLYDEPOT,
     UnitTypeId.ORBITALCOMMAND : UnitTypeId.BARRACKS,
@@ -146,7 +147,7 @@ building_addons = {
 }
 
 
-# Terran units requirements: https://liquipedia.net/starcraft2/Terran_Units_(Legacy_of_the_Void)
+# Terran units requirements
 unit_requirements = {
     UnitTypeId.MARINE : UnitTypeId.BARRACKS,
     UnitTypeId.MARAUDER : UnitTypeId.BARRACKSTECHLAB,

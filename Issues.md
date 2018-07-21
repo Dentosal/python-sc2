@@ -1,3 +1,7 @@
+- check auto defend
+
+
+
 # TODO
 
 - do multiple commands in parallel if enough minerals/gas

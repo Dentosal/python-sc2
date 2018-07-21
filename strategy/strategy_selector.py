@@ -14,7 +14,7 @@ import pandas as pd
 
 def main():
     # CatalystLE
-    map_name = "Catalyst LE" # "Blackpink LE" #""
+    map_name = "Blackpink LE" # "Catalyst LE" #  #""
     self_race = Race.Terran
     enemy_race = Race.Terran
     method = "BestEqualWeighted"
