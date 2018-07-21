@@ -12,7 +12,7 @@ env: PYTHONPATH=$PYTHONPATH:$TRAVIS_BUILD_DIR
 
 # install libraries needed to run
 install:
-    - pip install s2clientprotocol async-timeout portpicker websockets
+    - pip install s2clientprotocol async-timeout portpicker websockets aiohttp
 
 # run my unit tests
 script: 
