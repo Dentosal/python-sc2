@@ -148,7 +148,8 @@ class Ramp:
 
 
 class GameInfo(object):
-    def __init__(self, proto):
+    def __init__(self, proto): 
+        self._proto = proto       
         self.players = [Player.from_proto(p) for p in proto.player_info]
         self.map_size = Size.from_proto(proto.start_raw.map_size)
         self.pathing_grid = PixelMap(proto.start_raw.pathing_grid)

@@ -2,12 +2,11 @@ import random
 
 from .unit import Unit
 from .ids.unit_typeid import UnitTypeId
-from .position import Point2
-
+from .position import Point2, Point3
+from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type checking
 
 class Units(list):
     """A collection for units. Makes it easy to select units by selectors."""
-
     @classmethod
     def from_proto(cls, units, game_data):
         return cls(
@@ -41,18 +40,18 @@ class Units(list):
         return Units(units, self.game_data)
 
     @property
-    def amount(self):
+    def amount(self) -> int:
         return len(self)
 
     @property
-    def empty(self):
+    def empty(self) -> bool:
         return self.amount == 0
 
     @property
-    def exists(self):
+    def exists(self) -> bool:
         return not self.empty
 
-    def find_by_tag(self, tag):
+    def find_by_tag(self, tag) -> Optional[Unit]:
         for unit in self:
             if unit.tag == tag:
                 return unit
@@ -65,16 +64,16 @@ class Units(list):
         return unit
 
     @property
-    def first(self):
+    def first(self) -> Unit:
         assert self.exists
         return self[0]
 
-    def take(self, n, require_all=True):
+    def take(self, n, require_all=True) -> "Units":
         assert (not require_all) or len(self) >= n
         return self[:n]
 
     @property
-    def random(self):
+    def random(self) -> Unit:
         assert self.exists
         return random.choice(self)
 
@@ -93,30 +92,33 @@ class Units(list):
         else:
             return self.subgroup(random.sample(self, n))
 
-    def closest_distance_to(self, position):
+    def in_attack_range_of(self, unit: Unit) -> "Units":
+        return self.filter(lambda x: unit.target_in_range(x))
+
+    def closest_distance_to(self, position: Union[Unit, Point2, Point3]) -> Union[int, float]:
         assert self.exists
         if isinstance(position, Unit):
             position = position.position
         return min({unit.position.to2.distance_to(position.to2) for unit in self})
 
-    def closest_to(self, position):
+    def closest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
         assert self.exists
         if isinstance(position, Unit):
             position = position.position
         return min(self, key=lambda unit: unit.position.to2.distance_to(position.to2))
 
-    def furthest_to(self, position):
+    def furthest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
         assert self.exists
         if isinstance(position, Unit):
             position = position.position
         return max(self, key=lambda unit: unit.position.to2.distance_to(position.to2))
 
-    def closer_than(self, distance, position):
+    def closer_than(self, distance: Union[int, float], position: Union[Unit, Point2, Point3]) -> "Units":
         if isinstance(position, Unit):
             position = position.position
         return self.filter(lambda unit: unit.position.to2.distance_to(position.to2) < distance)
 
-    def further_than(self, distance, position):
+    def further_than(self, distance: Union[int, float], position: Union[Unit, Point2, Point3]) -> "Units":
         if isinstance(position, Unit):
             position = position.position
         return self.filter(lambda unit: unit.position.to2.distance_to(position.to2) > distance)
@@ -124,38 +126,38 @@ class Units(list):
     def subgroup(self, units):
         return Units(list(units), self.game_data)
 
-    def filter(self, pred):
+    def filter(self, pred: callable) -> "Units":
         return self.subgroup(filter(pred, self))
 
-    def sorted(self, keyfn, reverse=False):
+    def sorted(self, keyfn: callable, reverse: bool=False) -> "Units":
         return self.subgroup(sorted(self, key=keyfn, reverse=reverse))
 
-    def tags_in(self, other):
+    def tags_in(self, other: Union[Set[int], List[int], Dict[int, Any]]) -> "Units":
         """ Filters all units that have their tags in the 'other' set/list/dict """
         # example: self.units(QUEEN).tags_in(self.queen_tags_assigned_to_do_injects)
         return self.filter(lambda unit: unit.tag in other)
 
-    def tags_not_in(self, other):
+    def tags_not_in(self, other: Union[Set[int], List[int], Dict[int, Any]]) -> "Units":
         """ Filters all units that have their tags not in the 'other' set/list/dict """
         # example: self.units(QUEEN).tags_not_in(self.queen_tags_assigned_to_do_injects)
         return self.filter(lambda unit: unit.tag not in other)
 
-    def of_type(self, other):
+    def of_type(self, other: Union[UnitTypeId, Set[UnitTypeId], List[UnitTypeId], Dict[UnitTypeId, Any]]) -> "Units":
         """ Filters all units that are of a specific type """
         # example: self.units.of_type([ZERGLING, ROACH, HYDRALISK, BROODLORD])
-        if not isinstance(other, (tuple, list, set, dict)):
+        if isinstance(other, UnitTypeId):
             other = [other]
         return self.filter(lambda unit: unit.type_id in other)
 
-    def exclude_type(self, other):
+    def exclude_type(self, other: Union[UnitTypeId, Set[UnitTypeId], List[UnitTypeId], Dict[UnitTypeId, Any]]) -> "Units":
         """ Filters all units that are not of a specific type """
         # example: self.known_enemy_units.exclude_type([OVERLORD])
-        if not isinstance(other, (tuple, list, set, dict)):
+        if isinstance(other, UnitTypeId):
             other = [other]
         return self.filter(lambda unit: unit.type_id not in other)
 
     @property
-    def center(self):
+    def center(self) -> Point2:
         """ Returns the central point of all units in this list """
         assert self.exists
         pos = Point2((sum([unit.position.x for unit in self]) / self.amount, \
@@ -163,66 +165,70 @@ class Units(list):
         return pos
 
     @property
-    def tags(self):
+    def selected(self):
+        return self.filter(lambda unit: unit.is_selected)
+
+    @property
+    def tags(self) -> Set[int]:
         return {unit.tag for unit in self}
 
     @property
-    def ready(self):
+    def ready(self) -> "Units":
         return self.filter(lambda unit: unit.is_ready)
 
     @property
-    def not_ready(self):
+    def not_ready(self) -> "Units":
         return self.filter(lambda unit: not unit.is_ready)
 
     @property
-    def noqueue(self):
+    def noqueue(self) -> "Units":
         return self.filter(lambda unit: unit.noqueue)
 
     @property
-    def idle(self):
+    def idle(self) -> "Units":
         return self.filter(lambda unit: unit.is_idle)
 
     @property
-    def owned(self):
+    def owned(self) -> "Units":
         return self.filter(lambda unit: unit.is_mine)
 
     @property
-    def enemy(self):
+    def enemy(self) -> "Units":
         return self.filter(lambda unit: unit.is_enemy)
 
     @property
-    def flying(self):
+    def flying(self) -> "Units":
         return self.filter(lambda unit: unit.is_flying)
 
     @property
-    def not_flying(self):
+    def not_flying(self) -> "Units":
         return self.filter(lambda unit: not unit.is_flying)
 
     @property
-    def structure(self):
+    def structure(self) -> "Units":
         return self.filter(lambda unit: unit.is_structure)
 
     @property
-    def not_structure(self):
+    def not_structure(self) -> "Units":
         return self.filter(lambda unit: not unit.is_structure)
 
     @property
-    def gathering(self):
+    def gathering(self) -> "Units":
         return self.filter(lambda unit: unit.is_gathering)
 
     @property
-    def mineral_field(self):
+    def mineral_field(self) -> "Units":
         return self.filter(lambda unit: unit.is_mineral_field)
 
     @property
-    def vespene_geyser(self):
+    def vespene_geyser(self) -> "Units":
         return self.filter(lambda unit: unit.is_vespene_geyser)
 
     @property
-    def prefer_idle(self):
+    def prefer_idle(self) -> "Units":
         return self.sorted(lambda unit: unit.is_idle, reverse=True)
 
-    def prefer_close_to(self, p):
+    def prefer_close_to(self, p: Union[Unit, Point2, Point3]) -> "Units":
         return self.sorted(lambda unit: unit.distance_to(p))
 
 

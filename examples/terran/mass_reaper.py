@@ -15,6 +15,8 @@ from sc2.position import Point2, Point3
 from sc2.unit import Unit
 from sc2.player import Bot, Computer
 from sc2.player import Human
+from sc2.ids.unit_typeid import UnitTypeId
+from sc2.ids.ability_id import AbilityId
 
 class MassReaperBot(sc2.BotAI):
     def __init__(self):
@@ -23,61 +25,72 @@ class MassReaperBot(sc2.BotAI):
     async def on_step(self, iteration):
         self.combinedActions = []
 
-        # make depots when running low on remaining supply
-        if self.supply_left < 5 and self.townhalls.exists and self.supply_used >= 14 and self.can_afford(SUPPLYDEPOT) and self.units(SUPPLYDEPOT).not_ready.amount + self.already_pending(SUPPLYDEPOT) < 1:
+        """
+        -  depots when low on remaining supply
+        - townhalls contains commandcenter and orbitalcommand
+        - self.units(TYPE).not_ready.amount selects all units of that type, filters incomplete units, and then counts the amount
+        - self.already_pending(TYPE) counts how many units are queued - but in this bot below you will find a slightly different already_pending function which only counts units queued (but not in construction)
+        """
+        if self.supply_left < 5 and self.townhalls.exists and self.supply_used >= 14 and self.can_afford(UnitTypeId.SUPPLYDEPOT) and self.units(UnitTypeId.SUPPLYDEPOT).not_ready.amount + self.already_pending(UnitTypeId.SUPPLYDEPOT) < 1:
             ws = self.workers.gathering
-            if ws: # if workers available
+            if ws: # if workers found
                 w = ws.furthest_to(ws.center)
                 loc = await self.find_placement(SUPPLYDEPOT, w.position, placement_step=3)
-                if loc:
-                    self.combinedActions.append(w.build(SUPPLYDEPOT, loc))
+                if loc: # if a placement location was found
+                    # build exactly on that location
+                    self.combinedActions.append(w.build(UnitTypeId.SUPPLYDEPOT, loc))
 
-        # lower all depots
-        for depot in self.units(SUPPLYDEPOT):
-            self.combinedActions.append(depot(MORPH_SUPPLYDEPOT_LOWER))
+        # lower all depots when finished
+        for depot in self.units(SUPPLYDEPOT).ready:
+            self.combinedActions.append(depot(AbilityId.MORPH_SUPPLYDEPOT_LOWER))
 
-        # make orbital
-        if self.units(BARRACKS).ready.exists and self.can_afford(BARRACKS): # change to orbital once can_afford bug is fixed for morphing units - combined actions ignores cost
-            for cc in self.units(COMMANDCENTER).idle:
-                self.combinedActions.append(cc(UPGRADETOORBITAL_ORBITALCOMMAND))
+        # morph commandcenter to orbitalcommand
+        if self.units(UnitTypeId.BARRACKS).ready.exists and self.can_afford(UnitTypeId.BARRACKS): # we dont check if we can afford because the price for morphing units was/is bugged - doesn't work with "await self.do()"
+            for cc in self.units(COMMANDCENTER).idle: # .idle filters idle command centers
+                self.combinedActions.append(cc(AbilityId.UPGRADETOORBITAL_ORBITALCOMMAND))
 
-        # make up to 4 barracks
-        if self.units.of_type([SUPPLYDEPOT, SUPPLYDEPOTLOWERED, SUPPLYDEPOTDROP]).ready.exists and self.units(BARRACKS).amount + self.already_pending(BARRACKS) < 4 and self.can_afford(BARRACKS):
+        # make up to 4 barracks if we can afford them
+        # check if we have a supply depot (tech requirement) before trying to make barracks
+        if self.units.of_type([UnitTypeId.SUPPLYDEPOT, UnitTypeId.SUPPLYDEPOTLOWERED, UnitTypeId.SUPPLYDEPOTDROP]).ready.exists and self.units(UnitTypeId.BARRACKS).amount + self.already_pending(UnitTypeId.BARRACKS) < 4 and self.can_afford(UnitTypeId.BARRACKS):
             ws = self.workers.gathering
-            if ws and self.townhalls.exists: # if workers available
+            if ws and self.townhalls.exists: # need to check if townhalls.amount > 0 because placement is based on townhall location
                 w = ws.furthest_to(ws.center)
-                loc = await self.find_placement(BARRACKS, self.townhalls.random.position, placement_step=4)
+                # I chose placement_step 4 here so there will be gaps between barracks hopefully
+                loc = await self.find_placement(UnitTypeId.BARRACKS, self.townhalls.random.position, placement_step=4)
                 if loc:
-                    self.combinedActions.append(w.build(BARRACKS, loc))
+                    self.combinedActions.append(w.build(UnitTypeId.BARRACKS, loc))
 
-        # take gas when first barracks is on the way
-        if self.units(BARRACKS).amount > 0 and self.already_pending(REFINERY) < 1:
+        # build refineries (on nearby vespene) when at least one barracks is in construction
+        if self.units(UnitTypeId.BARRACKS).amount > 0 and self.already_pending(UnitTypeId.REFINERY) < 1:
             for th in self.townhalls:
                 vgs = self.state.vespene_geyser.closer_than(10, th)
                 for vg in vgs:
-                    if await self.can_place(REFINERY, vg.position) and self.can_afford(REFINERY):
+                    if await self.can_place(UnitTypeId.REFINERY, vg.position) and self.can_afford(UnitTypeId.REFINERY):
                         ws = self.workers.gathering
-                        if ws.exists:
+                        if ws.exists: # same condition as above
                             w = ws.closest_to(vg)
-                            self.combinedActions.append(w.build(REFINERY, vg))
+                            # caution: the target for the refinery has to be the vespene geyser, not its position!
+                            self.combinedActions.append(w.build(UnitTypeId.REFINERY, vg))
 
 
-        # make scvs until 18, usually you only need 1:1 mineral:gas ratio for reapers, but if you dont lose any then you will need additional depots (mule income should take care of that)
-        if self.can_afford(SCV) and self.supply_left > 0 and self.units(SCV).amount < 18 and (self.units(BARRACKS).ready.amount < 1 and self.units(COMMANDCENTER).idle.exists or self.units(ORBITALCOMMAND).idle.exists):
+        # make scvs until 18, usually you only need 1:1 mineral:gas ratio for reapers, but if you don't lose any then you will need additional depots (mule income should take care of that)
+        # stop scv production when barracks is complete but we still have a command cender (priotize morphing to orbital command)
+        if self.can_afford(SCV) and self.supply_left > 0 and self.units(UnitTypeId.SCV).amount < 18 and (self.units(UnitTypeId.BARRACKS).ready.amount < 1 and self.units(UnitTypeId.COMMANDCENTER).idle.exists or self.units(UnitTypeId.ORBITALCOMMAND).idle.exists):
             for th in self.townhalls.idle:
-                self.combinedActions.append(th.train(SCV))
+                self.combinedActions.append(th.train(UnitTypeId.SCV))
 
-        # make reapers 
-        if self.can_afford(REAPER) and self.supply_left > 0:
-            for rax in self.units(BARRACKS).idle:
-                self.combinedActions.append(rax.train(REAPER))
+        # make reapers if we can afford them and we have supply remaining
+        if self.can_afford(UnitTypeId.REAPER) and self.supply_left > 0:
+            # loop through all idle barracks
+            for rax in self.units(UnitTypeId.BARRACKS).idle:
+                self.combinedActions.append(rax.train(UnitTypeId.REAPER))
 
-        # saturate gas
+        # send workers to mine from gas
         if iteration % 25 == 0:
             await self.distribute_workers()
 
-        # micro reapers
-        for r in self.units(REAPER):
+        # reaper micro
+        for r in self.units(UnitTypeId.REAPER):
 
             # move to range 15 of closest unit if reaper is below 20 hp and not regenerating
             enemyThreatsClose = self.known_enemy_units.filter(lambda x: x.can_attack_ground).closer_than(15, r) # threats that can attack the reaper
@@ -100,42 +113,41 @@ class MassReaperBot(sc2.BotAI):
                 continue # continue for loop, dont execute any of the following
             
             # attack is on cooldown, check if grenade is on cooldown, if not then throw it to furthest enemy in range 5
-            reaperGrenadeRange = self._game_data.abilities[KD8CHARGE_KD8CHARGE.value]._proto.cast_range
+            reaperGrenadeRange = self._game_data.abilities[Abi lityId.D8CHARGE_KD8CHARGE.value]._proto.cast_range
             enemyGroundUnitsInGrenadeRange = self.known_enemy_units.not_structure.not_flying.exclude_type([LARVA, EGG]).closer_than(reaperGrenadeRange, r)
             if enemyGroundUnitsInGrenadeRange.exists and (r.is_attacking or r.is_moving):
+                # if AbilityId.KD8CHARGE_KD8CHARGE in abilities, we check that to see if the reaper grenade is off cooldown
                 abilities = await self.get_available_abilities(r)
-                # if KD8CHARGE_KD8CHARGE in abilities
                 enemyGroundUnitsInGrenadeRange = enemyGroundUnitsInGrenadeRange.sorted(lambda x: x.distance_to(r), reverse=True)
                 furthestEnemy = None
                 for enemy in enemyGroundUnitsInGrenadeRange:
-                    if await self.can_cast(r, KD8CHARGE_KD8CHARGE, enemy, cached_abilities_of_unit=abilities):
+                    if await self.can_cast(r, AbilityId.KD8CHARGE_KD8CHARGE, enemy, cached_abilities_of_unit=abilities):
                         furthestEnemy = enemy
                         break
                 if furthestEnemy:
-                    self.combinedActions.append(r(KD8CHARGE_KD8CHARGE, furthestEnemy))
-                    continue # continue for loop, dont execute any of the following
+                    self.combinedActions.append(r(AbilityId.KD8CHARGE_KD8CHARGE, furthestEnemy))
+                    continue # continue for loop, don't execute any of the following
 
             # move towards to max unit range if enemy is closer than 4
-            # enemyThreatsVeryClose = self.known_enemy_units.filter(lambda x: x.can_attack_ground and not x.is_snapshot).closer_than(3.5, r) # threats that can attack the reaper
-            enemyThreatsVeryClose = self.known_enemy_units.filter(lambda x: x.can_attack_ground).closer_than(4.5, r) # hardcoded attackrange - 0.5
+            enemyThreatsVeryClose = self.known_enemy_units.filter(lambda x: x.can_attack_ground).closer_than(4.5, r) # hardcoded attackrange minus 0.5
             # threats that can attack the reaper
             if r.weapon_cooldown != 0 and enemyThreatsVeryClose.exists:
                 retreatPoints = self.neighbors8(r.position, distance=2) | self.neighbors8(r.position, distance=4)               
-                # filter points that are pathable
+                # filter points that are pathable by a reaper
                 retreatPoints = {x for x in retreatPoints if self.inPathingGrid(x)}
                 if retreatPoints:
                     closestEnemy = enemyThreatsVeryClose.closest_to(r)
                     retreatPoint = max(retreatPoints, key=lambda x: x.distance_to(closestEnemy) - x.distance_to(r))
                     # retreatPoint = closestEnemy.position.furthest(retreatPoints)
                     self.combinedActions.append(r.move(retreatPoint))
-                    continue # continue for loop, dont execute any of the following
+                    continue # continue for loop, don't execute any of the following
 
             # move to nearest enemy ground unit/building because no enemy unit is closer than 5
             allEnemyGroundUnits = self.known_enemy_units.not_flying
             if allEnemyGroundUnits.exists:
                 closestEnemy = allEnemyGroundUnits.closest_to(r)
                 self.combinedActions.append(r.move(closestEnemy))
-                continue # continue for loop, dont execute any of the following
+                continue # continue for loop, don't execute any of the following
 
             # move to random enemy start location if no enemy buildings have been seen
             self.combinedActions.append(r.move(random.choice(self.enemy_start_locations)))
@@ -150,25 +162,29 @@ class MassReaperBot(sc2.BotAI):
                     self.combinedActions.append(w.gather(mf))
 
         # manage orbital energy and drop mules
-        for oc in self.units(ORBITALCOMMAND).filter(lambda x: x.energy >= 50):
+        for oc in self.units(UnitTypeId.ORBITALCOMMAND).filter(lambda x: x.energy >= 50):
             mfs = self.state.mineral_field.closer_than(10, oc)
             if mfs:
                 mf = max(mfs, key=lambda x:x.mineral_contents)
-                self.combinedActions.append(oc(CALLDOWNMULE_CALLDOWNMULE, mf))
+                self.combinedActions.append(oc(AbilityId.CALLDOWNMULE_CALLDOWNMULE, mf))
 
         # when running out of mineral fields near command center, fly to next base with minerals
 
         # execuite actions
         await self.do_actions(self.combinedActions)
 
+
+
     # helper functions
 
+    # this checks if a ground unit can walk on a Point2 position
     def inPathingGrid(self, pos):
         # returns True if it is possible for a ground unit to move to pos - doesnt seem to work on ramps or near edges
         assert isinstance(pos, (Point2, Point3, Unit))
         pos = pos.position.to2.rounded
         return self._game_info.pathing_grid[(pos)] != 0
 
+    # stolen and modified from position.py
     def neighbors4(self, position, distance=1):
         p = position
         d = distance
@@ -179,6 +195,7 @@ class MassReaperBot(sc2.BotAI):
             Point2((p.x, p.y + d)),
         }
 
+    # stolen and modified from position.py
     def neighbors8(self, position, distance=1):
         p = position
         d = distance
@@ -191,7 +208,8 @@ class MassReaperBot(sc2.BotAI):
 
 
 
-    # already pending function rewritten
+    # already pending function rewritten to only capture units in queue and queued buildings
+    # the difference to bot_ai.py alredy_pending() is: it will not cover structures in construction
     def already_pending(self, unit_type):
         ability = self._game_data.units[unit_type.value].creation_ability
         unitAttributes = self._game_data.units[unit_type.value].attributes
@@ -210,7 +228,8 @@ class MassReaperBot(sc2.BotAI):
             return sum([egg.orders[0].ability == ability for egg in self.units(EGG)])
         return 0
 
-    # distribute workers function rewritten    
+
+    # distribute workers function rewritten, the default distribute_workers() function did not saturate gas quickly enough
     async def distribute_workers(self, performanceHeavy=True, onlySaturateGas=False):
         # expansion_locations = self.expansion_locations
         # owned_expansions = self.owned_expansions
@@ -307,7 +326,10 @@ class MassReaperBot(sc2.BotAI):
                         else:
                             self.combinedActions.append(w.gather(mf))
 
+
+
 def main():
+    # Multiple difficulties for enemy bots available https://github.com/Blizzard/s2client-api/blob/ce2b3c5ac5d0c85ede96cef38ee7ee55714eeb2f/include/sc2api/sc2_gametypes.h#L30
     sc2.run_game(sc2.maps.get("(2)CatalystLE"), [
         Bot(Race.Terran, MassReaperBot()),
         Computer(Race.Zerg, Difficulty.VeryHard)

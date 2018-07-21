@@ -2,7 +2,8 @@ from s2clientprotocol import (
     sc2api_pb2 as sc_pb,
     common_pb2 as common_pb,
     query_pb2 as query_pb,
-    debug_pb2 as debug_pb
+    debug_pb2 as debug_pb,
+    raw_pb2 as raw_pb,
 )
 
 import logging
@@ -22,11 +23,12 @@ from .data import Race, ActionResult, ChatChannel
 from .action import combine_actions
 from .position import Point2, Point3
 from .unit import Unit
-
+from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type checking
 
 class Client(Protocol):
     def __init__(self, ws):
         super().__init__(ws)
+        self.game_step = 8
         self._player_id = None
         self._game_result = None
         self._debug_texts = list()
@@ -39,7 +41,7 @@ class Client(Protocol):
         return self._status == Status.in_game
 
     async def join_game(self, race=None, observed_player_id=None, portconfig=None):
-        ifopts = sc_pb.InterfaceOptions(raw=True)
+        ifopts = sc_pb.InterfaceOptions(raw=True, score=True)
 
         if race is None:
             assert isinstance(observed_player_id, int)
@@ -106,7 +108,7 @@ class Client(Protocol):
         return result
 
     async def step(self):
-        result = await self._execute(step=sc_pb.RequestStep(count=8))
+        result = await self._execute(step=sc_pb.RequestStep(count=self.game_step))
         return result
 
     async def get_game_data(self):
@@ -140,7 +142,7 @@ class Client(Protocol):
                 return res
             else:
                 return [r for r in res if r != ActionResult.Success]
-
+        
     async def query_pathing(self, start, end):
         assert isinstance(start, (Point2, Unit))
         assert isinstance(end, Point2)
@@ -162,6 +164,35 @@ class Client(Protocol):
         if distance <= 0.0:
             return None
         return distance
+
+    async def query_pathings(self, zipped_list):
+        """ Usage: await self.query_pathings([[unit1, target2], [unit2, target2]]) 
+        -> returns [distance1, distance2]
+        Caution: returns 0 when path not found
+        Might merge this function with the function above
+        """
+        assert isinstance(zipped_list, list)
+        assert len(zipped_list) > 0
+        assert isinstance(zipped_list[0], list)
+        assert len(zipped_list[0]) == 2
+        assert isinstance(zipped_list[0][0], (Point2, Unit))
+        assert isinstance(zipped_list[0][1], Point2)
+        if isinstance(zipped_list[0][0], Point2):
+            results = await self._execute(query=query_pb.RequestQuery(
+                pathing=[query_pb.RequestQueryPathing(
+                    start_pos=common_pb.Point2D(x=p1.x, y=p1.y),
+                    end_pos=common_pb.Point2D(x=p2.x, y=p2.y)
+                ) for p1, p2 in zipped_list]
+            ))
+        else:
+            results = await self._execute(query=query_pb.RequestQuery(
+                pathing=[query_pb.RequestQueryPathing(
+                    unit_tag=p1.tag,
+                    end_pos=common_pb.Point2D(x=p2.x, y=p2.y)
+                ) for p1, p2 in zipped_list]
+            ))
+        results = [float(d.distance) for d in results.query.pathing]
+        return results
 
     async def query_building_placement(self, ability, positions, ignore_resources=True):
         assert isinstance(ability, AbilityData)
@@ -195,8 +226,22 @@ class Client(Protocol):
             ))]
         ))
 
+    async def move_camera(self, position: Union[Unit, Point2, Point3]):
+        assert isinstance(position, (Unit, Point2, Point3))
+        if isinstance(position, Unit):
+            position = position.position
+        await self._execute(action=sc_pb.RequestAction(
+            action=[sc_pb.Action(
+                action_raw=raw_pb.ActionRaw(
+                    camera_move=raw_pb.ActionRawCameraMove(
+                        center_world_space=common_pb.Point(x=position.x, y=position.y)
+                    )
+                )
+            )]
+        ))
+
     async def debug_text(self, texts, positions, color=(0, 255, 0), size_px=16):
-        if isinstance(positions, list):
+        if isinstance(positions, (set, list)):
             if not positions:
                 return
 
@@ -259,21 +304,25 @@ class Client(Protocol):
         self._debug_boxes.clear()
         self._debug_spheres.clear()
 
-    async def debug_create_unit(self, unit_type, amount_of_units, position, owner_id):
-        # example:
-        # await self._client.debug_create_unit(MARINE, 1, self._game_info.map_center, 1)
-        assert isinstance(unit_type, UnitTypeId)
-        assert 0 < amount_of_units  # careful, in realtime=True mode, as of now units get created the double amount
-        assert isinstance(position, (Point2, Point3))
-        assert 1 <= owner_id <= 2
+    async def debug_create_unit(self, unit_spawn_commands):
+        # usage example (will spawn 1 marine in the center of the map for player ID 1:
+        # await self._client.debug_create_unit([[UnitTypeId.MARINE, 1, self._game_info.map_center, 1]])
+        assert isinstance(unit_spawn_commands, list)
+        assert len(unit_spawn_commands) > 0
+        assert isinstance(unit_spawn_commands[0], list)
+        assert len(unit_spawn_commands[0]) == 4
+        assert isinstance(unit_spawn_commands[0][0], UnitTypeId)
+        assert 0 < unit_spawn_commands[0][1] # careful, in realtime=True this function may create more units
+        assert isinstance(unit_spawn_commands[0][2], (Point2, Point3))
+        assert 1 <= unit_spawn_commands[0][3] <= 2
 
         await self._execute(debug=sc_pb.RequestDebug(
             debug=[debug_pb.DebugCommand(create_unit=debug_pb.DebugCreateUnit(
                 unit_type=unit_type.value,
                 owner=owner_id,
                 pos=common_pb.Point2D(x=position.x, y=position.y),
-                quantity=(amount_of_units)
-            ))]
+                quantity=amount_of_units
+            )) for unit_type, owner_id, position, amount_of_units in unit_spawn_commands]
         ))
 
 
