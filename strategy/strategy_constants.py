@@ -1,7 +1,17 @@
 from sc2.constants import *
-
-# NOTE: you may need to adapt folder_sc2replays
+from os.path import dirname
+import os
 # NOTE: constants are partially tailored to Terran specific units due to underlying data set
+
+# Setup -----------------------------------------------------------------------
+
+# Dataset name
+dataset = "DataSetSc2ReplayStats"
+# NOTE: Adapt these paths in case of custom directories
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+folder_sc2replays = dirname(dirname(ROOT_DIR)) + "/SC2-replays/" + dataset + "/"
+
+
 
 # Files -----------------------------------------------------------------------
 
@@ -9,17 +19,6 @@ from sc2.constants import *
 ending_folder = "/"
 ending_csv = ".csv"
 ending_sc2replay = ".SC2Replay"
-
-from os.path import dirname
-import os
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# Dataset name
-dataset = "SC2ReplayStats"
-# NOTE: Adapt these paths in case of custom directories
-folder_sc2replays = dirname(dirname(ROOT_DIR)) + "/SC2-replays/" + dataset + ending_folder
-
-
 
 # Strings for file names
 race_terran_string = "Terran"

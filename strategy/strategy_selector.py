@@ -17,7 +17,7 @@ def main():
     map_name = "Catalyst LE" # "Blackpink LE" #""
     self_race = Race.Terran
     enemy_race = Race.Terran
-    method = "EqualWeighted"
+    method = "BestEqualWeighted"
 
     race_to_string = {
         Race.Terran:  race_terran_string,
