@@ -208,15 +208,23 @@ class Client(Protocol):
         return [ActionResult(p.result) for p in result.query.placements]
 
     async def query_available_abilities(self, units, ignore_resource_requirements=False):
+        """ Query abilities of multiple units """
         if not isinstance(units, list):
+            """ Deprecated, accepting a single unit may be removed in the future, query a list of units instead """
             assert isinstance(units, Unit)
             units = [units]
+            input_was_a_list = False
+        else:
+            input_was_a_list = True
         assert len(units) > 0
         result = await self._execute(query=query_pb.RequestQuery(
             abilities=[query_pb.RequestQueryAvailableAbilities(
                 unit_tag=unit.tag) for unit in units],
             ignore_resource_requirements=ignore_resource_requirements)
         )
+        """ Fix for bots that only query a single unit """
+        if not input_was_a_list:
+            return [[AbilityId(a.ability_id) for a in b.abilities] for b in result.query.abilities][0]
         return [[AbilityId(a.ability_id) for a in b.abilities] for b in result.query.abilities]
 
     async def chat_send(self, message, team_only):
@@ -266,7 +274,7 @@ class Client(Protocol):
         ))
 
     async def debug_text(self, texts, positions, color=(0, 255, 0), size_px=16):
-        """ deprecated, may be removed soon """
+        """ Deprecated, may be removed soon """
         if isinstance(positions, (set, list)):
             if not positions:
                 return
