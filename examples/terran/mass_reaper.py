@@ -35,18 +35,18 @@ class MassReaperBot(sc2.BotAI):
             ws = self.workers.gathering
             if ws: # if workers found
                 w = ws.furthest_to(ws.center)
-                loc = await self.find_placement(SUPPLYDEPOT, w.position, placement_step=3)
+                loc = await self.find_placement(UnitTypeId.SUPPLYDEPOT, w.position, placement_step=3)
                 if loc: # if a placement location was found
                     # build exactly on that location
                     self.combinedActions.append(w.build(UnitTypeId.SUPPLYDEPOT, loc))
 
         # lower all depots when finished
-        for depot in self.units(SUPPLYDEPOT).ready:
+        for depot in self.units(UnitTypeId.SUPPLYDEPOT).ready:
             self.combinedActions.append(depot(AbilityId.MORPH_SUPPLYDEPOT_LOWER))
 
         # morph commandcenter to orbitalcommand
         if self.units(UnitTypeId.BARRACKS).ready.exists and self.can_afford(UnitTypeId.BARRACKS): # we dont check if we can afford because the price for morphing units was/is bugged - doesn't work with "await self.do()"
-            for cc in self.units(COMMANDCENTER).idle: # .idle filters idle command centers
+            for cc in self.units(UnitTypeId.COMMANDCENTER).idle: # .idle filters idle command centers
                 self.combinedActions.append(cc(AbilityId.UPGRADETOORBITAL_ORBITALCOMMAND))
 
         # make up to 4 barracks if we can afford them
@@ -113,7 +113,7 @@ class MassReaperBot(sc2.BotAI):
                 continue # continue for loop, dont execute any of the following
             
             # attack is on cooldown, check if grenade is on cooldown, if not then throw it to furthest enemy in range 5
-            reaperGrenadeRange = self._game_data.abilities[Abi lityId.D8CHARGE_KD8CHARGE.value]._proto.cast_range
+            reaperGrenadeRange = self._game_data.abilities[AbilityId.KD8CHARGE_KD8CHARGE.value]._proto.cast_range
             enemyGroundUnitsInGrenadeRange = self.known_enemy_units.not_structure.not_flying.exclude_type([LARVA, EGG]).closer_than(reaperGrenadeRange, r)
             if enemyGroundUnitsInGrenadeRange.exists and (r.is_attacking or r.is_moving):
                 # if AbilityId.KD8CHARGE_KD8CHARGE in abilities, we check that to see if the reaper grenade is off cooldown
