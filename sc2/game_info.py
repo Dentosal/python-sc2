@@ -47,8 +47,8 @@ class Ramp:
 
     @property
     def top_center(self) -> Point2:
-        pos = Point2((sum([p.x for p in self.upper]) / self.size, \
-            sum([p.y for p in self.upper]) / self.size))
+        pos = Point2((sum([p.x for p in self.upper]) / len(self.upper), \
+            sum([p.y for p in self.upper]) / len(self.upper)))
         return pos
 
     @property
@@ -154,7 +154,7 @@ class GameInfo(object):
         return [Ramp(group, self) for group in rampGroups]
 
 
-    def _find_groups(self, points: Set[Point2], minimum_points_per_group: int=2, max_distance_between_points: int=2) -> List[Set[Point2]]:
+    def _find_groups(self, points: Set[Point2], minimum_points_per_group: int=8, max_distance_between_points: int=2) -> List[Set[Point2]]:
         """ From a set/list of points, this function will try to group points """
         foundGroups = []
         currentGroup = set()
