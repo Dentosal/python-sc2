@@ -108,6 +108,7 @@ class Client(Protocol):
         return result
 
     async def step(self):
+        """ EXPERIMENTAL: Change self._client.game_step during the step function to increase or decrease steps per second """
         result = await self._execute(step=sc_pb.RequestStep(count=self.game_step))
         return result
 
@@ -142,7 +143,7 @@ class Client(Protocol):
                 return res
             else:
                 return [r for r in res if r != ActionResult.Success]
-        
+
     async def query_pathing(self, start, end):
         assert isinstance(start, (Point2, Unit))
         assert isinstance(end, Point2)
@@ -166,7 +167,7 @@ class Client(Protocol):
         return distance
 
     async def query_pathings(self, zipped_list):
-        """ Usage: await self.query_pathings([[unit1, target2], [unit2, target2]]) 
+        """ Usage: await self.query_pathings([[unit1, target2], [unit2, target2]])
         -> returns [distance1, distance2]
         Caution: returns 0 when path not found
         Might merge this function with the function above
@@ -218,6 +219,7 @@ class Client(Protocol):
         return [[AbilityId(a.ability_id) for a in b.abilities] for b in result.query.abilities]
 
     async def chat_send(self, message, team_only):
+        """ Writes a message to the chat """
         ch = ChatChannel.Team if team_only else ChatChannel.Broadcast
         r = await self._execute(action=sc_pb.RequestAction(
             actions=[sc_pb.Action(action_chat=sc_pb.ActionChat(
@@ -227,6 +229,7 @@ class Client(Protocol):
         ))
 
     async def move_camera(self, position: Union[Unit, Point2, Point3]):
+        """ Moves camera to the target position """
         assert isinstance(position, (Unit, Point2, Point3))
         if isinstance(position, Unit):
             position = position.position
@@ -241,6 +244,7 @@ class Client(Protocol):
         ))
 
     async def debug_text(self, texts, positions, color=(0, 255, 0), size_px=16):
+        """ deprecated, may be removed soon """
         if isinstance(positions, (set, list)):
             if not positions:
                 return
@@ -263,34 +267,41 @@ class Client(Protocol):
             await self.debug_text([texts], [positions], color)
 
     def debug_text_simple(self, text, color=None):
-        self._debug_texts.append(to_debug_message(text, color))
+        """ Draws a text in the top left corner of the screen (up to a max of 6 messages it seems). Don't forget to add 'await self._client.send_debug'. """
+        self._debug_texts.append(self.to_debug_message(text, color))
 
     def debug_text_2d(self, text, pos, color=None, size=8):
-        self._debug_texts.append(to_debug_message(text, color, pos, False, size))
+        """ Draws a text at Point2 position. Don't forget to add 'await self._client.send_debug'. """
+        self._debug_texts.append(self.to_debug_message(text, color, pos, size))
 
     def debug_text_3d(self, text, pos, color=None, size=8):
-        self._debug_texts.append(to_debug_message(text, color, pos, True, size))
+        """ Draws a text at Point3 position. Don't forget to add 'await self._client.send_debug'. """
+        self._debug_texts.append(self.to_debug_message(text, color, pos, size))
 
     def debug_line_out(self, p0, p1, color=None):
+        """ Draws a line from p0 to p1. Don't forget to add 'await self._client.send_debug'. """
         self._debug_lines.append(debug_pb.DebugLine(
-            line=debug_pb.Line(p0=to_debug_point(p0), p1=to_debug_point(p1)),
-            color=to_debug_color(color)))
+            line=debug_pb.Line(p0=self.to_debug_point(p0), p1=self.to_debug_point(p1)),
+            color=self.to_debug_color(color)))
 
     def debug_box_out(self, p_min, p_max, color=None):
+        """ Draws a box with p_min and p_max as corners. Don't forget to add 'await self._client.send_debug'. """
         self._debug_boxes.append(debug_pb.DebugBox(
-            min=to_debug_point(p_min),
-            max=to_debug_point(p_max),
-            color=to_debug_color(color)
+            min=self.to_debug_point(p_min),
+            max=self.to_debug_point(p_max),
+            color=self.to_debug_color(color)
         ))
 
     def debug_sphere_out(self, p, r, color=None):
+        """ Draws a sphere at point p with radius r. Don't forget to add 'await self._client.send_debug'. """
         self._debug_spheres.append(debug_pb.DebugSphere(
-            p=to_debug_point(p),
+            p=self.to_debug_point(p),
             r=r,
-            color=to_debug_color(color)
+            color=self.to_debug_color(color)
         ))
 
     async def send_debug(self):
+        """ Sends the debug draw execution. Put this at the end of your step function. """
         await self._execute(debug=sc_pb.RequestDebug(
             debug=[debug_pb.DebugCommand(draw=debug_pb.DebugDraw(
                 text=self._debug_texts if len(self._debug_texts) > 0 else None,
@@ -298,7 +309,6 @@ class Client(Protocol):
                 boxes=self._debug_boxes if len(self._debug_boxes) > 0 else None,
                 spheres=self._debug_spheres if len(self._debug_spheres) > 0 else None
             ))]))
-
         self._debug_texts.clear()
         self._debug_lines.clear()
         self._debug_boxes.clear()
@@ -325,42 +335,40 @@ class Client(Protocol):
             )) for unit_type, owner_id, position, amount_of_units in unit_spawn_commands]
         ))
 
-
-def to_debug_color(color):
-    if color is None:
-        return debug_pb.Color(r=255, g=255, b=255)
-    else:
-        r = getattr(color, "r", getattr(color, "x", 255))
-        g = getattr(color, "g", getattr(color, "y", 255))
-        b = getattr(color, "b", getattr(color, "z", 255))
-        if r + g + b <= 3:
-            r *= 255
-            g *= 255
-            b *= 255
-
-        return debug_pb.Color(r=int(r), g=int(g), b=int(b))
-
-
-def to_debug_point(point):
-    return common_pb.Point(x=point.x, y=point.y, z=getattr(point, "z", 0))
-
-
-def to_debug_message(text, color=None, pos=None, is3d=False, size=8):
-    text = text
-    color = to_debug_color(color)
-    size = size
-    pt3d = None
-    virtual_pos = None
-
-    if pos is not None:
-        if is3d:
-            pt3d = to_debug_point(pos)
+    def to_debug_color(self, color):
+        """ Helper function for color conversion """
+        if color is None:
+            return debug_pb.Color(r=255, g=255, b=255)
         else:
-            virtual_pos = to_debug_point(pos)
-    return debug_pb.DebugText(
-        color=color,
-        text=text,
-        virtual_pos=virtual_pos,
-        world_pos=pt3d,
-        size=size
-    )
+            r = getattr(color, "r", getattr(color, "x", 255))
+            g = getattr(color, "g", getattr(color, "y", 255))
+            b = getattr(color, "b", getattr(color, "z", 255))
+            if r + g + b <= 3:
+                r *= 255
+                g *= 255
+                b *= 255
+
+            return debug_pb.Color(r=int(r), g=int(g), b=int(b))
+
+    def to_debug_point(self, point):
+        """ Helper function for point2 to point3 conversion """
+        if isinstance(point, Point2):
+            point = point.to3
+        if isinstance(point, Point3):
+            return common_pb.Point(x=point.x, y=point.y, z=getattr(point, "z", 0))
+        return None
+
+
+    def to_debug_message(self, text, color=None, pos=None, size=8):
+        """ Helper function to create debug texts """
+        color = self.to_debug_color(color)
+        pt3d = self.to_debug_point(pos)
+        virtual_pos = None
+
+        return debug_pb.DebugText(
+            color=color,
+            text=text,
+            virtual_pos=virtual_pos,
+            world_pos=pt3d,
+            size=size
+        )
