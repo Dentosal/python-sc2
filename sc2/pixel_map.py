@@ -31,7 +31,7 @@ class PixelMap(object):
         assert 0 <= x < self.width
         assert 0 <= y < self.height
 
-        index = (self.height - self.width * y) + x + (self.width - self.height)
+        index = -self.width * y + x
         # print(f"INDEX IS {index} FOR {pos}")
         start = index * self.bytes_per_pixel
         data = self.data[start : start + self.bytes_per_pixel]
