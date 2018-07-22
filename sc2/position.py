@@ -59,30 +59,6 @@ class Pointlike(tuple):
             distance = min(d, distance)
         return self.__class__(a + (b - a) / d * distance for a, b in itertools.zip_longest(self, p[:len(self)], fillvalue=0))
 
-    def circle_intersection(self, p: "Point2", r: Union[int, float]):
-        """ self is point1, p is point2, r is the radius for circles originating in both points
-        Used in ramp finding """
-        assert self != p
-        distanceBetweenPoints = self.distance_to(p)
-        assert r > distanceBetweenPoints / 2
-        # remaining distance from center towards the intersection, using pythagoras
-        remainingDistanceFromCenter = (r**2 - (distanceBetweenPoints/2)**2)**0.5
-        # center of both points
-        offsetToCenter = Point2(((p.x - self.x) / 2, (p.y - self.y) / 2))
-        center = self.offset(offsetToCenter)
-
-        # stretch offset vector in the ratio of remaining distance from center to intersection
-        vectorStretchFactor = remainingDistanceFromCenter / (distanceBetweenPoints / 2)
-        v = offsetToCenter
-        offsetToCenterStretched = Point2((v.x * vectorStretchFactor, v.y * vectorStretchFactor))
-
-        # rotate vector by 90° and -90°
-        vectorRotated1 = Point2((offsetToCenterStretched.y, -offsetToCenterStretched.x))
-        vectorRotated2 = Point2((-offsetToCenterStretched.y, offsetToCenterStretched.x))
-        intersect1 = center.offset(vectorRotated1)
-        intersect2 = center.offset(vectorRotated2)
-        return {intersect1, intersect2}
-
     def __eq__(self, other):
         if not isinstance(other, tuple):
             return False
