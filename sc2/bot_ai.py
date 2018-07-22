@@ -23,6 +23,16 @@ class BotAI(object):
     EXPANSION_GAP_THRESHOLD = 15
 
     @property
+    def enemy_race(self) -> Race:
+        self.enemy_id = 3 - self.player_id
+        return Race(self._game_info.player_races[self.enemy_id])
+
+    @property
+    def time(self):
+        """ Returns time in seconds, assumes the game is played on 'faster' """
+        return self.state.game_loop / 22.4 # / (1/1.4) * (1/16)
+
+    @property
     def game_info(self):
         return self._game_info
 
@@ -442,12 +452,15 @@ class BotAI(object):
         raise NotImplementedError
 
     def on_unit_destroyed(self, unit_tag):
+        """ Override this in your bot class """
         pass
 
     def on_unit_created(self, unit):
+        """ Override this in your bot class """
         pass
 
     def on_building_construction_complete(self, unit):
+        """ Override this in your bot class """
         pass
 
 
