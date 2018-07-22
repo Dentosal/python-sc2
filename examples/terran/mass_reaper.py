@@ -114,7 +114,7 @@ class MassReaperBot(sc2.BotAI):
             
             # attack is on cooldown, check if grenade is on cooldown, if not then throw it to furthest enemy in range 5
             reaperGrenadeRange = self._game_data.abilities[AbilityId.KD8CHARGE_KD8CHARGE.value]._proto.cast_range
-            enemyGroundUnitsInGrenadeRange = self.known_enemy_units.not_structure.not_flying.exclude_type([LARVA, EGG]).closer_than(reaperGrenadeRange, r)
+            enemyGroundUnitsInGrenadeRange = self.known_enemy_units.not_structure.not_flying.exclude_type([UnitTypeId.LARVA, UnitTypeId.EGG]).closer_than(reaperGrenadeRange, r)
             if enemyGroundUnitsInGrenadeRange.exists and (r.is_attacking or r.is_moving):
                 # if AbilityId.KD8CHARGE_KD8CHARGE in abilities, we check that to see if the reaper grenade is off cooldown
                 abilities = await self.get_available_abilities(r)
@@ -224,8 +224,8 @@ class MassReaperBot(sc2.BotAI):
         elif any(o.ability == ability for w in self.workers for o in w.orders):
             return sum([o.ability == ability for w in self.workers for o in w.orders]) \
                 - buildings_in_construction.amount
-        elif any(egg.orders[0].ability == ability for egg in self.units(EGG)):
-            return sum([egg.orders[0].ability == ability for egg in self.units(EGG)])
+        elif any(egg.orders[0].ability == ability for egg in self.units(UnitTypeId.EGG)):
+            return sum([egg.orders[0].ability == ability for egg in self.units(UnitTypeId.EGG)])
         return 0
 
 
