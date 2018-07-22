@@ -15,7 +15,7 @@ class Ramp:
         self.__game_info = game_info
         # tested by printing actual building locations vs calculated depot positions
         self.x_offset = 0.5 # might be errors with the pixelmap?
-        self.y_offset = -1.5
+        self.y_offset = -0.5
 
     @property
     def _height_map(self):
@@ -72,6 +72,7 @@ class Ramp:
             # intersects = p1.circle_intersection(p2, (2**2 + 1**2)**0.5)
             anyLowerPoint = next(iter(self.lower))
             return max(intersects, key=lambda p: p.distance_to(anyLowerPoint))
+        raise Exception('Not implemented. Trying to access a ramp that has a wrong amount of upper points.')
 
     @property
     def depot_in_middle(self) -> Point2:
@@ -85,6 +86,7 @@ class Ramp:
             intersects = p1.circle_intersection(p2, (1.5**2 + 0.5**2)**0.5)
             anyLowerPoint = next(iter(self.lower))
             return max(intersects, key=lambda p: p.distance_to(anyLowerPoint))
+        raise Exception('Not implemented. Trying to access a ramp that has a wrong amount of upper points.')
 
     @property
     def corner_depots(self) -> Set[Point2]:
@@ -98,6 +100,7 @@ class Ramp:
             # offset from middle depot to corner depots is (2, 1)
             intersects = center.circle_intersection(depotPosition, (2**2 + 1**2)**0.5)
             return intersects
+        raise Exception('Not implemented. Trying to access a ramp that has a wrong amount of upper points.')
 
     @property
     def barracks_can_fit_addon(self) -> bool:
@@ -105,6 +108,7 @@ class Ramp:
         # https://i.imgur.com/4b2cXHZ.png
         if len(self.upper) == 2:
             return self.barracks_in_middle.x + 1 > max(self.corner_depots, key=lambda depot: depot.x).x
+        raise Exception('Not implemented. Trying to access a ramp that has a wrong amount of upper points.')
 
     @property
     def barracks_correct_placement(self) -> Point2:
@@ -114,6 +118,7 @@ class Ramp:
                 return self.barracks_in_middle
             else:
                 return self.barracks_in_middle.offset((-2, 0))
+        raise Exception('Not implemented. Trying to access a ramp that has a wrong amount of upper points.')
 
 
 
