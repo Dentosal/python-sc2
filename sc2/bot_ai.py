@@ -58,7 +58,7 @@ class BotAI(object):
     @property_cache_forever
     def main_base_ramp(self):
         return min(
-            self.game_info.map_ramps,
+            {ramp for ramp in self.game_info.map_ramps if len(ramp.upper) == 2},
             key=(lambda r: self.start_location.distance_to(r.top_center))
         )
 
