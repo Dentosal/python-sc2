@@ -113,7 +113,7 @@ class MassReaperBot(sc2.BotAI):
                 continue # continue for loop, dont execute any of the following
             
             # attack is on cooldown, check if grenade is on cooldown, if not then throw it to furthest enemy in range 5
-            reaperGrenadeRange = self._game_data.abilities[Abi lityId.D8CHARGE_KD8CHARGE.value]._proto.cast_range
+            reaperGrenadeRange = self._game_data.abilities[AbilityId.D8CHARGE_KD8CHARGE.value]._proto.cast_range
             enemyGroundUnitsInGrenadeRange = self.known_enemy_units.not_structure.not_flying.exclude_type([LARVA, EGG]).closer_than(reaperGrenadeRange, r)
             if enemyGroundUnitsInGrenadeRange.exists and (r.is_attacking or r.is_moving):
                 # if AbilityId.KD8CHARGE_KD8CHARGE in abilities, we check that to see if the reaper grenade is off cooldown
