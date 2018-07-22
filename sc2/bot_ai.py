@@ -55,10 +55,11 @@ class BotAI(object):
         """List of known enemy units, structures only."""
         return self.state.units.enemy.structure
 
-    @property_cache_forever
+    @property
     def main_base_ramp(self):
+        """ Returns the Ramp instance of the closest main-ramp to start location. Look in game_info.py for more information """
         return min(
-            self.game_info.map_ramps,
+            {ramp for ramp in self.game_info.map_ramps if len(ramp.upper) == 2},
             key=(lambda r: self.start_location.distance_to(r.top_center))
         )
 

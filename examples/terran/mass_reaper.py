@@ -35,18 +35,18 @@ class MassReaperBot(sc2.BotAI):
             ws = self.workers.gathering
             if ws: # if workers found
                 w = ws.furthest_to(ws.center)
-                loc = await self.find_placement(SUPPLYDEPOT, w.position, placement_step=3)
+                loc = await self.find_placement(UnitTypeId.SUPPLYDEPOT, w.position, placement_step=3)
                 if loc: # if a placement location was found
                     # build exactly on that location
                     self.combinedActions.append(w.build(UnitTypeId.SUPPLYDEPOT, loc))
 
         # lower all depots when finished
-        for depot in self.units(SUPPLYDEPOT).ready:
+        for depot in self.units(UnitTypeId.SUPPLYDEPOT).ready:
             self.combinedActions.append(depot(AbilityId.MORPH_SUPPLYDEPOT_LOWER))
 
         # morph commandcenter to orbitalcommand
         if self.units(UnitTypeId.BARRACKS).ready.exists and self.can_afford(UnitTypeId.BARRACKS): # we dont check if we can afford because the price for morphing units was/is bugged - doesn't work with "await self.do()"
-            for cc in self.units(COMMANDCENTER).idle: # .idle filters idle command centers
+            for cc in self.units(UnitTypeId.COMMANDCENTER).idle: # .idle filters idle command centers
                 self.combinedActions.append(cc(AbilityId.UPGRADETOORBITAL_ORBITALCOMMAND))
 
         # make up to 4 barracks if we can afford them
@@ -75,7 +75,7 @@ class MassReaperBot(sc2.BotAI):
 
         # make scvs until 18, usually you only need 1:1 mineral:gas ratio for reapers, but if you don't lose any then you will need additional depots (mule income should take care of that)
         # stop scv production when barracks is complete but we still have a command cender (priotize morphing to orbital command)
-        if self.can_afford(SCV) and self.supply_left > 0 and self.units(UnitTypeId.SCV).amount < 18 and (self.units(UnitTypeId.BARRACKS).ready.amount < 1 and self.units(UnitTypeId.COMMANDCENTER).idle.exists or self.units(UnitTypeId.ORBITALCOMMAND).idle.exists):
+        if self.can_afford(UnitTypeId.SCV) and self.supply_left > 0 and self.units(UnitTypeId.SCV).amount < 18 and (self.units(UnitTypeId.BARRACKS).ready.amount < 1 and self.units(UnitTypeId.COMMANDCENTER).idle.exists or self.units(UnitTypeId.ORBITALCOMMAND).idle.exists):
             for th in self.townhalls.idle:
                 self.combinedActions.append(th.train(UnitTypeId.SCV))
 
@@ -113,8 +113,8 @@ class MassReaperBot(sc2.BotAI):
                 continue # continue for loop, dont execute any of the following
             
             # attack is on cooldown, check if grenade is on cooldown, if not then throw it to furthest enemy in range 5
-            reaperGrenadeRange = self._game_data.abilities[AbilityId.D8CHARGE_KD8CHARGE.value]._proto.cast_range
-            enemyGroundUnitsInGrenadeRange = self.known_enemy_units.not_structure.not_flying.exclude_type([LARVA, EGG]).closer_than(reaperGrenadeRange, r)
+            reaperGrenadeRange = self._game_data.abilities[AbilityId.KD8CHARGE_KD8CHARGE.value]._proto.cast_range
+            enemyGroundUnitsInGrenadeRange = self.known_enemy_units.not_structure.not_flying.exclude_type([UnitTypeId.LARVA, UnitTypeId.EGG]).closer_than(reaperGrenadeRange, r)
             if enemyGroundUnitsInGrenadeRange.exists and (r.is_attacking or r.is_moving):
                 # if AbilityId.KD8CHARGE_KD8CHARGE in abilities, we check that to see if the reaper grenade is off cooldown
                 abilities = await self.get_available_abilities(r)
@@ -224,8 +224,8 @@ class MassReaperBot(sc2.BotAI):
         elif any(o.ability == ability for w in self.workers for o in w.orders):
             return sum([o.ability == ability for w in self.workers for o in w.orders]) \
                 - buildings_in_construction.amount
-        elif any(egg.orders[0].ability == ability for egg in self.units(EGG)):
-            return sum([egg.orders[0].ability == ability for egg in self.units(EGG)])
+        elif any(egg.orders[0].ability == ability for egg in self.units(UnitTypeId.EGG)):
+            return sum([egg.orders[0].ability == ability for egg in self.units(UnitTypeId.EGG)])
         return 0
 
 

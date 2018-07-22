@@ -34,28 +34,45 @@ class RampWallBot(sc2.BotAI):
                     await self.do(depo(MORPH_SUPPLYDEPOT_RAISE))
                     break
 
-        depos = [
-            Point2((min({p.x for p in d}), max({p.y for p in d})))
-            for d in self.main_base_ramp.top_wall_depos
-        ]
+        depot_placement_positions = self.main_base_ramp.corner_depots
+        # Uncomment the following if you want to build 3 supplydepots in the wall instead of a barracks in the middle + 2 depots in the corner
+        # depot_placement_positions = self.main_base_ramp.corner_depots | {self.main_base_ramp.depot_in_middle}
 
-        txt_p = [Point3(p.x, p.y, 100) for p in depos]
-        txt_s = [f"({p.x}, {p.y})" for p in depos]
+        barracks_placement_position = None
+        barracks_placement_position = self.main_base_ramp.barracks_correct_placement
+        # If you prefer to have the barracks in the middle without room for addons, use the following instead
+        # barracks_placement_position = self.main_base_ramp.barracks_in_middle
 
-        await self.debug_text(txt_s, txt_p)
+        depots = self.units(SUPPLYDEPOT) | self.units(SUPPLYDEPOTLOWERED)
 
-        depo_count = (self.units(SUPPLYDEPOT) | self.units(SUPPLYDEPOTLOWERED)).amount
+        # Filter locations close to finished supply depots
+        if depots:
+            depot_placement_positions = {d for d in depot_placement_positions if depots.closest_distance_to(d) > 1}
 
+        # Build depots
         if self.can_afford(SUPPLYDEPOT) and not self.already_pending(SUPPLYDEPOT):
-            if depo_count >= len(depos):
+            if len(depot_placement_positions) == 0:
                 return
-            depo = list(depos)[depo_count]
-            r = await self.build(SUPPLYDEPOT, near=depo, max_distance=2, placement_step=1)
+            # Choose any depot location
+            target_depot_location = depot_placement_positions.pop()
+            ws = self.workers.gathering
+            if ws: # if workers were found
+                w = ws.random
+                await self.do(w.build(SUPPLYDEPOT, target_depot_location))
+
+        # Build barracks
+        if depots.ready.exists and self.can_afford(BARRACKS) and not self.already_pending(BARRACKS):
+            if self.units(BARRACKS).amount + self.already_pending(BARRACKS) > 0:
+                return
+            ws = self.workers.gathering
+            if ws and barracks_placement_position: # if workers were found
+                w = ws.random
+                await self.do(w.build(BARRACKS, barracks_placement_position))
 
 
 
 def main():
-    sc2.run_game(sc2.maps.get("Abyssal Reef LE"), [
+    sc2.run_game(sc2.maps.get("(2)CatalystLE"), [
         Bot(Race.Terran, RampWallBot()),
         Computer(Race.Zerg, Difficulty.Hard)
     ], realtime=False)
