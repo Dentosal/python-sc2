@@ -112,7 +112,7 @@ class Client(Protocol):
         result = await self._execute(step=sc_pb.RequestStep(count=self.game_step))
         return result
 
-    async def get_game_data(self):
+    async def get_game_data(self) -> GameData:
         result = await self._execute(data=sc_pb.RequestData(
             ability_id=True,
             unit_type_id=True,
@@ -120,7 +120,7 @@ class Client(Protocol):
         ))
         return GameData(result.data)
 
-    async def get_game_info(self):
+    async def get_game_info(self) -> GameInfo:
         result = await self._execute(game_info=sc_pb.RequestGameInfo())
         return GameInfo(result.game_info)
 
@@ -144,7 +144,8 @@ class Client(Protocol):
             else:
                 return [r for r in res if r != ActionResult.Success]
 
-    async def query_pathing(self, start, end):
+    async def query_pathing(self, start: Union[Unit, Point2, Point3], end: Union[Point2, Point3]) -> Union[int, float]:
+        """ Caution: returns 0 when path not found """
         assert isinstance(start, (Point2, Unit))
         assert isinstance(end, Point2)
         if isinstance(start, Point2):
@@ -166,7 +167,7 @@ class Client(Protocol):
             return None
         return distance
 
-    async def query_pathings(self, zipped_list):
+    async def query_pathings(self, zipped_list) -> List[Union[float, int]]:
         """ Usage: await self.query_pathings([[unit1, target2], [unit2, target2]])
         -> returns [distance1, distance2]
         Caution: returns 0 when path not found
@@ -228,6 +229,27 @@ class Client(Protocol):
             ))]
         ))
 
+    async def debug_create_unit(self, unit_spawn_commands):
+        """ Usage example (will spawn 1 marine in the center of the map for player ID 1):
+        await self._client.debug_create_unit([[UnitTypeId.MARINE, 1, self._game_info.map_center, 1]]) """
+        assert isinstance(unit_spawn_commands, list)
+        assert len(unit_spawn_commands) > 0
+        assert isinstance(unit_spawn_commands[0], list)
+        assert len(unit_spawn_commands[0]) == 4
+        assert isinstance(unit_spawn_commands[0][0], UnitTypeId)
+        assert 0 < unit_spawn_commands[0][1] # careful, in realtime=True this function may create more units
+        assert isinstance(unit_spawn_commands[0][2], (Point2, Point3))
+        assert 1 <= unit_spawn_commands[0][3] <= 2
+
+        await self._execute(debug=sc_pb.RequestDebug(
+            debug=[debug_pb.DebugCommand(create_unit=debug_pb.DebugCreateUnit(
+                unit_type=unit_type.value,
+                owner=owner_id,
+                pos=common_pb.Point2D(x=position.x, y=position.y),
+                quantity=amount_of_units
+            )) for unit_type, owner_id, position, amount_of_units in unit_spawn_commands]
+        ))
+
     async def move_camera(self, position: Union[Unit, Point2, Point3]):
         """ Moves camera to the target position """
         assert isinstance(position, (Unit, Point2, Point3))
@@ -266,25 +288,32 @@ class Client(Protocol):
         else:
             await self.debug_text([texts], [positions], color)
 
-    def debug_text_simple(self, text, color=None):
+    def debug_text_simple(self, text: str):
         """ Draws a text in the top left corner of the screen (up to a max of 6 messages it seems). Don't forget to add 'await self._client.send_debug'. """
-        self._debug_texts.append(self.to_debug_message(text, color))
+        self._debug_texts.append(self.to_debug_message(text))
 
-    def debug_text_2d(self, text, pos, color=None, size=8):
-        """ Draws a text at Point2 position. Don't forget to add 'await self._client.send_debug'. """
+    def debug_text_2d(self, text: str, pos: Point2, color=None, size: int=8):
+        """ Draws a text on the screen. Don't forget to add 'await self._client.send_debug'. """
+        assert 0 <= pos[0] <= 1
+        assert 0 <= pos[1] <= 1
         self._debug_texts.append(self.to_debug_message(text, color, pos, size))
 
-    def debug_text_3d(self, text, pos, color=None, size=8):
-        """ Draws a text at Point3 position. Don't forget to add 'await self._client.send_debug'. """
+    def debug_text_3d(self, text: str, pos: Union[Unit, Point2, Point3], color=None, size: int=8):
+        """ Draws a text at Point3 position. Don't forget to add 'await self._client.send_debug'.
+        To grab a unit's 3d position, use unit.position3d
+        Usually the Z value of a Point3 is between 8 and 14 (except for flying units)
+        """
+        if isinstance(pos, Point2) and not isinstance(pos, Point3): # a Point3 is also a Point2
+            pos = Point3((pos.x, pos.y, 0))
         self._debug_texts.append(self.to_debug_message(text, color, pos, size))
 
-    def debug_line_out(self, p0, p1, color=None):
+    def debug_line_out(self, p0: Union[Unit, Point2, Point3], p1: Union[Unit, Point2, Point3], color=None):
         """ Draws a line from p0 to p1. Don't forget to add 'await self._client.send_debug'. """
         self._debug_lines.append(debug_pb.DebugLine(
             line=debug_pb.Line(p0=self.to_debug_point(p0), p1=self.to_debug_point(p1)),
             color=self.to_debug_color(color)))
 
-    def debug_box_out(self, p_min, p_max, color=None):
+    def debug_box_out(self, p_min: Union[Unit, Point2, Point3], p_max: Union[Unit, Point2, Point3], color=None):
         """ Draws a box with p_min and p_max as corners. Don't forget to add 'await self._client.send_debug'. """
         self._debug_boxes.append(debug_pb.DebugBox(
             min=self.to_debug_point(p_min),
@@ -292,7 +321,7 @@ class Client(Protocol):
             color=self.to_debug_color(color)
         ))
 
-    def debug_sphere_out(self, p, r, color=None):
+    def debug_sphere_out(self, p: Union[Unit, Point2, Point3], r: Union[int, float], color=None):
         """ Draws a sphere at point p with radius r. Don't forget to add 'await self._client.send_debug'. """
         self._debug_spheres.append(debug_pb.DebugSphere(
             p=self.to_debug_point(p),
@@ -314,27 +343,6 @@ class Client(Protocol):
         self._debug_boxes.clear()
         self._debug_spheres.clear()
 
-    async def debug_create_unit(self, unit_spawn_commands):
-        # usage example (will spawn 1 marine in the center of the map for player ID 1:
-        # await self._client.debug_create_unit([[UnitTypeId.MARINE, 1, self._game_info.map_center, 1]])
-        assert isinstance(unit_spawn_commands, list)
-        assert len(unit_spawn_commands) > 0
-        assert isinstance(unit_spawn_commands[0], list)
-        assert len(unit_spawn_commands[0]) == 4
-        assert isinstance(unit_spawn_commands[0][0], UnitTypeId)
-        assert 0 < unit_spawn_commands[0][1] # careful, in realtime=True this function may create more units
-        assert isinstance(unit_spawn_commands[0][2], (Point2, Point3))
-        assert 1 <= unit_spawn_commands[0][3] <= 2
-
-        await self._execute(debug=sc_pb.RequestDebug(
-            debug=[debug_pb.DebugCommand(create_unit=debug_pb.DebugCreateUnit(
-                unit_type=unit_type.value,
-                owner=owner_id,
-                pos=common_pb.Point2D(x=position.x, y=position.y),
-                quantity=amount_of_units
-            )) for unit_type, owner_id, position, amount_of_units in unit_spawn_commands]
-        ))
-
     def to_debug_color(self, color):
         """ Helper function for color conversion """
         if color is None:
@@ -350,20 +358,17 @@ class Client(Protocol):
 
             return debug_pb.Color(r=int(r), g=int(g), b=int(b))
 
-    def to_debug_point(self, point):
-        """ Helper function for point2 to point3 conversion """
-        if isinstance(point, Point2):
-            point = point.to3
-        if isinstance(point, Point3):
-            return common_pb.Point(x=point.x, y=point.y, z=getattr(point, "z", 0))
-        return None
+    def to_debug_point(self, point: Union[Unit, Point2, Point3]) -> common_pb.Point:
+        """ Helper function for point conversion """
+        if isinstance(point, Unit):
+            point = point.position3d
+        return common_pb.Point(x=point.x, y=point.y, z=getattr(point, "z", 0))
 
-
-    def to_debug_message(self, text, color=None, pos=None, size=8):
+    def to_debug_message(self, text: str, color=None, pos: Optional[Union[Point2, Point3]]=None, size: int=8) -> debug_pb.DebugText:
         """ Helper function to create debug texts """
         color = self.to_debug_color(color)
-        pt3d = self.to_debug_point(pos)
-        virtual_pos = None
+        pt3d = self.to_debug_point(pos) if isinstance(pos, Point3) else None
+        virtual_pos = self.to_debug_point(pos) if not isinstance(pos, Point3) else None
 
         return debug_pb.DebugText(
             color=color,
