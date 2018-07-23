@@ -303,6 +303,7 @@ class Unit(object):
         return 0
 
     def target_in_range(self, target: "Unit", bonus_distance: Union[int, float]=0) -> bool:
+        """ Includes the target's radius when calculating distance to target """
         if self.can_attack_ground and not target.is_flying:
             unit_attack_range = self.ground_range
         elif self.can_attack_air and target.is_flying:
