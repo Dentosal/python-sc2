@@ -22,7 +22,7 @@ def can_build(building, unit):
         return isclose(building.build_progress, build_progress_completed) and building.is_mine and building.noqueue and building.is_idle
 
 def get_random_building_location(bot):
-    return bot.townhalls.random.position.towards(bot.game_info.map_center, randrange(5, 16)).random_on_distance(randrange(5, 12))
+    return bot.townhalls.random.position.towards(bot.game_info.map_center, randrange(5, 15)).random_on_distance(randrange(5, 12))
 
 
 # TODO attack as group, or solution as in proxy_ray.py???
@@ -39,16 +39,7 @@ def get_units_military(bot):
 
 
 
-def get_buildorder_hash(path_strategy, method):
-    df = pd.read_csv(path_strategy, sep=";", decimal=b',')
 
-    r = uniform(0,1)
-    #print(r)
-
-    for index, row in df.iterrows():
-        weight = row[method]
-        if weight >= r: 
-            return row["Hash"]
 
 
 

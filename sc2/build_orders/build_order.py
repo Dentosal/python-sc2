@@ -11,28 +11,40 @@ class BuildOrder(object):
         self.auto_add_supply = auto_add_supply
         self.bot.cum_supply = init_supply
          
-        
+   
+    # HS adapted + moved
+    async def increase_workers(self):
+        """Increase number of workers, if below target amount"""
+        bot = self.bot
+        if bot.workers.amount < self.worker_count:
+            if bot.race == Race.Zerg:
+                return await morph(race_worker[Race.Zerg], increased_supply = worker_supply).execute(bot)
+            else:
+                return await train_unit(race_worker[bot.race], race_townhalls[self.bot.race], increased_supply = worker_supply).execute(bot)
+
+            
+    # HS adapted + moved
+    async def increase_supply(self):   
+        """Increase supply if close to supply cap"""
+        max_supply_cap = 200
+        bot = self.bot
+
+        if bot.supply_left <= ((bot.supply_cap+40) / 40) and not bot.already_pending(bot.supply_type) \
+                and self.auto_add_supply and bot.supply_cap < max_supply_cap:
+            return await add_supply().execute(bot)
 
     async def execute_build(self):
         bot = self.bot
-        if bot.supply_left <= ((bot.supply_cap+40) / 40) and not bot.already_pending(bot.supply_type) \
-                and self.auto_add_supply:
-            return await add_supply().execute(bot)
-
         
-
         for index, item in enumerate(self.build):
             condition, command = item
-
             
-
             condition = item[0] if item[0] else always_true
             if condition(bot) and not command.is_done:
 
                 if command.requires is not None: # e == ActionResult.NotSupported and
                     await build_required(self, bot, command.requires)
-                    
-                    
+                                 
                 e = await command.execute(bot)
                 
                 if command.is_done: 
@@ -48,13 +60,7 @@ class BuildOrder(object):
                         return await add_supply().execute(bot)
                     continue
 
-        if bot.workers.amount < self.worker_count:
-            if bot.race == Race.Zerg:
-                return await morph(race_worker[Race.Zerg], increased_supply = worker_supply).execute(bot)
-            else:
-                return await train_unit(race_worker[bot.race], race_townhalls[self.bot.race], increased_supply = worker_supply).execute(bot)
-
-            
+        
         
 
         return None

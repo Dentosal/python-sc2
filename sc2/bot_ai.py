@@ -216,10 +216,11 @@ class BotAI(object):
                 cost = self._game_data.calculate_ability_cost(item_id)
             except : # TODO fix e.g. 185cefb4cda1246ea8c3bdc6c033680f7279162a
                 # ENGINEERINGBAYRESEARCH_TERRANINFANTRYWEAPONSLEVEL1
-                if item_id == AbilityId.ENGINEERINGBAYRESEARCH_TERRANINFANTRYWEAPONSLEVEL1 | item_id == "ENGINEERINGBAYRESEARCH_TERRANINFANTRYWEAPONSLEVEL1":
-                    return CanAffordWrapper(100 <= self.minerals, 100 <= self.vespene)
+                if item_id == AbilityId.ENGINEERINGBAYRESEARCH_TERRANINFANTRYWEAPONSLEVEL1 or item_id == "ENGINEERINGBAYRESEARCH_TERRANINFANTRYWEAPONSLEVEL1":
+                    return CanAffordWrapper(200 <= self.minerals, 200 <= self.vespene) # 100, 100
                 else:
                     min_resource_unknown = 400
+                    print("Unknown item: " + item_id)
                     return CanAffordWrapper(min_resource_unknown <= self.minerals, min_resource_unknown <= self.vespene)
             
             if cost is None:

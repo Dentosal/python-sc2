@@ -1,4 +1,4 @@
-import sc2
-class Protoss_Bot_Buildorder(sc2.BotAI):
-    """Custom methods for protoss"""
-    pass
+from bot_ai_extended import *
+
+class Protoss_Bot_Buildorder(Bot_AI_Extended):
+    """Custom methods for Protoss"""

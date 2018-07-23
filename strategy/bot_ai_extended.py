@@ -28,18 +28,27 @@ class Bot_AI_Extended(sc2.BotAI):
 
                 
        
+        # check if game lost -> give up
         if iteration % gameloops_check_frequency*10 == 0:
+
+
+           # TODO change to first Commandcenter
            cc = (self.units(UnitTypeId.COMMANDCENTER) | self.units(UnitTypeId.ORBITALCOMMAND))
-           if cc.amount == 0 and len(get_units_military(self)) < max_units_giveup:
+           if cc.amount == 0: #and len(get_units_military(self)) < max_units_giveup:
              await self.chat_send("gg")
              self.final_result = result_lost
              return
 
-         # If opponent write gg --> win
+        
 
         await self.distribute_workers()
+        await self.build_order.increase_supply()
+
         if iteration % gameloops_check_frequency / 2 == 0:
             await self.build_order.execute_build()
+
+        await self.build_order.increase_workers()
+
 
         # check every 2 seconds
         if iteration % gameloops_check_frequency*2 == 0: 

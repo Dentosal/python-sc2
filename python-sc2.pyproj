@@ -79,6 +79,12 @@
     <Compile Include="setup.py" />
     <Compile Include="strategy\111expand.py" />
     <Compile Include="strategy\bot_ai_extended.py" />
+    <Compile Include="strategy\bot_config.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="strategy\deprecated.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="strategy\protoss_bot_buildorder.py">
       <SubType>Code</SubType>
     </Compile>
@@ -107,8 +113,9 @@
     <Folder Include="test" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Issues.md" />
+    <Content Include="strategy\Issues.md" />
     <Content Include="README.md" />
+    <Content Include="strategy\Contribution.md" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
 </Project>

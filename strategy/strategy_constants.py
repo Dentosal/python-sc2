@@ -1,4 +1,6 @@
+from sc2 import Race, Difficulty
 from sc2.constants import *
+from bot_config import *
 from os.path import dirname
 import os
 # NOTE: constants are partially tailored to Terran specific units due to underlying data set
@@ -10,6 +12,19 @@ dataset = "DataSetSc2ReplayStats"
 # NOTE: Adapt these paths in case of custom directories
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 folder_sc2replays = dirname(dirname(ROOT_DIR)) + "/SC2-replays/" + dataset + "/"
+
+
+# Eval settings ---------------------------------------------------------------
+
+# Number of games to play
+eval_number_games = 1
+
+# CatalystLE
+map_name = "Blackpink LE" # .replace(" ", "") # "Catalyst LE" # TODO list all 7 maps
+method = "BestEqualWeighted"
+self_race = Race.Terran
+enemy_race = Race.Terran
+enemy_difficulty = Difficulty.Medium
 
 
 
@@ -45,63 +60,15 @@ main_buildings = ("COMMANDCENTER", "NEXUS", "HATCHERY")
 # Additionally UnityTypeId.Hellbat does not exists
 buildorder_excluded = ("SCV", "DRONE", "PROBE", "SUPPLYDEPOT", "PYLON", "OVERLORD", "HELLBAT") 
 
-
-# Minimum number of resources to perform an upgrade
-# Maximum costs for Terran upgrades are 300 i.e. ShipPlatingLevel3
-min_resource_upgrades = 300 
-
-# Minimum number of resources to autobuild units
-sufficently_enough_minerals = 600 # i.e. 2 times Battlecruiser or commandcenter == 800
-sufficently_enough_vespene = 400 # i.e. 2 times Battlecruiser == 600
-
-# Minimum number of resources to autobuild buildings
-sufficently_much_minerals = sufficently_enough_minerals + 400 # additional commandcenter
-sufficently_much_vespene = sufficently_enough_vespene + 150 # additional Planetary Fortress
-
-
-# Game settings ---------------------------------------------------------------
-
-# Number of games to play
-eval_number_games = 10
-# Maximum time in seconds until game result is Tie
-max_gametime = 1200 # 900 = 15 min, 1200 = 20 min 
-
-# Minimum amount of units to attack
-min_units_attack = 25
-# Minimum amount of units to defend
-min_units_defend = 10
-# Maximum military units when giving up
-max_units_giveup = min_units_defend
-# Maximum distance to defend against enemy units
-distance_defend = 30
-
-# 16 iterations == 1 second
-gameloops_check_frequency = 16
-
-# Amount of new workers per expansion
-worker_expand_increase = 16
-
-# Amount of new workers per new gas resource
-worker_gas_increase = 3
-
-# Supply of a single worker
-worker_supply = 1
-
-# Initial supply
-init_supply = 12
-
-# if more less auto_build_idle_limit idle buildings, build new ones
-auto_build_idle_limit = 3
-
-# 16 only mineral, will be increased automatically for gas
-init_worker_count = 16
-
-# Check for isclose if build is completed
-build_progress_completed = 1
-
-
 result_won = "won"
 result_lost = "lost"
+
+
+race_to_string = {
+        Race.Terran:  race_terran_string,
+        Race.Zerg: race_zerg_string,
+        Race.Protoss: race_protoss_string
+    }
 
 # Terran buildings and units --------------------------------------------------
 

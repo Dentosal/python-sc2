@@ -1,4 +1,5 @@
-import sc2
-class Zerg_Bot_Buildorder(sc2.BotAI):
-    """Custom methods for zerg"""
-    pass
+from bot_ai_extended import *
+
+class Zerg_Bot_Buildorder(Bot_AI_Extended):
+    """Custom methods for Zerg"""
+    
