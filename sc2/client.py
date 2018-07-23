@@ -167,7 +167,7 @@ class Client(Protocol):
             return None
         return distance
 
-    async def query_pathings(self, zipped_list) -> List[Union[float, int]]:
+    async def query_pathings(self, zipped_list: List[List[Union[Unit, Point2, Point3]]]) -> List[Union[float, int]]:
         """ Usage: await self.query_pathings([[unit1, target2], [unit2, target2]])
         -> returns [distance1, distance2]
         Caution: returns 0 when path not found
@@ -196,7 +196,7 @@ class Client(Protocol):
         results = [float(d.distance) for d in results.query.pathing]
         return results
 
-    async def query_building_placement(self, ability, positions, ignore_resources=True):
+    async def query_building_placement(self, ability: AbilityId, positions: List[Union[Unit, Point2, Point3]], ignore_resources: bool=True) -> List[ActionResult]:
         assert isinstance(ability, AbilityData)
         result = await self._execute(query=query_pb.RequestQuery(
             placements=[query_pb.RequestQueryBuildingPlacement(
@@ -207,7 +207,7 @@ class Client(Protocol):
         ))
         return [ActionResult(p.result) for p in result.query.placements]
 
-    async def query_available_abilities(self, units, ignore_resource_requirements=False):
+    async def query_available_abilities(self, units: Union[List[Unit], "Units"], ignore_resource_requirements: bool=False) -> List[List[AbilityId]]:
         """ Query abilities of multiple units """
         if not isinstance(units, list):
             """ Deprecated, accepting a single unit may be removed in the future, query a list of units instead """
@@ -227,7 +227,7 @@ class Client(Protocol):
             return [[AbilityId(a.ability_id) for a in b.abilities] for b in result.query.abilities][0]
         return [[AbilityId(a.ability_id) for a in b.abilities] for b in result.query.abilities]
 
-    async def chat_send(self, message, team_only):
+    async def chat_send(self, message: str, team_only: bool):
         """ Writes a message to the chat """
         ch = ChatChannel.Team if team_only else ChatChannel.Broadcast
         r = await self._execute(action=sc_pb.RequestAction(
@@ -237,9 +237,9 @@ class Client(Protocol):
             ))]
         ))
 
-    async def debug_create_unit(self, unit_spawn_commands):
-        """ Usage example (will spawn 5 marines in the center of the map for player ID 1):
-        await self._client.debug_create_unit([[UnitTypeId.MARINE, 5, self._game_info.map_center, 1]]) """
+    async def debug_create_unit(self, unit_spawn_commands: List[List[UnitTypeId, int, Union[Point2, Point3], int]]):
+        """ Usage example (will spawn 1 marine in the center of the map for player ID 1):
+        await self._client.debug_create_unit([[UnitTypeId.MARINE, 1, self._game_info.map_center, 1]]) """
         assert isinstance(unit_spawn_commands, list)
         assert len(unit_spawn_commands) > 0
         assert isinstance(unit_spawn_commands[0], list)
@@ -273,7 +273,7 @@ class Client(Protocol):
             )]
         ))
 
-    async def debug_text(self, texts, positions, color=(0, 255, 0), size_px=16):
+    async def debug_text(self, texts: Union[str, list], positions: Union[list, set], color=(0, 255, 0), size_px=16):
         """ Deprecated, may be removed soon """
         if isinstance(positions, (set, list)):
             if not positions:
