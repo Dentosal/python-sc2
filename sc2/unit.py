@@ -147,13 +147,17 @@ class Unit(object):
         return self._type_data.has_vespene
 
     @property
-    def tech_alias(self) -> UnitTypeId:
+    def tech_alias(self) -> Optional[List[UnitTypeId]]:
         """ Building tech equality, e.g. OrbitalCommand is the same as CommandCenter """
+        """ For Hive, this returns [UnitTypeId.Hatchery, UnitTypeId.Lair] """
+        """ For SCV, this returns None """
         return self._type_data.tech_alias
 
     @property
-    def unit_alias(self) -> UnitTypeId:
+    def unit_alias(self) -> Optional[UnitTypeId]:
         """ Building type equality, e.g. FlyingOrbitalCommand is the same as OrbitalCommand """
+        """ For flying OrbitalCommand, this returns UnitTypeId.OrbitalCommand """
+        """ For SCV, this returns None """
         return self._type_data.unit_alias
 
     @property
