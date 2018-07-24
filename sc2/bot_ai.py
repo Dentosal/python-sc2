@@ -6,7 +6,6 @@ import logging
 from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type checking
 
 # imports for mypy and pycharm autocomplete
-from .game_info import GameInfo
 from .game_state import GameState
 from .game_data import GameData
 
@@ -389,8 +388,8 @@ class BotAI(object):
 
     def _prepare_start(self, client, player_id, game_info, game_data):
         """Ran until game start to set game and player data."""
-        self._client: Client = client
-        self._game_info: GameInfo = game_info
+        self._client: "Client" = client
+        self._game_info: "GameInfo" = game_info
         self._game_data: GameData = game_data
 
         self.player_id: int = player_id
