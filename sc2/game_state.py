@@ -90,7 +90,7 @@ class GameState(object):
         self.psionic_matrix: PsionicMatrix = PsionicMatrix.from_proto(self.observation.raw_data.player.power_sources) # what area pylon covers
         self.game_loop: int = self.observation.game_loop # game loop, 22.4 per second on faster game speed
 
-        self.score = ScoreDetails(self.observation.score) # https://github.com/Blizzard/s2client-proto/blob/33f0ecf615aa06ca845ffe4739ef3133f37265a9/s2clientprotocol/score.proto#L31
+        self.score: ScoreDetails = ScoreDetails(self.observation.score) # https://github.com/Blizzard/s2client-proto/blob/33f0ecf615aa06ca845ffe4739ef3133f37265a9/s2clientprotocol/score.proto#L31
         self.abilities = self.observation.abilities # abilities of selected units
         destructables = [x for x in self.observation.raw_data.units if x.alliance == 3 and x.radius > 1.5] # all destructable rocks except the one below the main base ramps
         self.destructables: Units = Units.from_proto(destructables, game_data)
@@ -100,7 +100,7 @@ class GameState(object):
         for u in self.observation.raw_data.units:
             hiddenUnits.append(u) if u.is_blip else visibleUnits.append(u)
         self.units: Units = Units.from_proto(visibleUnits, game_data)
-        self.blips: Set[Blip] = {Blip(unit) for unit in hiddenUnits}
+        self.blips: Blip = {Blip(unit) for unit in hiddenUnits}
 
         self.visibility: PixelMap = PixelMap(self.observation.raw_data.map_state.visibility)
         self.creep: PixelMap = PixelMap(self.observation.raw_data.map_state.creep)

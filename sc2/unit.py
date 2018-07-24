@@ -21,7 +21,7 @@ class Unit(object):
         return UnitTypeId(self._proto.unit_type)
 
     @property
-    def _type_data(self):
+    def _type_data(self) -> "UnitTypeData":
         return self._game_data.units[self._proto.unit_type]
 
     @property
@@ -147,6 +147,16 @@ class Unit(object):
         return self._type_data.has_vespene
 
     @property
+    def tech_alias(self) -> UnitTypeId:
+        """ Building tech equality, e.g. OrbitalCommand is the same as CommandCenter """
+        return self._type_data.tech_alias
+
+    @property
+    def unit_alias(self) -> UnitTypeId:
+        """ Building type equality, e.g. FlyingOrbitalCommand is the same as OrbitalCommand """
+        return self._type_data.unit_alias
+
+    @property
     def race(self) -> Race:
         return Race(self._type_data._proto.race)
 
@@ -223,7 +233,7 @@ class Unit(object):
     @property
     def cargo_size(self) -> Union[float, int]:
         """ How much cargo this unit uses up in cargo_space """
-        return self._proto.cargo_size
+        return self._type_data.cargo_size
 
     @property
     def has_cargo(self) -> bool:

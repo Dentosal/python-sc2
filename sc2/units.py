@@ -138,25 +138,33 @@ class Units(list):
     def tags_in(self, other: Union[Set[int], List[int], Dict[int, Any]]) -> "Units":
         """ Filters all units that have their tags in the 'other' set/list/dict """
         # example: self.units(QUEEN).tags_in(self.queen_tags_assigned_to_do_injects)
+        if isinstance(other, list):
+            other = set(other)
         return self.filter(lambda unit: unit.tag in other)
 
     def tags_not_in(self, other: Union[Set[int], List[int], Dict[int, Any]]) -> "Units":
         """ Filters all units that have their tags not in the 'other' set/list/dict """
         # example: self.units(QUEEN).tags_not_in(self.queen_tags_assigned_to_do_injects)
+        if isinstance(other, list):
+            other = set(other)
         return self.filter(lambda unit: unit.tag not in other)
 
     def of_type(self, other: Union[UnitTypeId, Set[UnitTypeId], List[UnitTypeId], Dict[UnitTypeId, Any]]) -> "Units":
         """ Filters all units that are of a specific type """
         # example: self.units.of_type([ZERGLING, ROACH, HYDRALISK, BROODLORD])
         if isinstance(other, UnitTypeId):
-            other = [other]
+            other = {other}
+        if isinstance(other, list):
+            other = set(other)
         return self.filter(lambda unit: unit.type_id in other)
 
     def exclude_type(self, other: Union[UnitTypeId, Set[UnitTypeId], List[UnitTypeId], Dict[UnitTypeId, Any]]) -> "Units":
         """ Filters all units that are not of a specific type """
         # example: self.known_enemy_units.exclude_type([OVERLORD])
         if isinstance(other, UnitTypeId):
-            other = [other]
+            other = {other}
+        if isinstance(other, list):
+            other = set(other)
         return self.filter(lambda unit: unit.type_id not in other)
 
     @property

@@ -5,6 +5,12 @@ from functools import partial
 import logging
 from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type checking
 
+# imports for mypy and pycharm autocomplete
+from .client import Client
+from .game_info import GameInfo
+from .game_state import GameState
+from .game_data import GameData
+
 logger = logging.getLogger(__name__)
 
 from .position import Point2, Point3
@@ -384,9 +390,9 @@ class BotAI(object):
 
     def _prepare_start(self, client, player_id, game_info, game_data):
         """Ran until game start to set game and player data."""
-        self._client: "Client" = client
-        self._game_info: "GameInfo" = game_info
-        self._game_data: "GameData" = game_data
+        self._client: Client = client
+        self._game_info: GameInfo = game_info
+        self._game_data: GameData = game_data
 
         self.player_id: int = player_id
         self.race: Race = Race(self._game_info.player_races[self.player_id])
@@ -400,7 +406,7 @@ class BotAI(object):
 
     def _prepare_step(self, state):
         """Set attributes from new state before on_step."""
-        self.state: "GameState" = state
+        self.state: GameState = state
         # need this for checking for new units
         self._units_previous_map.clear()
         for unit in self.units:
