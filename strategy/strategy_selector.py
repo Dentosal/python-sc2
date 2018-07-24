@@ -7,10 +7,8 @@ from zerg_bot_buildorder import Zerg_Bot_Buildorder
 from protoss_bot_buildorder import Protoss_Bot_Buildorder
 from terran_bot_buildorder import Terran_Bot_Buildorder
 import time
-
-
 import pandas as pd
-from random import uniform, randrange
+from random import uniform
 
 def get_buildorder_hash(path_strategy, method):
     """Determines the build-order"""

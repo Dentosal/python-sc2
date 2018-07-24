@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{23c2358d-e06f-4628-ae1e-6cfe980ab822}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>strategy\strategy_selector.py</StartupFile>
+    <StartupFile>strategy\strategy_test.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -95,6 +95,9 @@
     <Compile Include="strategy\strategy_test.py" />
     <Compile Include="strategy\strategy_util.py" />
     <Compile Include="strategy\terran_bot_buildorder.py" />
+    <Compile Include="strategy\util.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="strategy\zerg_bot_buildorder.py">
       <SubType>Code</SubType>
     </Compile>

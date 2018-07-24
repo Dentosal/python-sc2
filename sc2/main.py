@@ -71,8 +71,12 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
             if not client.in_game: # Client left (resigned) the game
                 return client._game_result[player_id]
 
+
+            
             # HS added
             if ai.final_result is not None:
+                logger.info(f"Result is: {ai.final_result}")
+
                 if ai.final_result == "won":
                     return Result.Victory
                 elif ai.final_result == "lost":

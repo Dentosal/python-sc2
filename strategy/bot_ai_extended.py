@@ -8,9 +8,9 @@ from sc2.state_conditions.conditions import all_of, supply_at_least, minerals_at
 from math import isclose
 from random import sample, randrange
 from abc import ABCMeta, abstractmethod, abstractproperty
-
 from sc2.data import Result
 from strategy_util import *
+from util import *
 
 class Bot_AI_Extended(sc2.BotAI):
     """Extends BotAI with specific methods for the strategy"""
@@ -22,42 +22,58 @@ class Bot_AI_Extended(sc2.BotAI):
         self.defending = False
         self.researched = []
         self.build_order = BuildOrder(self, build_order, worker_count=init_worker_count)
-        
+        self.first_base = None
+        self.path = path
+      
+    
 
     async def on_step(self, iteration):
 
+        if self.first_base is None:
+            self.first_base = self.units(UnitTypeId.COMMANDCENTER).first 
                 
        
         # check if game lost -> give up
-        if iteration % gameloops_check_frequency*10 == 0:
-
-
-           # TODO change to first Commandcenter
-           cc = (self.units(UnitTypeId.COMMANDCENTER) | self.units(UnitTypeId.ORBITALCOMMAND))
-           if cc.amount == 0: #and len(get_units_military(self)) < max_units_giveup:
-             await self.chat_send("gg")
-             self.final_result = result_lost
-             return
-
+        if iteration % gameloops_check_frequency == 0:
+            # if first base is destroyed --> died
+            cc = self.units(UnitTypeId.COMMANDCENTER) | self.units(UnitTypeId.ORBITALCOMMAND)
+            if self.units.find_by_tag(self.first_base.tag) is None or cc.amount == 0: # or (cc.amount == 1 and cc.first.health < 1000): # TODO check health
+                await self.chat_send("gg")
+                self.final_result = result_lost
+                export_result(self, result_lost)
+                return
+            
         
 
         await self.distribute_workers()
         await self.build_order.increase_supply()
-
-        if iteration % gameloops_check_frequency / 2 == 0:
+        await self.build_order.increase_workers()
+        if (iteration + 2)  % gameloops_check_frequency / 2 == 0:
             await self.build_order.execute_build()
 
-        await self.build_order.increase_workers()
+        if (iteration + 4) % gameloops_check_frequency / 2 == 0:
+            await auto_build_buildings(self)
 
+        if (iteration + 6) % gameloops_check_frequency / 2 == 0:
+            await auto_build_units(self, UnitTypeId.FACTORY, auto_build_factory_units)
+
+        if (iteration + 8) % gameloops_check_frequency / 2 == 0:
+            await auto_build_units(self, UnitTypeId.BARRACKS, auto_build_barracks_units)
+
+        if (iteration + 10) % gameloops_check_frequency / 2 == 0:
+            await auto_build_units(self, UnitTypeId.STARPORT, auto_build_starport_units)
+
+        if (iteration + 12) % gameloops_check_frequency / 2 == 0:
+            await auto_build_expansion(self)
 
         # check every 2 seconds
-        if iteration % gameloops_check_frequency*2 == 0: 
-            await auto_build(self)
+        #if iteration % gameloops_check_frequency*2 == 0: 
+        #    await auto_build(self)
 
         # check every second
-        if iteration % gameloops_check_frequency == 0:
-            await auto_attack(self)
-            await auto_defend(self)
+        #if iteration % gameloops_check_frequency == 0:
+        #    await auto_attack(self)
+        #    await auto_defend(self)
 
 # TODO check if works  
 async def auto_defend(bot):
@@ -105,6 +121,7 @@ async def auto_attack(bot):
             for unit in filter(lambda u: u.is_idle, units_military):   
                 if unit.position.distance_to(bot.enemy_start_locations[0]) < 1:
                     bot.final_result = result_won
+                    export_result(self, result_won)
                     return
 
             
@@ -113,59 +130,40 @@ async def auto_attack(bot):
  
 
 
-
-async def auto_build(bot):
-            
-     # if much --> build new terran_military_buildings
-    if bot.minerals > sufficently_much_minerals and bot.vespene > sufficently_much_vespene and bot.units.structure.idle.amount < auto_build_idle_limit:  
-        for building in sample(terran_military_buildings, terran_military_buildings_sample):
-            building_required = construct_requirements[building]
-            if bot.units(building_required).owned.completed.amount > 0:      
-                print("Build {0} due to a large surplus of resources".format(building))
-                bot.cum_supply = bot.cum_supply + 2 # in case of stopped build order
-                await bot.build(building, near = get_random_building_location(bot))
-    elif bot.minerals > sufficently_much_minerals and bot.units(bot.basic_townhall_type).pending.amount == 0:
-        print("Auto expand due to a large surplus of resources")
+async def auto_build_expansion(bot):
+    """if much resources --> build new """
+    if bot.minerals > sufficently_much_minerals + sufficently_enough_minerals  and bot.units(bot.basic_townhall_type).pending.amount == 0 :
+        print("Auto expand due to a gigantic surplus of resources")
         await expand().execute(bot)
 
+
+async def auto_build_buildings(bot):            
+    """if much resources --> build new terran_military_buildings"""
+    if bot.minerals > sufficently_much_minerals and bot.vespene > sufficently_much_vespene:  
+        building = sample(terran_military_buildings, 1)[0] # select one random building
+        building_required = construct_requirements[building]
+        if bot.units(building_required).owned.completed.amount > 0:      
+            print("Build {0} due to a large surplus of resources".format(building))
+            bot.cum_supply = bot.cum_supply + 1 # in case of bringing the gap in build-order
+            await bot.build(building, near = get_random_building_location(bot))
+
+
+
+
+
+
+async def auto_build_units(bot, building_id, units_list):
+    """Auto build units in case of surplus of resources"""
+    for building in bot.units(building_id).owned.completed.idle: # TODO or noqueue ???
+        unit = sample(units_list, 1)[0]
+        if can_build(building, unit) and bot.can_afford(unit):
+            print("Train unit {0} due to surplus of resources".format(unit))
+            bot.cum_supply = bot.cum_supply + 1
+            await bot.do(building.train(unit))
+
+
+
     
-        
-
-    # sample order for different units
-    # build units if enough resources
-    if bot.minerals > sufficently_enough_minerals and bot.vespene > sufficently_enough_vespene:  # and bot.can_afford(unit) 
-        for unit in sample(terran_military_units_vepene, terran_military_units_vepene_sample): 
-            building_required = unit_requirements[unit]
-
-            if building_required in building_addons:
-                building_required = construct_requirements[building_required]
-
-            # find at least one idle building that can built the unit
-            for building in bot.units(building_required).owned.completed.idle:
-                if can_build(building, unit) and bot.can_afford(unit) : # and count_units(bot, building_required, True) > 0:
-                        print("Train unit {0} due to surplus of resources".format(unit))
-                        bot.cum_supply = bot.cum_supply + 1
-                        await bot.do(building.train(unit))
-
-                        #await train_unit(unit, building_required, 1).execute(bot) # increase only by one in order not to miss up the build order
-
-
-    # build units if enough resources
-    if bot.minerals > sufficently_enough_minerals and bot.vespene < sufficently_enough_vespene:  
-        for unit in sample(terran_military_units_mineral, terran_military_units_mineral_sample): # shuffle(terran_military_units_mineral):
-            building_required = unit_requirements[unit]
-
-            if building_required in building_addons:
-                building_required = construct_requirements[building_required]
-
-            # find at least one idle building that can built the unit
-            for building in bot.units(building_required).owned.completed.idle:
-                if can_build(building, unit)  and bot.can_afford(unit) :
-                #if building.noqueue and building.is_idle and count_units(bot, building_required, True) > 0:
-                        print("Train unit {0} due to surplus of minerals".format(unit))
-                        bot.cum_supply = bot.cum_supply + 1
-                        await bot.do(building.train(unit))
-                        # await train_unit(unit, building_required, 1).execute(bot) # increase only by one in order not to miss up the build order
 
 
 

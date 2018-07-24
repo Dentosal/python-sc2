@@ -49,6 +49,7 @@ if not os.path.exists(folder_bot_replays):
 folder_buildorder =  folder_sc2replays + "buildorders-csv/"
 file_strategy = "strategy"+ending_csv
 
+file_bot_results = folder_bot_replays + "results.csv"
 
 # Strategy util constants -----------------------------------------------------
 
@@ -178,3 +179,9 @@ terran_military_units_vepene_sample = terran_military_buildings_sample + terran_
 
 
 
+auto_build_factory_units = [UnitTypeId.HELLION, UnitTypeId.CYCLONE]
+#auto_build_factory_units_length = len(auto_build_factory_units)
+
+auto_build_barracks_units = [UnitTypeId.MARINE, UnitTypeId.REAPER]
+
+auto_build_starport_units = [UnitTypeId.VIKINGFIGHTER, UnitTypeId.MEDIVAC, UnitTypeId.LIBERATOR]

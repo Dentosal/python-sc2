@@ -2,6 +2,7 @@ from sc2 import ActionResult, Race
 from sc2.constants import *
 from sc2.state_conditions.conditions import  unit_count_at_least
 from random import uniform, randrange
+from util import get_random_building_location
 
 class Command(object):
     def __init__(self, action, repeatable=False, priority=False, increase_workers = 0, increased_supply = 0, requires = None):
@@ -94,8 +95,10 @@ def construct(building, placement=None, prioritize=True, repeatable=False):
 
 
         if not placement:
-            location = bot.townhalls.random.position.towards(bot.game_info.map_center, randrange(5, 20)).random_on_distance(randrange(5, 12))
-            # get_random_building_location(bot) # bot.townhalls.first.position.towards(bot.game_info.map_center, 5)
+            # HS
+            location = get_random_building_location(bot)
+            
+
         else:
             location = placement
 

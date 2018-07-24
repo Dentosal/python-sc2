@@ -9,7 +9,7 @@ import sc2
 from sc2 import Race
 import re
 from random import uniform, randrange
-
+import os
 from math import isclose
 
 
@@ -21,8 +21,7 @@ def can_build(building, unit):
     else:
         return isclose(building.build_progress, build_progress_completed) and building.is_mine and building.noqueue and building.is_idle
 
-def get_random_building_location(bot):
-    return bot.townhalls.random.position.towards(bot.game_info.map_center, randrange(5, 15)).random_on_distance(randrange(5, 12))
+
 
 
 # TODO attack as group, or solution as in proxy_ray.py???
@@ -39,7 +38,16 @@ def get_units_military(bot):
 
 
 
+def export_result(self, result): 
+    #df_col = ["path","result"]
+    #df = pd.DataFrame([self.path, result], columns = df_col)
 
+    df = pd.DataFrame(data = {"file": [os.path.basename(self.path)], "result": [result]})
+
+    if os.path.isfile(file_bot_results):
+        df.to_csv(file_bot_results, mode = "a", header = False)          
+    else:
+        df.to_csv(file_bot_results, header = ["path","result"])     
 
 
 
