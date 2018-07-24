@@ -230,8 +230,8 @@ class Client(Protocol):
         ))
 
     async def debug_create_unit(self, unit_spawn_commands):
-        """ Usage example (will spawn 1 marine in the center of the map for player ID 1):
-        await self._client.debug_create_unit([[UnitTypeId.MARINE, 1, self._game_info.map_center, 1]]) """
+        """ Usage example (will spawn 5 marines in the center of the map for player ID 1):
+        await self._client.debug_create_unit([[UnitTypeId.MARINE, 5, self._game_info.map_center, 1]]) """
         assert isinstance(unit_spawn_commands, list)
         assert len(unit_spawn_commands) > 0
         assert isinstance(unit_spawn_commands[0], list)
@@ -247,7 +247,7 @@ class Client(Protocol):
                 owner=owner_id,
                 pos=common_pb.Point2D(x=position.x, y=position.y),
                 quantity=amount_of_units
-            )) for unit_type, owner_id, position, amount_of_units in unit_spawn_commands]
+            )) for unit_type, amount_of_units, position, owner_id in unit_spawn_commands]
         ))
 
     async def move_camera(self, position: Union[Unit, Point2, Point3]):
