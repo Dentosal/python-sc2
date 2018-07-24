@@ -3,6 +3,7 @@ import random
 from functools import partial
 
 import logging
+from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type checking
 
 logger = logging.getLogger(__name__)
 
@@ -90,11 +91,10 @@ class BotAI(object):
 
         return centers
 
-    async def get_available_abilities(self, unit, ignore_resource_requirements=False):
-        """Returns available abilities of a unit."""
-
+    async def get_available_abilities(self, units: Union[List[Unit], Units], ignore_resource_requirements=False) -> List[List[AbilityId]]:
+        """ Returns available abilities of one or more units. """
         # right know only checks cooldown, energy cost, and whether the ability has been researched
-        return await self._client.query_available_abilities(unit, ignore_resource_requirements)
+        return await self._client.query_available_abilities(units, ignore_resource_requirements)
 
     async def expand_now(self, building=None, max_distance=10, location=None):
         """Takes new expansion."""
@@ -226,7 +226,7 @@ class BotAI(object):
 
         return CanAffordWrapper(cost.minerals <= self.minerals, cost.vespene <= self.vespene)
 
-    async def can_cast(self, unit, ability_id, target=None, only_check_energy_and_cooldown=False, cached_abilities_of_unit=None):
+    async def can_cast(self, unit: Unit, ability_id: AbilityId, target: Optional[Union[Unit, Point2, Point3]]=None, only_check_energy_and_cooldown: bool=False, cached_abilities_of_unit: List[AbilityId]=None) -> bool:
         """Tests if a unit has an ability available and enough energy to cast it.
         See data_pb2.py (line 161) for the numbers 1-5 to make sense"""
         assert isinstance(unit, Unit)
@@ -236,8 +236,8 @@ class BotAI(object):
         if cached_abilities_of_unit:
             abilities = cached_abilities_of_unit
         else:
-            abilities = await self.get_available_abilities(unit) 
-        
+            abilities = (await self.get_available_abilities([unit]))[0]
+
         if ability_id in abilities:
             if only_check_energy_and_cooldown:
                 return True
