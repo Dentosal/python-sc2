@@ -24,17 +24,17 @@ class Units(list):
     def select(self, *args, **kwargs):
         return UnitSelection(self, *args, **kwargs)
 
-    def __or__(self, other):
+    def __or__(self, other: "Units") -> "Units":
         tags = {unit.tag for unit in self}
         units = self + [unit for unit in other if unit.tag not in tags]
         return Units(units, self.game_data)
 
-    def __and__(self, other):
+    def __and__(self, other: "Units") -> "Units":
         tags = {unit.tag for unit in self}
         units = [unit for unit in other if unit.tag in tags]
         return Units(units, self.game_data)
 
-    def __sub__(self, other):
+    def __sub__(self, other: "Units") -> "Units":
         tags = {unit.tag for unit in other}
         units = [unit for unit in self if unit.tag not in tags]
         return Units(units, self.game_data)
@@ -68,7 +68,7 @@ class Units(list):
         assert self.exists
         return self[0]
 
-    def take(self, n, require_all=True) -> "Units":
+    def take(self, n: int, require_all: bool=True) -> "Units":
         assert (not require_all) or len(self) >= n
         return self[:n]
 
@@ -77,7 +77,7 @@ class Units(list):
         assert self.exists
         return random.choice(self)
 
-    def random_or(self, other):
+    def random_or(self, other: any) -> Unit:
         if self.exists:
             return random.choice(self)
         else:
@@ -93,9 +93,11 @@ class Units(list):
             return self.subgroup(random.sample(self, n))
 
     def in_attack_range_of(self, unit: Unit) -> "Units":
+        """ Filters units that are in attack range of the unit in parameter """
         return self.filter(lambda x: unit.target_in_range(x))
 
     def closest_distance_to(self, position: Union[Unit, Point2, Point3]) -> Union[int, float]:
+        """ Returns the distance between the closest unit from this group to the target unit """
         assert self.exists
         if isinstance(position, Unit):
             position = position.position
@@ -108,6 +110,7 @@ class Units(list):
         return min(self, key=lambda unit: unit.position.to2.distance_to(position.to2))
 
     def furthest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
+        """ Returns the distance between the furthest unit from this group to the target unit """
         assert self.exists
         if isinstance(position, Unit):
             position = position.position
@@ -165,7 +168,7 @@ class Units(list):
         return pos
 
     @property
-    def selected(self):
+    def selected(self) -> "Units":
         return self.filter(lambda unit: unit.is_selected)
 
     @property

@@ -167,7 +167,7 @@ class Client(Protocol):
             return None
         return distance
 
-    async def query_pathings(self, zipped_list) -> List[Union[float, int]]:
+    async def query_pathings(self, zipped_list: List[List[Union[Unit, Point2, Point3]]]) -> List[Union[float, int]]:
         """ Usage: await self.query_pathings([[unit1, target2], [unit2, target2]])
         -> returns [distance1, distance2]
         Caution: returns 0 when path not found
@@ -196,7 +196,7 @@ class Client(Protocol):
         results = [float(d.distance) for d in results.query.pathing]
         return results
 
-    async def query_building_placement(self, ability, positions, ignore_resources=True):
+    async def query_building_placement(self, ability: AbilityId, positions: List[Union[Unit, Point2, Point3]], ignore_resources: bool=True) -> List[ActionResult]:
         assert isinstance(ability, AbilityData)
         result = await self._execute(query=query_pb.RequestQuery(
             placements=[query_pb.RequestQueryBuildingPlacement(
@@ -207,7 +207,7 @@ class Client(Protocol):
         ))
         return [ActionResult(p.result) for p in result.query.placements]
 
-    async def query_available_abilities(self, units, ignore_resource_requirements=False):
+    async def query_available_abilities(self, units: Union[List[Unit], "Units"], ignore_resource_requirements: bool=False) -> List[List[AbilityId]]:
         """ Query abilities of multiple units """
         if not isinstance(units, list):
             """ Deprecated, accepting a single unit may be removed in the future, query a list of units instead """
@@ -227,7 +227,7 @@ class Client(Protocol):
             return [[AbilityId(a.ability_id) for a in b.abilities] for b in result.query.abilities][0]
         return [[AbilityId(a.ability_id) for a in b.abilities] for b in result.query.abilities]
 
-    async def chat_send(self, message, team_only):
+    async def chat_send(self, message: str, team_only: bool):
         """ Writes a message to the chat """
         ch = ChatChannel.Team if team_only else ChatChannel.Broadcast
         r = await self._execute(action=sc_pb.RequestAction(
@@ -237,9 +237,9 @@ class Client(Protocol):
             ))]
         ))
 
-    async def debug_create_unit(self, unit_spawn_commands):
-        """ Usage example (will spawn 5 marines in the center of the map for player ID 1):
-        await self._client.debug_create_unit([[UnitTypeId.MARINE, 5, self._game_info.map_center, 1]]) """
+    async def debug_create_unit(self, unit_spawn_commands: List[List[Union[UnitTypeId, int, Point2, Point3]]]):
+        """ Usage example (will spawn 1 marine in the center of the map for player ID 1):
+        await self._client.debug_create_unit([[UnitTypeId.MARINE, 1, self._game_info.map_center, 1]]) """
         assert isinstance(unit_spawn_commands, list)
         assert len(unit_spawn_commands) > 0
         assert isinstance(unit_spawn_commands[0], list)
@@ -273,7 +273,7 @@ class Client(Protocol):
             )]
         ))
 
-    async def debug_text(self, texts, positions, color=(0, 255, 0), size_px=16):
+    async def debug_text(self, texts: Union[str, list], positions: Union[list, set], color=(0, 255, 0), size_px=16):
         """ Deprecated, may be removed soon """
         if isinstance(positions, (set, list)):
             if not positions:
@@ -300,13 +300,18 @@ class Client(Protocol):
         """ Draws a text in the top left corner of the screen (up to a max of 6 messages it seems). Don't forget to add 'await self._client.send_debug'. """
         self._debug_texts.append(self.to_debug_message(text))
 
-    def debug_text_2d(self, text: str, pos: Point2, color=None, size: int=8):
-        """ Draws a text on the screen. Don't forget to add 'await self._client.send_debug'. """
+    def debug_text_screen(self, text: str, pos: Union[Point2, Point3, tuple, list], color=None, size: int=8):
+        """ Draws a text on the screen with coordinates 0 <= x, y <= 1. Don't forget to add 'await self._client.send_debug'. """
+        assert len(pos) >= 2
         assert 0 <= pos[0] <= 1
         assert 0 <= pos[1] <= 1
+        pos = Point2((pos[0], pos[1]))
         self._debug_texts.append(self.to_debug_message(text, color, pos, size))
 
-    def debug_text_3d(self, text: str, pos: Union[Unit, Point2, Point3], color=None, size: int=8):
+    def debug_text_2d(self, text: str, pos: Union[Point2, Point3, tuple, list], color=None, size: int=8):
+        return self.debug_text_screen(text, pos, color, size)
+
+    def debug_text_world(self, text: str, pos: Union[Unit, Point2, Point3], color=None, size: int=8):
         """ Draws a text at Point3 position. Don't forget to add 'await self._client.send_debug'.
         To grab a unit's 3d position, use unit.position3d
         Usually the Z value of a Point3 is between 8 and 14 (except for flying units)
@@ -314,6 +319,9 @@ class Client(Protocol):
         if isinstance(pos, Point2) and not isinstance(pos, Point3): # a Point3 is also a Point2
             pos = Point3((pos.x, pos.y, 0))
         self._debug_texts.append(self.to_debug_message(text, color, pos, size))
+
+    def debug_text_3d(self, text: str, pos: Union[Unit, Point2, Point3], color=None, size: int=8):
+        return self.debug_text_world(text, pos, color, size)
 
     def debug_line_out(self, p0: Union[Unit, Point2, Point3], p1: Union[Unit, Point2, Point3], color=None):
         """ Draws a line from p0 to p1. Don't forget to add 'await self._client.send_debug'. """
@@ -338,7 +346,7 @@ class Client(Protocol):
         ))
 
     async def send_debug(self):
-        """ Sends the debug draw execution. Put this at the end of your step function. """
+        """ Sends the debug draw execution. Put this after your debug creation functions. """
         await self._execute(debug=sc_pb.RequestDebug(
             debug=[debug_pb.DebugCommand(draw=debug_pb.DebugDraw(
                 text=self._debug_texts if len(self._debug_texts) > 0 else None,
@@ -359,7 +367,7 @@ class Client(Protocol):
             r = getattr(color, "r", getattr(color, "x", 255))
             g = getattr(color, "g", getattr(color, "y", 255))
             b = getattr(color, "b", getattr(color, "z", 255))
-            if r + g + b <= 3:
+            if max(r, g, b) <= 1:
                 r *= 255
                 g *= 255
                 b *= 255

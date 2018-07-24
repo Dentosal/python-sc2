@@ -105,7 +105,7 @@ class Point2(Pointlike):
         angle = (angle - max_difference) + max_difference * 2 * random.random()
         return Point2((self.x + cos(angle) * distance, self.y + sin(angle) * distance))
 
-    def circle_intersection(self, p: "Point2", r: Union[int, float]):
+    def circle_intersection(self, p: "Point2", r: Union[int, float]) -> Set["Point2"]:
         """ self is point1, p is point2, r is the radius for circles originating in both points
         Used in ramp finding """
         assert self != p

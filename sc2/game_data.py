@@ -75,13 +75,13 @@ class AbilityData(object):
         assert self.id != 0
 
     @property
-    def id(self):
+    def id(self) -> AbilityId:
         if self._proto.remaps_to_ability_id:
             return AbilityId(self._proto.remaps_to_ability_id)
         return AbilityId(self._proto.ability_id)
 
     @property
-    def is_free_morph(self):
+    def is_free_morph(self) -> bool:
         parts = split_camel_case(self._proto.link_name)
         for p in parts:
             if p in FREE_MORPH_ABILITY_CATEGORIES:
@@ -101,7 +101,7 @@ class UnitTypeData(object):
         self._proto = proto
 
     @property
-    def id(self):
+    def id(self) -> UnitTypeId:
         return UnitTypeId(self._proto.unit_id)
 
     @property
