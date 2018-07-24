@@ -10,7 +10,7 @@ from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type chec
 
 
 class Ramp:
-    def __init__(self, points: Set[Point2], game_info: "GameInfo") -> None:
+    def __init__(self, points: Set[Point2], game_info: "GameInfo"):
         self._points: Set[Point2] = set(points)
         self.__game_info = game_info
         # tested by printing actual building locations vs calculated depot positions

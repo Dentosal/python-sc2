@@ -6,7 +6,6 @@ import logging
 from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type checking
 
 # imports for mypy and pycharm autocomplete
-from .client import Client
 from .game_info import GameInfo
 from .game_state import GameState
 from .game_data import GameData
