@@ -16,15 +16,21 @@ class Command(object):
 
     async def execute(self, bot):
 
-        condition = unit_count_at_least(self.requires, 1, True)
-        condition_done = unit_count_at_least(self.requires, 1, False)
+        #condition = unit_count_at_least(self.requires, 1, True)
+        #condition_done = unit_count_at_least(self.requires, 1, False)
+
+        # HS
+        # if requirement not fulfilled, return later
+        if self.requires is not None and bot.units(self.requires).completed.amount < 1:
+            return None
 
         #if  self.requires is not None and not condition:
 
         #    print("Required {0} is not pending. Therefore, schedule to built it".format(self.requires))
         #    await construct(self.requires)
             # await bot.do(bot.build(self.requires))
-            
+        
+         
          
         e = await self.action(bot)
         
@@ -92,13 +98,10 @@ def morph(unit, prioritize=False, repeatable=False, increased_supply = 0):
 
 def construct(building, placement=None, prioritize=True, repeatable=False):
     async def do_build(bot):
-
-
+        
         if not placement:
             # HS
-            location = get_random_building_location(bot)
-            
-
+            location = get_random_building_location(bot)           
         else:
             location = placement
 
@@ -109,7 +112,7 @@ def construct(building, placement=None, prioritize=True, repeatable=False):
         else:
             return can_afford.action_result
 
-    return Command(do_build, priority=prioritize, repeatable=repeatable, requires =  construct_requirements.get(building))
+    return Command(do_build, priority=prioritize, repeatable=repeatable, requires = construct_requirements.get(building))
 
 
 def add_supply(prioritize=True, repeatable=False):
@@ -170,9 +173,6 @@ def research(upgrade, on_building, prioritize=True):
 async def build_required(self, bot, required):
     """Builds required building"""
 
- 
-
-    
     if required is None or bot.units(required).owned.amount > 0 or not bot.can_afford(required):
         # If no required building or its available (soon) or cannot afford
         return

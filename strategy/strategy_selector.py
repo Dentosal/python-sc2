@@ -54,7 +54,7 @@ def main():
 
         # Start game
         run_game(maps.get(map_name), [
-            Bot(self_race, bot_selector[self_race](path)),
+            Bot(self_race, bot_selector[self_race](path, output_replay)),
             Computer(enemy_race, enemy_difficulty)
         ], realtime=False, save_replay_as= output_replay, game_time_limit = max_gametime)
 

@@ -24,17 +24,7 @@ def can_build(building, unit):
 
 
 
-# TODO attack as group, or solution as in proxy_ray.py???
-# TODO for other races
-# TODO couldnt it be improved by adding new units automatically
-# TODO can be improved significantly --> e.g. superclass units without SCV
-def get_units_military(bot):
-    units_military = []
 
-    for unit in terran_military_units:
-        units_military = units_military + bot.units(unit)
-            
-    return  units_military
 
 
 

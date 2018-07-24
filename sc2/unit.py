@@ -19,6 +19,18 @@ class Unit(object):
     def type_id(self):
         return UnitTypeId(self._proto.unit_type)
 
+    # HS
+    @property
+    def is_worker(self):
+        return self.type_id in [UnitTypeId.SCV, UnitTypeId.PROBE, UnitTypeId.DRONE]
+
+    # HS
+    @property
+    def is_townhall(self):
+        return self.type_id in [UnitTypeId.COMMANDCENTER, UnitTypeId.ORBITALCOMMAND, UnitTypeId.PLANETARYFORTRESS, 
+                                UnitTypeId.NEXUS, 
+                                UnitTypeId.HATCHERY, UnitTypeId.LAIR, UnitTypeId.HIVE]
+
     @property
     def _type_data(self):
         return self._game_data.units[self._proto.unit_type]

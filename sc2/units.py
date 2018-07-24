@@ -144,6 +144,17 @@ class Units(list):
     def not_structure(self):
         return self.filter(lambda unit: not unit.is_structure)
 
+    # HS
+    @property
+    def military(self):
+        return self.not_structure.filter(lambda unit: not unit.is_worker)
+
+    # HS
+    @property
+    def townhall(self):
+        return self.structure.filter(lambda unit: unit.is_townhall)
+
+
     #HS
     @property
     def no_add_on(self):

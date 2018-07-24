@@ -45,6 +45,7 @@ class Strategy_Test(Bot_AI_Extended):
         self.build_order = BuildOrder(self, build_order, worker_count=init_worker_count) 
         self.first_base = None
         self.path = ""
+        self.enemy_base = None
   
 def main():
     run_game(maps.get("Abyssal Reef LE"), [
