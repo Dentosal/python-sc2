@@ -11,6 +11,7 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 from sc2.data import Result
 from strategy_util import *
 from util import *
+import time
 
 class Bot_AI_Extended(sc2.BotAI):
     """Extends BotAI with specific methods for the strategy"""
@@ -47,7 +48,7 @@ class Bot_AI_Extended(sc2.BotAI):
         if iteration % gameloops_check_frequency / 4 == 0:
             await self.distribute_workers()
             await self.build_order.increase_supply()
-            await self.build_order.increase_workers()
+            await self.build_order.increase_workers()            
 
         if (iteration + 2)  % gameloops_check_frequency / 2 == 0:
             await self.build_order.execute_build()
@@ -66,25 +67,22 @@ class Bot_AI_Extended(sc2.BotAI):
 
         if (iteration + 12) % gameloops_check_frequency / 2 == 0:
             await auto_build_expand(self)
-
-        # Lower supply depots
-        #for supply_depot in self.units(UnitTypeId.SUPPLYDEPOT):
-        #     await self.do(supply_depot.__call__(AbilityId.MORPH_SUPPLYDEPOT_LOWER))
-
+            
         if (iteration + 13) % gameloops_check_frequency == 0:
-           await auto_attack(self)
+           await auto_defend(self)  
+        if (iteration + 14) % gameloops_check_frequency == 0:
+           await auto_attack(self)          
 
 
 
-        # check every second
-        #if iteration % gameloops_check_frequency == 0:
-        #    await auto_attack(self)
-        #    await auto_defend(self)
 
-# TODO check if works  
 async def auto_defend(bot):
+    """Defends against enemy"""
 
-    if bot.defending or bot.known_enemy_units.amount > 0:
+    if bot.townhalls.amount == 0:
+        return
+
+    if not bot.attack and (bot.defending or bot.known_enemy_units.amount > 0):
         units_military = bot.units.owned.military #get_units_military(bot)
         units_military_amount = len(units_military)
         close_enemies =  bot.known_enemy_units.closer_than(distance_defend, bot.townhalls.random)
@@ -92,22 +90,39 @@ async def auto_defend(bot):
             print("Defending")
             bot.defending = True 
 
+
+            list_actions = []
             for unit in filter(lambda u: u.is_idle, units_military):  
-                enemy = close_enemies.random # attack random unit
-                if enemy.distance_to(bot.townhalls.random) < distance_defend:
-                    await bot.do(unit.attack(enemy.position.to2, queue=True))
-        else:
+                    enemy = close_enemies.random # attack random unit
+                    if enemy.distance_to(bot.townhalls.random) < distance_defend:
+                        list_actions.append(unit.attack(enemy.position.to2, queue=True))
+            await execute_actions(bot, list_actions)
+
+            #for unit in filter(lambda u: u.is_idle, units_military):  
+            #    enemy = close_enemies.random # attack random unit
+            #    if enemy.distance_to(bot.townhalls.random) < distance_defend:
+            #        await bot.do(unit.attack(enemy.position.to2, queue=True))
+        elif bot.defending == True:
             # enemy too far away, or too few units
             print("Not defending")
             bot.defending = False
 
 
 
+async def execute_actions(bot, list_action):
+    """Executing actions as list improves the performance significantly"""
+
+    await bot._client.actions(list_action, bot._game_data)
+
+
 # TODO attack as group
 async def auto_attack(bot):
     """Automatic attack opponent; Priority: Attack units first, then buildings, else enemy base"""
 
-    units_military = bot.units.owned.military
+    if bot.defending == True:
+        return
+   
+    units_military = bot.units.owned.military 
     units_military_amount = len(units_military)
     enemy_position = None
 
@@ -115,6 +130,11 @@ async def auto_attack(bot):
         # Retreat
         print("Not attacking")
         bot.attack = False
+
+        # army too week, try next time with more units
+        global min_units_attack 
+        min_units_attack = min_units_attack + min_units_defend
+        
     elif bot.attack or units_military_amount >= min_units_attack:
         if bot.attack == False:
             print("Attacking")           
@@ -136,36 +156,45 @@ async def auto_attack(bot):
 
                 for base in enemy_bases:
                     distance = base.position.to2.distance_to(bot.enemy_start_locations[0])
-                    if distance < 5:
+                    if distance < 1:
                         bot.enemy_base = base
    
         if enemy_position is None: 
                 enemy_position = bot.enemy_start_locations[0]
 
         # Check if enemy base is destroyed
-        # TODO fix, different tags
-        if bot.enemy_base is not None and enemy_buildings.find_by_tag(bot.enemy_base.tag) is None:
-            bot.final_result = result_won
-            export_result(self, result_won)
-            return
-                
-        for unit in filter(lambda u: u.is_ready, units_military):   # u.is_idle
-                await bot.do(unit.attack(enemy_position, queue=False))
-        
-        
+        # diffenet tags wont work
+        if bot.enemy_base is not None: #and enemy_buildings.find_by_tag(bot.enemy_base.tag) is None:
+            won_destroyed = True
+            for building in enemy_buildings.townhall:
+                # if there is a base -> not destroyed
+                if building.position.to2.distance_to(bot.enemy_start_locations[0]) < 1:
+                    won_destroyed = False
 
-        #for unit in units_military:   
-        #    if unit.position.distance_to(bot.enemy_start_locations[0]) < 2:
-        #        bot.final_result = result_won
-        #        export_result(self, result_won)
-        #        return
+            #won_reached = False
+            #for unit in units_military:   
+            #    if unit.position.to2.distance_to(bot.enemy_start_locations[0]) < 1:
+            #        won_reached = True
+
+            if won_destroyed == True: # or won_reached == True:
+                bot.final_result = result_won
+                export_result(bot, result_won)
+                return
+         
+        
+        list_actions = []
+        for unit in units_military: # filter(lambda u: u.is_ready, units_military):  
+                #await bot.do(unit.attack(enemy_position, queue=False))
+                list_actions.append(unit.attack(enemy_position, queue=False))
+        await execute_actions(bot, list_actions)
+                
     return           
  
 
 async def auto_build_expand(bot):
     """Auto build expansion in case of surplus of resources"""
 
-    if bot.minerals > sufficently_much_minerals + sufficently_enough_minerals and bot.units(bot.basic_townhall_type).pending.amount == 0 :
+    if bot.minerals > sufficently_gigantic_minerals and bot.units(bot.basic_townhall_type).pending.amount == 0 :
         print("Auto expand due to a gigantic surplus of resources")
         await expand().execute(bot)
 

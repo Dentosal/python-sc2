@@ -54,3 +54,6 @@ sufficently_enough_vespene = 450 # i.e. 2 times Battlecruiser == 600  -> 50 % di
 # Minimum number of resources to autobuild buildings
 sufficently_much_minerals = sufficently_enough_minerals + 400 # additional commandcenter
 sufficently_much_vespene = sufficently_enough_vespene + 150 # additional Planetary Fortress
+
+# Minimum number of resources to auto expand
+sufficently_gigantic_minerals = sufficently_much_minerals + 100
