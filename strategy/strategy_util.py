@@ -11,7 +11,8 @@ import re
 from random import uniform, randrange
 import os
 from math import isclose
-
+from util import print_log
+import logging
 
 
 def can_build(building, unit):
@@ -43,7 +44,7 @@ def export_result(self, result):
 
 
 
-def init_build_order(path):
+def init_build_order(path, logger):
 
     build_order = []
     df = pd.read_csv(path, sep=";")
@@ -112,10 +113,10 @@ def init_build_order(path):
                     break
             
             if upgrade == "":
-                print("Upgrade {0} not found".format(unit_name))
+                print_log(logger, logging.WARNING, "Upgrade {0} not found".format(unit_name))
                 continue
             else:
-                print("Upgrade {0} found".format(unit_name))
+                print_log(logger, logging.DEBUG, "Upgrade {0} found".format(unit_name))
 
 
             build_order.append((all_of(supply_at_least(supply), unit_count_at_least_completed(UnitTypeId[unit_building], 1)), 

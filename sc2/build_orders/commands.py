@@ -2,7 +2,8 @@ from sc2 import ActionResult, Race
 from sc2.constants import *
 from sc2.state_conditions.conditions import  unit_count_at_least
 from random import uniform, randrange
-from util import get_random_building_location
+from util import get_random_building_location, print_log
+import logging
 
 class Command(object):
     def __init__(self, action, repeatable=False, priority=False, increase_workers = 0, increased_supply = 0, requires = None):
@@ -68,7 +69,7 @@ def train_unit(unit, on_building, prioritize=False, repeatable=False, increased_
             selected = buildings.first
             can_afford = bot.can_afford(unit)
             if can_afford:
-                print("Training {}".format(unit))
+                print_log(logging.getLogger("sc2.command"), logging.DEBUG, "Training {}".format(unit))
                 return await bot.do(selected.train(unit))
             else:
                 return can_afford.action_result
@@ -86,7 +87,7 @@ def morph(unit, prioritize=False, repeatable=False, increased_supply = 0):
             selected = larvae.first
             can_afford = bot.can_afford(unit)
             if can_afford:
-                print("Morph {}".format(unit))
+                print_log(logging.getLogger("sc2.command"), logging.DEBUG, "Morph {}".format(unit))
                 return await bot.do(selected.train(unit))
             else:
                 return can_afford.action_result
@@ -107,7 +108,7 @@ def construct(building, placement=None, prioritize=True, repeatable=False):
 
         can_afford = bot.can_afford(building)
         if can_afford:
-            print("Building {}".format(building))
+            print_log(logging.getLogger("sc2.command"), logging.DEBUG, "Building {}".format(building))
             return await bot.build(building, near=location)
         else:
             return can_afford.action_result
@@ -159,7 +160,7 @@ def research(upgrade, on_building, prioritize=True):
        
             can_afford = bot.can_afford(upgrade)
             if can_afford:
-                print("Research {0}".format(upgrade))
+                print_log(logging.getLogger("sc2.command"), logging.DEBUG, "Research {0}".format(upgrade))
                 bot.researched.append(upgrade)
                 await bot.do(buildings.first(upgrade))
             else:
@@ -190,7 +191,7 @@ async def build_required(self, bot, required):
 
          if required in building_addons:
             if bot.units(prerequired).owned.completed.no_add_on.amount > 0:
-                print("Build new addon {0} due to requirements".format(required))
+                print_log(logging.getLogger("sc2.command"), logging.DEBUG, "Build new addon {0} due to requirements".format(required))
                 await train_unit(required, prerequired).execute(bot)
             elif bot.units(prerequired).owned.pending.amount > 0:
                 return
@@ -198,7 +199,7 @@ async def build_required(self, bot, required):
                 # rebuild building, since no empty add_on place
                 await build_required(self, bot, prerequired)
          elif bot.already_pending(required) == 0 or bot.units(required).owned.pending.amount == 0:
-             print("Build new building {0} due to requirements".format(required))
+             print_log(logging.getLogger("sc2.command"), logging.DEBUG, "Build new building {0} due to requirements".format(required))
              await construct(required).execute(bot)
     elif bot.already_pending(prerequired) > 0 or bot.units(prerequired).owned.pending.amount > 0:  
         return

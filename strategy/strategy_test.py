@@ -46,7 +46,9 @@ class Strategy_Test(Bot_AI_Extended):
         self.first_base = None
         self.path = ""
         self.enemy_base = None
-  
+        self.logger = None
+
+
 def main():
     run_game(maps.get("Abyssal Reef LE"), [
         Bot(Race.Terran, Strategy_Test()),

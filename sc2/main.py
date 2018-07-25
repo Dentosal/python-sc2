@@ -93,14 +93,16 @@ async def _play_game(player, client, realtime, portconfig, step_time_limit=None,
     assert isinstance(realtime, bool), repr(realtime)
 
     player_id = await client.join_game(player.race, portconfig=portconfig)
-    logging.info(f"Player id: {player_id}")
+    # HS fix logger
+    logger.info(f"Player id: {player_id}")
 
     if isinstance(player, Human):
         result = await _play_game_human(client, player_id, realtime, game_time_limit)
     else:
         result = await _play_game_ai(client, player_id, player.ai, realtime, step_time_limit, game_time_limit)
-
-    logging.info(f"Result for player id: {player_id}: {result}")
+    
+    # HS fix logger
+    logger.info(f"Result for player id: {player_id}: {result}")
     return result
 
 async def _host_game(map_settings, players, realtime, portconfig=None, save_replay_as=None, step_time_limit=None, game_time_limit=None):

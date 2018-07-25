@@ -12,13 +12,14 @@ from sc2.data import Result
 from strategy_util import *
 from util import *
 import time
+import logging
 
 class Bot_AI_Extended(sc2.BotAI):
     """Extends BotAI with specific methods for the strategy"""
 
 
-    def __init__(self, path, output_replay):
-        build_order = init_build_order(path)
+    def __init__(self, path, output_replay, logger):
+        build_order = init_build_order(path, logger)
         self.attack = False
         self.defending = False
         self.researched = []
@@ -26,8 +27,11 @@ class Bot_AI_Extended(sc2.BotAI):
         self.first_base = None
         self.path = output_replay
         self.enemy_base = None
+        self.logger = logger
 
-    
+
+   
+
 
     async def on_step(self, iteration):
 
@@ -87,7 +91,7 @@ async def auto_defend(bot):
         units_military_amount = len(units_military)
         close_enemies =  bot.known_enemy_units.closer_than(distance_defend, bot.townhalls.random)
         if close_enemies.amount > 0 and (units_military_amount >= min_units_defend or bot.known_enemy_units.amount <= units_military_amount):          
-            print("Defending")
+            print_log(bot.logger, logging.DEBUG, "Defending")
             bot.defending = True 
 
 
@@ -104,14 +108,14 @@ async def auto_defend(bot):
             #        await bot.do(unit.attack(enemy.position.to2, queue=True))
         elif bot.defending == True:
             # enemy too far away, or too few units
-            print("Not defending")
+            print_log(bot.logger, logging.DEBUG, "Not defending")
             bot.defending = False
 
 
 
 async def execute_actions(bot, list_action):
     """Executing actions as list improves the performance significantly"""
-
+    # minerals and gas are not checked, instead use for moving units
     await bot._client.actions(list_action, bot._game_data)
 
 
@@ -128,7 +132,7 @@ async def auto_attack(bot):
 
     if units_military_amount <= min_units_defend and bot.attack == True:
         # Retreat
-        print("Not attacking")
+        print_log(bot.logger, logging.DEBUG, "Not attacking")
         bot.attack = False
 
         # army too week, try next time with more units
@@ -137,7 +141,7 @@ async def auto_attack(bot):
         
     elif bot.attack or units_military_amount >= min_units_attack:
         if bot.attack == False:
-            print("Attacking")           
+            print_log(bot.logger, logging.DEBUG, "Attacking")           
             bot.attack = True
           
         # Attack units    
@@ -195,7 +199,7 @@ async def auto_build_expand(bot):
     """Auto build expansion in case of surplus of resources"""
 
     if bot.minerals > sufficently_gigantic_minerals and bot.units(bot.basic_townhall_type).pending.amount == 0 :
-        print("Auto expand due to a gigantic surplus of resources")
+        print_log(bot.logger, logging.DEBUG, "Auto expand due to a gigantic surplus of resources")
         await expand().execute(bot)
 
 
@@ -207,7 +211,7 @@ async def auto_build_buildings(bot):
         building_required = construct_requirements[building]
 
         if bot.units(building_required).owned.completed.amount > 0 and bot.can_afford(building):      
-            print("Build {0} due to a large surplus of resources".format(building))
+            print_log(bot.logger, logging.DEBUG, "Build {0} due to a large surplus of resources".format(building))
             bot.cum_supply = bot.cum_supply + 1 # in case of bringing the gap in build-order
             await bot.build(building, near = get_random_building_location(bot))
 
@@ -220,6 +224,6 @@ async def auto_build_units(bot, building_id, units_list):
             unit = sample(units_list, 1)[0] # random unit
 
             if can_build(building, unit) and bot.can_afford(unit):
-                print("Train unit {0} due to surplus of resources".format(unit))
+                print_log(bot.logger, logging.DEBUG, "Train unit {0} due to surplus of resources".format(unit))
                 bot.cum_supply = bot.cum_supply + 1
                 await bot.do(building.train(unit))

@@ -87,3 +87,13 @@ def get_units_military(bot):
         units_military = units_military + bot.units(unit)
             
     return  units_military
+
+
+
+ def write_log(self):
+        if self.log_file is None:
+            return
+
+        with open(self.log_file, "a") as f:
+            for log in self.log:
+                f.write("%s\n" % log)

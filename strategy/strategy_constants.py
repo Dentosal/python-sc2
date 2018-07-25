@@ -1,7 +1,6 @@
 from sc2 import Race, Difficulty
 from sc2.constants import *
 from bot_config import *
-from os.path import dirname
 import os
 # NOTE: constants are partially tailored to Terran specific units due to underlying data set
 
@@ -11,7 +10,7 @@ import os
 dataset = "DataSetSc2ReplayStats"
 # NOTE: Adapt these paths in case of custom directories
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-folder_sc2replays = dirname(dirname(ROOT_DIR)) + "/SC2-replays/" + dataset + "/"
+folder_sc2replays = os.path.dirname(os.path.dirname(ROOT_DIR)) + "/SC2-replays/" + dataset + "/"
 
 
 # Eval settings ---------------------------------------------------------------
@@ -34,6 +33,7 @@ enemy_difficulty = Difficulty.Medium
 ending_folder = "/"
 ending_csv = ".csv"
 ending_sc2replay = ".SC2Replay"
+ending_logs = ".log"
 
 # Strings for file names
 race_terran_string = "Terran"
@@ -41,10 +41,19 @@ race_protoss_string = "Protoss"
 race_zerg_string = "Zerg"
 race_bot_separator = "vs"
 
+def create_folder(folder):
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
 
 folder_bot_replays = folder_sc2replays + "bot-replays/"
-if not os.path.exists(folder_bot_replays):
-    os.makedirs(folder_bot_replays)
+folder_bot_logs = folder_sc2replays + "bot-logs/"
+
+create_folder(folder_bot_replays)
+create_folder(folder_bot_logs)
+
+
+
 
 folder_buildorder =  folder_sc2replays + "buildorders-csv/"
 file_strategy = "strategy"+ending_csv
