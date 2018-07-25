@@ -144,7 +144,7 @@ class Client(Protocol):
             else:
                 return [r for r in res if r != ActionResult.Success]
 
-    async def query_pathing(self, start: Union[Unit, Point2, Point3], end: Union[Point2, Point3]) -> Union[int, float]:
+    async def query_pathing(self, start: Union[Unit, Point2, Point3], end: Union[Point2, Point3]) -> Optional[Union[int, float]]:
         """ Caution: returns 0 when path not found """
         assert isinstance(start, (Point2, Unit))
         assert isinstance(end, Point2)
