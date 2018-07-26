@@ -90,10 +90,10 @@ def get_units_military(bot):
 
 
 
- def write_log(self):
-        if self.log_file is None:
-            return
+def write_log(self):
+    if self.log_file is None:
+        return
 
-        with open(self.log_file, "a") as f:
-            for log in self.log:
-                f.write("%s\n" % log)
+    with open(self.log_file, "a") as f:
+        for log in self.log:
+            f.write("%s\n" % log)

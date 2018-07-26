@@ -18,11 +18,30 @@ def get_test_buildorder_research():
     ]
     return get_test_buildorder(build_order_research)
 
-def get_test_buildorder_build_required():
+def get_test_buildorder_research_tiwl():
+    build_order_research = [        
+        (supply_at_least(14), research(AbilityId.ENGINEERINGBAYRESEARCH_TERRANINFANTRYWEAPONSLEVEL1, on_building = UnitTypeId.ENGINEERINGBAY)),
+        (supply_at_least(15), research(AbilityId.ENGINEERINGBAYRESEARCH_TERRANINFANTRYWEAPONSLEVEL2, on_building = UnitTypeId.ENGINEERINGBAY))
+    ]
+    return get_test_buildorder(build_order_research)
+
+
+
+
+
+def get_test_buildorder_build_required_viking():
     build_order_required = [
-        (supply_at_least(15), train_unit(UnitTypeId.VIKINGFIGHTER, on_building = UnitTypeId.STARPORT))  
+        (supply_at_least(13), train_unit(UnitTypeId.VIKINGFIGHTER, on_building = UnitTypeId.STARPORT, repeatable = True))  
     ]
     return get_test_buildorder(build_order_required)
+
+def get_test_buildorder_build_required_thor():
+    build_order_required = [
+        (supply_at_least(13), train_unit(UnitTypeId.THOR, on_building = UnitTypeId.FACTORY, repeatable = True))  
+    ]
+    return get_test_buildorder(build_order_required)
+
+
 
 
 def get_test_buildorder_build_BFS():
@@ -38,7 +57,8 @@ class Strategy_Test(Bot_AI_Extended):
     """Only for testing purposes"""
 
     def __init__(self):
-        build_order = get_test_buildorder_build_BFS() # get_test_buildorder([])
+        init_loggers()
+        build_order = get_test_buildorder_research_tiwl() #   get_test_buildorder_build_required_thor() #get_test_buildorder_build_BFS() # get_test_buildorder([])
         self.attack = False
         self.defending = False
         self.researched = []

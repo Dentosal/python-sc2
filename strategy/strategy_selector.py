@@ -48,11 +48,7 @@ def main():
 
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    logger_strategy = logging.getLogger("sc2.strategy")        
-    logger_strategy.setLevel(logging.DEBUG)       
-    
-    logger_command = logging.getLogger("sc2.command")
-    logger_command.setLevel(logging.DEBUG)    
+  
 
 
     loggers = [logging.getLogger("sc2.bot_ai"), logging.getLogger("sc2.controller"), logging.getLogger("sc2.main"),

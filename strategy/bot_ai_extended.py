@@ -18,7 +18,11 @@ class Bot_AI_Extended(sc2.BotAI):
     """Extends BotAI with specific methods for the strategy"""
 
 
+
+
     def __init__(self, path, output_replay, logger):
+        init_loggers()
+
         build_order = init_build_order(path, logger)
         self.attack = False
         self.defending = False

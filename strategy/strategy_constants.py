@@ -124,6 +124,19 @@ building_addons = {
 }
 
 
+# Terran reseach requirements
+research_requirements = {
+    AbilityId.ENGINEERINGBAYRESEARCH_TERRANINFANTRYARMORLEVEL2 : UnitTypeId.ARMORY,
+    AbilityId.ENGINEERINGBAYRESEARCH_TERRANINFANTRYARMORLEVEL3 : UnitTypeId.ARMORY,
+    AbilityId.ENGINEERINGBAYRESEARCH_TERRANINFANTRYWEAPONSLEVEL2: UnitTypeId.ARMORY,
+    AbilityId.ENGINEERINGBAYRESEARCH_TERRANINFANTRYWEAPONSLEVEL3 : UnitTypeId.ARMORY,
+    AbilityId.RESEARCH_ADVANCEDBALLISTICS : UnitTypeId.FUSIONCORE,
+    AbilityId.RESEARCH_DRILLINGCLAWS : UnitTypeId.ARMORY,
+    AbilityId.FACTORYTECHLABRESEARCH_RESEARCHTRANSFORMATIONSERVOS : UnitTypeId.ARMORY
+}
+
+
+
 # Terran units requirements
 unit_requirements = {
     UnitTypeId.MARINE : UnitTypeId.BARRACKS,
@@ -141,6 +154,25 @@ unit_requirements = {
     UnitTypeId.RAVEN : UnitTypeId.STARPORTTECHLAB,
     UnitTypeId.BANSHEE : UnitTypeId.STARPORTTECHLAB,
     UnitTypeId.BATTLECRUISER : UnitTypeId.STARPORTTECHLAB
+}
+
+# Terran units requirements
+unit_requirements_2nd = {
+    UnitTypeId.MARINE : None,
+    UnitTypeId.MARAUDER : None,
+    UnitTypeId.REAPER : None,
+    UnitTypeId.GHOST : None,
+    UnitTypeId.HELLION : None,
+    UnitTypeId.SIEGETANK : None,
+    UnitTypeId.CYCLONE : None,
+    UnitTypeId.WIDOWMINE : None,
+    UnitTypeId.THOR : UnitTypeId.ARMORY,
+    UnitTypeId.VIKINGFIGHTER : None,
+    UnitTypeId.MEDIVAC : None,
+    UnitTypeId.LIBERATOR : None,
+    UnitTypeId.RAVEN : None,
+    UnitTypeId.BANSHEE : None,
+    UnitTypeId.BATTLECRUISER : UnitTypeId.FUSIONCORE
 }
 
 

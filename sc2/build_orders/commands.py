@@ -6,7 +6,7 @@ from util import get_random_building_location, print_log
 import logging
 
 class Command(object):
-    def __init__(self, action, repeatable=False, priority=False, increase_workers = 0, increased_supply = 0, requires = None):
+    def __init__(self, action, repeatable=False, priority=False, increase_workers = 0, increased_supply = 0, requires = None, requires_2nd = None):
         self.action = action
         self.is_done = False
         self.is_repeatable = repeatable
@@ -14,6 +14,7 @@ class Command(object):
         self.increase_workers = increase_workers
         self.increased_supply = increased_supply
         self.requires = requires
+        self.requires_2nd = requires_2nd
 
     async def execute(self, bot):
 
@@ -24,6 +25,9 @@ class Command(object):
         # if requirement not fulfilled, return later
         if self.requires is not None and bot.units(self.requires).completed.amount < 1:
             return None
+        if self.requires_2nd is not None and bot.units(self.requires_2nd).completed.amount < 1:
+            return None
+  
 
         #if  self.requires is not None and not condition:
 
@@ -77,7 +81,8 @@ def train_unit(unit, on_building, prioritize=False, repeatable=False, increased_
         else:
             return ActionResult.Error
 
-    return Command(do_train, priority=prioritize, repeatable=repeatable, increased_supply= increased_supply, requires =  unit_requirements.get(unit))
+    return Command(do_train, priority=prioritize, repeatable=repeatable, increased_supply= increased_supply, 
+                   requires =  unit_requirements.get(unit), requires_2nd= unit_requirements_2nd.get(unit))
 
 
 def morph(unit, prioritize=False, repeatable=False, increased_supply = 0):
@@ -168,7 +173,7 @@ def research(upgrade, on_building, prioritize=True):
         else:
             return ActionResult.Error
 
-    return Command(research_spec, priority=prioritize, repeatable=False)
+    return Command(research_spec, priority=prioritize, repeatable=False, requires=on_building, requires_2nd = research_requirements.get(upgrade))
 
 # HS
 async def build_required(self, bot, required):

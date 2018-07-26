@@ -27,3 +27,10 @@ def print_log(logger, level, message):
     
     else:
         print(message)
+
+def init_loggers():
+    logger_strategy = logging.getLogger("sc2.strategy")        
+    logger_strategy.setLevel(logging.DEBUG)       
+    
+    logger_command = logging.getLogger("sc2.command")
+    logger_command.setLevel(logging.DEBUG)    
