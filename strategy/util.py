@@ -1,5 +1,10 @@
 from random import uniform, randrange
 import logging
+logger = logging.getLogger("sc2.performance")
+logger.setLevel(logging.INFO)
+import functools
+import timeit
+import time
 
 def get_random_building_location(bot):
     random1 = randrange(5, 15, 2)
@@ -34,3 +39,30 @@ def init_loggers():
     
     logger_command = logging.getLogger("sc2.command")
     logger_command.setLevel(logging.DEBUG)    
+
+
+# Based on: https://stackoverflow.com/a/20924212
+def measure_runtime(func):
+    @functools.wraps(func)
+    async def newfunc(*args, **kwargs):
+        start = time.time()
+        await func(*args, **kwargs)
+        elaped_ms = int((time.time() - start) * 1000)
+
+        level = None
+        if elaped_ms <= 10:
+            return
+        elif elaped_ms > 1000:            
+            level = logging.CRITICAL
+        elif elaped_ms > 500:            
+            level = logging.ERROR            
+        elif elaped_ms > 100:            
+            level = logging.WARNING
+        elif elaped_ms > 50:            
+            level = logging.INFO
+        elif elaped_ms > 10:            
+            level = logging.DEBUG
+
+        print_log(logger, level, "Function {} required {} ms".format(func.__name__, elaped_ms))
+
+    return newfunc

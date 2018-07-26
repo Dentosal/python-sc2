@@ -49,18 +49,21 @@ def main():
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
   
-
+    logger_strategy = logging.getLogger("sc2.strategy")     
 
     loggers = [logging.getLogger("sc2.bot_ai"), logging.getLogger("sc2.controller"), logging.getLogger("sc2.main"),
                logging.getLogger("sc2.maps"), logging.getLogger("sc2.paths"), logging.getLogger("sc2.sc2process"),
-               logging.getLogger("sc2.protocol"), logging.getLogger("root"), logger_command, logger_strategy]
+               logging.getLogger("sc2.protocol"), logging.getLogger("root"), logging.getLogger("sc2.command"), logger_strategy,
+               logging.getLogger("sc2.performance")]
     
 
 
       
     for i in range(eval_number_games):    
         
-        hash = get_buildorder_hash(path_strategy, method)
+        #hash = get_buildorder_hash(path_strategy, method)
+        hash = "9963262526c6c99a6e04bdc9449b50a2afc48175" # TODO
+
         path = folder + hash + ending_csv
 
         time_string = str(round(time.time())) #strftime("%Y-%m-%d-%H:%M:%S", gmtime())

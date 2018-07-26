@@ -17,6 +17,7 @@ from .ids.unit_typeid import UnitTypeId
 from .ids.ability_id import AbilityId
 from .ids.upgrade_id import UpgradeId
 
+from util import measure_runtime
 
 class BotAI(object):
     """Base class for bots."""
@@ -126,7 +127,8 @@ class BotAI(object):
                 closest = el
 
         return closest
-
+    
+    @measure_runtime
     async def distribute_workers(self):
         """Distributes workers across all the bases taken."""
 

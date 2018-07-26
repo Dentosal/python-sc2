@@ -66,7 +66,11 @@ class Strategy_Test(Bot_AI_Extended):
         self.first_base = None
         self.path = ""
         self.enemy_base = None
-        self.logger = None
+
+        logger = logging.getLogger("sc2.strategy")
+        logger.setLevel(logging.DEBUG)
+
+        self.logger = logger
 
 
 def main():

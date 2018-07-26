@@ -11,7 +11,7 @@ import re
 from random import uniform, randrange
 import os
 from math import isclose
-from util import print_log
+from util import print_log, measure_runtime
 import logging
 
 
@@ -43,7 +43,7 @@ def export_result(self, result):
 
 
 
-
+@measure_runtime
 def init_build_order(path, logger):
 
     build_order = []
@@ -96,19 +96,20 @@ def init_build_order(path, logger):
             building = ""
             prefix_buildings = ["BARRACKS", "STARPORT", "FACTORY", ""]
             unit_name = unit_name.replace("ARMORSLEVEL", "ARMORLEVEL")
+                                  
             
-            
+
             if not unit_building == "TECHLAB":
                 prefix_buildings = [""]
            
             for option_building in prefix_buildings:
                 
                 if option_building+unit_building+"RESEARCH_"+unit_name in AbilityId.__members__:
-                    upgrade = unit_building+"RESEARCH_"+unit_name
+                    upgrade = option_building+unit_building+"RESEARCH_"+unit_name
                     building = option_building + unit_building
                     break
                 elif option_building+"RESEARCH_"+unit_name in AbilityId.__members__:
-                    upgrade = "RESEARCH_"+unit_name
+                    upgrade = option_building+"RESEARCH_"+unit_name
                     building = option_building + unit_building
                     break
             
@@ -116,11 +117,11 @@ def init_build_order(path, logger):
                 print_log(logger, logging.WARNING, "Upgrade {0} not found".format(unit_name))
                 continue
             else:
-                print_log(logger, logging.DEBUG, "Upgrade {0} found".format(unit_name))
+                print_log(logger, logging.DEBUG, "Upgrade {0} on building {1} found".format(upgrade, building))
 
 
-            build_order.append((all_of(supply_at_least(supply), unit_count_at_least_completed(UnitTypeId[unit_building], 1)), 
-                                    research(upgrade, on_building = UnitTypeId[unit_building])))
+            build_order.append((all_of(supply_at_least(supply), unit_count_at_least_completed(UnitTypeId[building], 1)), 
+                                    research(AbilityId[upgrade], on_building = UnitTypeId[building])))
 
             
     return build_order

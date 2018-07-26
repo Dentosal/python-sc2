@@ -2,6 +2,7 @@ from sc2 import Race, race_worker, ActionResult, race_townhalls
 from sc2.build_orders.commands import train_unit, add_supply, morph, build_required
 from sc2.state_conditions.conditions import always_true, unit_count_at_least
 from sc2.constants import *
+from util import measure_runtime
 
 class BuildOrder(object):
     def __init__(self, bot, build, worker_count=0, auto_add_supply=True):
@@ -13,6 +14,7 @@ class BuildOrder(object):
          
    
     # HS adapted + moved
+    @measure_runtime
     async def increase_workers(self):
         """Increase number of workers, if below target amount"""
         bot = self.bot
@@ -24,6 +26,7 @@ class BuildOrder(object):
 
             
     # HS adapted + moved
+    @measure_runtime
     async def increase_supply(self):   
         """Increase supply if close to supply cap"""
         max_supply_cap = 200
@@ -33,6 +36,8 @@ class BuildOrder(object):
                 and self.auto_add_supply and bot.supply_cap < max_supply_cap:
             return await add_supply().execute(bot)
 
+    # HS adapted
+    @measure_runtime
     async def execute_build(self):
         bot = self.bot
         
@@ -62,8 +67,5 @@ class BuildOrder(object):
                             and not bot.already_pending(bot.supply_type):
                         return await add_supply().execute(bot)
                     continue
-
-        
-        
 
         return None

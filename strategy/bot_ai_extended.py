@@ -33,8 +33,11 @@ class Bot_AI_Extended(sc2.BotAI):
         self.enemy_base = None
         self.logger = logger
 
+    
 
-   
+          
+
+
 
 
     async def on_step(self, iteration):
@@ -83,7 +86,7 @@ class Bot_AI_Extended(sc2.BotAI):
 
 
 
-
+@measure_runtime
 async def auto_defend(bot):
     """Defends against enemy"""
 
@@ -116,14 +119,14 @@ async def auto_defend(bot):
             bot.defending = False
 
 
-
+@measure_runtime
 async def execute_actions(bot, list_action):
     """Executing actions as list improves the performance significantly"""
     # minerals and gas are not checked, instead use for moving units
     await bot._client.actions(list_action, bot._game_data)
 
 
-# TODO attack as group
+@measure_runtime
 async def auto_attack(bot):
     """Automatic attack opponent; Priority: Attack units first, then buildings, else enemy base"""
 
@@ -198,7 +201,7 @@ async def auto_attack(bot):
                 
     return           
  
-
+@measure_runtime
 async def auto_build_expand(bot):
     """Auto build expansion in case of surplus of resources"""
 
@@ -206,7 +209,7 @@ async def auto_build_expand(bot):
         print_log(bot.logger, logging.DEBUG, "Auto expand due to a gigantic surplus of resources")
         await expand().execute(bot)
 
-
+@measure_runtime
 async def auto_build_buildings(bot):            
     """Auto build terran_military_buildings in case of large surplus of resources"""
 
@@ -219,7 +222,7 @@ async def auto_build_buildings(bot):
             bot.cum_supply = bot.cum_supply + 1 # in case of bringing the gap in build-order
             await bot.build(building, near = get_random_building_location(bot))
 
-
+@measure_runtime
 async def auto_build_units(bot, building_id, units_list):
     """Auto build units in case of surplus of resources"""
 
