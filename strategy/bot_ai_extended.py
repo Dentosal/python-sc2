@@ -33,10 +33,10 @@ class Bot_AI_Extended(sc2.BotAI):
         self.enemy_base = None
         self.logger = logger
 
+        global min_units_attack
+        self.min_units_attack = min_units_attack
+
     
-
-          
-
 
 
 
@@ -93,17 +93,19 @@ async def auto_defend(bot):
     if bot.townhalls.amount == 0:
         return
 
-    if not bot.attack and (bot.defending or bot.known_enemy_units.amount > 0):
+    if bot.defending or bot.known_enemy_units.amount > 0:
         units_military = bot.units.owned.military #get_units_military(bot)
         units_military_amount = len(units_military)
         close_enemies =  bot.known_enemy_units.closer_than(distance_defend, bot.townhalls.random)
-        if close_enemies.amount > 0 and (units_military_amount >= min_units_defend or bot.known_enemy_units.amount <= units_military_amount):          
-            print_log(bot.logger, logging.DEBUG, "Defending")
-            bot.defending = True 
+        if close_enemies.amount > 0 and (units_military_amount >= min_units_defend or bot.known_enemy_units.amount <= units_military_amount):       
+            
+            if not bot.defending:
+                print_log(bot.logger, logging.DEBUG, "Defending")
+                bot.defending = True 
 
 
             list_actions = []
-            for unit in filter(lambda u: u.is_idle, units_military):  
+            for unit in units_military: #filter(lambda u: u.is_idle, units_military):  
                     enemy = close_enemies.random # attack random unit
                     if enemy.distance_to(bot.townhalls.random) < distance_defend:
                         list_actions.append(unit.attack(enemy.position.to2, queue=True))
@@ -143,10 +145,10 @@ async def auto_attack(bot):
         bot.attack = False
 
         # army too week, try next time with more units
-        global min_units_attack 
-        min_units_attack = min_units_attack + min_units_defend
+        if bot.min_units_attack < always_units_attack:
+            bot.min_units_attack = bot.min_units_attack + min_units_defend
         
-    elif bot.attack or units_military_amount >= min_units_attack:
+    elif bot.attack or units_military_amount >= bot.min_units_attack:
         if bot.attack == False:
             print_log(bot.logger, logging.DEBUG, "Attacking")           
             bot.attack = True
@@ -232,5 +234,5 @@ async def auto_build_units(bot, building_id, units_list):
 
             if can_build(building, unit) and bot.can_afford(unit):
                 print_log(bot.logger, logging.DEBUG, "Train unit {0} due to surplus of resources".format(unit))
-                bot.cum_supply = bot.cum_supply + 1
+                #bot.cum_supply = bot.cum_supply + 0.5
                 await bot.do(building.train(unit))

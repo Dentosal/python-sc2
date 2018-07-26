@@ -8,8 +8,12 @@ max_gametime = 1800 # 900 = 15 min, 1200 = 20 min , 1800 = 30 min
 
 # Minimum amount of units to attack
 min_units_attack = 12 # i.e. same amount as commandcenter https://github.com/davechurchill/commandcenter
+
+# maximum border of min_units_attack
+always_units_attack = 36
+
 # Minimum amount of units to defend
-min_units_defend = min_units_attack / 2
+min_units_defend = 6
 # Maximum military units when giving up
 max_units_giveup = min_units_defend
 # Maximum distance to defend against enemy units

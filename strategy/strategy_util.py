@@ -43,7 +43,6 @@ def export_result(self, result):
 
 
 
-@measure_runtime
 def init_build_order(path, logger):
 
     build_order = []

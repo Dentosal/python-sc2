@@ -61,9 +61,8 @@ def main():
       
     for i in range(eval_number_games):    
         
-        #hash = get_buildorder_hash(path_strategy, method)
-        hash = "9963262526c6c99a6e04bdc9449b50a2afc48175" # TODO
-
+        hash = get_buildorder_hash(path_strategy, method)
+        
         path = folder + hash + ending_csv
 
         time_string = str(round(time.time())) #strftime("%Y-%m-%d-%H:%M:%S", gmtime())
@@ -90,16 +89,22 @@ def main():
         # Start game
         run_game(maps.get(map_name), [
             Bot(self_race, bot_selector[self_race](path, output_replay, logger_strategy)),
+            #Bot(self_race, bot_selector[self_race](path, output_replay, logger_strategy))
             Computer(enemy_race, enemy_difficulty)
         ], realtime=False, save_replay_as= output_replay, game_time_limit = max_gametime)
 
 
-        logging.shutdown()     
+        
+        
         for logger in loggers:
             logger.removeHandler(fh)
 
         fh.flush()
         fh.close()
+
+        logging.shutdown()   
+        
+
 
         
 
