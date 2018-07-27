@@ -50,18 +50,18 @@ def measure_runtime(func):
         elaped_ms = int((time.time() - start) * 1000)
 
         level = None
-        if elaped_ms <= 10:
+        if elaped_ms <= 50:
             return
         elif elaped_ms > 1000:            
-            level = logging.CRITICAL
+            level = logging.ERROR
         elif elaped_ms > 500:            
-            level = logging.ERROR            
+            level = logging. WARNING           
         elif elaped_ms > 100:            
-            level = logging.WARNING
-        elif elaped_ms > 50:            
             level = logging.INFO
-        elif elaped_ms > 10:            
+        elif elaped_ms > 50:            
             level = logging.DEBUG
+        else:            
+            level = logging.CRITICAL
 
         print_log(logger, level, "Function {} required {} ms".format(func.__name__, elaped_ms))
 

@@ -129,7 +129,7 @@ class BotAI(object):
         return closest
     
     @measure_runtime
-    async def distribute_workers(self):
+    async def distribute_workers_old(self):
         """Distributes workers across all the bases taken."""
 
         expansion_locations = self.expansion_locations
@@ -185,6 +185,71 @@ class BotAI(object):
                         await self.do(w.gather(mf, queue=True))
                     else:
                         await self.do(w.gather(mf))
+
+
+
+    @measure_runtime
+    async def distribute_workers(self):
+        """Distributes workers across all the bases taken."""
+
+        list_actions = []
+        expansion_locations = self.expansion_locations
+        owned_expansions = self.owned_expansions
+        worker_pool = []
+        for idle_worker in self.workers.idle:
+            mf = self.state.mineral_field.closest_to(idle_worker)
+            list_actions.append(idle_worker.gather(mf))
+
+        for location, townhall in owned_expansions.items():
+            workers = self.workers.closer_than(20, location)
+            actual = townhall.assigned_harvesters
+            ideal = townhall.ideal_harvesters
+            excess = actual-ideal
+            if actual > ideal:
+                worker_pool.extend(workers.random_group_of(min(excess, len(workers))))
+                continue
+        for g in self.geysers:
+            workers = self.workers.closer_than(5, g)
+            actual = g.assigned_harvesters
+            ideal = g.ideal_harvesters
+            excess = actual - ideal
+            if actual > ideal:
+                worker_pool.extend(workers.random_group_of(min(excess, len(workers))))
+                continue
+
+        for g in self.geysers:
+            actual = g.assigned_harvesters
+            ideal = g.ideal_harvesters
+            deficit = ideal - actual
+
+            for x in range(0, deficit):
+                if worker_pool:
+                    w = worker_pool.pop()
+                    if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
+                        list_actions.append(w.move(g))
+                        list_actions.append(w.return_resource(queue=True))
+                    else:
+                        list_actions.append(w.gather(g))
+
+        for location, townhall in owned_expansions.items():
+            actual = townhall.assigned_harvesters
+            ideal = townhall.ideal_harvesters
+
+            deficit = ideal - actual
+            for x in range(0, deficit):
+                if worker_pool:
+                    w = worker_pool.pop()
+                    mf = self.state.mineral_field.closest_to(townhall)
+                    if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
+                        list_actions.append(w.move(townhall))
+                        list_actions.append(w.return_resource(queue=True))
+                        list_actions.append(w.gather(mf, queue=True))
+                    else:
+                        list_actions.append(w.gather(mf))
+
+        await self._client.actions(list_actions, self._game_data)
+
+
 
     @property
     def owned_expansions(self):

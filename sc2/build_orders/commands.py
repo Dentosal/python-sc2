@@ -57,6 +57,7 @@ def expand(prioritize=False, repeatable=True):
         building = bot.basic_townhall_type
         can_afford = bot.can_afford(building)
         if can_afford:
+            print_log(logging.getLogger("sc2.command"), logging.DEBUG, "Expanding {}".format(building))
             return await bot.expand_now(building=building)
         else:
             return can_afford.action_result

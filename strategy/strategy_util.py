@@ -14,7 +14,6 @@ from math import isclose
 from util import print_log, measure_runtime
 import logging
 
-
 def can_build(building, unit):
     # TODO check if unit requires addon
     if unit_requirements[unit] in building_addons and building.has_add_on:
@@ -22,16 +21,12 @@ def can_build(building, unit):
     else:
         return isclose(building.build_progress, build_progress_completed) and building.is_mine and building.noqueue and building.is_idle
 
-
-
-
-
-
-
+    
 
 def export_result(self, result): 
-    #df_col = ["path","result"]
-    #df = pd.DataFrame([self.path, result], columns = df_col)
+
+    if self.path is None:
+        return
 
     df = pd.DataFrame(data = {"file": [os.path.basename(self.path)], "result": [result]})
 
@@ -39,8 +34,6 @@ def export_result(self, result):
         df.to_csv(file_bot_results, mode = "a", header = False)          
     else:
         df.to_csv(file_bot_results, header = ["path","result"])     
-
-
 
 
 def init_build_order(path, logger):
@@ -95,8 +88,9 @@ def init_build_order(path, logger):
             building = ""
             prefix_buildings = ["BARRACKS", "STARPORT", "FACTORY", ""]
             unit_name = unit_name.replace("ARMORSLEVEL", "ARMORLEVEL")
-                                  
             
+            unit_name = unit_name.replace("TERRANVEHICLEANDSHIPARMOR", "TERRANVEHICLEANDSHIPPLATING") 
+
 
             if not unit_building == "TECHLAB":
                 prefix_buildings = [""]

@@ -52,12 +52,12 @@ build_progress_completed = 1
 min_resource_upgrades = 300 
 
 # Minimum number of resources to autobuild units
-sufficently_enough_minerals = 600 # i.e. 2 times Battlecruiser or commandcenter == 800 -> 50 % discount of 2nd
-sufficently_enough_vespene = 450 # i.e. 2 times Battlecruiser == 600  -> 50 % discount of 2nd
+sufficently_enough_minerals = 400 # for comparison: Battlecruiser or commandcenter == 400 
+sufficently_enough_vespene = 300 # for comparison: Battlecruiser == 300  
 
 # Minimum number of resources to autobuild buildings
-sufficently_much_minerals = sufficently_enough_minerals + 400 # additional commandcenter
-sufficently_much_vespene = sufficently_enough_vespene + 150 # additional Planetary Fortress
+sufficently_much_minerals = sufficently_enough_minerals + 200 
+sufficently_much_vespene = sufficently_enough_vespene + 150 
 
 # Minimum number of resources to auto expand
 sufficently_gigantic_minerals = sufficently_much_minerals + 100

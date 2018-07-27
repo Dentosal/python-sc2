@@ -13,25 +13,28 @@ from strategy_util import *
 from util import *
 import time
 import logging
+from sc2.helpers import ControlGroup
 
 class Bot_AI_Extended(sc2.BotAI):
     """Extends BotAI with specific methods for the strategy"""
 
 
+    def get_buildorder(self, path, logger):
+        return init_build_order(path, logger)
 
-
-    def __init__(self, path, output_replay, logger):
+    def __init__(self, path = None, output_replay = None, logger = logging.getLogger("sc2.strategy")):
         init_loggers()
 
-        build_order = init_build_order(path, logger)
         self.attack = False
         self.defending = False
         self.researched = []
-        self.build_order = BuildOrder(self, build_order, worker_count=init_worker_count)
+        self.build_order = BuildOrder(self, self.get_buildorder(path, logger), worker_count=init_worker_count)
         self.first_base = None
         self.path = output_replay
         self.enemy_base = None
         self.logger = logger
+        
+        #self.attack_distance = 40
 
         global min_units_attack
         self.min_units_attack = min_units_attack
@@ -57,9 +60,11 @@ class Bot_AI_Extended(sc2.BotAI):
                 return
             
         if iteration % gameloops_check_frequency / 4 == 0:
-            await self.distribute_workers()
             await self.build_order.increase_supply()
-            await self.build_order.increase_workers()            
+            await self.build_order.increase_workers()   
+        
+        if (iteration + 1) % gameloops_check_frequency == 0:
+            await self.distribute_workers()
 
         if (iteration + 2)  % gameloops_check_frequency / 2 == 0:
             await self.build_order.execute_build()
@@ -173,7 +178,7 @@ async def auto_attack(bot):
                         bot.enemy_base = base
    
         if enemy_position is None: 
-                enemy_position = bot.enemy_start_locations[0]
+            enemy_position = bot.enemy_start_locations[0]
 
         # Check if enemy base is destroyed
         # diffenet tags wont work
@@ -196,9 +201,28 @@ async def auto_attack(bot):
          
         
         list_actions = []
-        for unit in units_military: # filter(lambda u: u.is_ready, units_military):  
-                #await bot.do(unit.attack(enemy_position, queue=False))
-                list_actions.append(unit.attack(enemy_position, queue=False))
+
+      
+
+        # define leader, if not yet determined of died
+        #if bot.squad_leader is None or units_military.find_by_tag(bot.squad_leader.tag) is None:
+        #    bot.squad_leader = units_military.random
+            
+        #squad_position = bot.squad_leader.position.to2.towards(enemy_position, 5)
+        #for i in range(len(units_military)):
+        #    unit = units_military[i]
+        #    if i % squad_size == 0:
+        #        squad_position = unit.position.to2.towards(enemy_position, 5)  # defines squad leader
+        #        list_actions.append(unit.attack(enemy_position, queue=False))
+        #    else:
+        #        # move to leader of squad
+        #        list_actions.append(unit.attack(squad_position, queue=False))
+
+        #list_actions.append(bot.squad_leader.attack(enemy_position, queue=False))
+
+        for unit in units_military: # filter(lambda u: u.is_ready, units_military): 
+            #if unit.tag != bot.squad_leader.tag:
+            list_actions.append(unit.attack(enemy_position, queue=False))
         await execute_actions(bot, list_actions)
                 
     return           
