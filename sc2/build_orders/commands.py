@@ -6,7 +6,7 @@ from util import get_random_building_location, print_log
 import logging
 
 class Command(object):
-    def __init__(self, action, repeatable=False, priority=False, increase_workers = 0, increased_supply = 0, requires = None, requires_2nd = None):
+    def __init__(self, action, repeatable=False, priority=False, increase_workers = 0, increased_supply = 0, requires = None, requires_2nd = None, max_supply = 200):
         self.action = action
         self.is_done = False
         self.is_repeatable = repeatable
@@ -15,8 +15,12 @@ class Command(object):
         self.increased_supply = increased_supply
         self.requires = requires
         self.requires_2nd = requires_2nd
+        self.max_supply = max_supply # otherwise, bot will try to build units over max supply cap yielding ActionResult.FoodUsageImpossible
 
     async def execute(self, bot):
+
+        if bot.supply_used > self.max_supply:
+            return None
 
         #condition = unit_count_at_least(self.requires, 1, True)
         #condition_done = unit_count_at_least(self.requires, 1, False)
@@ -83,7 +87,7 @@ def train_unit(unit, on_building, prioritize=False, repeatable=False, increased_
             return ActionResult.Error
 
     return Command(do_train, priority=prioritize, repeatable=repeatable, increased_supply= increased_supply, 
-                   requires =  unit_requirements.get(unit), requires_2nd= unit_requirements_2nd.get(unit))
+                   requires =  unit_requirements.get(unit), requires_2nd= unit_requirements_2nd.get(unit), max_supply = 195)
 
 
 def morph(unit, prioritize=False, repeatable=False, increased_supply = 0):
@@ -151,6 +155,7 @@ def add_gas(prioritize=True, repeatable=False):
                     break
 
                 if not bot.units(bot.geyser_type).closer_than(1.0, vg).exists:
+                    print_log(logging.getLogger("sc2.command"), logging.DEBUG, "Add Gas")
                     return await bot.do(worker.build(bot.geyser_type, vg))
 
         return ActionResult.Error

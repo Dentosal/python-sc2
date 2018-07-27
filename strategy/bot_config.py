@@ -13,11 +13,15 @@ min_units_attack = 12 # i.e. same amount as commandcenter https://github.com/dav
 always_units_attack = 36
 
 # Minimum amount of units to defend
-min_units_defend = 6
+min_units_defend = 3
 # Maximum military units when giving up
 max_units_giveup = min_units_defend
-# Maximum distance to defend against enemy units
+# Maximum distance to defend against enemy units, distance from own base
 distance_defend = 30
+# First distance to attack, distance from enemy base
+distance_attack = 100
+# Value to decrease distance_attack
+distance_attack_speed = 2
 
 # 16 iterations == 1 second
 gameloops_check_frequency = 16

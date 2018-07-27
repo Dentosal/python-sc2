@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{23c2358d-e06f-4628-ae1e-6cfe980ab822}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>strategy\strategy_test.py</StartupFile>
+    <StartupFile>strategy\strategy_selector.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -77,15 +77,11 @@
     <Compile Include="sc2\unit_command.py" />
     <Compile Include="sc2\__init__.py" />
     <Compile Include="setup.py" />
-    <Compile Include="strategy\111expand.py" />
     <Compile Include="strategy\bot_ai_extended.py" />
     <Compile Include="strategy\bot_config.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="strategy\deprecated.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="strategy\protoss_bot_buildorder.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="strategy\strategy_constants.py">
@@ -94,11 +90,7 @@
     <Compile Include="strategy\strategy_selector.py" />
     <Compile Include="strategy\strategy_test.py" />
     <Compile Include="strategy\strategy_util.py" />
-    <Compile Include="strategy\terran_bot_buildorder.py" />
     <Compile Include="strategy\util.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="strategy\zerg_bot_buildorder.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="test\conftest.py" />

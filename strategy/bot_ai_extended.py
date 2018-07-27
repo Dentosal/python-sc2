@@ -13,36 +13,36 @@ from strategy_util import *
 from util import *
 import time
 import logging
-from sc2.helpers import ControlGroup
+
 
 class Bot_AI_Extended(sc2.BotAI):
     """Extends BotAI with specific methods for the strategy"""
 
 
     def get_buildorder(self, path, logger):
+        """Gets build-order, can be overwritten e.g. in strategy_test"""
         return init_build_order(path, logger)
 
     def __init__(self, path = None, output_replay = None, logger = logging.getLogger("sc2.strategy")):
+        """Initialised bot"""
         init_loggers()
 
         self.attack = False
         self.defending = False
-        self.researched = []
+        self.researched = [] # list of researched
         self.build_order = BuildOrder(self, self.get_buildorder(path, logger), worker_count=init_worker_count)
-        self.first_base = None
-        self.path = output_replay
-        self.enemy_base = None
+        self.first_base = None # location of first own base
+        self.path = output_replay # output replay path
+        self.enemy_base = None # location of first enemy base
         self.logger = logger
         
-        #self.attack_distance = 40
+        global distance_attack
+        self.distance_attack_current = distance_attack # current attacking distance to enemy base
 
         global min_units_attack
-        self.min_units_attack = min_units_attack
+        self.min_units_attack = min_units_attack # minimum units required to attack
 
     
-
-
-
     async def on_step(self, iteration):
 
         if self.first_base is None:
@@ -53,7 +53,7 @@ class Bot_AI_Extended(sc2.BotAI):
         if iteration % gameloops_check_frequency == 0:
             # if first base is destroyed --> died
             cc = self.units(UnitTypeId.COMMANDCENTER) | self.units(UnitTypeId.ORBITALCOMMAND)
-            if self.units.find_by_tag(self.first_base.tag) is None or cc.amount == 0: # or (cc.amount == 1 and cc.first.health < 1000): # TODO check health
+            if self.units.find_by_tag(self.first_base.tag) is None or cc.amount == 0: 
                 await self.chat_send("gg")
                 self.final_result = result_lost
                 export_result(self, result_lost)
@@ -86,8 +86,12 @@ class Bot_AI_Extended(sc2.BotAI):
             
         if (iteration + 13) % gameloops_check_frequency == 0:
            await auto_defend(self)  
+
         if (iteration + 14) % gameloops_check_frequency == 0:
-           await auto_attack(self)          
+           await auto_attack(self)   
+           
+        if (iteration + 15) % gameloops_check_frequency * 2 == 0:
+           await add_gas().execute(self)
 
 
 
@@ -99,27 +103,28 @@ async def auto_defend(bot):
         return
 
     if bot.defending or bot.known_enemy_units.amount > 0:
-        units_military = bot.units.owned.military #get_units_military(bot)
+        units_military = bot.units.owned.military 
         units_military_amount = len(units_military)
         close_enemies =  bot.known_enemy_units.closer_than(distance_defend, bot.townhalls.random)
+        # if there are close enemies and sufficiently enough units -> defend
         if close_enemies.amount > 0 and (units_military_amount >= min_units_defend or bot.known_enemy_units.amount <= units_military_amount):       
             
             if not bot.defending:
                 print_log(bot.logger, logging.DEBUG, "Defending")
                 bot.defending = True 
+                bot.attack = False
+                # increase distance to enemy
+                if bot.distance_attack_current + distance_attack_speed <= distance_attack:
+                    bot.distance_attack_current = bot.distance_attack_current + distance_attack_speed
 
-
+            
             list_actions = []
-            for unit in units_military: #filter(lambda u: u.is_idle, units_military):  
+            for unit in units_military: 
                     enemy = close_enemies.random # attack random unit
                     if enemy.distance_to(bot.townhalls.random) < distance_defend:
                         list_actions.append(unit.attack(enemy.position.to2, queue=True))
             await execute_actions(bot, list_actions)
 
-            #for unit in filter(lambda u: u.is_idle, units_military):  
-            #    enemy = close_enemies.random # attack random unit
-            #    if enemy.distance_to(bot.townhalls.random) < distance_defend:
-            #        await bot.do(unit.attack(enemy.position.to2, queue=True))
         elif bot.defending == True:
             # enemy too far away, or too few units
             print_log(bot.logger, logging.DEBUG, "Not defending")
@@ -137,17 +142,22 @@ async def execute_actions(bot, list_action):
 async def auto_attack(bot):
     """Automatic attack opponent; Priority: Attack units first, then buildings, else enemy base"""
 
+    # do not attack and defend at same time
     if bot.defending == True:
         return
    
     units_military = bot.units.owned.military 
     units_military_amount = len(units_military)
-    enemy_position = None
+    enemy_position = None # i.e. either unit, building or opponents base
 
-    if units_military_amount <= min_units_defend and bot.attack == True:
+    if units_military_amount <= 0.5 * min_units_attack and bot.attack == True:
         # Retreat
         print_log(bot.logger, logging.DEBUG, "Not attacking")
         bot.attack = False
+
+        # reset to distance attack
+        global distance_attack
+        bot.distance_attack_current = distance_attack
 
         # army too week, try next time with more units
         if bot.min_units_attack < always_units_attack:
@@ -157,6 +167,7 @@ async def auto_attack(bot):
         if bot.attack == False:
             print_log(bot.logger, logging.DEBUG, "Attacking")           
             bot.attack = True
+            bot.defending = False
           
         # Attack units    
         if bot.known_enemy_units.exists:
@@ -169,6 +180,7 @@ async def auto_attack(bot):
             if enemy_position is None:
                 enemy_position = enemy_buildings.first.position.to2 # focus on single building
 
+            # determine enemy base
             if bot.enemy_base is None:
                 enemy_bases = enemy_buildings.townhall
 
@@ -177,15 +189,23 @@ async def auto_attack(bot):
                     if distance < 1:
                         bot.enemy_base = base
    
-        if enemy_position is None: 
-            enemy_position = bot.enemy_start_locations[0]
 
-        # Check if enemy base is destroyed
-        # diffenet tags wont work
-        if bot.enemy_base is not None: #and enemy_buildings.find_by_tag(bot.enemy_base.tag) is None:
+        # Attack base if neither unit nor building is known
+        if enemy_position is None: 
+            # approach enemy base by distance_attack_speed steps
+            if bot.distance_attack_current > 0:
+                bot.distance_attack_current = bot.distance_attack_current - distance_attack_speed
+                        
+            enemy_position = bot.enemy_start_locations[0].towards(bot.first_base.position, bot.distance_attack_current)
+
+        # Check if enemy base is destroyed        
+        if bot.enemy_base is not None: 
             won_destroyed = True
+            # tags might change over time, thus comparison wont work on tags
+            # therefore compare by distance
+
             for building in enemy_buildings.townhall:
-                # if there is a base -> not destroyed
+                # if there is a base -> not destroyed                
                 if building.position.to2.distance_to(bot.enemy_start_locations[0]) < 1:
                     won_destroyed = False
 
@@ -201,27 +221,7 @@ async def auto_attack(bot):
          
         
         list_actions = []
-
-      
-
-        # define leader, if not yet determined of died
-        #if bot.squad_leader is None or units_military.find_by_tag(bot.squad_leader.tag) is None:
-        #    bot.squad_leader = units_military.random
-            
-        #squad_position = bot.squad_leader.position.to2.towards(enemy_position, 5)
-        #for i in range(len(units_military)):
-        #    unit = units_military[i]
-        #    if i % squad_size == 0:
-        #        squad_position = unit.position.to2.towards(enemy_position, 5)  # defines squad leader
-        #        list_actions.append(unit.attack(enemy_position, queue=False))
-        #    else:
-        #        # move to leader of squad
-        #        list_actions.append(unit.attack(squad_position, queue=False))
-
-        #list_actions.append(bot.squad_leader.attack(enemy_position, queue=False))
-
-        for unit in units_military: # filter(lambda u: u.is_ready, units_military): 
-            #if unit.tag != bot.squad_leader.tag:
+        for unit in units_military: 
             list_actions.append(unit.attack(enemy_position, queue=False))
         await execute_actions(bot, list_actions)
                 
@@ -233,16 +233,18 @@ async def auto_build_expand(bot):
 
     if bot.minerals > sufficently_gigantic_minerals and bot.units(bot.basic_townhall_type).pending.amount == 0 :
         print_log(bot.logger, logging.DEBUG, "Auto expand due to a gigantic surplus of resources")
-        await expand().execute(bot)
+        await expand().execute(bot)      
+        
 
 @measure_runtime
 async def auto_build_buildings(bot):            
     """Auto build terran_military_buildings in case of large surplus of resources"""
 
     if bot.minerals > sufficently_much_minerals or bot.vespene > sufficently_much_vespene:  
+        # build random terran building
         building = sample(terran_military_buildings, 1)[0] # select one random building
         building_required = construct_requirements[building]
-
+        # if requirements fulfilled
         if bot.units(building_required).owned.completed.amount > 0 and bot.can_afford(building):      
             print_log(bot.logger, logging.DEBUG, "Build {0} due to a large surplus of resources".format(building))
             bot.cum_supply = bot.cum_supply + 1 # in case of bringing the gap in build-order
@@ -253,7 +255,9 @@ async def auto_build_units(bot, building_id, units_list):
     """Auto build units in case of surplus of resources"""
 
     if bot.minerals > sufficently_enough_minerals or bot.vespene > sufficently_enough_vespene:  
+        # for idle buildings, build random unit             
         for building in bot.units(building_id).owned.completed.idle: 
+
             unit = sample(units_list, 1)[0] # random unit
 
             if can_build(building, unit) and bot.can_afford(unit):
