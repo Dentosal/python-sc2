@@ -3,4 +3,3 @@ from .ids.buff_id import *
 from .ids.effect_id import *
 from .ids.unit_typeid import *
 from .ids.upgrade_id import *
-from strategy_constants import *

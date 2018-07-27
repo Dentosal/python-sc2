@@ -9,6 +9,12 @@ max_gametime = 1800 # 900 = 15 min, 1200 = 20 min , 1800 = 30 min
 # Minimum amount of units to attack
 min_units_attack = 12 # i.e. same amount as commandcenter https://github.com/davechurchill/commandcenter
 
+# Increment factor for more units in next wave
+min_units_attack_increment = 6
+
+# retreat if less than (min_units_attack * retreating_level) units left
+retreating_level = 0.5
+
 # maximum border of min_units_attack
 always_units_attack = 36
 
@@ -38,6 +44,8 @@ worker_supply = 1
 # Initial supply
 init_supply = 12
 
+
+
 # if more less auto_build_idle_limit idle buildings, build new ones
 auto_build_idle_limit = 3
 
@@ -65,3 +73,6 @@ sufficently_much_vespene = sufficently_enough_vespene + 150
 
 # Minimum number of resources to auto expand
 sufficently_gigantic_minerals = sufficently_much_minerals + 100
+
+# increase cum supply in case of auto build builgings
+supply_increase_autobuild_buildings = 0.5

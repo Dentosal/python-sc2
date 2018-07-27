@@ -4,6 +4,7 @@ from sc2.state_conditions.conditions import  unit_count_at_least
 from random import uniform, randrange
 from util import get_random_building_location, print_log
 import logging
+from strategy_constants import *
 
 class Command(object):
     def __init__(self, action, repeatable=False, priority=False, increase_workers = 0, increased_supply = 0, requires = None, requires_2nd = None, max_supply = 200):
@@ -130,7 +131,6 @@ def add_supply(prioritize=True, repeatable=False):
 
     return Command(supply_spec, priority=prioritize, repeatable=repeatable)
 
-
 def add_gas(prioritize=True, repeatable=False):
 
     async def do_add_gas(bot):
@@ -141,6 +141,13 @@ def add_gas(prioritize=True, repeatable=False):
         owned_expansions = bot.owned_expansions
         for location, th in owned_expansions.items():
             vgs = bot.state.vespene_geyser.closer_than(20.0, th)
+
+            # HS 
+            if vgs(bot.geyser_type).amount >= 0.5 * vgs.amount:
+                # all places already have a geyser building
+                return
+
+
             for vg in vgs:
                 worker = bot.select_build_worker(vg.position)
                 if worker is None:

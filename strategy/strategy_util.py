@@ -15,16 +15,16 @@ from util import print_log, measure_runtime
 import logging
 
 def can_build(building, unit):
-    # TODO check if unit requires addon
-    if unit_requirements[unit] in building_addons and building.has_add_on:
-        return isclose(building.build_progress, build_progress_completed) and building.is_mine and building.noqueue and building.is_idle
+    """Determines whether unit can be build"""
+    if unit_requirements[unit] in building_addons and not building.has_add_on:
+        return False
     else:
         return isclose(building.build_progress, build_progress_completed) and building.is_mine and building.noqueue and building.is_idle
 
     
 
 def export_result(self, result): 
-
+    """Appends result to a specified file"""
     if self.path is None:
         return
 
@@ -37,6 +37,7 @@ def export_result(self, result):
 
 
 def init_build_order(path, logger):
+    """Parse csv file to build order"""
 
     build_order = []
     df = pd.read_csv(path, sep=";")
@@ -54,7 +55,6 @@ def init_build_order(path, logger):
             continue
 
         # check if its addon to a building
-
         if type == "Building":
             try:
                 building_sep = re.findall('[A-Z][^A-Z]*', unit_name)
@@ -66,10 +66,8 @@ def init_build_order(path, logger):
                     unit_building = building_str
             except (NameError, KeyError):
                 pass
-          
-
-        unit_name = unit_name.upper()
-       
+ 
+        unit_name = unit_name.upper()       
 
         if(type == "Building"):
             if(unit_name in vespene_buildings): # race_gas
@@ -81,14 +79,13 @@ def init_build_order(path, logger):
         elif(type == "Unit"):
             unit_building = unit_building.upper()
             build_order.append((all_of(cum_supply_at_least(supply), unit_count_at_least(UnitTypeId[unit_building], 1, include_pending=False)), train_unit(UnitTypeId[unit_name], on_building = UnitTypeId[unit_building], increased_supply = unit_supply)))
-        elif(type == "Upgrade"):
-           
+        elif(type == "Upgrade"):           
             unit_building = unit_building.upper()
             upgrade = ""
             building = ""
             prefix_buildings = ["BARRACKS", "STARPORT", "FACTORY", ""]
+            # Adapt to Ids
             unit_name = unit_name.replace("ARMORSLEVEL", "ARMORLEVEL")
-            
             unit_name = unit_name.replace("TERRANVEHICLEANDSHIPARMOR", "TERRANVEHICLEANDSHIPPLATING") 
 
 

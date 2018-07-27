@@ -6,6 +6,7 @@
 # Optional
 
 - poor building location placement --> trying to build addons failed due to missing space --> more distance to other buildings
+    - note: will not rebuild since building can be used
 - Lower supply depot
 - attack in groups instead of sending single units
 

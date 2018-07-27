@@ -12,3 +12,4 @@
 	- build_orders/build_order.py
 	- build_orders/commands.py
     - state_conditions/conditions.py
+- everywhere else, indicated with: # HS

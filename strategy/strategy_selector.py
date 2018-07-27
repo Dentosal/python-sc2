@@ -48,8 +48,8 @@ def main():
       
     for i in range(eval_number_games):    
         
-        #hash = get_buildorder_hash(path_strategy, method) 
-        hash = "185cefb4cda1246ea8c3bdc6c033680f7279162a"
+        hash = get_buildorder_hash(path_strategy, method) 
+        
         path = folder + hash + ending_csv
         time_string = str(round(time.time())) 
         id = map_name + self_race_string + race_bot_separator + enemy_race_string + time_string + "_" + hash

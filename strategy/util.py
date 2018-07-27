@@ -17,6 +17,7 @@ def get_random_building_location(bot):
         return bot.first_base.position.towards(bot.game_info.map_center, random1).random_on_distance(random2)
  
 def print_log(logger, level, message):
+    """Logs or print messages"""
     if logger is not None:
         if level == logging.DEBUG:
             logger.debug(message)
@@ -34,16 +35,12 @@ def print_log(logger, level, message):
     else:
         print(message)
 
-def init_loggers():
-    logger_strategy = logging.getLogger("sc2.strategy")        
-    logger_strategy.setLevel(logging.DEBUG)       
-    
-    logger_command = logging.getLogger("sc2.command")
-    logger_command.setLevel(logging.DEBUG)    
+
 
 
 # Based on: https://stackoverflow.com/a/20924212
 def measure_runtime(func):
+    """Measures runtime, logs in case of slow performance"""
     @functools.wraps(func)
     async def newfunc(*args, **kwargs):
         start = time.time()

@@ -2,6 +2,7 @@ from sc2 import Race, race_worker, ActionResult, race_townhalls
 from sc2.build_orders.commands import train_unit, add_supply, morph, build_required
 from sc2.state_conditions.conditions import always_true, unit_count_at_least
 from sc2.constants import *
+from strategy_constants import *
 from util import measure_runtime
 
 class BuildOrder(object):
@@ -64,7 +65,8 @@ class BuildOrder(object):
 
                     if e == ActionResult.NotEnoughFood and self.auto_add_supply \
                             and not bot.already_pending(bot.supply_type):
-                        return await add_supply().execute(bot)
+                        return await add_supply().execute(bot)                                        
+
                     continue
 
         return None
