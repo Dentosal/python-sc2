@@ -19,9 +19,9 @@ max_units_giveup = min_units_defend
 # Maximum distance to defend against enemy units, distance from own base
 distance_defend = 30
 # First distance to attack, distance from enemy base
-distance_attack = 100
+distance_attack = 120
 # Value to decrease distance_attack
-distance_attack_speed = 2
+distance_attack_speed = 4
 
 # 16 iterations == 1 second
 gameloops_check_frequency = 16

@@ -7,6 +7,7 @@ import timeit
 import time
 
 def get_random_building_location(bot):
+    """Generates random placement suggestion for building location"""
     random1 = randrange(5, 15, 2)
     random2 = randrange(5, 12, 2)
 

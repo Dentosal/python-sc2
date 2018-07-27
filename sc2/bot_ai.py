@@ -264,14 +264,9 @@ class BotAI(object):
 
         return owned
 
+    # HS modified
     def can_afford(self, item_id):
         """Tests if the player has enough resources to build a unit or cast an ability."""
-
-        # TODO check
-        # HS
-        #reserve = 1.1
-
-
 
         if isinstance(item_id, UnitTypeId):
             unit = self._game_data.units[item_id.value]
@@ -281,23 +276,15 @@ class BotAI(object):
         else:
             try:
                 cost = self._game_data.calculate_ability_cost(item_id)
-            except : # TODO fix e.g. 185cefb4cda1246ea8c3bdc6c033680f7279162a
-                # ENGINEERINGBAYRESEARCH_TERRANINFANTRYWEAPONSLEVEL1
-                if item_id == AbilityId.ENGINEERINGBAYRESEARCH_TERRANINFANTRYWEAPONSLEVEL1 or item_id == "ENGINEERINGBAYRESEARCH_TERRANINFANTRYWEAPONSLEVEL1":
-                    return CanAffordWrapper(200 <= self.minerals, 200 <= self.vespene) # 100, 100
-                else:
-                    min_resource_unknown = 400
-                    print("Unknown item: " + item_id)
-                    return CanAffordWrapper(min_resource_unknown <= self.minerals, min_resource_unknown <= self.vespene)
+            except : 
+                min_resource_unknown = 400
+                print("Unknown item: " + item_id)
+                return CanAffordWrapper(min_resource_unknown <= self.minerals, min_resource_unknown <= self.vespene)
             
             if cost is None:
-               # TODO check if it works  
-               # can_afford occasionally crashed when using for research # 
-               # e.g. for ARMORYRESEARCH_TERRANVEHICLEWEAPONSLEVEL1
                min_resource_upgrades = 300
                return CanAffordWrapper(min_resource_upgrades <= self.minerals, min_resource_upgrades <= self.vespene)
-               #costs = (bot.minerals  > min_resource_upgrades) and (bot.vespene > min_resource_upgrades)  
-
+               
 
         return CanAffordWrapper(cost.minerals <= self.minerals, cost.vespene <= self.vespene)
 

@@ -11,41 +11,30 @@ class Command(object):
         self.is_done = False
         self.is_repeatable = repeatable
         self.is_priority = priority
-        self.increase_workers = increase_workers
-        self.increased_supply = increased_supply
-        self.requires = requires
-        self.requires_2nd = requires_2nd
+        self.increase_workers = increase_workers # value to increase workers after executing command
+        self.increased_supply = increased_supply # value to increase cum supply after executing command
+        self.requires = requires # structure required 
+        self.requires_2nd = requires_2nd # 2nd structure required
         self.max_supply = max_supply # otherwise, bot will try to build units over max supply cap yielding ActionResult.FoodUsageImpossible
 
+
+    # HS modified
     async def execute(self, bot):
 
+        # do not train units if close to supply cap 
         if bot.supply_used > self.max_supply:
             return None
-
-        #condition = unit_count_at_least(self.requires, 1, True)
-        #condition_done = unit_count_at_least(self.requires, 1, False)
-
-        # HS
+        
         # if requirement not fulfilled, return later
         if self.requires is not None and bot.units(self.requires).completed.amount < 1:
             return None
         if self.requires_2nd is not None and bot.units(self.requires_2nd).completed.amount < 1:
             return None
-  
-
-        #if  self.requires is not None and not condition:
-
-        #    print("Required {0} is not pending. Therefore, schedule to built it".format(self.requires))
-        #    await construct(self.requires)
-            # await bot.do(bot.build(self.requires))
-        
-         
-         
+           
         e = await self.action(bot)
         
         if not e and not self.is_repeatable:
-            self.is_done = True
-            #print("Increase supply by {0} to cum supply {1}".format(self.increased_supply, bot.cum_supply))
+            self.is_done = True            
             bot.cum_supply = bot.cum_supply + self.increased_supply
             bot.build_order.worker_count = bot.build_order.worker_count + self.increase_workers
         return e
@@ -57,6 +46,7 @@ class Command(object):
 
 
 def expand(prioritize=False, repeatable=True):
+
     async def do_expand(bot):
         building = bot.basic_townhall_type
         can_afford = bot.can_afford(building)
@@ -70,8 +60,7 @@ def expand(prioritize=False, repeatable=True):
 
 
 def train_unit(unit, on_building, prioritize=False, repeatable=False, increased_supply = 0):
-
-   
+       
     async def do_train(bot):
         buildings = bot.units(on_building).ready.noqueue
         if buildings.exists:
@@ -91,6 +80,7 @@ def train_unit(unit, on_building, prioritize=False, repeatable=False, increased_
 
 
 def morph(unit, prioritize=False, repeatable=False, increased_supply = 0):
+
     async def do_morph(bot):
         larvae = bot.units(UnitTypeId.LARVA)
         if larvae.exists:
@@ -106,12 +96,12 @@ def morph(unit, prioritize=False, repeatable=False, increased_supply = 0):
 
     return Command(do_morph, priority=prioritize, repeatable=repeatable, increased_supply = increased_supply)
 
-
+# HS modified
 def construct(building, placement=None, prioritize=True, repeatable=False):
+
     async def do_build(bot):
         
-        if not placement:
-            # HS
+        if not placement:            
             location = get_random_building_location(bot)           
         else:
             location = placement
@@ -127,6 +117,7 @@ def construct(building, placement=None, prioritize=True, repeatable=False):
 
 
 def add_supply(prioritize=True, repeatable=False):
+
     async def supply_spec(bot):
         can_afford = bot.can_afford(bot.supply_type)
         if can_afford:
@@ -141,6 +132,7 @@ def add_supply(prioritize=True, repeatable=False):
 
 
 def add_gas(prioritize=True, repeatable=False):
+
     async def do_add_gas(bot):
         can_afford = bot.can_afford(bot.geyser_type)
         if not can_afford:
@@ -165,6 +157,8 @@ def add_gas(prioritize=True, repeatable=False):
 
 # HS
 def research(upgrade, on_building, prioritize=True):
+    """Research upgrade"""
+
     async def research_spec(bot):
         buildings = bot.units(on_building).completed.noqueue.idle
         if buildings.exists and not upgrade in bot.researched: # already pending wont work with upgrades
@@ -191,10 +185,6 @@ async def build_required(self, bot, required):
   
     # Whether the requirement itself has a dependency   
     prerequired = construct_requirements[required]
-
-
-    #if not prerequired is None and bot.units(prerequired).amount == 0:
-    #    await build_required(self, bot, prerequired)
    
 
     if prerequired is None or bot.units(prerequired).owned.completed.amount > 0:
@@ -205,6 +195,7 @@ async def build_required(self, bot, required):
                 print_log(logging.getLogger("sc2.command"), logging.DEBUG, "Build new addon {0} due to requirements".format(required))
                 await train_unit(required, prerequired).execute(bot)
             elif bot.units(prerequired).owned.pending.amount > 0:
+                # wait since their are building
                 return
             elif bot.can_afford(prerequired):
                 # rebuild building, since no empty add_on place
@@ -215,5 +206,6 @@ async def build_required(self, bot, required):
     elif bot.already_pending(prerequired) > 0 or bot.units(prerequired).owned.pending.amount > 0:  
         return
     else:
+        # trigger prerequired
         await build_required(self, bot, prerequired)
   

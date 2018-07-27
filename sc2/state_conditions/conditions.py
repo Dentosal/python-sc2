@@ -22,12 +22,6 @@ def supply_at_least(s):
 
     return condition
 
-def cum_supply_at_least(s):
-    def condition(bot):
-        return bot.cum_supply >= s
-
-    return condition
-
 
 def gas_at_least(s):
     def condition(bot):
@@ -86,6 +80,12 @@ def unit_count_less_than(unit, n, include_pending=False):
     return condition
 
 
+# HS
+def cum_supply_at_least(s):
+    def condition(bot):
+        return bot.cum_supply >= s
+
+    return condition
 
 # HS
 def unit_count_at_least_completed(unit, n):
