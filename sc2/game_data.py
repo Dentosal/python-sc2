@@ -1,7 +1,7 @@
 from functools import lru_cache, reduce
 from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type checking
 
-from .data import Attribute
+from .data import Attribute, Race
 from .unit_command import UnitCommand
 
 from .ids.unit_typeid import UnitTypeId
@@ -55,7 +55,14 @@ class GameData(object):
                         unit.cost.vespene * 2,
                         unit.cost.time
                     )
-                return unit.cost
+                # Correction for morphing units, e.g. orbital would return 550/0 instead of actual 150/0
+                morph_cost = unit.morph_cost
+                if morph_cost: # can be None
+                    print("returning morph cost for unit {}: {} - {}".format(unit.name, morph_cost.minerals, morph_cost.vespene))
+                    return morph_cost
+                # Correction for zerg structures without morph: Extractor would return 75 instead of actual 25
+                print("returning unit cost for unit {}: {} - {}".format(unit.name, unit.cost_zerg_corrected.minerals, unit.cost_zerg_corrected.vespene))
+                return unit.cost_zerg_corrected
 
         for upgrade in self.upgrades.values():
             if upgrade.research_ability == ability:
@@ -187,7 +194,11 @@ class UnitTypeData(object):
         return UnitTypeId(self._proto.unit_alias)
 
     @property
-    def cost(self):
+    def race(self):
+        return Race(self._proto.race)
+
+    @property
+    def cost(self) -> "Cost":
         return Cost(
             self._proto.mineral_cost,
             self._proto.vespene_cost,
@@ -195,10 +206,26 @@ class UnitTypeData(object):
         )
 
     @property
-    def morph_cost(self):
+    def cost_zerg_corrected(self) -> "Cost":
+        """ This returns 25 for extractor and 200 for spawning pool instead of 75 and 250 respectively """
+        if self.race == Race.Zerg and Attribute.Structure.value in self.attributes:
+            # a = self._game_data.units(UnitTypeId.ZERGLING)
+            # print(a)
+            # print(vars(a))
+            return Cost(
+                self._proto.mineral_cost - 50,
+                self._proto.vespene_cost,
+                self._proto.build_time
+            )
+        else:
+            return self.cost
+
+    @property
+    def morph_cost(self) -> Optional["Cost"]:
         """ This returns 150 minerals for OrbitalCommand instead of 550 """
         if self.tech_alias is None:
             return None
+        # Morphing a HIVE would have HATCHERY and LAIR in the tech alias - now subtract HIVE cost from LAIR cost instead of from HATCHERY cost
         tech_alias_cost_minerals = max([self._game_data.units[tech_alias.value].cost.minerals for tech_alias in self.tech_alias])
         tech_alias_cost_vespene = max([self._game_data.units[tech_alias.value].cost.vespene for tech_alias in self.tech_alias])
         return Cost(
@@ -238,6 +265,12 @@ class Cost(object):
         self.minerals = minerals
         self.vespene = vespene
         self.time = time
+
+    def __eq__(self, other):
+        return self.minerals == other.minerals and self.vespene == other.vespene
+
+    def __ne__(self, other):
+        return self.minerals != other.minerals or self.vespene != other.vespene
 
     def __repr__(self):
         return f"Cost({self.minerals}, {self.vespene})"
