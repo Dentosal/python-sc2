@@ -113,7 +113,7 @@ class BotAI(object):
 
         await self.build(building, near=location, max_distance=max_distance, random_alternative=False, placement_step=1)
 
-    async def get_next_expansion(self) -> Point2:
+    async def get_next_expansion(self) -> Optional[Point2]:
         """Find next expansion location."""
 
         closest = None
@@ -218,7 +218,6 @@ class BotAI(object):
 
     def can_afford(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId]) -> "CanAffordWrapper":
         """Tests if the player has enough resources to build a unit or cast an ability."""
-
         if isinstance(item_id, UnitTypeId):
             unit = self._game_data.units[item_id.value]
             cost = self._game_data.calculate_ability_cost(unit.creation_ability)
