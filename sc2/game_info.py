@@ -10,7 +10,7 @@ from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type chec
 
 
 class Ramp:
-    def __init__(self, points: Set[Point2], game_info: "GameInfo") -> None:
+    def __init__(self, points: Set[Point2], game_info: "GameInfo"):
         self._points: Set[Point2] = set(points)
         self.__game_info = game_info
         # tested by printing actual building locations vs calculated depot positions
@@ -122,7 +122,8 @@ class Ramp:
 
 
 class GameInfo(object):
-    def __init__(self, proto): 
+    def __init__(self, proto):
+        # TODO: this might require an update during the game because placement grid and playable grid are greyed out on minerals, start locations and ramps (debris)
         self._proto = proto       
         self.players = [Player.from_proto(p) for p in proto.player_info]
         self.map_size = Size.from_proto(proto.start_raw.map_size)
