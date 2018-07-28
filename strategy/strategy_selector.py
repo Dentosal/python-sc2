@@ -52,6 +52,8 @@ def main():
 
       
     for i in range(eval_number_games):    
+
+        print("Evaluation number: {0}".format(i+1))
         
         hash = get_buildorder_hash(path_strategy, method) 
         

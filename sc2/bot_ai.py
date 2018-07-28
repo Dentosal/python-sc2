@@ -118,6 +118,9 @@ class BotAI(object):
                 # already taken
                 continue
 
+            if not self.townhalls.exists:
+                continue
+
             th = self.townhalls.first
             d = await self._client.query_pathing(th.position, el)
             if d is None:

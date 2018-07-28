@@ -164,5 +164,6 @@ def run_game(map_settings, players, **kwargs):
     else:
         result = asyncio.get_event_loop().run_until_complete(
             _host_game(map_settings, players, **kwargs)
-        )
+            )      
+        
     return result
