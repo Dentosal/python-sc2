@@ -123,7 +123,7 @@ class Ramp:
 
 class GameInfo(object):
     def __init__(self, proto):
-        # this might require an update during the game because placement grid and playable grid are greyed out on minerals, start locations and ramps (debris)
+        # TODO: this might require an update during the game because placement grid and playable grid are greyed out on minerals, start locations and ramps (debris)
         self._proto = proto       
         self.players = [Player.from_proto(p) for p in proto.player_info]
         self.map_size = Size.from_proto(proto.start_raw.map_size)
