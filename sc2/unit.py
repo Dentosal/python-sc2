@@ -225,9 +225,12 @@ class Unit(object):
     def weapon_cooldown(self) -> Union[int, float]:
         """ Returns some time (more than game loops) until the unit can fire again, returns -1 for units that can't attack
         Usage: 
-        if unit.weapon_cooldown == 0: # unit can attack
-        elif unit.weapon_cooldown < 0: # unit cannot attack
-        else: # unit can attack but weapon is on cooldown
+        if unit.weapon_cooldown == 0:
+            await self.do(unit.attack(target))
+        elif unit.weapon_cooldown < 0:
+            await self.do(unit.move(closest_allied_unit_because_cant_attack))
+        else:
+            await self.do(unit.move(retreatPosition))
         """
         if self.can_attack_ground or self.can_attack_air:
             return self._proto.weapon_cooldown
