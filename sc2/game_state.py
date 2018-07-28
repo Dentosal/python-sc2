@@ -100,7 +100,7 @@ class GameState(object):
         for u in self.observation.raw_data.units:
             hiddenUnits.append(u) if u.is_blip else visibleUnits.append(u)
         self.units: Units = Units.from_proto(visibleUnits, game_data)
-        self.blips: Blip = {Blip(unit) for unit in hiddenUnits}
+        self.blips: Set[Blip] = {Blip(unit) for unit in hiddenUnits}
 
         self.visibility: PixelMap = PixelMap(self.observation.raw_data.map_state.visibility)
         self.creep: PixelMap = PixelMap(self.observation.raw_data.map_state.creep)
