@@ -315,7 +315,24 @@ class BotAI(object):
                 return min(possible, key=lambda p: p.distance_to(near))
         return None
 
-    def already_pending(self, unit_type: UnitTypeId, all_units: bool=False) -> int:
+    def already_pending_upgrade(self, upgrade_type: UpgradeId) -> Union[int, float]:
+        """ Check if an upgrade is being researched
+        Return values:
+        0: not started
+        0 < x < 1: researching
+        1: finished
+        """
+        assert isinstance(upgrade_type, UpgradeId)
+        if upgrade_type in self.state.upgrades:
+            return 1
+        creationAbilityID = self._game_data.upgrades[upgrade_type.value].research_ability.id
+        for s in self.units.structure.ready:
+            for o in s.orders:
+                if o.ability.id == creationAbilityID:
+                    return o.progress
+        return 0
+
+    def already_pending(self, unit_type: Union[UpgradeId, UnitTypeId], all_units: bool=False) -> int:
         """
         Returns a number of buildings or units already in progress, or if a
         worker is en route to build it. This also includes queued orders for
@@ -327,6 +344,9 @@ class BotAI(object):
 
         # TODO / FIXME: SCV building a structure might be counted as two units
 
+        if isinstance(unit_type, UpgradeId):
+            return self.already_pending_upgrade(unit_type)
+            
         ability = self._game_data.units[unit_type.value].creation_ability
 
         amount = len(self.units(unit_type).not_ready)
