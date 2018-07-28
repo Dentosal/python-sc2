@@ -100,7 +100,7 @@ class Bot_AI_Extended(sc2.BotAI):
            await self.auto_attack()   
            
         # always build gas on all expansions
-        if (iteration + 15) % gameloops_check_frequency * 10 == 0 and self.supply_used > 30:
+        if (iteration + 15) % gameloops_check_frequency * 10 == 0 and self.supply_used > 20:
            await add_gas().execute(self)
 
 
@@ -235,7 +235,7 @@ class Bot_AI_Extended(sc2.BotAI):
     async def auto_build_expand(self):
         """Auto build expansion in case of surplus of resources"""
 
-        if self.minerals > sufficently_gigantic_minerals and self.units(self.basic_townhall_type).pending.amount == 0 :
+        if self.minerals > sufficently_gigantic_minerals and self.units(self.basic_townhall_type).pending.amount == 0 and self.build_order.worker_count <= self.workers.amount + 24:
             print_log(self.logger, logging.DEBUG, "Auto expand due to a gigantic surplus of resources")
             await expand().execute(self)      
         
@@ -257,6 +257,9 @@ class Bot_AI_Extended(sc2.BotAI):
     @measure_runtime
     async def auto_build_units(self, building_id, units_list):
         """Auto build units in case of surplus of resources"""
+
+        if self.supply_used > 195:
+            return
 
         if self.minerals > sufficently_enough_minerals or self.vespene > sufficently_enough_vespene:  
             # for idle buildings, build random unit             

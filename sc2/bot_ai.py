@@ -101,8 +101,9 @@ class BotAI(object):
         if not location:
             location = await self.get_next_expansion()
 
-        await self.build(building, near=location, max_distance=max_distance, random_alternative=False,
-                         placement_step=1)
+        if location is not None:
+            await self.build(building, near=location, max_distance=max_distance, random_alternative=False,
+                             placement_step=1)
 
     async def get_next_expansion(self):
         """Find next expansion location."""

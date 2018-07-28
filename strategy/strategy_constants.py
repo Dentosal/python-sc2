@@ -17,7 +17,7 @@ folder_sc2replays = os.path.dirname(os.path.dirname(ROOT_DIR)) + "/SC2-replays/"
 # Eval settings ---------------------------------------------------------------
 
 # Number of games to play
-eval_number_games = 30
+eval_number_games = 2
 
 # CatalystLE
 map_name = "Catalyst LE" # "Blackpink LE", "Catalyst LE" # TODO list all 7 maps

@@ -32,8 +32,7 @@ class BuildOrder(object):
         """Increase supply if close to supply cap"""
         max_supply_cap = 200
         bot = self.bot
-        if bot.supply_left <= bot.supply_cap * 0.1 + 1 and not bot.already_pending(bot.supply_type) \
-                and self.auto_add_supply and bot.supply_cap < max_supply_cap:
+        if bot.supply_left <= bot.supply_cap * 0.1 + 1 and self.auto_add_supply and bot.supply_cap < max_supply_cap: # and not bot.already_pending(bot.supply_type) \
             return await add_supply().execute(bot)
 
     # HS modified

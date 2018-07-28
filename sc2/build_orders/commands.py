@@ -39,8 +39,8 @@ class Command(object):
             bot.cum_supply = bot.cum_supply + self.increased_supply
             bot.build_order.worker_count = bot.build_order.worker_count + self.increase_workers
 
-            if self.increase_workers > 0:
-                print("INCREASE WORKERS BY {0} TO {1}".format(self.increase_workers, bot.build_order.worker_count))
+            #if self.increase_workers > 0:
+            #    print("INCREASE WORKERS BY {0} TO {1}".format(self.increase_workers, bot.build_order.worker_count))
 
         return e
 
@@ -145,11 +145,11 @@ def add_gas(prioritize=True, repeatable=False):
 
         owned_expansions = bot.owned_expansions
         for location, th in owned_expansions.items():
-            vgs = bot.state.vespene_geyser.closer_than(20.0, th)
+            vgs = bot.state.vespene_geyser.closer_than(15.0, th)
 
             if vgs(bot.geyser_type).amount >= 0.5 * vgs.amount:
                 # all places already have a geyser building
-                return ActionResult.CantFindPlacementLocation
+                continue
 
 
             for vg in vgs:
