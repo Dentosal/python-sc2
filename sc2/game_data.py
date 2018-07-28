@@ -58,10 +58,8 @@ class GameData(object):
                 # Correction for morphing units, e.g. orbital would return 550/0 instead of actual 150/0
                 morph_cost = unit.morph_cost
                 if morph_cost: # can be None
-                    print("returning morph cost for unit {}: {} - {}".format(unit.name, morph_cost.minerals, morph_cost.vespene))
                     return morph_cost
                 # Correction for zerg structures without morph: Extractor would return 75 instead of actual 25
-                print("returning unit cost for unit {}: {} - {}".format(unit.name, unit.cost_zerg_corrected.minerals, unit.cost_zerg_corrected.vespene))
                 return unit.cost_zerg_corrected
 
         for upgrade in self.upgrades.values():
