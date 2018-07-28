@@ -40,6 +40,11 @@ def init_build_order(path, logger):
     """Parse csv file to build order"""
 
     build_order = []
+
+    if no_hash in path:
+        return build_order
+
+    
     df = pd.read_csv(path, sep=";")
 
     for index, row in df.iterrows():

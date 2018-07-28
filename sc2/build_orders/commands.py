@@ -38,6 +38,10 @@ class Command(object):
             self.is_done = True            
             bot.cum_supply = bot.cum_supply + self.increased_supply
             bot.build_order.worker_count = bot.build_order.worker_count + self.increase_workers
+
+            if self.increase_workers > 0:
+                print("INCREASE WORKERS BY {0} TO {1}".format(self.increase_workers, bot.build_order.worker_count))
+
         return e
 
     def allow_repeat(self):
@@ -46,7 +50,7 @@ class Command(object):
         return self
 
 
-def expand(prioritize=False, repeatable=True):
+def expand(prioritize=True, repeatable=False):
 
     async def do_expand(bot):
         building = bot.basic_townhall_type
@@ -131,6 +135,7 @@ def add_supply(prioritize=True, repeatable=False):
 
     return Command(supply_spec, priority=prioritize, repeatable=repeatable)
 
+# HS modified
 def add_gas(prioritize=True, repeatable=False):
 
     async def do_add_gas(bot):
@@ -142,10 +147,9 @@ def add_gas(prioritize=True, repeatable=False):
         for location, th in owned_expansions.items():
             vgs = bot.state.vespene_geyser.closer_than(20.0, th)
 
-            # HS 
             if vgs(bot.geyser_type).amount >= 0.5 * vgs.amount:
                 # all places already have a geyser building
-                return
+                return ActionResult.CantFindPlacementLocation
 
 
             for vg in vgs:

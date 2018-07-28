@@ -100,7 +100,7 @@ class Bot_AI_Extended(sc2.BotAI):
            await self.auto_attack()   
            
         # always build gas on all expansions
-        if (iteration + 15) % gameloops_check_frequency * 10 == 0 and self.cum_supply > 30:
+        if (iteration + 15) % gameloops_check_frequency * 10 == 0 and self.supply_used > 30:
            await add_gas().execute(self)
 
 

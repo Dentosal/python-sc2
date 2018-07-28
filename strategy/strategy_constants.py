@@ -2,6 +2,7 @@ from sc2 import Race, Difficulty
 from sc2.constants import *
 from bot_config import *
 import os
+from util import create_folder
 # NOTE: constants are partially tailored to Terran specific units due to underlying data set
 
 # Setup -----------------------------------------------------------------------
@@ -16,11 +17,11 @@ folder_sc2replays = os.path.dirname(os.path.dirname(ROOT_DIR)) + "/SC2-replays/"
 # Eval settings ---------------------------------------------------------------
 
 # Number of games to play
-eval_number_games = 10
+eval_number_games = 30
 
 # CatalystLE
 map_name = "Catalyst LE" # "Blackpink LE", "Catalyst LE" # TODO list all 7 maps
-method = "BestEqualWeighted"
+method = "NoBuildOrder" # "BestEqualWeighted"
 self_race = Race.Terran
 enemy_race = Race.Terran
 enemy_difficulty = Difficulty.Hard
@@ -41,18 +42,13 @@ race_protoss_string = "Protoss"
 race_zerg_string = "Zerg"
 race_bot_separator = "vs"
 
-def create_folder(folder):
-    if not os.path.exists(folder):
-        os.makedirs(folder)
-
-
 folder_bot_replays = folder_sc2replays + "bot-replays/"
 folder_bot_logs = folder_sc2replays + "bot-logs/"
 
 create_folder(folder_bot_replays)
 create_folder(folder_bot_logs)
 
-
+no_hash = "NoBuildOrder"
 
 
 folder_buildorder =  folder_sc2replays + "buildorders-csv/"

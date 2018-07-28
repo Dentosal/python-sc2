@@ -5,6 +5,13 @@ logger.setLevel(logging.INFO)
 import functools
 import timeit
 import time
+import os
+
+
+def create_folder(folder):
+    """Creates folder if not exists"""
+    if not os.path.exists(folder):
+        os.makedirs(folder)
 
 def get_random_building_location(bot):
     """Generates random placement suggestion for building location"""

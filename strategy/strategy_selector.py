@@ -9,9 +9,14 @@ from random import uniform
 import sys
 from bot_ai_extended import Bot_AI_Extended
 import logging
+from util import create_folder
 
 def get_buildorder_hash(path_strategy, method):
     """Determines the build-order"""
+
+    if method == no_hash:
+        return method
+
     df = pd.read_csv(path_strategy, sep=";", decimal=b',')
 
     r = uniform(0,1)
@@ -54,8 +59,13 @@ def main():
         time_string = str(round(time.time())) 
         id = map_name + self_race_string + race_bot_separator + enemy_race_string + time_string + "_" + hash
 
-        output_replay = folder_bot_replays + id + ending_sc2replay
-        log_file_path = folder_bot_logs + id + ending_logs
+        subpath = method +  ending_folder + map_name + ending_folder
+
+        create_folder(folder_bot_replays + subpath)
+        create_folder(folder_bot_logs + subpath)
+
+        output_replay = folder_bot_replays + subpath +  id + ending_sc2replay
+        log_file_path = folder_bot_logs + subpath + id + ending_logs
                        
         fh = logging.FileHandler(log_file_path, mode = "w") 
         fh.setFormatter(formatter)
