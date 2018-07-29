@@ -53,7 +53,7 @@ def main():
       
     for i in range(eval_number_games):    
 
-        print("Evaluation number: {0}".format(i+1))
+        print("Evaluation number: {0} of {1}".format(i+1, eval_number_games))
         
         hash = get_buildorder_hash(path_strategy, method) 
         
@@ -84,7 +84,7 @@ def main():
 
         # Start game
         run_game(maps.get(map_name), [
-            Bot(self_race, Bot_AI_Extended(path, output_replay, logger_strategy)),
+            Bot(self_race, Bot_AI_Extended(path, output_replay, logger_strategy, method, map_name)),
             #Bot(self_race, Bot_AI_Extended(path, output_replay, logger_strategy))
             Computer(enemy_race, enemy_difficulty)
         ], realtime=False, save_replay_as= output_replay, game_time_limit = max_gametime)

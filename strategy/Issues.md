@@ -1,5 +1,6 @@
 # TODO
 
+
 - mark my contribution with HS
 
 # Optional
@@ -8,7 +9,7 @@
     - note: will not rebuild since building can be used
 - Lower supply depot
 - attack in groups instead of sending single units
-
+- export method + mapname in results.csv
 
 # Currently out of scope
 

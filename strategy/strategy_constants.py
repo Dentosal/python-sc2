@@ -17,11 +17,11 @@ folder_sc2replays = os.path.dirname(os.path.dirname(ROOT_DIR)) + "/SC2-replays/"
 # Eval settings ---------------------------------------------------------------
 
 # Number of games to play
-eval_number_games = 40
+eval_number_games = 20
 
 # CatalystLE
 map_name = "Catalyst LE" # "Blackpink LE", "Catalyst LE" # TODO list all 7 maps
-method = "NoBuildOrder" # "BestEqualWeighted"
+method = "RandomEqualWeighted" # "BestEqualWeighted" # "RandomEqualWeighted"
 self_race = Race.Terran
 enemy_race = Race.Terran
 enemy_difficulty = Difficulty.Hard

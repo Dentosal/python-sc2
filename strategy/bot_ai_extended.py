@@ -31,7 +31,7 @@ class Bot_AI_Extended(sc2.BotAI):
         """Gets build-order, can be overwritten e.g. in strategy_test"""
         return init_build_order(path, logger)
 
-    def __init__(self, path = None, output_replay = None, logger = logging.getLogger("sc2.strategy")):
+    def __init__(self, path = None, output_replay = None, logger = logging.getLogger("sc2.strategy"), method = "Unknown", map = "Unknown"):
         """Initialised bot"""
         self.init_loggers()
 
@@ -43,6 +43,8 @@ class Bot_AI_Extended(sc2.BotAI):
         self.path = output_replay # output replay path
         self.enemy_base = None # location of first enemy base
         self.logger = logger
+        self.method = method
+        self.map = map
         
         global distance_attack
         self.distance_attack_current = distance_attack # current attacking distance to enemy base

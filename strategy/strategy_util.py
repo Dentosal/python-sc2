@@ -23,17 +23,17 @@ def can_build(building, unit):
 
     
 
-def export_result(self, result): 
+def export_result(bot, result): 
     """Appends result to a specified file"""
-    if self.path is None:
+    if bot.path is None:
         return
 
-    df = pd.DataFrame(data = {"file": [os.path.basename(self.path)], "result": [result]})
+    df = pd.DataFrame(data = {"File": [os.path.basename(bot.path)], "Result": [result], "Method": [bot.method], "Map": [bot.map]})
 
     if os.path.isfile(file_bot_results):
-        df.to_csv(file_bot_results, mode = "a", header = False)          
+        df.to_csv(file_bot_results, mode = "a", header = False, index=False)          
     else:
-        df.to_csv(file_bot_results, header = ["path","result"])     
+        df.to_csv(file_bot_results, header = ["File", "Result", "Method", "Map"], index=False)     
 
 
 def init_build_order(path, logger):
@@ -109,7 +109,7 @@ def init_build_order(path, logger):
                     break
             
             if upgrade == "":
-                print_log(logger, logging.WARNING, "Upgrade {0} not found".format(unit_name))
+                print_log(logger, logging.ERROR, "Upgrade {0} not found".format(unit_name))
                 continue
             else:
                 print_log(logger, logging.DEBUG, "Upgrade {0} on building {1} found".format(upgrade, building))
