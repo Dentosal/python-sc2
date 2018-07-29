@@ -1,3 +1,7 @@
+## For local testing
+#FROM test_image2
+
+# For live version
 FROM burnysc2/python-sc2-docker
 
 # Copy run_tests bash script
