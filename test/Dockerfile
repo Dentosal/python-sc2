@@ -36,7 +36,6 @@ RUN python -m pip install pipenv
 
 
 
-
 # Copy python-sc2 directory to docker image
 ADD $TRAVIS_BUILD_DIR /root/python-sc2
 # ADD python-sc2 /root/python-sc2
@@ -52,3 +51,5 @@ ADD run_tests.sh /root/run_tests.sh
 # docker cp run_tests.sh mytest:/root/
 # docker cp python-sc2/. mytest:/root/python-sc2
 # docker exec mytest bash /root/run_tests.sh
+
+ENTRYPOINT [ "/bin/bash" ]
