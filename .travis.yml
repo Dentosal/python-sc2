@@ -30,16 +30,40 @@ language: python
 services:
   - docker
 
-before_install:
-  - cd $TRAVIS_BUILD_DIR
-  - ls
-  - echo test
-  - docker pull burnysc2/python-sc2-docker
-  - python -m pip install $TRAVIS_BUILD_DIR
+before_install:  
+  # - python -m pip install $TRAVIS_BUILD_DIR
+  - docker build $TRAVIS_BUILD_DIR/test/Dockerfile
 
+#   - docker pull burnysc2/python-sc2-docker
+#   # - docker run -it --name mytest burnysc2/python-sc2-docker
+#   - docker run --name mytest burnysc2/python-sc2-docker
+#   - docker start -a -i mytest
+#   # https://stackoverflow.com/questions/22907231/copying-files-from-host-to-docker-container
+#   # docker exec -i mytest python -m pip install /root/python-sc2
+#   - docker cp $TRAVIS_BUILD_DIR/. mytest:/root/python-sc2
+
+
+# docker run -it --name mytest test1 && docker cp python-sc2/. mytest:/root/python-sc2 && docker exec -i mytest python -m pip install /root/python-sc2
+
+
+# docker run -it --name mytest test1
+# exit
+# docker cp run_tests.sh /root/
+# docker cp python-sc2/. mytest:/root/python-sc2
+# docker start -i mytest
+# python -m pip install /root/python-sc2
+# python /root/python-sc2/test/test_units.py
+
+# docker exec -it mytest python -m pip install /root/python-sc2
+
+# docker start -i mytest && docker exec -i mytest python -m pip install /root/python-sc2
+# docker exec -i mytest "python -m pip install /root/python-sc2"
 
 script:
-  - ls
+  - docker run --name mytest test2 /root/run_tests.sh
+  # - docker run --name dockertest burnysc2/python-sc2-docker
+  # - docker cp $TRAVIS_BUILD_DIR dockertest:/root/python-sc2
+  # - docker run dockertest
 
 # # Download my bots
 # RUN git clone --recursive https://github.com/BurnySc2/python-sc2-docker
