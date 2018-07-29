@@ -1,7 +1,39 @@
 # FROM burnysc2/python-sc2-docker
-FROM python:3.6
+FROM ubuntu:16.04
 USER root
 WORKDIR /root/
+RUN apt-get update --assume-yes --quiet=2
+# RUN apt-get build-dep --assume-yes --no-install-recommends --no-show-upgraded --quiet=2 python-pygame
+RUN apt-get install --assume-yes --no-install-recommends --no-show-upgraded --quiet=2 \
+    net-tools \
+    build-essential \
+    clang \
+    cmake \
+    curl  \
+    git  \
+    htop  \
+    libidn11  \
+    libz-dev \
+    libssl-dev \
+    make \
+    software-properties-common \
+    unzip \
+    vim \
+    wget
+# Install python 3.6 with pip
+RUN add-apt-repository ppa:jonathonf/python-3.6
+RUN apt-get update --assume-yes --quiet=2
+RUN apt-get install --assume-yes --no-install-recommends --no-show-upgraded --quiet=2 \
+    python3.6 \
+    python3-setuptools \
+    python3-pip
+RUN apt-get update
+RUN apt-get install wget unzip git tar gzip -y
+RUN python -m pip install --upgrade pip
+RUN python -m pip install pipenv
+
+
+
 
 # Copy python-sc2 directory to docker image
 ADD $TRAVIS_BUILD_DIR /root/python-sc2
