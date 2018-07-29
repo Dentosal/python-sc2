@@ -29,6 +29,8 @@ RUN apt-get install --assume-yes --no-install-recommends --no-show-upgraded --qu
     python3-pip
 RUN apt-get update
 RUN apt-get install wget unzip git tar gzip -y
+# Change default python 2.7 => 3.6
+RUN /bin/bash -c "ln -sfn /usr/bin/python3.6 /usr/bin/python"
 RUN python -m pip install --upgrade pip
 RUN python -m pip install pipenv
 
