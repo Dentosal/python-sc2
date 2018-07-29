@@ -2,14 +2,13 @@
 
 echo Hello world test from run_tests script
 
-echo Files:
-ls
-echo Files in root:
-ls ~/root/
-echo Files in root/python-sc2:
-ls ~/root/python-sc2
-echo Files in root/python-sc2/test:
-ls ~/root/python-sc2/test
 
-python -m pip install ~/python-sc2
-python ~/python-sc2/test/test_units.py
+# Install the python-sc2 library and its requirements (s2clientprotocol etc)
+cd /root/python-sc2
+#tree
+#pwd
+python -m pip install .
+
+
+python /root/python-sc2/test/test_units.py
+python /root/python-sc2/test/test_bot.py
