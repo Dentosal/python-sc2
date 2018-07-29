@@ -45,6 +45,7 @@ class Command(object):
 
             #if self.increase_workers > 0:
             #    print("INCREASE WORKERS BY {0} TO {1}".format(self.increase_workers, bot.build_order.worker_count))
+
         elif self.checkTrainAddon is not None and e == ActionResult.Error:   
             # TODO CHECK, never reached this statement???
 

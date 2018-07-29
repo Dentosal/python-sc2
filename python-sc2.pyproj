@@ -81,9 +81,6 @@
     <Compile Include="strategy\bot_config.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="strategy\deprecated.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="strategy\strategy_constants.py">
       <SubType>Code</SubType>
     </Compile>
@@ -111,6 +108,7 @@
     <Content Include="strategy\Issues.md" />
     <Content Include="README.md" />
     <Content Include="strategy\Contribution.md" />
+    <Content Include="strategy\README_STRATEGY.md" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
 </Project>

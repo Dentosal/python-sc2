@@ -14,15 +14,6 @@ from math import isclose
 from util import print_log, measure_runtime
 import logging
 
-def can_build(building, unit):
-    """Determines whether unit can be build"""
-    if unit_requirements[unit] in building_addons and not building.has_add_on:
-        return False
-    else:
-        return isclose(building.build_progress, build_progress_completed) and building.is_mine and building.noqueue and building.is_idle
-
-
-
 def export_result(bot, result): 
     """Appends result to a specified file"""
     if bot.path is None:

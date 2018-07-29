@@ -106,6 +106,12 @@ class Bot_AI_Extended(sc2.BotAI):
            await add_gas().execute(self)
 
 
+    def can_build(self, building, unit):
+        """Determines whether unit can be build"""
+        if unit_requirements[unit] in building_addons and not building.has_add_on:
+            return False
+        else:
+            return isclose(building.build_progress, build_progress_completed) and building.is_mine and building.noqueue and building.is_idle
 
     @measure_runtime
     async def auto_defend(self):
@@ -269,7 +275,7 @@ class Bot_AI_Extended(sc2.BotAI):
 
                 unit = sample(units_list, 1)[0] # random unit
 
-                if can_build(building, unit) and self.can_afford(unit):
+                if self.can_build(building, unit) and self.can_afford(unit):
                     print_log(self.logger, logging.DEBUG, "Train unit {0} due to surplus of resources".format(unit))
                     #self.cum_supply = self.cum_supply + 0.5
                     await self.do(building.train(unit))

@@ -1,7 +1,7 @@
 from bot_ai_extended import *
 
 class Strategy_Test(Bot_AI_Extended):
-    """Only for testing purposes"""
+    """Contains basic build-orders"""
 
     def get_buildorder(self, path, logger):
         """Overrides Bot_AI_Extended method, change strategy here"""
