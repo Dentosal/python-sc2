@@ -7,7 +7,10 @@ import logging
 from strategy_constants import *
 
 class Command(object):
-    def __init__(self, action, repeatable=False, priority=False, increase_workers = 0, increased_supply = 0, requires = None, requires_2nd = None, max_supply = 200):
+
+  
+
+    def __init__(self, action, repeatable=False, priority=False, increase_workers = 0, increased_supply = 0, requires = None, requires_2nd = None, max_supply = 200, checkTrainAddon = None):
         self.action = action
         self.is_done = False
         self.is_repeatable = repeatable
@@ -17,6 +20,7 @@ class Command(object):
         self.requires = requires # structure required 
         self.requires_2nd = requires_2nd # 2nd structure required
         self.max_supply = max_supply # otherwise, bot will try to build units over max supply cap yielding ActionResult.FoodUsageImpossible
+        self.checkTrainAddon = checkTrainAddon # indicates whether action is training an addon
 
 
     # HS modified
@@ -41,6 +45,22 @@ class Command(object):
 
             #if self.increase_workers > 0:
             #    print("INCREASE WORKERS BY {0} TO {1}".format(self.increase_workers, bot.build_order.worker_count))
+        elif self.checkTrainAddon is not None and e == ActionResult.Error:   
+            # TODO CHECK, never reached this statement???
+
+
+
+            on_building = construct_requirements[self.checkTrainAddon]
+            possible_buildings = bot.units(on_building).owned.completed.no_add_on
+            if possible_buildings.ready.noqueue.amount > 0 and bot.can_afford(on_building):
+                # TODO INFO level
+                print_log(logging.getLogger("sc2.command"), logging.ERROR, "Constructing {0} due to blocked space for {1}".format(on_building, self.checkTrainAddon))
+                # triggers constructing building, if no place for addon
+                await construct(on_building).execute(bot)
+                # retry placing addon
+                e = await self.action(bot)
+            return e
+
 
         return e
 
@@ -49,6 +69,15 @@ class Command(object):
         self.is_done = False
         return self
 
+
+# HS
+def checkAddon(unit):
+    """Checks whether units is an addon"""
+    
+    if unit in building_addons:
+        return unit
+    else:
+        return None  
 
 def expand(prioritize=True, repeatable=False):
 
@@ -64,10 +93,15 @@ def expand(prioritize=True, repeatable=False):
     return Command(do_expand, priority=prioritize, repeatable=repeatable, increase_workers = worker_expand_increase)
 
 
+# HS modified
 def train_unit(unit, on_building, prioritize=False, repeatable=False, increased_supply = 0):
        
     async def do_train(bot):
         buildings = bot.units(on_building).ready.noqueue
+
+        if checkAddon(unit) is not None:
+            buildings = buildings.no_add_on
+
         if buildings.exists:
             selected = buildings.first
             can_afford = bot.can_afford(unit)
@@ -81,7 +115,8 @@ def train_unit(unit, on_building, prioritize=False, repeatable=False, increased_
             return ActionResult.Error
 
     return Command(do_train, priority=prioritize, repeatable=repeatable, increased_supply= increased_supply, 
-                   requires =  unit_requirements.get(unit), requires_2nd= unit_requirements_2nd.get(unit), max_supply = 195)
+                   requires =  unit_requirements.get(unit), requires_2nd = unit_requirements_2nd.get(unit), 
+                   max_supply = 195, checkTrainAddon = checkAddon(unit))
 
 
 def morph(unit, prioritize=False, repeatable=False, increased_supply = 0):

@@ -71,3 +71,6 @@ def measure_runtime(func):
         print_log(logger, level, "Function {} required {} ms".format(func.__name__, elaped_ms))
 
     return newfunc
+
+
+

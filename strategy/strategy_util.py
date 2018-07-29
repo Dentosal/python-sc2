@@ -21,19 +21,19 @@ def can_build(building, unit):
     else:
         return isclose(building.build_progress, build_progress_completed) and building.is_mine and building.noqueue and building.is_idle
 
-    
+
 
 def export_result(bot, result): 
     """Appends result to a specified file"""
     if bot.path is None:
         return
 
-    df = pd.DataFrame(data = {"File": [os.path.basename(bot.path)], "Result": [result], "Method": [bot.method], "Map": [bot.map]})
+    df = pd.DataFrame(data = {"File": [os.path.basename(bot.path)], "Map": [bot.map], "Method": [bot.method], "Result": [result]})
 
     if os.path.isfile(file_bot_results):
         df.to_csv(file_bot_results, mode = "a", header = False, index=False)          
     else:
-        df.to_csv(file_bot_results, header = ["File", "Result", "Method", "Map"], index=False)     
+        df.to_csv(file_bot_results, header = ["File", "Map", "Method", "Result"], index=False)     
 
 
 def init_build_order(path, logger):
