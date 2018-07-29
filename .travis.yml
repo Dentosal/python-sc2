@@ -31,58 +31,14 @@ services:
   - docker
 
 before_install:  
-  # - python -m pip install $TRAVIS_BUILD_DIR
-  # - cd $TRAVIS_BUILD_DIR/test
+  # Debugging
   - echo Current path
   - pwd
   - echo Project dir contents
   - ls
+  # Build docker image
   - docker build -t test_image -f test/Dockerfile .
-  # - docker build /home/travis/build/Dentosal/test/Dockerfile
-  # - docker build $TRAVIS_BUILD_DIR/test/Dockerfile
-
-#   - docker pull burnysc2/python-sc2-docker
-#   # - docker run -it --name mytest burnysc2/python-sc2-docker
-#   - docker run --name mytest burnysc2/python-sc2-docker
-#   - docker start -a -i mytest
-#   # https://stackoverflow.com/questions/22907231/copying-files-from-host-to-docker-container
-#   # docker exec -i mytest python -m pip install /root/python-sc2
-#   - docker cp $TRAVIS_BUILD_DIR/. mytest:/root/python-sc2
-
-
-# docker run -it --name mytest test1 && docker cp python-sc2/. mytest:/root/python-sc2 && docker exec -i mytest python -m pip install /root/python-sc2
-
-
-# docker run -it --name mytest test1
-# exit
-# docker cp run_tests.sh /root/
-# docker cp python-sc2/. mytest:/root/python-sc2
-# docker start -i mytest
-# python -m pip install /root/python-sc2
-# python /root/python-sc2/test/test_units.py
-
-# docker exec -it mytest python -m pip install /root/python-sc2
-
-# docker start -i mytest && docker exec -i mytest python -m pip install /root/python-sc2
-# docker exec -i mytest "python -m pip install /root/python-sc2"
 
 script:
+  # Run tests
   - docker run --name mytest test_image /root/run_tests.sh
-  # - docker run --name dockertest burnysc2/python-sc2-docker
-  # - docker cp $TRAVIS_BUILD_DIR dockertest:/root/python-sc2
-  # - docker run dockertest
-
-# # Download my bots
-# RUN git clone --recursive https://github.com/BurnySc2/python-sc2-docker
-
-# # Download python-sc2 from github
-# RUN git clone --recursive https://github.com/Dentosal/python-sc2
-
-# # Install python-sc2 via setup.py file
-# RUN python -m pip install /root/python-sc2
-
-# Add python-sc2 to path - not needed here since we install from setup.py
-# ENV PYTHONPATH "${PYTHONPATH}:/root/python-sc2/"
-
-# Run bot example
-# RUN python ~/python-sc2-docker/testing/python-sc2-zergrush/zerg_rush.py

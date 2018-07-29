@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 
-echo Hello world test from run_tests script
-
+# Debugging
+echo Hello from run_tests.sh script
 
 # Install the python-sc2 library and its requirements (s2clientprotocol etc)
 cd /root/python-sc2
-#tree
-#pwd
+echo Files in these folders
+tree
+echo Current path
+pwd
 python -m pip install .
 
-
+# Run tests
 python /root/python-sc2/test/test_units.py
 python /root/python-sc2/test/test_bot.py
