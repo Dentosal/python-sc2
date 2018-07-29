@@ -37,7 +37,7 @@ before_install:
   - pwd
   - echo Project dir contents
   - ls
-  - docker build -t test_image test/Dockerfile .
+  - docker build -t test_image -f test/Dockerfile .
   # - docker build /home/travis/build/Dentosal/test/Dockerfile
   # - docker build $TRAVIS_BUILD_DIR/test/Dockerfile
 
