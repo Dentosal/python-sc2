@@ -1,4 +1,5 @@
-FROM burnysc2/python-sc2-docker
+# FROM burnysc2/python-sc2-docker
+FROM python:3.6
 
 # Copy python-sc2 directory to docker image
 ADD $TRAVIS_BUILD_DIR /root/python-sc2
