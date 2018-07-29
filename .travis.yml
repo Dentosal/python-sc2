@@ -32,9 +32,8 @@ services:
 
 before_install:  
   # - python -m pip install $TRAVIS_BUILD_DIR
-  - cd $TRAVIS_BUILD_DIR
-  - cd test
-  - docker build .
+  - cd $TRAVIS_BUILD_DIR/test
+  - docker build -t test_image .
   # - docker build /home/travis/build/Dentosal/test/Dockerfile
   # - docker build $TRAVIS_BUILD_DIR/test/Dockerfile
 
@@ -64,7 +63,7 @@ before_install:
 # docker exec -i mytest "python -m pip install /root/python-sc2"
 
 script:
-  - docker run --name mytest burnysc2/python-sc2-docker /root/run_tests.sh
+  - docker run --name mytest test_image /root/run_tests.sh
   # - docker run --name dockertest burnysc2/python-sc2-docker
   # - docker cp $TRAVIS_BUILD_DIR dockertest:/root/python-sc2
   # - docker run dockertest
