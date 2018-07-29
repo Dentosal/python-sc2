@@ -31,7 +31,7 @@ services:
   - docker
 
 before_install:
-  - docker pull burnysc2:python-sc2-docker
+  - docker pull burnysc2/python-sc2-docker
   - python -m pip install $TRAVIS_BUILD_DIR
 
 
