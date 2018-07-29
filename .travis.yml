@@ -32,7 +32,8 @@ services:
 
 before_install:  
   # - python -m pip install $TRAVIS_BUILD_DIR
-  - docker build $TRAVIS_BUILD_DIR/test/Dockerfile
+  - docker build /home/travis/build/Dentosal/test/Dockerfile
+  # - docker build $TRAVIS_BUILD_DIR/test/Dockerfile
 
 #   - docker pull burnysc2/python-sc2-docker
 #   # - docker run -it --name mytest burnysc2/python-sc2-docker
