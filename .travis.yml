@@ -1,23 +1,54 @@
+# language: python
+
+# # sudo false implies containerized builds
+# sudo: required
+
+# services:
+#   - docker
+
+# # add the cloned directory to python path
+# env: PYTHONPATH=$PYTHONPATH:$TRAVIS_BUILD_DIR
+
+# # install libraries needed to run
+# install:
+#     - pip install s2clientprotocol async-timeout portpicker websockets aiohttp
+
+# # run my unit tests
+# script: 
+#   python test/test_position.py
+# script:
+#   python test/test_unit.py
+# script:
+#   python test/test_units.py
+
+
+
+sudo: required
+
 language: python
 
-# sudo false implies containerized builds
-sudo: false
+services:
+  - docker
 
-# python 3.7 not yet available on linux
-python:
-  - 3.6
+before_install:
+  - docker pull burnysc2:python-sc2-docker
+  - python -m pip install $TRAVIS_BUILD_DIR
 
-# add the cloned directory to python path
-env: PYTHONPATH=$PYTHONPATH:$TRAVIS_BUILD_DIR
 
-# install libraries needed to run
-install:
-    - pip install s2clientprotocol async-timeout portpicker websockets aiohttp
-
-# run my unit tests
-script: 
-  python test/test_position.py
 script:
-  python test/test_unit.py
-script:
-  python test/test_units.py
+  - ls
+
+# # Download my bots
+# RUN git clone --recursive https://github.com/BurnySc2/python-sc2-docker
+
+# # Download python-sc2 from github
+# RUN git clone --recursive https://github.com/Dentosal/python-sc2
+
+# # Install python-sc2 via setup.py file
+# RUN python -m pip install /root/python-sc2
+
+# Add python-sc2 to path - not needed here since we install from setup.py
+# ENV PYTHONPATH "${PYTHONPATH}:/root/python-sc2/"
+
+# Run bot example
+# RUN python ~/python-sc2-docker/testing/python-sc2-zergrush/zerg_rush.py
