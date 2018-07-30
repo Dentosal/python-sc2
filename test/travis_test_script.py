@@ -21,7 +21,7 @@ if len(sys.argv) > 1:
         for line in output_as_list:
             # This will throw an error if a bot is called Traceback
             if "Traceback " in line:
-                print("Exiting with exit code 3, error:\r\n{}".format(output_as_list))
+                print("Exiting with exit code 3, error log:\r\n{}".format(output_as_list))
                 exit(3)
         print("Exiting with exit code 0")
         exit(0)
