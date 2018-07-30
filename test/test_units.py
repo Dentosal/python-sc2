@@ -141,5 +141,11 @@ class TestUnits(unittest.TestCase):
     def test_enemy(self):
         self.assertEqual(self.marines.enemy, self.emptyUnitsGroup)
 
+    def test_contains(self):
+        self.assertTrue(UnitTypeId.MARINE in self.marines)
+
+    def test_not_contains(self):
+        self.assertFalse(UnitTypeId.ADEPT in self.marines)
+
 if __name__ == "__main__":
     unittest.main()

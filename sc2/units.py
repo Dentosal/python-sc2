@@ -39,6 +39,12 @@ class Units(list):
         units = [unit for unit in self if unit.tag not in tags]
         return Units(units, self.game_data)
 
+    def __contains__(self, TypeID):
+        for tag in self.tags:
+            if TypeID == self.find_by_tag(tag):
+                return True
+        return False
+
     @property
     def amount(self) -> int:
         return len(self)
