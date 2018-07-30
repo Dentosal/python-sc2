@@ -13,6 +13,7 @@ class Command(object):
     def run(self, timeout):
         def target():
             print('Thread started')
+            print("Threat command is: {}".format(self.cmd))
             self.process = subprocess.Popen(self.cmd, stdout=subprocess.PIPE)
             self.result = self.process.communicate()
             print('Thread finished')
