@@ -42,4 +42,4 @@ before_install:
 script:
   # Run tests
   # - docker run --name mytest test_image /root/run_tests.sh
-  - docker run --name mytest test_image python /root/python-sc2/examples/protoss/cannon_rush.py
+  - docker run test_image python examples/protoss/cannon_rush.py
