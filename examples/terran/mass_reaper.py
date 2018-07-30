@@ -50,7 +50,7 @@ class MassReaperBot(sc2.BotAI):
                 self.combinedActions.append(cc(AbilityId.UPGRADETOORBITAL_ORBITALCOMMAND))
 
         # expand if we can afford and have less than 2 bases
-        if self.townhalls.amount < 2 and self.already_pending(UnitTypeId.COMMANDCENTER) == 0 and self.can_afford(UnitTypeId.COMMANDCENTER):
+        if 1 <= self.townhalls.amount < 2 and self.already_pending(UnitTypeId.COMMANDCENTER) == 0 and self.can_afford(UnitTypeId.COMMANDCENTER):
             # get_next_expansion returns the center of the mineral fields of the next nearby expansion
             next_expo = await self.get_next_expansion()
             # from the center of mineral fields, we need to find a valid place to place the command center
