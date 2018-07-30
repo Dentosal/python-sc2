@@ -10,7 +10,7 @@ class CannonRushBot(sc2.BotAI):
         if iteration == 0:
             await self.chat_send("(probe)(pylon)(cannon)(cannon)(gg)")
 
-        raise NotImplementedError
+        exit(1)
 
         if not self.units(NEXUS).exists:
             for worker in self.workers:
