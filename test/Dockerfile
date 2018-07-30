@@ -10,6 +10,10 @@ ADD test/run_tests.sh /root/run_tests.sh
 # Copy files from the current commit to root
 ADD . /root/python-sc2
 
+# Install the python-sc2 library and its requirements (s2clientprotocol etc.)
+WORKDIR /root/python-sc2
+RUN python -m pip install .
+
 # This will be executed during the container run instead
 # docker run --name mytest test_image /root/run_tests.sh
 # RUN /root/run_tests.sh
