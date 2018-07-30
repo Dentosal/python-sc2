@@ -5,7 +5,7 @@ This script is made as a wrapper for sc2 bots to set a timeout to the bots (in c
 """
 
 retries = 10
-timeout_time = 2*60
+timeout_time = 3*60
 
 
 
