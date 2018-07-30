@@ -43,7 +43,7 @@ script:
   # Run tests
   # Protoss
   - docker run test_image -c "python test/travis_test_script.py examples/protoss/cannon_rush.py"
-  - docker run test_image -c "python test/travis_test_script.py examples/protoss/threebase_voidray.py"
+  # - docker run test_image -c "python test/travis_test_script.py examples/protoss/threebase_voidray.py"
   - docker run test_image -c "python test/travis_test_script.py examples/protoss/warpgate_push.py"
   # Terran
   - docker run test_image -c "python test/travis_test_script.py examples/terran/cyclone_push.py"
