@@ -1,9 +1,28 @@
 import sys, subprocess
 
+retries = 5
+timeout_time = 180
+
 # Run the game from here via arguments e.g.:
 # python test/travis_test_script.py examples/protoss/cannon_rush_bot.py
 if len(sys.argv) > 1:
-    result = subprocess.run(["python", sys.argv[1]], stdout=subprocess.PIPE)
+    # Attempt to run process up to 5 times with 180 seconds timeout time
+    result = None
+    for i in range(retries):
+        try:
+            result = subprocess.run(["python", sys.argv[1]], stdout=subprocess.PIPE, timeout=timeout_time)
+        except subprocess.TimeoutExpired:
+            if i - 1 < retries:
+                print("Relaunching bot {}, retrying {}/{}".format(sys.argv[1], i+2, retries))
+            continue
+        finally:
+            if result is None:
+                print("Exiting with exit code 5, error: Attempted to launch script {} timed out after {} seconds. Retry attempt number {}".format(sys.argv[1], timeout_time, i+1))
+                exit(5)
+            else:
+                # Bot was successfully run in timeout_time seconds
+                break
+
     print_output: str = result.stdout.decode('utf-8')
     print(print_output)
     linebreaks = [
