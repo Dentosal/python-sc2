@@ -10,14 +10,16 @@ if len(sys.argv) > 1:
     t0 = time.time()
     result = None
     for i in range(retries):
+        t0 = time.time()
+        print("Launching bot {}, attempt {}/{}".format(sys.argv[1], i+1, retries))
         try:
-            t0 = time.time()
-            print("Launching bot {}, attempt {}/{}".format(sys.argv[1], i+1, retries))
             result = subprocess.run(["python", sys.argv[1]], stdout=subprocess.PIPE, timeout=timeout_time)
         except subprocess.TimeoutExpired:
+            # Retry after timeout
             print("Bot expired.")
             continue
         finally:
+            # End for loop after a successful game
             break
 
     # Bot was not successfully run in time
