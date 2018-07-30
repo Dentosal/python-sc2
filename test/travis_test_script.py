@@ -1,7 +1,7 @@
 import sys, subprocess, time
 
-retries = 5
-timeout_time = 8*60
+retries = 10
+timeout_time = 2*60
 
 # Run the game from here via arguments e.g.:
 # python test/travis_test_script.py examples/protoss/cannon_rush_bot.py
