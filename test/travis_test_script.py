@@ -18,11 +18,11 @@ def find_bot_class(bot_module):
     return None
 
 def find_bot_race(bot_path):
-    if "protoss" in bot_path.lower():
+    if "examples/protoss" in bot_path.lower():
         return Race.Protoss
-    if "terran" in bot_path.lower():
+    if "examples/terran" in bot_path.lower():
         return Race.Terran
-    if "zerg" in bot_path.lower():
+    if "examples/zerg" in bot_path.lower():
         return Race.Zerg
 
 def run_bot(bot_class, race):
@@ -46,5 +46,7 @@ if len(sys.argv) > 1:
     print(result)
     if result is not None and result.value in [1, 2]:
         exit(0)
+    # Exit code 1: bot crashed
     exit(1)
+# Exit code 2: bot was not launched
 exit(2)
