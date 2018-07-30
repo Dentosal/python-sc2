@@ -1,4 +1,4 @@
-import sys, subprocess
+import sys, subprocess, time
 
 retries = 5
 timeout_time = 180
@@ -7,9 +7,11 @@ timeout_time = 180
 # python test/travis_test_script.py examples/protoss/cannon_rush_bot.py
 if len(sys.argv) > 1:
     # Attempt to run process up to 5 times with 180 seconds timeout time
+    t0 = time.time()
     result = None
     for i in range(retries):
         try:
+            t0 = time.time()
             result = subprocess.run(["python", sys.argv[1]], stdout=subprocess.PIPE, timeout=timeout_time)
         except subprocess.TimeoutExpired:
             if i - 1 < retries:
@@ -36,6 +38,7 @@ if len(sys.argv) > 1:
 
     # result.returncode will always return 0 if the game was run successfully or if there was a python error
     print("Returncode: {}".format(result.returncode))
+    print("Game took {} real time seconds".format(round(time.time() - t0, 1)))
     if result.returncode == 0:
         for line in output_as_list:
             # This will throw an error if a bot is called Traceback
