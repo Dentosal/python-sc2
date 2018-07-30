@@ -10,7 +10,7 @@ class CannonRushBot(sc2.BotAI):
         if iteration == 0:
             await self.chat_send("(probe)(pylon)(cannon)(cannon)(gg)")
 
-        print(self.townhalls.random.property_that.does_not.exist)
+        raise NotImplementedError
 
         if not self.units(NEXUS).exists:
             for worker in self.workers:
