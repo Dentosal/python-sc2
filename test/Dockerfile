@@ -14,11 +14,6 @@ ADD . /root/python-sc2
 WORKDIR /root/python-sc2
 RUN python -m pip install .
 
-# Make all examples executeable so that they can be run from bash script
-RUN chmod +x examples/protoss/*.py
-RUN chmod +x examples/terran/*.py
-RUN chmod +x examples/zerg/*.py
-
 # This will be executed during the container run instead
 # docker run test_image -c "examples/protoss/cannon_rush.py"
 # RUN python "examples/protoss/cannon_rush.py"
