@@ -18,7 +18,7 @@ if len(sys.argv) > 1:
             # Retry after timeout
             print("Bot expired.")
             continue
-        finally:
+        else:
             # End for loop after a successful game
             break
 
