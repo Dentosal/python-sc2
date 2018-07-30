@@ -90,7 +90,7 @@ class ProxyRaxBot(sc2.BotAI):
             await self.do(scv.gather(self.state.mineral_field.closest_to(cc)))
 
 def main():
-    sc2.run_game(sc2.maps.get("Sequencer LE"), [
+    sc2.run_game(sc2.maps.get("(2)CatalystLE"), [
         # Human(Race.Terran),
         Bot(Race.Terran, ProxyRaxBot()),
         Computer(Race.Zerg, Difficulty.Easy)

@@ -95,7 +95,7 @@ class ThreebaseVoidrayBot(sc2.BotAI):
                 await self.do(sg.train(VOIDRAY))
 
 def main():
-    sc2.run_game(sc2.maps.get("Abyssal Reef LE"), [
+    sc2.run_game(sc2.maps.get("(2)CatalystLE"), [
         Bot(Race.Protoss, ThreebaseVoidrayBot()),
         Computer(Race.Protoss, Difficulty.Easy)
     ], realtime=False)
