@@ -17,6 +17,8 @@ if len(sys.argv) > 1:
         except subprocess.TimeoutExpired:
             print("Bot expired.")
             continue
+        finally:
+            break
 
     # Bot was not successfully run in time
     if result is None:
