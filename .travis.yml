@@ -41,17 +41,18 @@ before_install:
 
 script:
   # Run tests
+  - docker run test_image -c "python test/travis_test_script.py test_bot.py"
   # Protoss
-  - docker run test_image -c "python test/travis_test_script.py examples/protoss/cannon_rush.py"
+  # - docker run test_image -c "python test/travis_test_script.py examples/protoss/cannon_rush.py"
   # - docker run test_image -c "python test/travis_test_script.py examples/protoss/threebase_voidray.py"
   # - docker run test_image -c "python test/travis_test_script.py examples/protoss/warpgate_push.py"
   # Terran
-  - docker run test_image -c "python test/travis_test_script.py examples/terran/cyclone_push.py"
-  - docker run test_image -c "python test/travis_test_script.py examples/terran/mass_reaper.py"
+  # - docker run test_image -c "python test/travis_test_script.py examples/terran/cyclone_push.py"
+  # - docker run test_image -c "python test/travis_test_script.py examples/terran/mass_reaper.py"
   # - docker run test_image -c "python test/travis_test_script.py examples/terran/onebase_battlecruiser.py"
-  - docker run test_image -c "python test/travis_test_script.py examples/terran/proxy_rax.py"
-  - docker run test_image -c "python test/travis_test_script.py examples/terran/ramp_wall.py"
+  # - docker run test_image -c "python test/travis_test_script.py examples/terran/proxy_rax.py"
+  # - docker run test_image -c "python test/travis_test_script.py examples/terran/ramp_wall.py"
   # Zerg
-  - docker run test_image -c "python test/travis_test_script.py examples/zerg/hydralisk_push.py"
+  # - docker run test_image -c "python test/travis_test_script.py examples/zerg/hydralisk_push.py"
   # - docker run test_image -c "python test/travis_test_script.py examples/zerg/onebase_broodlord.py"
-  - docker run test_image -c "python test/travis_test_script.py examples/zerg/zerg_rush.py"
+  # - docker run test_image -c "python test/travis_test_script.py examples/zerg/zerg_rush.py"
