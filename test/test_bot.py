@@ -20,7 +20,7 @@ class TestBot(sc2.BotAI):
     def __init__(self):
         # Tests related
         self.game_time_timeout_limit = 2*60
-        self.tests_target = 7
+        self.tests_target = 8
         self.tests_done_by_name = set()
 
         # Variables handled by tests
@@ -63,6 +63,11 @@ class TestBot(sc2.BotAI):
             if iteration >= 6:
                 await self.test_botai_actions4()
                 await self.test_botai_actions4_successful()
+
+        elif "test_botai_actions5_successful" not in self.tests_done_by_name:
+            if iteration >= 6:
+                await self.test_botai_actions5()
+                await self.test_botai_actions5_successful()
 
 
 
@@ -123,8 +128,22 @@ class TestBot(sc2.BotAI):
             combined_actions.append(scv.move(center))
         await self.do_actions(combined_actions)
 
-    # Test BotAI action: move all SCVs to mine minerals near townhall
+    # Test BotAI action: move some scvs to the center, some to minerals
     async def test_botai_actions3(self):
+        combined_actions = []
+        center = self._game_info.map_center
+        scvs = self.workers
+        scvs1 = scvs[:6]
+        scvs2 = scvs[6:]
+        for scv in scvs1:
+            combined_actions.append(scv.move(center))
+        mf = self.state.mineral_field.closest_to(self.townhalls.random)
+        for scv in scvs2:
+            combined_actions.append(scv.gather(mf))
+        await self.do_actions(combined_actions)
+
+    # Test BotAI action: move all SCVs to mine minerals near townhall
+    async def test_botai_actions4(self):
         combined_actions = []
         mf = self.state.mineral_field.closest_to(self.townhalls.random)
         for scv in self.units(UnitTypeId.SCV):
@@ -132,7 +151,7 @@ class TestBot(sc2.BotAI):
         await self.do_actions(combined_actions)
 
     # Test BotAI action: self.expand_now()
-    async def test_botai_actions4(self):
+    async def test_botai_actions5(self):
         if self.can_afford(UnitTypeId.COMMANDCENTER) and not self.already_pending(UnitTypeId.COMMANDCENTER, all_units=True):
             await self.expand_now()
 
@@ -147,12 +166,17 @@ class TestBot(sc2.BotAI):
             self.tests_done_by_name.add("test_botai_actions2_successful")
 
     async def test_botai_actions3_successful(self):
-        if self.units.gathering.amount >= 12:
-            self.tests_done_by_name.add("test_botai_actions3_successful")
+        if self.units.filter(lambda x: x.is_moving).amount >= 6:
+            if self.units.gathering.amount >= 6:
+                self.tests_done_by_name.add("test_botai_actions3_successful")
 
     async def test_botai_actions4_successful(self):
-        if self.units(UnitTypeId.COMMANDCENTER).amount >= 2:
+        if self.units.gathering.amount >= 12:
             self.tests_done_by_name.add("test_botai_actions4_successful")
+
+    async def test_botai_actions5_successful(self):
+        if self.units(UnitTypeId.COMMANDCENTER).amount >= 2:
+            self.tests_done_by_name.add("test_botai_actions5_successful")
 
 
 
