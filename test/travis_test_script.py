@@ -4,7 +4,7 @@ import sys, subprocess, time
 This script is made as a wrapper for sc2 bots to set a timeout to the bots (in case they cant find the last enemy structure or the game is ending in a draw)
 """
 
-retries = 3
+retries = 10
 timeout_time = 2*60
 
 
