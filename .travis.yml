@@ -1,28 +1,3 @@
-# language: python
-
-# # sudo false implies containerized builds
-# sudo: required
-
-# services:
-#   - docker
-
-# # add the cloned directory to python path
-# env: PYTHONPATH=$PYTHONPATH:$TRAVIS_BUILD_DIR
-
-# # install libraries needed to run
-# install:
-#     - pip install s2clientprotocol async-timeout portpicker websockets aiohttp
-
-# # run my unit tests
-# script: 
-#   python test/test_position.py
-# script:
-#   python test/test_unit.py
-# script:
-#   python test/test_units.py
-
-
-
 sudo: required
 
 language: python
