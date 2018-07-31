@@ -464,6 +464,9 @@ class Unit(object):
     def __repr__(self):
         return f"Unit(name={self.name !r}, tag={self.tag})"
 
+    def __eq__(self, ID):
+        return ID == self.type_id
+
 class UnitOrder(object):
     @classmethod
     def from_proto(cls, proto, game_data):
