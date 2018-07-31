@@ -1,23 +1,19 @@
+sudo: required
+
 language: python
 
-# sudo false implies containerized builds
-sudo: false
+services:
+  - docker
 
-# python 3.7 not yet available on linux
-python:
-  - 3.6
+before_install:  
+  # Debugging
+  - echo Current path
+  - pwd
+  - echo Project dir contents
+  - ls
+  # Build docker image
+  - docker build -t test_image -f test/Dockerfile .
 
-# add the cloned directory to python path
-env: PYTHONPATH=$PYTHONPATH:$TRAVIS_BUILD_DIR
-
-# install libraries needed to run
-install:
-    - pip install s2clientprotocol async-timeout portpicker websockets aiohttp
-
-# run my unit tests
-script: 
-  python test/test_position.py
 script:
-  python test/test_unit.py
-script:
-  python test/test_units.py
+  # Run tests
+  - docker run test_image -c "python test/travis_test_script.py test/test_bot.py"
