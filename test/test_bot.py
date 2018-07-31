@@ -133,8 +133,8 @@ class TestBot(sc2.BotAI):
         combined_actions = []
         center = self._game_info.map_center
         scvs = self.workers
-        scvs1 = scvs[:7]
-        scvs2 = scvs[7:]
+        scvs1 = scvs[:6]
+        scvs2 = scvs[6:]
         for scv in scvs1:
             combined_actions.append(scv.move(center))
         mf = self.state.mineral_field.closest_to(self.townhalls.random)
@@ -172,7 +172,7 @@ class TestBot(sc2.BotAI):
 
     async def test_botai_actions4_successful(self):
         if self.units.gathering.amount >= 12:
-            self.tests_done_by_name.add("test_botai_actionn4_successful")
+            self.tests_done_by_name.add("test_botai_actions4_successful")
 
     async def test_botai_actions5_successful(self):
         if self.units(UnitTypeId.COMMANDCENTER).amount >= 2:
