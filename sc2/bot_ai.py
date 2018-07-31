@@ -137,24 +137,14 @@ class BotAI(object):
 
         return closest
 
-    async def distribute_workers(self):
-        """
-        Distributes workers across all the bases taken.
-        WARNING: This is quite slow when there are lots of workers or multiple bases.
-        """
 
-        # TODO:
-        # OPTIMIZE: Assign idle workers smarter
-        # OPTIMIZE: Never use same worker mutltiple times
+    @staticmethod
+    def getNearestWorker(location, workers: list):
+        return sorted(workers, key=lambda worker: worker.distance_to(location))[0]
 
-        expansion_locations = self.expansion_locations
-        owned_expansions = self.owned_expansions
-        worker_pool = []
-        for idle_worker in self.workers.idle:
-            mf = self.state.mineral_field.closest_to(idle_worker)
-            await self.do(idle_worker.gather(mf))
-
-        for location, townhall in owned_expansions.items():
+    # ensure that each townhall has the right amount of workers
+    def check_townhalls(self, worker_pool):
+        for location, townhall in self.owned_expansions.items():
             workers = self.workers.closer_than(20, location)
             actual = townhall.assigned_harvesters
             ideal = townhall.ideal_harvesters
@@ -162,6 +152,9 @@ class BotAI(object):
             if actual > ideal:
                 worker_pool.extend(workers.random_group_of(min(excess, len(workers))))
                 continue
+
+    # ensure that each geyser has the right amount of workers
+    def check_geysers(self, worker_pool):
         for g in self.geysers:
             workers = self.workers.closer_than(5, g)
             actual = g.assigned_harvesters
@@ -171,35 +164,71 @@ class BotAI(object):
                 worker_pool.extend(workers.random_group_of(min(excess, len(workers))))
                 continue
 
+    async def assign_geysers(self, worker_pool):
         for g in self.geysers:
             actual = g.assigned_harvesters
             ideal = g.ideal_harvesters
             deficit = ideal - actual
 
             for x in range(0, deficit):
-                if worker_pool:
-                    w = worker_pool.pop()
-                    if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
-                        await self.do(w.move(g))
-                        await self.do(w.return_resource(queue=True))
+                worker = None
+                if self.workers.idle:
+                    worker = self.getNearestWorker(g,  self.workers.idle)
+                    self.workers.idle.remove(worker)
+                elif worker_pool:
+                    worker = self.getNearestWorker(g, worker_pool)
+                    worker_pool.remove(worker)
+                if worker:
+                    if len(worker.orders) == 1 and worker.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
+                        await self.do(worker.move(g))
+                        await self.do(worker.return_resource(queue=True))
                     else:
-                        await self.do(w.gather(g))
+                        await self.do(worker.gather(g))
 
-        for location, townhall in owned_expansions.items():
+    async def assign_townhalls(self, worker_pool):
+        for location, townhall in self.owned_expansions.items():
             actual = townhall.assigned_harvesters
             ideal = townhall.ideal_harvesters
 
             deficit = ideal - actual
-            for x in range(0, deficit):
-                if worker_pool:
-                    w = worker_pool.pop()
+            for _ in range(0, deficit):
+                worker = None
+                if  self.workers.idle:
+                    worker = self.getNearestWorker(location,  self.workers.idle)
+                    self.workers.idle.remove(worker)
+                elif worker_pool:
+                    worker = self.getNearestWorker(location, worker_pool)
+                    worker_pool.remove(worker)
+                if worker:
                     mf = self.state.mineral_field.closest_to(townhall)
-                    if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
-                        await self.do(w.move(townhall))
-                        await self.do(w.return_resource(queue=True))
-                        await self.do(w.gather(mf, queue=True))
+                    if len(worker.orders) == 1 and worker.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
+                        await self.do(worker.move(townhall))
+                        await self.do(worker.return_resource(queue=True))
+                        await self.do(worker.gather(mf, queue=True))
                     else:
-                        await self.do(w.gather(mf))
+                        await self.do(worker.gather(mf))
+
+    async def distribute_workers(self, geyser_first: bool = False):
+        """
+        Distributes workers across all the bases taken.
+        WARNING: This is quite slow when there are lots of workers or multiple bases.
+        """
+
+        # TODO:
+        # OPTIMIZE: Assign idle workers smarter
+        # OPTIMIZE: Never use same worker multiple times
+
+        worker_pool = []
+
+        self.check_townhalls(worker_pool)
+        self.check_geysers(worker_pool)
+        if geyser_first:
+            await self.assign_geysers(worker_pool)
+            await self.assign_townhalls(worker_pool)
+        else:
+            await self.assign_townhalls(worker_pool)
+            await self.assign_geysers(worker_pool)
+
 
     @property
     def owned_expansions(self):
