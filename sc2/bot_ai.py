@@ -434,8 +434,8 @@ class BotAI(object):
         self.townhalls: Units = self.units(race_townhalls[self.race])
         self.geysers: Units = self.units(race_gas[self.race])
 
-        self.minerals: Units = state.common.minerals
-        self.vespene: Units = state.common.vespene
+        self.minerals: Union[float, int] = state.common.minerals
+        self.vespene: Union[float, int] = state.common.vespene
         self.supply_used: Union[float, int] = state.common.food_used
         self.supply_cap: Union[float, int] = state.common.food_cap
         self.supply_left: Union[float, int] = self.supply_cap - self.supply_used
