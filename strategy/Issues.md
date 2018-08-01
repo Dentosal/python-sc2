@@ -2,6 +2,7 @@
 
 
 - mark my contribution with HS
+- check enemy base if multiple possible start location ???
 
 # Optional
 

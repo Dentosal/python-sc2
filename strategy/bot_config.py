@@ -4,7 +4,7 @@
 
 
 # Maximum time in seconds until game result is Tie
-max_gametime = 1800 # 900 = 15 min, 1200 = 20 min , 1800 = 30 min
+max_gametime = 2612 # 900 = 15 min, 1200 = 20 min , 1800 = 30 min, 2612s = 43 min 12s = max duration in data-set
 
 # Minimum amount of units to attack
 min_units_attack = 12 # i.e. same amount as commandcenter https://github.com/davechurchill/commandcenter

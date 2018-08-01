@@ -17,11 +17,11 @@ folder_sc2replays = os.path.dirname(os.path.dirname(ROOT_DIR)) + "/SC2-replays/"
 # Eval settings ---------------------------------------------------------------
 
 # Number of games to play
-eval_number_games = 20
+eval_number_games = 50
 
-# CatalystLE
-map_name = "Catalyst LE" # "Blackpink LE", "Catalyst LE" # TODO list all 7 maps
-method = "RandomEqualWeighted" # "BestEqualWeighted" # "RandomEqualWeighted"
+
+map_name = "Blackpink LE" # "Catalyst LE", "Blackpink LE", "Abiogenesis LE", "Acid Plant LE", "Backwater LE", "Eastwatch LE", "Neon Violet Square LE"
+method = "RandomEqualWeighted" # Available options: "BestEqualWeighted"  "RandomEqualWeighted"   "NoBuildOrder"
 self_race = Race.Terran
 enemy_race = Race.Terran
 enemy_difficulty = Difficulty.Hard

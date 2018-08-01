@@ -1,3 +1,5 @@
+# This fork focuses on strategy / build-orders. For details confer its [Readme](https://github.com/qnwart/python-sc2/blob/master/strategy/README_STRATEGY.md)
+
 # A StarCraft II API Client for Python 3
 
 An easy-to-use library for writing StarCraft II AI Bots in Python 3. The ultimate goal is simplicity and ease of use, while still preserving all functionality. A simple worker rush bot takes no more than twenty lines of code, not two hundred. However, this library intends to provide both high and low level abstractions.
