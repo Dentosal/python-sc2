@@ -45,9 +45,24 @@ class MassReaperBot(sc2.BotAI):
             self.combinedActions.append(depot(AbilityId.MORPH_SUPPLYDEPOT_LOWER))
 
         # morph commandcenter to orbitalcommand
-        if self.units(UnitTypeId.BARRACKS).ready.exists and self.can_afford(UnitTypeId.BARRACKS): # we dont check if we can afford because the price for morphing units was/is bugged - doesn't work with "await self.do()"
+        if self.units(UnitTypeId.BARRACKS).ready.exists and self.can_afford(UnitTypeId.ORBITALCOMMAND): # check if orbital is affordable
             for cc in self.units(UnitTypeId.COMMANDCENTER).idle: # .idle filters idle command centers
                 self.combinedActions.append(cc(AbilityId.UPGRADETOORBITAL_ORBITALCOMMAND))
+
+        # expand if we can afford and have less than 2 bases
+        if 1 <= self.townhalls.amount < 2 and self.already_pending(UnitTypeId.COMMANDCENTER) == 0 and self.can_afford(UnitTypeId.COMMANDCENTER):
+            # get_next_expansion returns the center of the mineral fields of the next nearby expansion
+            next_expo = await self.get_next_expansion()
+            # from the center of mineral fields, we need to find a valid place to place the command center
+            location = await self.find_placement(UnitTypeId.COMMANDCENTER, next_expo, placement_step=1)
+            if location:
+                # now we "select" (or choose) the nearest worker to that found location
+                w = self.select_build_worker(location)
+                if w and self.can_afford(UnitTypeId.COMMANDCENTER):
+                    # the worker will be commanded to build the command center
+                    error = await self.do(w.build(UnitTypeId.COMMANDCENTER, location))
+                    if error:
+                        print(error)
 
         # make up to 4 barracks if we can afford them
         # check if we have a supply depot (tech requirement) before trying to make barracks
@@ -117,7 +132,7 @@ class MassReaperBot(sc2.BotAI):
             enemyGroundUnitsInGrenadeRange = self.known_enemy_units.not_structure.not_flying.exclude_type([UnitTypeId.LARVA, UnitTypeId.EGG]).closer_than(reaperGrenadeRange, r)
             if enemyGroundUnitsInGrenadeRange.exists and (r.is_attacking or r.is_moving):
                 # if AbilityId.KD8CHARGE_KD8CHARGE in abilities, we check that to see if the reaper grenade is off cooldown
-                abilities = await self.get_available_abilities(r)
+                abilities = (await self.get_available_abilities(r))
                 enemyGroundUnitsInGrenadeRange = enemyGroundUnitsInGrenadeRange.sorted(lambda x: x.distance_to(r), reverse=True)
                 furthestEnemy = None
                 for enemy in enemyGroundUnitsInGrenadeRange:

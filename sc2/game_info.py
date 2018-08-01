@@ -10,7 +10,7 @@ from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type chec
 
 
 class Ramp:
-    def __init__(self, points: Sequence[Point2], game_info: "GameInfo") -> None:
+    def __init__(self, points: Set[Point2], game_info: "GameInfo"):
         self._points: Set[Point2] = set(points)
         self.__game_info = game_info
         # tested by printing actual building locations vs calculated depot positions
@@ -121,20 +121,20 @@ class Ramp:
         raise Exception('Not implemented. Trying to access a ramp that has a wrong amount of upper points.')
 
 
-
 class GameInfo(object):
-    def __init__(self, proto): 
+    def __init__(self, proto):
+        # TODO: this might require an update during the game because placement grid and playable grid are greyed out on minerals, start locations and ramps (debris)
         self._proto = proto       
         self.players = [Player.from_proto(p) for p in proto.player_info]
         self.map_size = Size.from_proto(proto.start_raw.map_size)
-        self.pathing_grid = PixelMap(proto.start_raw.pathing_grid)
-        self.terrain_height = PixelMap(proto.start_raw.terrain_height)
-        self.placement_grid = PixelMap(proto.start_raw.placement_grid)
+        self.pathing_grid: PixelMap = PixelMap(proto.start_raw.pathing_grid)
+        self.terrain_height: PixelMap = PixelMap(proto.start_raw.terrain_height)
+        self.placement_grid: PixelMap = PixelMap(proto.start_raw.placement_grid)
         self.playable_area = Rect.from_proto(proto.start_raw.playable_area)
-        self.map_ramps =  self._find_ramps()
-        self.player_races = {p.player_id: p.race_actual or p.race_requested for p in proto.player_info}
-        self.start_locations = [Point2.from_proto(sl) for sl in proto.start_raw.start_locations]
-        self.player_start_location = None # Filled later by BotAI._prepare_first_step
+        self.map_ramps: List[Ramp] = self._find_ramps()
+        self.player_races: Dict[int, "Race"] = {p.player_id: p.race_actual or p.race_requested for p in proto.player_info}
+        self.start_locations: List[Point2] = [Point2.from_proto(sl) for sl in proto.start_raw.start_locations]
+        self.player_start_location: Point2 = None # Filled later by BotAI._prepare_first_step
 
     @property
     def map_center(self):
@@ -177,7 +177,7 @@ class GameInfo(object):
                 if len(currentGroup) >= minimum_points_per_group: # add to group if number of points reached threshold - discard group if not enough points
                     foundGroups.append(currentGroup)
                 currentGroup = set()
-        """ returns groups of points as list
+        """ Returns groups of points as list
         [{p1, p2, p3}, {p4, p5, p6, p7, p8}]
         """
         return foundGroups

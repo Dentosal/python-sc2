@@ -5,6 +5,10 @@ from functools import partial
 import logging
 from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type checking
 
+# imports for mypy and pycharm autocomplete
+from .game_state import GameState
+from .game_data import GameData
+
 logger = logging.getLogger(__name__)
 
 from .position import Point2, Point3
@@ -29,35 +33,35 @@ class BotAI(object):
         return Race(self._game_info.player_races[self.enemy_id])
 
     @property
-    def time(self):
+    def time(self) -> Union[int, float]:
         """ Returns time in seconds, assumes the game is played on 'faster' """
         return self.state.game_loop / 22.4 # / (1/1.4) * (1/16)
 
     @property
-    def game_info(self):
+    def game_info(self) -> "GameInfo":
         return self._game_info
 
     @property
-    def start_location(self):
+    def start_location(self) -> Point2:
         return self._game_info.player_start_location
 
     @property
-    def enemy_start_locations(self):
+    def enemy_start_locations(self) -> List[Point2]:
         """Possible start locations for enemies."""
         return self._game_info.start_locations
 
     @property
-    def known_enemy_units(self):
+    def known_enemy_units(self) -> Units:
         """List of known enemy units, including structures."""
         return self.state.units.enemy
 
     @property
-    def known_enemy_structures(self):
+    def known_enemy_structures(self) -> Units:
         """List of known enemy units, structures only."""
         return self.state.units.enemy.structure
 
     @property
-    def main_base_ramp(self):
+    def main_base_ramp(self) -> "Ramp":
         """ Returns the Ramp instance of the closest main-ramp to start location. Look in game_info.py for more information """
         return min(
             {ramp for ramp in self.game_info.map_ramps if len(ramp.upper) == 2},
@@ -65,7 +69,7 @@ class BotAI(object):
         )
 
     @property_cache_forever
-    def expansion_locations(self):
+    def expansion_locations(self) -> Dict[Point2, Units]:
         """List of possible expansion locations."""
 
         RESOURCE_SPREAD_THRESHOLD = 8.0  # Tried with Abyssal Reef LE, this was fine
@@ -88,7 +92,7 @@ class BotAI(object):
         avg = lambda l: sum(l) / len(l)
         pos = lambda u: u.position.to2
         centers = {Point2(tuple(map(avg, zip(*map(pos, g))))).rounded: g for g in r_groups}
-
+        """ Returns dict with center of resources as key, resources (mineral field, vespene geyser) as value """
         return centers
 
     async def get_available_abilities(self, units: Union[List[Unit], Units], ignore_resource_requirements=False) -> List[List[AbilityId]]:
@@ -96,7 +100,7 @@ class BotAI(object):
         # right know only checks cooldown, energy cost, and whether the ability has been researched
         return await self._client.query_available_abilities(units, ignore_resource_requirements)
 
-    async def expand_now(self, building=None, max_distance=10, location=None):
+    async def expand_now(self, building: Optional[UnitTypeId]=None, max_distance: Union[int, float]=10, location: Optional[Point2]=None):
         """Takes new expansion."""
 
         if not building:
@@ -107,10 +111,9 @@ class BotAI(object):
         if not location:
             location = await self.get_next_expansion()
 
-        await self.build(building, near=location, max_distance=max_distance, random_alternative=False,
-                         placement_step=1)
+        await self.build(building, near=location, max_distance=max_distance, random_alternative=False, placement_step=1)
 
-    async def get_next_expansion(self):
+    async def get_next_expansion(self) -> Optional[Point2]:
         """Find next expansion location."""
 
         closest = None
@@ -213,9 +216,8 @@ class BotAI(object):
 
         return owned
 
-    def can_afford(self, item_id):
+    def can_afford(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId]) -> "CanAffordWrapper":
         """Tests if the player has enough resources to build a unit or cast an ability."""
-
         if isinstance(item_id, UnitTypeId):
             unit = self._game_data.units[item_id.value]
             cost = self._game_data.calculate_ability_cost(unit.creation_ability)
@@ -252,7 +254,7 @@ class BotAI(object):
                 return True
         return False
 
-    def select_build_worker(self, pos, force=False):
+    def select_build_worker(self, pos: Union[Unit, Point2, Point3], force: bool=False) -> Optional[Unit]:
         """Select a worker to build a bulding with."""
 
         workers = self.workers.closer_than(20, pos) or self.workers
@@ -264,7 +266,7 @@ class BotAI(object):
 
         return workers.random if force else None
 
-    async def can_place(self, building, position):
+    async def can_place(self, building: Union[AbilityData, AbilityId, UnitTypeId], position: Point2) -> bool:
         """Tests if a building can be placed in the given location."""
 
         assert isinstance(building, (AbilityData, AbilityId, UnitTypeId))
@@ -277,7 +279,7 @@ class BotAI(object):
         r = await self._client.query_building_placement(building, [position])
         return r[0] == ActionResult.Success
 
-    async def find_placement(self, building, near, max_distance=20, random_alternative=True, placement_step=2):
+    async def find_placement(self, building: UnitTypeId, near: Union[Unit, Point2, Point3], max_distance: int=20, random_alternative: bool=True, placement_step: int=2) -> Optional[Point2]:
         """Finds a placement location for building."""
 
         assert isinstance(building, (AbilityId, UnitTypeId))
@@ -313,7 +315,24 @@ class BotAI(object):
                 return min(possible, key=lambda p: p.distance_to(near))
         return None
 
-    def already_pending(self, unit_type, all_units=False) -> int:
+    def already_pending_upgrade(self, upgrade_type: UpgradeId) -> Union[int, float]:
+        """ Check if an upgrade is being researched
+        Return values:
+        0: not started
+        0 < x < 1: researching
+        1: finished
+        """
+        assert isinstance(upgrade_type, UpgradeId)
+        if upgrade_type in self.state.upgrades:
+            return 1
+        creationAbilityID = self._game_data.upgrades[upgrade_type.value].research_ability.id
+        for s in self.units.structure.ready:
+            for o in s.orders:
+                if o.ability.id == creationAbilityID:
+                    return o.progress
+        return 0
+
+    def already_pending(self, unit_type: Union[UpgradeId, UnitTypeId], all_units: bool=False) -> int:
         """
         Returns a number of buildings or units already in progress, or if a
         worker is en route to build it. This also includes queued orders for
@@ -325,6 +344,9 @@ class BotAI(object):
 
         # TODO / FIXME: SCV building a structure might be counted as two units
 
+        if isinstance(unit_type, UpgradeId):
+            return self.already_pending_upgrade(unit_type)
+            
         ability = self._game_data.units[unit_type.value].creation_ability
 
         amount = len(self.units(unit_type).not_ready)
@@ -337,7 +359,7 @@ class BotAI(object):
 
         return amount
 
-    async def build(self, building, near, max_distance=20, unit=None, random_alternative=True, placement_step=2):
+    async def build(self, building: UnitTypeId, near: Union[Point2, Point3], max_distance: int=20, unit: Optional[Unit]=None, random_alternative: bool=True, placement_step: int=2):
         """Build a building."""
 
         if isinstance(near, Unit):
@@ -368,7 +390,7 @@ class BotAI(object):
 
         return r
 
-    async def do_actions(self, actions):     
+    async def do_actions(self, actions: List["UnitCommand"]):
         for action in actions:
             cost = self._game_data.calculate_ability_cost(action.ability)
             self.minerals -= cost.minerals
@@ -377,7 +399,7 @@ class BotAI(object):
         r = await self._client.actions(actions, game_data=self._game_data)
         return r
 
-    async def chat_send(self, message):
+    async def chat_send(self, message: str):
         """Send a chat message."""
 
         assert isinstance(message, str)
@@ -385,14 +407,14 @@ class BotAI(object):
 
     def _prepare_start(self, client, player_id, game_info, game_data):
         """Ran until game start to set game and player data."""
-        self._client = client
-        self._game_info = game_info
-        self._game_data = game_data
+        self._client: "Client" = client
+        self._game_info: "GameInfo" = game_info
+        self._game_data: GameData = game_data
 
-        self.player_id = player_id
-        self.race = Race(self._game_info.player_races[self.player_id])
+        self.player_id: int = player_id
+        self.race: Race = Race(self._game_info.player_races[self.player_id])
         self._units_previous_map = dict()
-        self.units = Units([], game_data)
+        self.units: Units = Units([], game_data)
 
     def _prepare_first_step(self):
         """First step extra preparations. Must not be called before _prepare_step."""
@@ -401,22 +423,22 @@ class BotAI(object):
 
     def _prepare_step(self, state):
         """Set attributes from new state before on_step."""
-        self.state = state
+        self.state: GameState = state
         # need this for checking for new units
         self._units_previous_map.clear()
         for unit in self.units:
             self._units_previous_map[unit.tag] = unit
 
-        self.units = state.units.owned
-        self.workers = self.units(race_worker[self.race])
-        self.townhalls = self.units(race_townhalls[self.race])
-        self.geysers = self.units(race_gas[self.race])
+        self.units: Units = state.units.owned
+        self.workers: Units = self.units(race_worker[self.race])
+        self.townhalls: Units = self.units(race_townhalls[self.race])
+        self.geysers: Units = self.units(race_gas[self.race])
 
-        self.minerals = state.common.minerals
-        self.vespene = state.common.vespene
-        self.supply_used = state.common.food_used
-        self.supply_cap = state.common.food_cap
-        self.supply_left = self.supply_cap - self.supply_used
+        self.minerals: Union[float, int] = state.common.minerals
+        self.vespene: Union[float, int] = state.common.vespene
+        self.supply_used: Union[float, int] = state.common.food_used
+        self.supply_cap: Union[float, int] = state.common.food_cap
+        self.supply_left: Union[float, int] = self.supply_cap - self.supply_used
 
     def issue_events(self):
         self._issue_unit_dead_events()

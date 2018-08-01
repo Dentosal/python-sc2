@@ -21,7 +21,7 @@ class Unit(object):
         return UnitTypeId(self._proto.unit_type)
 
     @property
-    def _type_data(self):
+    def _type_data(self) -> "UnitTypeData":
         return self._game_data.units[self._proto.unit_type]
 
     @property
@@ -147,6 +147,20 @@ class Unit(object):
         return self._type_data.has_vespene
 
     @property
+    def tech_alias(self) -> Optional[List[UnitTypeId]]:
+        """ Building tech equality, e.g. OrbitalCommand is the same as CommandCenter """
+        """ For Hive, this returns [UnitTypeId.Hatchery, UnitTypeId.Lair] """
+        """ For SCV, this returns None """
+        return self._type_data.tech_alias
+
+    @property
+    def unit_alias(self) -> Optional[UnitTypeId]:
+        """ Building type equality, e.g. FlyingOrbitalCommand is the same as OrbitalCommand """
+        """ For flying OrbitalCommand, this returns UnitTypeId.OrbitalCommand """
+        """ For SCV, this returns None """
+        return self._type_data.unit_alias
+
+    @property
     def race(self) -> Race:
         return Race(self._type_data._proto.race)
 
@@ -213,6 +227,8 @@ class Unit(object):
         Usage: 
         if unit.weapon_cooldown == 0:
             await self.do(unit.attack(target))
+        elif unit.weapon_cooldown < 0:
+            await self.do(unit.move(closest_allied_unit_because_cant_attack))
         else:
             await self.do(unit.move(retreatPosition))
         """
@@ -223,7 +239,7 @@ class Unit(object):
     @property
     def cargo_size(self) -> Union[float, int]:
         """ How much cargo this unit uses up in cargo_space """
-        return self._proto.cargo_size
+        return self._type_data.cargo_size
 
     @property
     def has_cargo(self) -> bool:
@@ -303,6 +319,7 @@ class Unit(object):
         return 0
 
     def target_in_range(self, target: "Unit", bonus_distance: Union[int, float]=0) -> bool:
+        """ Includes the target's radius when calculating distance to target """
         if self.can_attack_ground and not target.is_flying:
             unit_attack_range = self.ground_range
         elif self.can_attack_air and target.is_flying:

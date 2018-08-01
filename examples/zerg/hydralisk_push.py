@@ -89,7 +89,7 @@ class Hydralisk(sc2.BotAI):
                 await self.do(larvae.random.train(ZERGLING))
 
 def main():
-    sc2.run_game(sc2.maps.get("Abyssal Reef LE"), [
+    sc2.run_game(sc2.maps.get("(2)CatalystLE"), [
         Bot(Race.Zerg, Hydralisk()),
         Computer(Race.Terran, Difficulty.Medium)
     ], realtime=False, save_replay_as="ZvT.SC2Replay")
