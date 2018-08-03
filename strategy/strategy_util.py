@@ -84,6 +84,10 @@ def init_build_order(path, logger):
             unit_name = unit_name.replace("ARMORSLEVEL", "ARMORLEVEL")
             unit_name = unit_name.replace("TERRANVEHICLEANDSHIPARMOR", "TERRANVEHICLEANDSHIPPLATING") 
 
+           
+            unit_name = unit_name.replace("DRILLCLAWS", "DRILLINGCLAWS")
+            unit_name = unit_name.replace("TERRANBUILDINGARMOR", "TERRANSTRUCTUREARMORUPGRADE")
+     
 
             if not unit_building == "TECHLAB":
                 prefix_buildings = [""]

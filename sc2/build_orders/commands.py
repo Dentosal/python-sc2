@@ -46,21 +46,7 @@ class Command(object):
             #if self.increase_workers > 0:
             #    print("INCREASE WORKERS BY {0} TO {1}".format(self.increase_workers, bot.build_order.worker_count))
 
-        elif self.checkTrainAddon is not None and e == ActionResult.Error:   
-            # TODO CHECK, never reached this statement???
-
-
-
-            on_building = construct_requirements[self.checkTrainAddon]
-            possible_buildings = bot.units(on_building).owned.completed.no_add_on
-            if possible_buildings.ready.noqueue.amount > 0 and bot.can_afford(on_building):
-                # TODO INFO level
-                print_log(logging.getLogger("sc2.command"), logging.ERROR, "Constructing {0} due to blocked space for {1}".format(on_building, self.checkTrainAddon))
-                # triggers constructing building, if no place for addon
-                await construct(on_building).execute(bot)
-                # retry placing addon
-                e = await self.action(bot)
-            return e
+        
 
 
         return e
@@ -181,6 +167,24 @@ def add_gas(prioritize=True, repeatable=False):
 
         owned_expansions = bot.owned_expansions
         for location, th in owned_expansions.items():
+            # ERROR
+            #    File "python-sc2\sc2\build_orders\commands.py", line 184, in do_add_gas
+            #    vgs = bot.state.vespene_geyser.closer_than(15.0, th)
+            #    File "python-sc2\sc2\game_state.py", line 33, in vespene_geyser
+            #    return self.units.vespene_geyser
+            #    File "python-sc2\sc2\units.py", line 179, in vespene_geyser
+            #    return self.filter(lambda unit: unit.is_vespene_geyser)
+            #    File "python-sc2\sc2\units.py", line 110, in filter
+            #    return self.subgroup(filter(pred, self))
+            #    File "python-sc2\sc2\units.py", line 107, in subgroup
+            #    return Units(list(units), self.game_data)
+            #    File "python-sc2\sc2\units.py", line 179, in <lambda>
+            #    return self.filter(lambda unit: unit.is_vespene_geyser)
+            #    File "python-sc2\sc2\unit.py", line 128, in is_vespene_geyser
+            #    return self._type_data.has_vespene
+            #    File "python-sc2\sc2\unit.py", line 36, in _type_data
+            #    return self._game_data.units[self._proto.unit_type]
+
             vgs = bot.state.vespene_geyser.closer_than(15.0, th)
 
             if vgs(bot.geyser_type).amount >= 0.5 * vgs.amount:

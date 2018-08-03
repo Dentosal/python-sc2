@@ -17,10 +17,10 @@ folder_sc2replays = os.path.dirname(os.path.dirname(ROOT_DIR)) + "/SC2-replays/"
 # Eval settings ---------------------------------------------------------------
 
 # Number of games to play
-eval_number_games = 50
+eval_number_games = 1
 
 
-map_name = "Blackpink LE" # "Catalyst LE", "Blackpink LE", "Abiogenesis LE", "Acid Plant LE", "Backwater LE", "Eastwatch LE", "Neon Violet Square LE"
+map_name = "Backwater LE" # Used Maps: "Abiogenesis LE", "Acid Plant LE", "Backwater LE", "Blackpink LE", "Catalyst LE", "Eastwatch LE", "Neon Violet Square LE"
 method = "RandomEqualWeighted" # Available options: "BestEqualWeighted"  "RandomEqualWeighted"   "NoBuildOrder"
 self_race = Race.Terran
 enemy_race = Race.Terran

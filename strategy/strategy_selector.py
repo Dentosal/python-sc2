@@ -55,7 +55,8 @@ def main():
 
         print("Evaluation number: {0} of {1}".format(i+1, eval_number_games))
         
-        hash = get_buildorder_hash(path_strategy, method) 
+         
+        hash =  get_buildorder_hash(path_strategy, method) 
         
         path = folder + hash + ending_csv
         time_string = str(round(time.time())) 

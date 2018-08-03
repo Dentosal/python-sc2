@@ -198,9 +198,26 @@ class BotAI(object):
 
         list_actions = []
         expansion_locations = self.expansion_locations
-        owned_expansions = self.owned_expansions
+        owned_expansions = self.owned_expansions        
         worker_pool = []
+
         for idle_worker in self.workers.idle:
+            # Rare error:
+            #    mf = self.state.mineral_field.closest_to(idle_worker)
+            #    File "\python-sc2\sc2\game_state.py", line 29, in mineral_field
+            #    return self.units.mineral_field
+            #    File "python-sc2\sc2\units.py", line 175, in mineral_field
+            #    return self.filter(lambda unit: unit.is_mineral_field)
+            #    File "python-sc2\sc2\units.py", line 110, in filter
+            #    return self.subgroup(filter(pred, self))
+            #    File "python-sc2\sc2\units.py", line 107, in subgroup
+            #    return Units(list(units), self.game_data)
+            #    File "python-sc2\sc2\units.py", line 175, in <lambda>
+            #    return self.filter(lambda unit: unit.is_mineral_field)
+            #    File "python-sc2\sc2\unit.py", line 124, in is_mineral_field
+            #    return self._type_data.has_minerals
+            #    File "python-sc2\sc2\unit.py", line 36, in _type_data
+            #    return self._game_data.units[self._proto.unit_type]
             mf = self.state.mineral_field.closest_to(idle_worker)
             list_actions.append(idle_worker.gather(mf))
 
