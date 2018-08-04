@@ -364,9 +364,17 @@ class Client(Protocol):
         if color is None:
             return debug_pb.Color(r=255, g=255, b=255)
         else:
-            r = getattr(color, "r", getattr(color, "x", 255))
-            g = getattr(color, "g", getattr(color, "y", 255))
-            b = getattr(color, "b", getattr(color, "z", 255))
+            if isinstance(color, (tuple, list)):
+                assert(len(color) == 3)
+
+                r = color[0]
+                g = color[1]
+                b = color[2]
+            else:
+                r = getattr(color, "r", getattr(color, "x", 255))
+                g = getattr(color, "g", getattr(color, "y", 255))
+                b = getattr(color, "b", getattr(color, "z", 255))
+
             if max(r, g, b) <= 1:
                 r *= 255
                 g *= 255
