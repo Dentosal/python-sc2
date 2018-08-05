@@ -17,11 +17,15 @@ folder_sc2replays = os.path.dirname(os.path.dirname(ROOT_DIR)) + "/SC2-replays/"
 # Eval settings ---------------------------------------------------------------
 
 # Number of games to play
-eval_number_games = 1
+eval_number_games = 41
 
 
-map_name = "Backwater LE" # Used Maps: "Abiogenesis LE", "Acid Plant LE", "Backwater LE", "Blackpink LE", "Catalyst LE", "Eastwatch LE", "Neon Violet Square LE"
-method = "RandomEqualWeighted" # Available options: "BestEqualWeighted"  "RandomEqualWeighted"   "NoBuildOrder"
+# Map name to start the game
+map_name = "Eastwatch LE" # Used Maps: "Abiogenesis LE", "Acid Plant LE", "Backwater LE", "Blackpink LE", "Catalyst LE", "Eastwatch LE", "Neon Violet Square LE"
+map_name_strategy =  "Neon Violet Square LE" # map_name # i.e. the map name for strategy selection, default: map_name
+method = "BestEqualWeighted" # Available options: "BestEqualWeighted"  "RandomEqualWeighted"   "NoBuildOrder"
+method_experiment_name = "StrategyOf" + map_name_strategy # method # Name of the folder containing replays, default: method
+
 self_race = Race.Terran
 enemy_race = Race.Terran
 enemy_difficulty = Difficulty.Hard

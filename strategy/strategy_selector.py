@@ -35,7 +35,7 @@ def main():
     self_race_string =  race_to_string[self_race]
     enemy_race_string = race_to_string[enemy_race]
                 
-    folder = folder_buildorder + self_race_string + race_bot_separator + enemy_race_string + ending_folder + map_name + ending_folder
+    folder = folder_buildorder + self_race_string + race_bot_separator + enemy_race_string + ending_folder + map_name_strategy + ending_folder
     path_strategy = folder + file_strategy 
 
      # Logging based on: https://docs.python.org/3/howto/logging-cookbook.html
@@ -56,13 +56,13 @@ def main():
         print("Evaluation number: {0} of {1}".format(i+1, eval_number_games))
         
          
-        hash =  get_buildorder_hash(path_strategy, method) 
+        hash = get_buildorder_hash(path_strategy, method) 
         
         path = folder + hash + ending_csv
         time_string = str(round(time.time())) 
         id = map_name + self_race_string + race_bot_separator + enemy_race_string + time_string + "_" + hash
 
-        subpath = method +  ending_folder + map_name + ending_folder
+        subpath = method_experiment_name +  ending_folder + map_name + ending_folder
 
         create_folder(folder_bot_replays + subpath)
         create_folder(folder_bot_logs + subpath)
@@ -85,7 +85,7 @@ def main():
 
         # Start game
         run_game(maps.get(map_name), [
-            Bot(self_race, Bot_AI_Extended(path, output_replay, logger_strategy, method, map_name)),
+            Bot(self_race, Bot_AI_Extended(path, output_replay, logger_strategy, method_experiment_name, map_name)),
             #Bot(self_race, Bot_AI_Extended(path, output_replay, logger_strategy))
             Computer(enemy_race, enemy_difficulty)
         ], realtime=False, save_replay_as= output_replay, game_time_limit = max_gametime)
