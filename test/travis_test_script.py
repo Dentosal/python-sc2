@@ -6,7 +6,7 @@ This script is made as a wrapper for sc2 bots to set a timeout to the bots (in c
 Usage:
 cd into python-sc2/ directory
 docker build -t test_image -f test/Dockerfile .
-docker run test_image -c "python test/travis_test_script.py test/test_bot.py"
+docker run test_image -c "python test/travis_test_script.py test/autotest_bot.py"
 """
 
 retries = 2

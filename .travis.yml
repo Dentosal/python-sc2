@@ -5,7 +5,7 @@ language: python
 services:
   - docker
 
-before_install:  
+before_install:
   # Debugging
   - echo Current path
   - pwd
@@ -16,4 +16,4 @@ before_install:
 
 script:
   # Run tests
-  - docker run test_image -c "python test/travis_test_script.py test/test_bot.py"
+  - docker run test_image -c "python test/travis_test_script.py test/autotest_bot.py"
