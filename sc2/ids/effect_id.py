@@ -4,19 +4,19 @@
 import enum
 
 class EffectId(enum.Enum):
-    NULL = 0
-    PSISTORMPERSISTENT = 1
-    GUARDIANSHIELDPERSISTENT = 2
-    TEMPORALFIELDGROWINGBUBBLECREATEPERSISTENT = 3
-    TEMPORALFIELDAFTERBUBBLECREATEPERSISTENT = 4
-    THERMALLANCESFORWARD = 5
-    SCANNERSWEEP = 6
-    NUKEPERSISTENT = 7
-    LIBERATORTARGETMORPHDELAYPERSISTENT = 8
-    LIBERATORTARGETMORPHPERSISTENT = 9
-    BLINDINGCLOUDCP = 10
-    RAVAGERCORROSIVEBILECP = 11
-    LURKERMP = 12
+    Null = 0
+    PsiStormPersistent = 1
+    GuardianShieldPersistent = 2
+    TemporalFieldGrowingBubbleCreatePersistent = 3
+    TemporalFieldAfterBubbleCreatePersistent = 4
+    ThermalLancesForward = 5
+    ScannerSweep = 6
+    NukePersistent = 7
+    LiberatorTargetMorphDelayPersistent = 8
+    LiberatorTargetMorphPersistent = 9
+    BlindingCloudCP = 10
+    RavagerCorrosiveBileCP = 11
+    LurkerMP = 12
 
 for item in EffectId:
     assert not item.name in globals()
