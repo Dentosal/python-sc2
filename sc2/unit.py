@@ -137,6 +137,10 @@ class Unit(object):
     @property
     def is_massive(self) -> bool:
         return Attribute.Massive.value in self._type_data.attributes
+    
+    @property
+    def is_psionic(self) -> bool:
+        return Attribute.Psionic.value in self._type_data.attributes
 
     @property
     def is_mineral_field(self) -> bool:
