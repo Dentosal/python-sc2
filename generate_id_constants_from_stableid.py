@@ -32,7 +32,7 @@ FILE_TRANSLATE = {
 def make_key(key):
     if key[0].isdigit():
         key = "_" + key
-    return key.upper().replace(" ", "_")
+    return key.replace(" ", "_")
 
 def parse_data(data):
     # for d in data:  # Units, Abilities, Upgrades, Buffs, Effects
