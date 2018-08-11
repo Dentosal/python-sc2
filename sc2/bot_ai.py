@@ -105,11 +105,16 @@ class BotAI(object):
         # right know only checks cooldown, energy cost, and whether the ability has been researched
         return await self._client.query_available_abilities(units, ignore_resource_requirements)
 
-    async def expand_now(self, building: Optional[UnitTypeId]=None, max_distance: Union[int, float]=10, location: Optional[Point2]=None):
+    async def expand_now(self, building: UnitTypeId=None, max_distance: Union[int, float]=10, location: Optional[Point2]=None):
         """Takes new expansion."""
 
         if not building:
-            building = self.townhalls.first.type_id
+            if self.race == Race.Protoss:
+                building = UnitTypeId.NEXUS
+            elif self.race == Race.Terran:
+                building = UnitTypeId.COMMANDCENTER
+            elif self.race == Race.Zerg:
+                building = UnitTypeId.HATCHERY
 
         assert isinstance(building, UnitTypeId)
 
@@ -288,7 +293,6 @@ class BotAI(object):
         """Finds a placement location for building."""
 
         assert isinstance(building, (AbilityId, UnitTypeId))
-        assert self.can_afford(building)
         assert isinstance(near, Point2)
 
         if isinstance(building, UnitTypeId):
@@ -377,7 +381,7 @@ class BotAI(object):
             return ActionResult.CantFindPlacementLocation
 
         unit = unit or self.select_build_worker(p)
-        if unit is None:
+        if unit is None or self.can_afford(building):
             return ActionResult.Error
         return await self.do(unit.build(building, p))
 
