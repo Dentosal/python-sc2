@@ -62,7 +62,7 @@ class Unit(object):
         """3d position of the unit."""
         return Point3.from_proto(self._proto.pos)
 
-    def distance_to(self, p) -> Union[int, float]:
+    def distance_to(self, p: Union["Unit", Point2, Point3]) -> Union[int, float]:
         return self.position.to2.distance_to(p.position.to2)
 
     @property
@@ -137,11 +137,11 @@ class Unit(object):
     @property
     def is_massive(self) -> bool:
         return Attribute.Massive.value in self._type_data.attributes
-    
+
     @property
     def is_psionic(self) -> bool:
         return Attribute.Psionic.value in self._type_data.attributes
-
+        
     @property
     def is_mineral_field(self) -> bool:
         return self._type_data.has_minerals
@@ -247,26 +247,30 @@ class Unit(object):
 
     @property
     def has_cargo(self) -> bool:
+        """ If this unit has units loaded """
         return self._proto.cargo_space_taken > 0
 
     @property
     def cargo_used(self) -> Union[float, int]:
+        """ How much cargo space is used (some units take up more than 1 space) """
         return self._proto.cargo_space_taken
 
     @property
     def cargo_max(self) -> Union[float, int]:
+        """ How much cargo space is totally available - CC: 5, Bunker: 4, Medivac: 8 and Bunker can only load infantry, CC only SCVs """
         return self._proto.cargo_space_max
 
-    # @property
-    # def passengers(self):
-    # TODO: convert each unit to passenger instance
-    #     return self._proto.passengers
+    @property
+    def passengers(self) -> Set["PassengerUnit"]:
+        """ Units inside a Bunker, CommandCenter, Nydus, Medivac, WarpPrism, Overlord """
+        return {PassengerUnit(unit, self._game_data) for unit in self._proto.passengers}
 
-    # TODO: retrieve all passenger tags in one call
+    @property
+    def passengers_tags(self) -> Set[int]:
+        return {unit.tag for unit in self._proto.passengers}
 
     @property
     def can_attack_ground(self) -> bool:
-        # See data_pb2.py line 141 for info on weapon data
         if hasattr(self._type_data._proto, "weapons"):
             weapons = self._type_data._proto.weapons
             weapon = next((weapon for weapon in weapons if weapon.type in [TargetType.Ground.value, TargetType.Any.value]), None)
@@ -379,7 +383,7 @@ class Unit(object):
         return len(self.orders) > 0 and self.orders[0].ability.id in [AbilityId.HARVEST_GATHER]
 
     @property
-    def order_target(self) -> Optional[Union[int, Point2, Point3]]:
+    def order_target(self) -> Optional[Union[int, Point2]]:
         """ Returns the target tag (if it is a Unit) or Point2 (if it is a Position) from the first order """
         if len(self.orders) > 0:
             if isinstance(self.orders[0].target, int):
@@ -434,7 +438,6 @@ class Unit(object):
 
     def has_buff(self, buff):
         assert isinstance(buff, BuffId)
-
         return buff.value in self._proto.buff_ids
 
     def warp_in(self, unit, placement, *args, **kwargs):
@@ -468,6 +471,7 @@ class Unit(object):
     def __repr__(self):
         return f"Unit(name={self.name !r}, tag={self.tag})"
 
+
 class UnitOrder(object):
     @classmethod
     def from_proto(cls, proto, game_data):
@@ -486,3 +490,178 @@ class UnitOrder(object):
 
     def __repr__(self):
         return f"UnitOrder({self.ability}, {self.target}, {self.progress})"
+
+
+class PassengerUnit(object):
+    def __init__(self, proto_data, game_data):
+        assert isinstance(game_data, GameData)
+        self._proto = proto_data
+        self._game_data = game_data
+
+    def __repr__(self):
+        return f"PassengerUnit(name={self.name !r}, tag={self.tag})"
+
+    @property
+    def type_id(self) -> UnitTypeId:
+        return UnitTypeId(self._proto.unit_type)
+
+    @property
+    def _type_data(self) -> "UnitTypeData":
+        return self._game_data.units[self._proto.unit_type]
+
+    @property
+    def name(self):
+        return self._type_data.name
+
+    @property
+    def race(self) -> Race:
+        return Race(self._type_data._proto.race)
+
+    @property
+    def tag(self) -> int:
+        return self._proto.tag
+
+    @property
+    def is_structure(self) -> bool:
+        return Attribute.Structure.value in self._type_data.attributes
+
+    @property
+    def is_light(self) -> bool:
+        return Attribute.Light.value in self._type_data.attributes
+
+    @property
+    def is_armored(self) -> bool:
+        return Attribute.Armored.value in self._type_data.attributes
+
+    @property
+    def is_biological(self) -> bool:
+        return Attribute.Biological.value in self._type_data.attributes
+
+    @property
+    def is_mechanical(self) -> bool:
+        return Attribute.Mechanical.value in self._type_data.attributes
+
+    @property
+    def is_robotic(self) -> bool:
+        return Attribute.Robotic.value in self._type_data.attributes
+
+    @property
+    def is_massive(self) -> bool:
+        return Attribute.Massive.value in self._type_data.attributes
+
+    @property
+    def cargo_size(self) -> Union[float, int]:
+        """ How much cargo this unit uses up in cargo_space """
+        return self._type_data.cargo_size
+
+    @property
+    def can_attack_ground(self) -> bool:
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            weapon = next((weapon for weapon in weapons if weapon.type in [TargetType.Ground.value, TargetType.Any.value]), None)
+            return weapon is not None
+        return False
+
+    @property
+    def ground_dps(self) -> Union[int, float]:
+        """ Does not include upgrades """
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            weapon = next((weapon for weapon in weapons if weapon.type in [TargetType.Ground.value, TargetType.Any.value]), None)
+            if weapon:
+                return (weapon.damage * weapon.attacks) / weapon.speed
+        return 0
+
+    @property
+    def ground_range(self) -> Union[int, float]:
+        """ Does not include upgrades """
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            weapon = next((weapon for weapon in weapons if weapon.type in [TargetType.Ground.value, TargetType.Any.value]), None)
+            if weapon:
+                return weapon.range
+        return 0
+
+    @property
+    def can_attack_air(self) -> bool:
+        """ Does not include upgrades """
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            weapon = next((weapon for weapon in weapons if weapon.type in [TargetType.Air.value, TargetType.Any.value]), None)
+            return weapon is not None
+        return False
+
+    @property
+    def air_dps(self) -> Union[int, float]:
+        """ Does not include upgrades """
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            weapon = next((weapon for weapon in weapons if weapon.type in [TargetType.Air.value, TargetType.Any.value]), None)
+            if weapon:
+                return (weapon.damage * weapon.attacks) / weapon.speed
+        return 0
+
+    @property
+    def air_range(self) -> Union[int, float]:
+        """ Does not include upgrades """
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            weapon = next((weapon for weapon in weapons if weapon.type in [TargetType.Air.value, TargetType.Any.value]), None)
+            if weapon:
+                return weapon.range
+        return 0
+
+    @property
+    def armor(self) -> Union[int, float]:
+        """ Does not include upgrades """
+        return self._type_data._proto.armor
+
+    @property
+    def sight_range(self) -> Union[int, float]:
+        return self._type_data._proto.sight_range
+
+    @property
+    def movement_speed(self) -> Union[int, float]:
+        return self._type_data._proto.movement_speed
+
+    @property
+    def health(self) -> Union[int, float]:
+        return self._proto.health
+
+    @property
+    def health_max(self) -> Union[int, float]:
+        return self._proto.health_max
+
+    @property
+    def health_percentage(self) -> Union[int, float]:
+        if self._proto.health_max == 0:
+            return 0
+        return self._proto.health / self._proto.health_max
+
+    @property
+    def shield(self) -> Union[int, float]:
+        return self._proto.shield
+
+    @property
+    def shield_max(self) -> Union[int, float]:
+        return self._proto.shield_max
+
+    @property
+    def shield_percentage(self) -> Union[int, float]:
+        if self._proto.shield_max == 0:
+            return 0
+        return self._proto.shield / self._proto.shield_max
+
+    @property
+    def energy(self) -> Union[int, float]:
+        return self._proto.energy
+
+    @property
+    def energy_max(self) -> Union[int, float]:
+        return self._proto.energy_max
+
+    @property
+    def energy_percentage(self) -> Union[int, float]:
+        if self._proto.energy_max == 0:
+            return 0
+        return self._proto.energy / self._proto.energy_max
