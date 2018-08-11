@@ -381,7 +381,7 @@ class BotAI(object):
             return ActionResult.CantFindPlacementLocation
 
         unit = unit or self.select_build_worker(p)
-        if unit is None or self.can_afford(building):
+        if unit is None or not self.can_afford(building):
             return ActionResult.Error
         return await self.do(unit.build(building, p))
 
