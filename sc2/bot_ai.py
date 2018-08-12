@@ -226,17 +226,24 @@ class BotAI(object):
 
         return owned
 
-    def can_afford(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId]) -> "CanAffordWrapper":
+    def can_feed(self, unit_type: UnitTypeId) -> bool:
+        """ Checks if you have enough free supply to build the unit """
+        return self.supply_left >= self._game_data.units[unit_type.value]._proto.food_required
+
+    def can_afford(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId], check_supply_cost: bool=True) -> "CanAffordWrapper":
         """Tests if the player has enough resources to build a unit or cast an ability."""
+        enough_supply = True
         if isinstance(item_id, UnitTypeId):
             unit = self._game_data.units[item_id.value]
             cost = self._game_data.calculate_ability_cost(unit.creation_ability)
+            if check_supply_cost:
+                enough_supply = self.can_feed(item_id)
         elif isinstance(item_id, UpgradeId):
             cost = self._game_data.upgrades[item_id.value].cost
         else:
             cost = self._game_data.calculate_ability_cost(item_id)
 
-        return CanAffordWrapper(cost.minerals <= self.minerals, cost.vespene <= self.vespene)
+        return CanAffordWrapper(cost.minerals <= self.minerals, cost.vespene <= self.vespene, enough_supply)
 
     async def can_cast(self, unit: Unit, ability_id: AbilityId, target: Optional[Union[Unit, Point2, Point3]]=None, only_check_energy_and_cooldown: bool=False, cached_abilities_of_unit: List[AbilityId]=None) -> bool:
         """Tests if a unit has an ability available and enough energy to cast it.
@@ -497,12 +504,13 @@ class BotAI(object):
 
 
 class CanAffordWrapper(object):
-    def __init__(self, can_afford_minerals, can_afford_vespene):
+    def __init__(self, can_afford_minerals, can_afford_vespene, have_enough_supply):
         self.can_afford_minerals = can_afford_minerals
         self.can_afford_vespene = can_afford_vespene
+        self.have_enough_supply = have_enough_supply
 
     def __bool__(self):
-        return self.can_afford_minerals and self.can_afford_vespene
+        return self.can_afford_minerals and self.can_afford_vespene and self.have_enough_supply
 
     @property
     def action_result(self):
@@ -510,5 +518,7 @@ class CanAffordWrapper(object):
             return ActionResult.NotEnoughVespene
         elif not self.can_afford_minerals:
             return ActionResult.NotEnoughMinerals
+        elif not self.have_enough_supply:
+            return ActionResult.NotEnoughFood
         else:
             return None
