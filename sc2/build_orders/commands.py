@@ -166,24 +166,7 @@ def add_gas(prioritize=True, repeatable=False):
             return can_afford.action_result
 
         owned_expansions = bot.owned_expansions
-        for location, th in owned_expansions.items():
-            # ERROR
-            #    File "python-sc2\sc2\build_orders\commands.py", line 184, in do_add_gas
-            #    vgs = bot.state.vespene_geyser.closer_than(15.0, th)
-            #    File "python-sc2\sc2\game_state.py", line 33, in vespene_geyser
-            #    return self.units.vespene_geyser
-            #    File "python-sc2\sc2\units.py", line 179, in vespene_geyser
-            #    return self.filter(lambda unit: unit.is_vespene_geyser)
-            #    File "python-sc2\sc2\units.py", line 110, in filter
-            #    return self.subgroup(filter(pred, self))
-            #    File "python-sc2\sc2\units.py", line 107, in subgroup
-            #    return Units(list(units), self.game_data)
-            #    File "python-sc2\sc2\units.py", line 179, in <lambda>
-            #    return self.filter(lambda unit: unit.is_vespene_geyser)
-            #    File "python-sc2\sc2\unit.py", line 128, in is_vespene_geyser
-            #    return self._type_data.has_vespene
-            #    File "python-sc2\sc2\unit.py", line 36, in _type_data
-            #    return self._game_data.units[self._proto.unit_type]
+        for location, th in owned_expansions.items():            
 
             vgs = bot.state.vespene_geyser.closer_than(15.0, th)
 
