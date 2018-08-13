@@ -33,7 +33,14 @@ class Unit(object):
 
     @property
     def _type_data(self):
-        return self._game_data.units[self._proto.unit_type]
+        # fixes when unit_type == 0
+        return self._game_data.units.get(self._proto.unit_type, None)
+        #try:
+        #    return self._game_data.units[self._proto.unit_type]        
+        #except KeyError:
+        #    print(self._proto.unit_type)
+        #    return None
+        
 
     @property
     def is_snapshot(self):
@@ -117,15 +124,19 @@ class Unit(object):
 
     @property
     def is_structure(self):
-        return Attribute.Structure.value in self._type_data.attributes
+        typedata = self._type_data
+        return Attribute.Structure.value in typedata.attributes if typedata is not None else False
 
     @property
     def is_mineral_field(self):
-        return self._type_data.has_minerals
+        typedata = self._type_data
+        return typedata.has_minerals if typedata is not None else False
 
     @property
     def is_vespene_geyser(self):
-        return self._type_data.has_vespene
+        typedata = self._type_data
+        return typedata.has_vespene if typedata is not None else False
+        #return self._type_data.has_vespene
 
     @property
     def health(self):
@@ -189,7 +200,9 @@ class Unit(object):
 
     @property
     def name(self):
-        return self._type_data.name
+        typedata = self._type_data
+        return typedata.name if typedata is not None else "Unit not Found"
+        #return self._type_data.name
 
     def train(self, unit, *args, **kwargs):
         return self(self._game_data.units[unit.value].creation_ability.id, *args, **kwargs)

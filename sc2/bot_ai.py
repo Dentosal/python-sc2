@@ -298,11 +298,13 @@ class BotAI(object):
             try:
                 cost = self._game_data.calculate_ability_cost(item_id)
             except : 
+                # TODO REMOVE NEVER REACHED
                 min_resource_unknown = 400
                 print("Unknown item: " + item_id)
                 return CanAffordWrapper(min_resource_unknown <= self.minerals, min_resource_unknown <= self.vespene)
             
             if cost is None:
+                # TODO REMOVE NEVER REACHED
                min_resource_upgrades = 300
                return CanAffordWrapper(min_resource_upgrades <= self.minerals, min_resource_upgrades <= self.vespene)
                
