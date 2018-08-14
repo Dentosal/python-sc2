@@ -81,6 +81,9 @@
     <Compile Include="strategy\bot_config.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="strategy\human_vs_strategy.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="strategy\strategy_constants.py">
       <SubType>Code</SubType>
     </Compile>

@@ -14,6 +14,23 @@ from math import isclose
 from util import print_log, measure_runtime
 import logging
 
+def get_buildorder_hash(path_strategy, method):
+    """Determines the build-order"""
+
+    if method == no_hash:
+        return method
+
+    df = pd.read_csv(path_strategy, sep=";", decimal=b',')
+
+    r = uniform(0,1)
+    
+    # All build-orders of strategy [method] have a weight of ]0,1]
+    # searches for the first occurances, where the weight is larger than r to determine hash/build-order
+    for index, row in df.iterrows():
+        weight = row[method]
+        if weight >= r: 
+            return row["Hash"]
+
 def export_result(bot, result): 
     """Appends result to a specified file"""
     if bot.path is None:

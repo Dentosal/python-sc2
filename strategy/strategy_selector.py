@@ -10,23 +10,8 @@ import sys
 from bot_ai_extended import Bot_AI_Extended
 import logging
 from util import create_folder
+from strategy_util import get_buildorder_hash
 
-def get_buildorder_hash(path_strategy, method):
-    """Determines the build-order"""
-
-    if method == no_hash:
-        return method
-
-    df = pd.read_csv(path_strategy, sep=";", decimal=b',')
-
-    r = uniform(0,1)
-    
-    # All build-orders of strategy [method] have a weight of ]0,1]
-    # searches for the first occurances, where the weight is larger than r to determine hash/build-order
-    for index, row in df.iterrows():
-        weight = row[method]
-        if weight >= r: 
-            return row["Hash"]
 
 
 def main():

@@ -21,7 +21,7 @@ eval_number_games = 50
 
 
 # Map name to start the game
-map_name = "Catalyst LE" # Used Maps: "Abiogenesis LE", "Acid Plant LE", "Backwater LE", "Blackpink LE", "Catalyst LE", "Eastwatch LE", "Neon Violet Square LE"
+map_name = "Neon Violet Square LE" # Used Maps: "Abiogenesis LE", "Acid Plant LE", "Backwater LE", "Blackpink LE", "Catalyst LE", "Eastwatch LE", "Neon Violet Square LE"
 map_name_strategy =  "Acid Plant LE" # map_name # i.e. the map name for strategy selection, default value: map_name
 method = "BestEqualWeighted" # Available options: "BestEqualWeighted"  "RandomEqualWeighted"   "NoBuildOrder"
 method_experiment_name = "StrategyOf" + map_name_strategy # method # Name of the folder containing replays, default value: method
