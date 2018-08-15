@@ -492,6 +492,10 @@ class BotAI(object):
         """Ran on every game step (looped in realtime mode)."""
         raise NotImplementedError
 
+    def on_end(self, game_result):
+        """Ran on on end of a game."""
+        pass
+
     def on_unit_destroyed(self, unit_tag):
         """ Override this in your bot class """
         pass
