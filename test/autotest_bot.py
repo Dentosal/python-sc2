@@ -251,20 +251,22 @@ class TestBot(sc2.BotAI):
 
     # Test unit.py
     async def test_unit(self):
-        scv = self.workers.random
+        scv1, scv2, scv3 = self.workers[:3]
 
-        assert scv.type_id == UnitTypeId.SCV
-        assert scv._type_data == self._game_data.units[UnitTypeId.SCV.value]
-        assert scv.alliance == Alliance.Self.value
-        assert scv.is_mine == True
-        assert isinstance(scv.position, Point2)
-        assert isinstance(scv.position3d, Point3)
-        assert scv.health == 45
-        assert scv.health_max == 45
-        assert scv.health_percentage == 45/45
-        assert scv.energy == 0
-        assert scv.energy_max == 0
-        assert scv.energy_percentage == 0
+        assert scv1.type_id == UnitTypeId.SCV
+        assert scv1._type_data == self._game_data.units[UnitTypeId.SCV.value]
+        assert scv1.alliance == Alliance.Self.value
+        assert scv1.is_mine == True
+        assert isinstance(scv1.position, Point2)
+        assert isinstance(scv1.position3d, Point3)
+        assert scv1.health == 45
+        assert scv1.health_max == 45
+        assert scv1.health_percentage == 45/45
+        assert scv1.energy == 0
+        assert scv1.energy_max == 0
+        assert scv1.energy_percentage == 0
+        assert not scv1.target_in_range(self.workers.tags_not_in({scv1.tag}).furthest_to(scv1.position))
+        assert scv1.target_in_range(scv1)
 
     # Test units.py
     async def test_units(self):
