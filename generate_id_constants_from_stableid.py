@@ -92,8 +92,15 @@ def parse_simple(d, data):
 
         if not key:
             continue
-
-        units[make_key(key)] = v["id"]
+        key_to_insert = make_key(key)
+        if key_to_insert in units:
+            index = 2
+            tmp = f'{key_to_insert}_{index}'
+            while tmp in units:
+                index += 1
+                tmp = f'{key_to_insert}_{index}'
+            key_to_insert = tmp
+        units[key_to_insert] = v["id"]
 
     return units
 
