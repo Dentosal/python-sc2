@@ -109,12 +109,9 @@ class BotAI(object):
         """Takes new expansion."""
 
         if not building:
-            if self.race == Race.Protoss:
-                building = UnitTypeId.NEXUS
-            elif self.race == Race.Terran:
-                building = UnitTypeId.COMMANDCENTER
-            elif self.race == Race.Zerg:
-                building = UnitTypeId.HATCHERY
+            # self.race is never Race.Random
+            start_townhall_type = {Race.Protoss: UnitTypeId.NEXUS, Race.Terran: UnitTypeId.COMMANDCENTER, Race.Zerg: UnitTypeId.HATCHERY}
+            building = start_townhall_type[self.race]
 
         assert isinstance(building, UnitTypeId)
 
