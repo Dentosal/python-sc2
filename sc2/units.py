@@ -103,6 +103,13 @@ class Units(list):
             position = position.position
         return min({unit.position.to2.distance_to(position.to2) for unit in self})
 
+    def furthest_distance_to(self, position: Union[Unit, Point2, Point3]) -> Union[int, float]:
+        """ Returns the distance between the furthest unit from this group to the target unit """
+        assert self.exists
+        if isinstance(position, Unit):
+            position = position.position
+        return max({unit.position.to2.distance_to(position.to2) for unit in self})
+
     def closest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
         assert self.exists
         if isinstance(position, Unit):
@@ -110,7 +117,6 @@ class Units(list):
         return min(self, key=lambda unit: unit.position.to2.distance_to(position.to2))
 
     def furthest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
-        """ Returns the distance between the furthest unit from this group to the target unit """
         assert self.exists
         if isinstance(position, Unit):
             position = position.position
