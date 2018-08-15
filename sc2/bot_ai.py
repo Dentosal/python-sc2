@@ -442,7 +442,7 @@ class BotAI(object):
     def _prepare_step(self, state):
         """Set attributes from new state before on_step."""
         self.state: GameState = state
-        # need this for checking for new units
+        # Required for events
         self._units_previous_map.clear()
         for unit in self.units:
             self._units_previous_map[unit.tag] = unit
@@ -458,31 +458,48 @@ class BotAI(object):
         self.supply_cap: Union[float, int] = state.common.food_cap
         self.supply_left: Union[float, int] = self.supply_cap - self.supply_used
 
-    def issue_events(self):
-        self._issue_unit_dead_events()
-        self._issue_unit_added_events()
+    async def issue_events(self):
+        """ Run this in your bot class to trigger event functions:
+        - on_unit_created
+        - on_unit_destroyed
+        - on_building_construction_complete
+        """
+        await self._issue_unit_dead_events()
+        await self._issue_unit_added_events()
         for unit in self.units:
-            self._issue_building_complete_event(unit)
+            await self._issue_building_complete_event(unit)
 
-    def _issue_unit_added_events(self):
+    async def _issue_unit_added_events(self):
         for unit in self.units:
             if unit.tag not in self._units_previous_map:
-                self.on_unit_created(unit)
+                await self.on_unit_created(unit)
 
-    def _issue_building_complete_event(self, unit):
+    async def _issue_building_complete_event(self, unit):
         if unit.build_progress < 1:
             return
         if unit.tag not in self._units_previous_map:
             return
         unit_prev = self._units_previous_map[unit.tag]
         if unit_prev.build_progress < 1:
-            self.on_building_construction_complete(unit)
+            await self.on_building_construction_complete(unit)
 
-    def _issue_unit_dead_events(self):
+    async def _issue_unit_dead_events(self):
         event = self.state.observation.raw_data.event
         if event is not None:
             for tag in event.dead_units:
-                self.on_unit_destroyed(tag)
+                await self.on_unit_destroyed(tag)
+
+    async def on_unit_destroyed(self, unit_tag):
+        """ Override this in your bot class. """
+        pass
+
+    async def on_unit_created(self, unit):
+        """ Override this in your bot class. """
+        pass
+
+    async def on_building_construction_complete(self, unit):
+        """ Override this in your bot class. """
+        pass
 
     def on_start(self):
         """Allows initializing the bot when the game data is available."""
@@ -493,21 +510,8 @@ class BotAI(object):
         raise NotImplementedError
 
     def on_end(self, game_result):
-        """Ran on on end of a game."""
+        """Ran at the end of a game."""
         pass
-
-    def on_unit_destroyed(self, unit_tag):
-        """ Override this in your bot class """
-        pass
-
-    def on_unit_created(self, unit):
-        """ Override this in your bot class """
-        pass
-
-    def on_building_construction_complete(self, unit):
-        """ Override this in your bot class """
-        pass
-
 
 class CanAffordWrapper(object):
     def __init__(self, can_afford_minerals, can_afford_vespene, have_enough_supply):
