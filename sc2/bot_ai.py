@@ -12,7 +12,7 @@ from .game_data import GameData
 logger = logging.getLogger(__name__)
 
 from .position import Point2, Point3
-from .data import Race, ActionResult, Attribute, race_worker, race_townhalls, race_gas
+from .data import Race, ActionResult, Attribute, race_worker, race_townhalls, race_gas, Target
 from .unit import Unit
 from .cache import property_cache_forever
 from .game_data import AbilityData, Cost
@@ -262,12 +262,14 @@ class BotAI(object):
                 return True
             cast_range = self._game_data.abilities[ability_id.value]._proto.cast_range
             ability_target = self._game_data.abilities[ability_id.value]._proto.target
-            # check if target is in range (or is a self cast like stimpack)
-            if ability_target == 1 or ability_target == 5 and isinstance(target, (Point2, Point3)) and unit.distance_to(target) <= cast_range: # TODO: replace numbers with enums
+            # Check if target is in range (or is a self cast like stimpack)
+            if ability_target == 1 or ability_target == Target.PointOrNone.value and isinstance(target, (Point2, Point3)) and unit.distance_to(target) <= cast_range: # cant replace 1 with "Target.None.value" because ".None" doesnt seem to be a valid enum name
                 return True
-            elif ability_target in [3, 4] and isinstance(target, Unit) and unit.distance_to(target) <= cast_range:
+            # Check if able to use ability on a unit
+            elif ability_target in {Target.Unit.value, Target.PointOrUnit.value} and isinstance(target, Unit) and unit.distance_to(target) <= cast_range:
                 return True
-            elif ability_target in [2, 4] and isinstance(target, (Point2, Point3)) and unit.distance_to(target) <= cast_range:
+            # Check if able to use ability on a position
+            elif ability_target in {Target.Point.value, Target.PointOrUnit.value} and isinstance(target, (Point2, Point3)) and unit.distance_to(target) <= cast_range:
                 return True
         return False
 
