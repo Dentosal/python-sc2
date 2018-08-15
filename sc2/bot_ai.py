@@ -105,12 +105,16 @@ class BotAI(object):
 
         if not building:
             building = self.townhalls.first.type_id
+            if building in [LAIR, HIVE]:
+                building = HATCHERY
+            elif building in [ORBITALCOMMAND, ORBITALCOMMANDFLYING, PLANETARYFORTRESS, COMMANDCENTERFLYING]:
+                building = COMMANDCENTER
 
         assert isinstance(building, UnitTypeId)
 
         if not location:
-            location = await self.get_next_expansion()
-
+            location = await self.get_next_expansion()        
+        
         await self.build(building, near=location, max_distance=max_distance, random_alternative=False, placement_step=1)
 
     async def get_next_expansion(self) -> Optional[Point2]:
