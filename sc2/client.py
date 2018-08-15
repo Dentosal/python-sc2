@@ -74,6 +74,7 @@ class Client(Protocol):
         return result.join_game.player_id
 
     async def leave(self):
+        """ You can use 'await self._client.leave()' to surrender midst game. """
         is_resign = self._game_result is None
 
         if is_resign:
