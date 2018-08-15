@@ -334,7 +334,7 @@ class Unit(object):
             unit_attack_range = self.air_range
         else:
             unit_attack_range = -1
-        return self.distance_to(target) + bonus_distance <= target.radius + unit_attack_range
+        return self.distance_to(target) + bonus_distance <= self.radius + target.radius + unit_attack_range
 
     @property
     def armor(self) -> Union[int, float]:
