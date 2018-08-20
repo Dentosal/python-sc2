@@ -48,9 +48,11 @@ race_bot_separator = "vs"
 
 folder_bot_replays = folder_sc2replays + "bot-replays/"
 folder_bot_logs = folder_sc2replays + "bot-logs/"
+folder_human_vs_bot = folder_sc2replays + "human-vs-bot/"
 
 create_folder(folder_bot_replays)
 create_folder(folder_bot_logs)
+create_folder(folder_human_vs_bot)
 
 no_hash = "NoBuildOrder"
 

@@ -21,13 +21,17 @@ def main():
     path_strategy = folder + file_strategy 
 
     hash = get_buildorder_hash(path_strategy, method) 
+    time_string = str(round(time.time())) 
+    id = map_name + self_race_string + race_bot_separator + enemy_race_string + time_string + "_" + hash
+    # Note replay will not be saved due to connectivity issues
+    output_replay = folder_human_vs_bot + id + ending_sc2replay
 
     path = folder + hash + ending_csv
        
     sc2.run_game(sc2.maps.get(map_name), [
-        Human(Race.Terran),
-        Bot(Race.Terran, Bot_AI_Extended(path, method = "Human", map = map_name))
-    ], realtime=True)
+        Human(self_race),
+        Bot(enemy_race, Bot_AI_Extended(path, method = "Human", map = map_name))
+    ], realtime=True, save_replay_as= output_replay)
 
 if __name__ == '__main__':
     main()

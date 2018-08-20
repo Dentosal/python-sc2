@@ -53,6 +53,19 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
         try:
             if realtime:
                 await ai.on_step(iteration)
+
+                # HS added
+                if ai.final_result is not None:
+                    logger.info(f"Result for ai is: {ai.final_result}")
+
+                    if ai.final_result == "won":
+                        return Result.Victory
+                    elif ai.final_result == "lost":
+                        return Result.Defeat
+                    else:
+                        logger.warning(f"Unknown result in ai.final_result")
+                        return Result.Tie
+
             else:
                 logger.debug(f"Running AI step, timeout={step_time_limit}")
                 try:
