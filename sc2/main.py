@@ -53,7 +53,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
         logger.debug(f"Running AI step, realtime={realtime}")
 
         try:
-            ai.issue_events()
+            await ai.issue_events()
             if realtime:
                 await ai.on_step(iteration)
             else:
