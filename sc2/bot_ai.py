@@ -68,10 +68,13 @@ class BotAI(object):
     @property
     def main_base_ramp(self) -> "Ramp":
         """ Returns the Ramp instance of the closest main-ramp to start location. Look in game_info.py for more information """
-        return min(
-            {ramp for ramp in self.game_info.map_ramps if len(ramp.upper) == 2},
+        if hasattr(self, "cached_main_base_ramp"):
+            return self.cached_main_base_ramp
+        self.cached_main_base_ramp = min(
+            {ramp for ramp in self.game_info.map_ramps if len(ramp.upper2_for_ramp_wall) == 2},
             key=(lambda r: self.start_location.distance_to(r.top_center))
         )
+        return self.cached_main_base_ramp
 
     @property_cache_forever
     def expansion_locations(self) -> Dict[Point2, Units]:
@@ -456,7 +459,7 @@ class BotAI(object):
         self.supply_left: Union[float, int] = self.supply_cap - self.supply_used
 
     async def issue_events(self):
-        """ Run this in your bot class to trigger event functions:
+        """ This function will be automatically run from main.py and triggers the following functions:
         - on_unit_created
         - on_unit_destroyed
         - on_building_construction_complete
