@@ -1,5 +1,7 @@
 class ScoreDetails(object):
-    """ Accessable in self.state.score during step function """
+    """ Accessable in self.state.score during step function
+    For more information, see https://github.com/Blizzard/s2client-proto/blob/master/s2clientprotocol/score.proto
+    """
     def __init__(self, proto):
         self._data = proto
         self._proto = proto.score_details
@@ -160,7 +162,125 @@ class ScoreDetails(object):
     def lost_vespene_upgrade(self):
         return self._proto.lost_vespene.upgrade
 
-    # TODO: friendly fire minerals, vespene, used minerals, vespene, total used minerals, vespene
+    @property
+    def friendly_fire_minerals_none(self):
+        return self._proto.friendly_fire_minerals.none
+
+    @property
+    def friendly_fire_minerals_army(self):
+        return self._proto.friendly_fire_minerals.army
+
+    @property
+    def friendly_fire_minerals_economy(self):
+        return self._proto.friendly_fire_minerals.economy
+
+    @property
+    def friendly_fire_minerals_technology(self):
+        return self._proto.friendly_fire_minerals.technology
+
+    @property
+    def friendly_fire_minerals_upgrade(self):
+        return self._proto.friendly_fire_minerals.upgrade
+
+    @property
+    def friendly_fire_vespene_none(self):
+        return self._proto.friendly_fire_vespene.none
+
+    @property
+    def friendly_fire_vespene_army(self):
+        return self._proto.friendly_fire_vespene.army
+
+    @property
+    def friendly_fire_vespene_economy(self):
+        return self._proto.friendly_fire_vespene.economy
+
+    @property
+    def friendly_fire_vespene_technology(self):
+        return self._proto.friendly_fire_vespene.technology
+
+    @property
+    def friendly_fire_vespene_upgrade(self):
+        return self._proto.friendly_fire_vespene.upgrade
+
+    @property
+    def used_minerals_none(self):
+        return self._proto.used_minerals.none
+
+    @property
+    def used_minerals_army(self):
+        return self._proto.used_minerals.army
+
+    @property
+    def used_minerals_economy(self):
+        return self._proto.used_minerals.economy
+
+    @property
+    def used_minerals_technology(self):
+        return self._proto.used_minerals.technology
+
+    @property
+    def used_minerals_upgrade(self):
+        return self._proto.used_minerals.upgrade
+
+    @property
+    def used_vespene_none(self):
+        return self._proto.used_vespene.none
+
+    @property
+    def used_vespene_army(self):
+        return self._proto.used_vespene.army
+
+    @property
+    def used_vespene_economy(self):
+        return self._proto.used_vespene.economy
+
+    @property
+    def used_vespene_technology(self):
+        return self._proto.used_vespene.technology
+
+    @property
+    def used_vespene_upgrade(self):
+        return self._proto.used_vespene.upgrade
+
+    @property
+    def total_used_minerals_none(self):
+        return self._proto.total_used_minerals.none
+
+    @property
+    def total_used_minerals_army(self):
+        return self._proto.total_used_minerals.army
+
+    @property
+    def total_used_minerals_economy(self):
+        return self._proto.total_used_minerals.economy
+
+    @property
+    def total_used_minerals_technology(self):
+        return self._proto.total_used_minerals.technology
+
+    @property
+    def total_used_minerals_upgrade(self):
+        return self._proto.total_used_minerals.upgrade
+
+    @property
+    def total_used_vespene_none(self):
+        return self._proto.total_used_vespene.none
+
+    @property
+    def total_used_vespene_army(self):
+        return self._proto.total_used_vespene.army
+
+    @property
+    def total_used_vespene_economy(self):
+        return self._proto.total_used_vespene.economy
+
+    @property
+    def total_used_vespene_technology(self):
+        return self._proto.total_used_vespene.technology
+
+    @property
+    def total_used_vespene_upgrade(self):
+        return self._proto.total_used_vespene.upgrade
 
     @property
     def total_damage_dealt_life(self):
