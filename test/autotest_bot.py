@@ -4,8 +4,9 @@ import sc2
 from sc2 import Race, Difficulty
 from sc2.constants import *
 from sc2.player import Bot, Computer
+from sc2.data import Alliance
 
-from sc2.position import Point2, Point3
+from sc2.position import Pointlike, Point2, Point3
 from sc2.units import Units
 from sc2.unit import Unit
 
@@ -23,10 +24,6 @@ class TestBot(sc2.BotAI):
         self.tests_target = 8
         self.tests_done_by_name = set()
 
-        # Variables handled by tests
-
-
-
     async def on_step(self, iteration):
         if iteration == 0:
             await self.chat_send("(glhf)")
@@ -40,6 +37,9 @@ class TestBot(sc2.BotAI):
             await self.test_botai_properties()
             await self.test_gamestate_static_variables()
             await self.test_game_info_static_variables()
+            await self.test_positions()
+            await self.test_unit()
+            await self.test_units()
 
         # Test actions:
         if "test_botai_actions1_successful" not in self.tests_done_by_name:
@@ -50,24 +50,20 @@ class TestBot(sc2.BotAI):
                 await self.test_botai_actions1_successful()
 
         elif "test_botai_actions2_successful" not in self.tests_done_by_name:
-            if iteration >= 6:
-                await self.test_botai_actions2()
-                await self.test_botai_actions2_successful()
+            await self.test_botai_actions2()
+            await self.test_botai_actions2_successful()
 
         elif "test_botai_actions3_successful" not in self.tests_done_by_name:
-            if iteration >= 6:
-                await self.test_botai_actions3()
-                await self.test_botai_actions3_successful()
+            await self.test_botai_actions3()
+            await self.test_botai_actions3_successful()
 
         elif "test_botai_actions4_successful" not in self.tests_done_by_name:
-            if iteration >= 6:
-                await self.test_botai_actions4()
-                await self.test_botai_actions4_successful()
+            await self.test_botai_actions4()
+            await self.test_botai_actions4_successful()
 
         elif "test_botai_actions5_successful" not in self.tests_done_by_name:
-            if iteration >= 6:
-                await self.test_botai_actions5()
-                await self.test_botai_actions5_successful()
+            await self.test_botai_actions5()
+            await self.test_botai_actions5_successful()
 
 
 
@@ -86,7 +82,7 @@ class TestBot(sc2.BotAI):
 
         """
         TODO BotAI tests:
-        distribute workers, owned expansions, can cast, select build worker, can place, find placement, self build, chat send
+        distribute workers, owned expansions, can cast, select build worker, can place, find placement, self build
         """
 
 
@@ -204,11 +200,121 @@ class TestBot(sc2.BotAI):
         # TODO: map size, pixel maps, playable area, player races, start locations, map center
         self.tests_done_by_name.add("test_game_info_static_variables")
 
+    # Test positions.py
+    async def test_positions(self):
+        p1 = Pointlike((2.3, 2.7))
+        p2 = Point2((-5.3, -7.9))
+        p3 = Point3((-2.7, 5.4, 133.2))
+
+        # Testing Pointlike
+        assert p1 == Pointlike((2.3, 2.7))
+        assert p1.rounded == Pointlike((2, 3))
+        assert p1.position == p1
+        assert p1.distance_to(Pointlike((-0.7, 6.7))) == 5
+        assert p1.closest([
+            Pointlike((2, 2)),
+            Pointlike((-2, -2))
+        ]) == Pointlike((2, 2))
+        assert p1.furthest([
+            Pointlike((2, 2)),
+            Pointlike((-2, -2))
+        ]) == Pointlike((-2, -2))
+        assert p1.offset(Pointlike((-1, -1))) == Pointlike((1.3, 1.7))
+        assert p1.offset(Pointlike((-1, 1))) == Pointlike((1.3, 3.7))
+        assert p1.towards(Pointlike((2.3, 50)), 5) == Pointlike((2.3, 7.7))
+        # testing backwards aswell
+        assert p1.towards(Pointlike((2.3, 50)), -5) == Pointlike((2.3, -2.3))
+
+        # Testing Point2
+        assert p2.x == -5.3
+        assert p2.y == -7.9
+        assert p2.to2 == p2
+        assert p2.to3 == Point3((-5.3, -7.9, 0))
+        assert (p2.neighbors4 ==
+            {
+                Point2((-5.3, -6.9)),
+                Point2((-5.3, -8.9)),
+                Point2((-4.3, -7.9)),
+                Point2((-6.3, -7.9)),
+            })
+        assert p2.neighbors8 == (p2.neighbors4 |
+            {
+                Point2((-4.3, -6.9)),
+                Point2((-4.3, -8.9)),
+                Point2((-6.3, -6.9)),
+                Point2((-6.3, -8.9)),
+            })
+
+        # Testing Point3
+        assert p3.z == 133.2
+        assert p3.to3 == p3
+
+    # Test unit.py
+    async def test_unit(self):
+        scv1, scv2, scv3 = self.workers[:3]
+
+        assert scv1.type_id == UnitTypeId.SCV
+        assert scv1._type_data == self._game_data.units[UnitTypeId.SCV.value]
+        assert scv1.alliance == Alliance.Self.value
+        assert scv1.is_mine == True
+        assert isinstance(scv1.position, Point2)
+        assert isinstance(scv1.position3d, Point3)
+        assert scv1.health == 45
+        assert scv1.health_max == 45
+        assert scv1.health_percentage == 45/45
+        assert scv1.energy == 0
+        assert scv1.energy_max == 0
+        assert scv1.energy_percentage == 0
+        assert not scv1.target_in_range(self.workers.tags_not_in({scv1.tag}).furthest_to(scv1.position))
+        assert scv1.target_in_range(scv1)
+
+    # Test units.py
+    async def test_units(self):
+        scv1, scv2, scv3 = self.workers[:3]
+        scv_group = self.workers.tags_in({scv1.tag, scv2.tag, scv3.tag})
+        empty_group = self.workers & []
+
+        assert scv_group.amount == 3
+        assert empty_group.amount == 0
+
+        assert not scv_group.empty
+        assert empty_group.empty
+
+        assert scv_group.exists
+        assert not empty_group.exists
+
+        assert scv_group.find_by_tag(scv1.tag) == scv1
+        assert scv_group.find_by_tag(1337) is None
+
+        assert scv_group.random in [scv1, scv2, scv3]
+
+        # Test distances and closest/furthest filters
+        test_point = scv1.position.offset(Point2((0.01, 0.01)))
+        assert abs(scv_group.closest_distance_to(test_point) - (0.01**2 + 0.01**2)**0.5) < 0.01
+
+        assert scv_group.closest_to(test_point) == scv1
+        assert scv_group.furthest_to(test_point) != scv1
+        assert scv_group.furthest_to(test_point) in [scv2, scv3]
+
+        assert scv_group.closer_than(0.02, test_point) == self.workers.tags_in({scv1.tag})
+        assert scv_group.closer_than(30, test_point) == scv_group
+
+        assert scv_group.further_than(0.02, test_point) == self.workers.tags_in({scv2.tag, scv3.tag})
+
+        # Test chained filters
+        assert scv_group.closer_than(50, test_point).further_than(0.00001, test_point).of_type(UnitTypeId.SCV) == scv_group
+
+        assert scv_group.of_type({UnitTypeId.SCV}) == scv_group
+        assert scv_group.of_type({UnitTypeId.MARINE}) == empty_group
+
+        assert scv_group.tags == {u.tag for u in scv_group}
+
+        assert scv_group.owned == scv_group
+
+        assert scv_group.enemy == empty_group
+
 
     # TODO:
-    # Test position.py
-    # Test unit.py
-    # Test units.py
     # Test ramp building placement position
     # Test client.py debug functions
 

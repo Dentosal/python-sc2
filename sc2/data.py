@@ -47,6 +47,7 @@ CloakState = enum.Enum("CloakState", raw_pb.CloakState.items())
 
 Attribute = enum.Enum("Attribute", data_pb.Attribute.items())
 TargetType = enum.Enum("TargetType", data_pb.Weapon.TargetType.items())
+Target = enum.Enum("Target", data_pb.AbilityData.Target.items())
 
 ActionResult = enum.Enum("ActionResult", error_pb.ActionResult.items())
 
