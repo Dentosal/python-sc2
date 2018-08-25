@@ -282,7 +282,8 @@ class Unit(object):
         """ Does not include upgrades """
         if hasattr(self._type_data._proto, "weapons"):
             weapons = self._type_data._proto.weapons
-            weapon = next((weapon for weapon in weapons if weapon.type in {TargetType.Ground.value, TargetType.Any.value}), None)            if weapon:
+            weapon = next((weapon for weapon in weapons if weapon.type in {TargetType.Ground.value, TargetType.Any.value}), None)            
+            if weapon:
                 return (weapon.damage * weapon.attacks) / weapon.speed
         return 0
 
@@ -291,7 +292,7 @@ class Unit(object):
         """ Does not include upgrades """
         if hasattr(self._type_data._proto, "weapons"):
             weapons = self._type_data._proto.weapons
-            weapon = next((weapon for weapon in weapons if weapon.type in [TargetType.Ground.value, TargetType.Any.value]), None)
+            weapon = next((weapon for weapon in weapons if weapon.type in {TargetType.Ground.value, TargetType.Any.value}), None)
             if weapon:
                 return weapon.range
         return 0
@@ -301,7 +302,7 @@ class Unit(object):
         """ Does not include upgrades """
         if hasattr(self._type_data._proto, "weapons"):
             weapons = self._type_data._proto.weapons
-            weapon = next((weapon for weapon in weapons if weapon.type in [TargetType.Air.value, TargetType.Any.value]), None)
+            weapon = next((weapon for weapon in weapons if weapon.type in {TargetType.Air.value, TargetType.Any.value}), None)
             return weapon is not None
         return False
 
@@ -310,7 +311,7 @@ class Unit(object):
         """ Does not include upgrades """
         if hasattr(self._type_data._proto, "weapons"):
             weapons = self._type_data._proto.weapons
-            weapon = next((weapon for weapon in weapons if weapon.type in [TargetType.Air.value, TargetType.Any.value]), None)
+            weapon = next((weapon for weapon in weapons if weapon.type in {TargetType.Air.value, TargetType.Any.value}), None)
             if weapon:
                 return (weapon.damage * weapon.attacks) / weapon.speed
         return 0
@@ -320,7 +321,7 @@ class Unit(object):
         """ Does not include upgrades """
         if hasattr(self._type_data._proto, "weapons"):
             weapons = self._type_data._proto.weapons
-            weapon = next((weapon for weapon in weapons if weapon.type in [TargetType.Air.value, TargetType.Any.value]), None)
+            weapon = next((weapon for weapon in weapons if weapon.type in {TargetType.Air.value, TargetType.Any.value}), None)
             if weapon:
                 return weapon.range
         return 0
