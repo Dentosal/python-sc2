@@ -273,7 +273,7 @@ class Unit(object):
     def can_attack_ground(self) -> bool:
         if hasattr(self._type_data._proto, "weapons"):
             weapons = self._type_data._proto.weapons
-            weapon = next((weapon for weapon in weapons if weapon.type in [TargetType.Ground.value, TargetType.Any.value]), None)
+            weapon = next((weapon for weapon in weapons if weapon.type in {TargetType.Ground.value, TargetType.Any.value}), None)
             return weapon is not None
         return False
     
@@ -282,8 +282,7 @@ class Unit(object):
         """ Does not include upgrades """
         if hasattr(self._type_data._proto, "weapons"):
             weapons = self._type_data._proto.weapons
-            weapon = next((weapon for weapon in weapons if weapon.type in [TargetType.Ground.value, TargetType.Any.value]), None)
-            if weapon:
+            weapon = next((weapon for weapon in weapons if weapon.type in {TargetType.Ground.value, TargetType.Any.value}), None)            if weapon:
                 return (weapon.damage * weapon.attacks) / weapon.speed
         return 0
 
@@ -351,10 +350,12 @@ class Unit(object):
 
     @property
     def is_carrying_minerals(self) -> bool:
+        """ Checks if a worker (or MULE) is carrying (gold-)minerals. """
         return self.has_buff(BuffId.CARRYMINERALFIELDMINERALS) or self.has_buff(BuffId.CARRYHIGHYIELDMINERALFIELDMINERALS)
 
     @property
     def is_carrying_vespene(self) -> bool:
+        """ Checks if a worker is carrying vespene. """
         return self.has_buff(BuffId.CARRYHARVESTABLEVESPENEGEYSERGAS) or self.has_buff(BuffId.CARRYHARVESTABLEVESPENEGEYSERGASPROTOSS) or self.has_buff(BuffId.CARRYHARVESTABLEVESPENEGEYSERGASZERG)
 
     @property
@@ -379,8 +380,18 @@ class Unit(object):
 
     @property
     def is_gathering(self) -> bool:
-        """ Checks if a unit is on its way to a mineral field / vespene geyser to mine """
-        return len(self.orders) > 0 and self.orders[0].ability.id in [AbilityId.HARVEST_GATHER]
+        """ Checks if a unit is on its way to a mineral field / vespene geyser to mine. """
+        return len(self.orders) > 0 and self.orders[0].ability.id in {AbilityId.HARVEST_GATHER}
+
+    @property
+    def is_returning(self) -> bool:
+        """ Checks if a unit is returning from mineral field / vespene geyser to deliver resources to townhall. """
+        return len(self.orders) > 0 and self.orders[0].ability.id in {AbilityId.HARVEST_RETURN}
+
+    @property
+    def is_collecting(self) -> bool:
+        """ Combines the two properties above. """
+        return len(self.orders) > 0 and self.orders[0].ability.id in {AbilityId.HARVEST_GATHER, AbilityId.HARVEST_RETURN}
 
     @property
     def order_target(self) -> Optional[Union[int, Point2]]:

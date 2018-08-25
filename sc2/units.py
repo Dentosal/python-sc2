@@ -234,6 +234,14 @@ class Units(list):
         return self.filter(lambda unit: unit.is_gathering)
 
     @property
+    def returning(self) -> "Units":
+        return self.filter(lambda unit: unit.is_returning)
+
+    @property
+    def collecting(self) -> "Units":
+        return self.filter(lambda unit: unit.is_collecting)
+
+    @property
     def mineral_field(self) -> "Units":
         return self.filter(lambda unit: unit.is_mineral_field)
 
