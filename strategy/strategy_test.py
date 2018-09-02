@@ -85,7 +85,7 @@ class Strategy_Test(Bot_AI_Extended):
     
 
 def main():
-    run_game(maps.get("Abyssal Reef LE"), [
+    run_game(maps.get("Eastwatch LE"), [
         Bot(Race.Terran, Strategy_Test()),
         Computer(Race.Terran, Difficulty.Hard)
     ], realtime=False)
