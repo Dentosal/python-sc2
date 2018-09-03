@@ -106,7 +106,7 @@ async def _play_game(player, client, realtime, portconfig, step_time_limit=None,
     assert isinstance(realtime, bool), repr(realtime)
 
     player_id = await client.join_game(player.race, portconfig=portconfig)
-    # HS fix logger
+    # HS fix
     logger.info(f"Player id: {player_id}")
 
     if isinstance(player, Human):
@@ -114,7 +114,7 @@ async def _play_game(player, client, realtime, portconfig, step_time_limit=None,
     else:
         result = await _play_game_ai(client, player_id, player.ai, realtime, step_time_limit, game_time_limit)
     
-    # HS fix logger
+    # HS fix
     logger.info(f"Result for player id: {player_id}: {result}")
     return result
 

@@ -19,12 +19,12 @@ class Unit(object):
     def type_id(self):
         return UnitTypeId(self._proto.unit_type)
 
-    # HS
+    # HS added
     @property
     def is_worker(self):
         return self.type_id in [UnitTypeId.SCV, UnitTypeId.PROBE, UnitTypeId.DRONE]
 
-    # HS
+    # HS added
     @property
     def is_townhall(self):
         return self.type_id in [UnitTypeId.COMMANDCENTER, UnitTypeId.ORBITALCOMMAND, UnitTypeId.PLANETARYFORTRESS, 
@@ -33,15 +33,8 @@ class Unit(object):
 
     @property
     def _type_data(self):
-        # fixes when unit_type == 0
         return self._game_data.units.get(self._proto.unit_type, None)
-        #try:
-        #    return self._game_data.units[self._proto.unit_type]        
-        #except KeyError:
-        #    print(self._proto.unit_type)
-        #    return None
-        
-
+       
     @property
     def is_snapshot(self):
         return self._proto.display_type == DisplayType.Snapshot.value
@@ -122,16 +115,19 @@ class Unit(object):
     def is_flying(self):
         return self._proto.is_flying
 
+    # HS fix
     @property
     def is_structure(self):
         typedata = self._type_data
         return Attribute.Structure.value in typedata.attributes if typedata is not None else False
 
+    # HS fix
     @property
     def is_mineral_field(self):
         typedata = self._type_data
         return typedata.has_minerals if typedata is not None else False
 
+    # HS fix
     @property
     def is_vespene_geyser(self):
         typedata = self._type_data
@@ -198,11 +194,12 @@ class Unit(object):
     def ideal_harvesters(self):
         return self._proto.ideal_harvesters
 
+    # HS fix
     @property
     def name(self):
         typedata = self._type_data
         return typedata.name if typedata is not None else "Unit not Found"
-        #return self._type_data.name
+       
 
     def train(self, unit, *args, **kwargs):
         return self(self._game_data.units[unit.value].creation_ability.id, *args, **kwargs)

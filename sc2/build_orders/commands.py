@@ -7,14 +7,15 @@ import logging
 from strategy_constants import *
 
 class Command(object):
-
-  
+     
 
     def __init__(self, action, repeatable=False, priority=False, increase_workers = 0, increased_supply = 0, requires = None, requires_2nd = None, max_supply = 200, checkTrainAddon = None):
         self.action = action
         self.is_done = False
         self.is_repeatable = repeatable
         self.is_priority = priority
+
+        # HS added
         self.increase_workers = increase_workers # value to increase workers after executing command
         self.increased_supply = increased_supply # value to increase cum supply after executing command
         self.requires = requires # structure required 
@@ -43,11 +44,6 @@ class Command(object):
             bot.cum_supply = bot.cum_supply + self.increased_supply
             bot.build_order.worker_count = bot.build_order.worker_count + self.increase_workers
 
-            #if self.increase_workers > 0:
-            #    print("INCREASE WORKERS BY {0} TO {1}".format(self.increase_workers, bot.build_order.worker_count))
-
-        
-
 
         return e
 
@@ -57,7 +53,7 @@ class Command(object):
         return self
 
 
-# HS
+# HS added
 def checkAddon(unit):
     """Checks whether units is an addon"""
     
@@ -189,7 +185,7 @@ def add_gas(prioritize=True, repeatable=False):
     return Command(do_add_gas, priority=prioritize, repeatable=repeatable, increase_workers=worker_gas_increase)
 
 
-# HS
+# HS added
 def research(upgrade, on_building, prioritize=True):
     """Research upgrade"""
 
@@ -209,7 +205,7 @@ def research(upgrade, on_building, prioritize=True):
 
     return Command(research_spec, priority=prioritize, repeatable=False, requires=on_building, requires_2nd = research_requirements.get(upgrade))
 
-# HS
+# HS added
 async def build_required(self, bot, required):
     """Builds required building"""
 

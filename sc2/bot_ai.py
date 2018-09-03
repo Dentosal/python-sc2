@@ -33,6 +33,7 @@ class BotAI(object):
         self.player_id = player_id
         self.race = Race(self._game_info.player_races[self.player_id])
 
+
         self.worker_type = race_worker[self.race]
         self.basic_townhall_type = race_basic_townhalls[self.race]
         self.geyser_type = race_gas[self.race]
@@ -101,6 +102,7 @@ class BotAI(object):
         if not location:
             location = await self.get_next_expansion()
 
+        # HS fix
         if location is not None:
             await self.build(building, near=location, max_distance=max_distance, random_alternative=False,
                              placement_step=1)
@@ -118,6 +120,7 @@ class BotAI(object):
                 # already taken
                 continue
 
+            # HS fix
             if not self.townhalls.exists:
                 continue
 
@@ -132,66 +135,7 @@ class BotAI(object):
 
         return closest
     
-    @measure_runtime
-    async def distribute_workers_old(self):
-        """Distributes workers across all the bases taken."""
-
-        expansion_locations = self.expansion_locations
-        owned_expansions = self.owned_expansions
-        worker_pool = []
-        for idle_worker in self.workers.idle:
-            mf = self.state.mineral_field.closest_to(idle_worker)
-            await self.do(idle_worker.gather(mf))
-
-        for location, townhall in owned_expansions.items():
-            workers = self.workers.closer_than(20, location)
-            actual = townhall.assigned_harvesters
-            ideal = townhall.ideal_harvesters
-            excess = actual-ideal
-            if actual > ideal:
-                worker_pool.extend(workers.random_group_of(min(excess, len(workers))))
-                continue
-        for g in self.geysers:
-            workers = self.workers.closer_than(5, g)
-            actual = g.assigned_harvesters
-            ideal = g.ideal_harvesters
-            excess = actual - ideal
-            if actual > ideal:
-                worker_pool.extend(workers.random_group_of(min(excess, len(workers))))
-                continue
-
-        for g in self.geysers:
-            actual = g.assigned_harvesters
-            ideal = g.ideal_harvesters
-            deficit = ideal - actual
-
-            for x in range(0, deficit):
-                if worker_pool:
-                    w = worker_pool.pop()
-                    if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
-                        await self.do(w.move(g))
-                        await self.do(w.return_resource(queue=True))
-                    else:
-                        await self.do(w.gather(g))
-
-        for location, townhall in owned_expansions.items():
-            actual = townhall.assigned_harvesters
-            ideal = townhall.ideal_harvesters
-
-            deficit = ideal - actual
-            for x in range(0, deficit):
-                if worker_pool:
-                    w = worker_pool.pop()
-                    mf = self.state.mineral_field.closest_to(townhall)
-                    if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
-                        await self.do(w.move(townhall))
-                        await self.do(w.return_resource(queue=True))
-                        await self.do(w.gather(mf, queue=True))
-                    else:
-                        await self.do(w.gather(mf))
-
-
-
+    # HS adapted
     @measure_runtime
     async def distribute_workers(self):
         """Distributes workers across all the bases taken."""
@@ -269,7 +213,7 @@ class BotAI(object):
 
         return owned
 
-    # HS modified
+    
     def can_afford(self, item_id):
         """Tests if the player has enough resources to build a unit or cast an ability."""
 
@@ -279,19 +223,8 @@ class BotAI(object):
         elif isinstance(item_id, UpgradeId):
             cost = self._game_data.upgrades[item_id.value].cost
         else:
-            try:
-                cost = self._game_data.calculate_ability_cost(item_id)
-            except : 
-                # TODO REMOVE NEVER REACHED
-                min_resource_unknown = 400
-                print("Unknown item: " + item_id)
-                return CanAffordWrapper(min_resource_unknown <= self.minerals, min_resource_unknown <= self.vespene)
-            
-            if cost is None:
-                # TODO REMOVE NEVER REACHED
-               min_resource_upgrades = 300
-               return CanAffordWrapper(min_resource_upgrades <= self.minerals, min_resource_upgrades <= self.vespene)
-               
+            cost = self._game_data.calculate_ability_cost(item_id)
+                          
 
         return CanAffordWrapper(cost.minerals <= self.minerals, cost.vespene <= self.vespene)
 
@@ -421,6 +354,7 @@ class BotAI(object):
         self.workers = self.units(self.worker_type)
         self.townhalls = self.units(race_townhalls[self.race])
         self.geysers = self.units(race_gas[self.race])
+
         # HS added
         self.final_result = None
 

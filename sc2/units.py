@@ -144,28 +144,28 @@ class Units(list):
     def not_structure(self):
         return self.filter(lambda unit: not unit.is_structure)
 
-    # HS
+    # HS added
     @property
     def military(self):
         return self.not_structure.filter(lambda unit: not unit.is_worker)
 
-    # HS
+    # HS added
     @property
     def townhall(self):
         return self.structure.filter(lambda unit: unit.is_townhall)
 
 
-    #HS
+    # HS added
     @property
     def no_add_on(self):
         return self.filter(lambda unit: not unit.has_add_on)
 
-    #HS
+    # HS added
     @property
     def completed(self):
         return self.filter(lambda unit: isclose(unit.build_progress, 1))
 
-    #HS
+    # HS added
     @property
     def pending(self):
         return self.filter(lambda unit: not isclose(unit.build_progress, 1))

@@ -80,14 +80,14 @@ def unit_count_less_than(unit, n, include_pending=False):
     return condition
 
 
-# HS
+# HS added
 def cum_supply_at_least(s):
     def condition(bot):
         return bot.cum_supply >= s
 
     return condition
 
-# HS
+# HS added
 def unit_count_at_least_completed(unit, n):
     def condition(bot):
         return bot.units(unit).completed.amount >= n
