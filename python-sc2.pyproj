@@ -109,9 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
-    <Content Include="strategy\Issues.md" />
     <Content Include="README.md" />
-    <Content Include="strategy\Contribution.md" />
     <Content Include="strategy\README_STRATEGY.md" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />

@@ -215,16 +215,8 @@ terran_military_units_vepene = {
 # All Terran military units
 terran_military_units =  terran_military_units_mineral.union(terran_military_units_vepene)
 
-# Length 
-terran_military_units_mineral_sample = len(terran_military_units_mineral)
-terran_military_buildings_sample = len(terran_military_buildings)
-terran_military_units_vepene_sample = terran_military_buildings_sample + terran_military_units_mineral_sample
 
-
-
+# AUto build units
 auto_build_factory_units = [UnitTypeId.HELLION, UnitTypeId.CYCLONE]
-#auto_build_factory_units_length = len(auto_build_factory_units)
-
 auto_build_barracks_units = [UnitTypeId.MARINE, UnitTypeId.REAPER]
-
 auto_build_starport_units = [UnitTypeId.VIKINGFIGHTER, UnitTypeId.MEDIVAC, UnitTypeId.LIBERATOR]
