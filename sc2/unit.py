@@ -396,7 +396,7 @@ class Unit(object):
     
     @property
     def is_constructing_scv(self) -> bool:
-        """ Checks if the unit is a scv that is currently building. """
+        """ Checks if the unit is an SCV that is currently building. """
         return self.orders and self.orders[0].ability.id in {
             AbilityId.TERRANBUILD_ARMORY,
             AbilityId.TERRANBUILD_BARRACKS,
