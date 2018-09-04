@@ -95,11 +95,12 @@ class Unit(object):
 
     @property
     def is_blip(self) -> bool:
-        """Detected by sensor tower."""
+        """ Detected by sensor tower. """
         return self._proto.is_blip
 
     @property
     def is_powered(self) -> bool:
+        """ Is powered by a pylon nearby. """
         return self._proto.is_powered
 
     @property
@@ -411,7 +412,7 @@ class Unit(object):
             AbilityId.TERRANBUILD_SENSORTOWER,
             AbilityId.TERRANBUILD_STARPORT,
             AbilityId.TERRANBUILD_SUPPLYDEPOT,
-        ]
+        }
 
     @property
     def order_target(self) -> Optional[Union[int, Point2]]:
