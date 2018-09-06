@@ -95,11 +95,12 @@ class Unit(object):
 
     @property
     def is_blip(self) -> bool:
-        """Detected by sensor tower."""
+        """ Detected by sensor tower. """
         return self._proto.is_blip
 
     @property
     def is_powered(self) -> bool:
+        """ Is powered by a pylon nearby. """
         return self._proto.is_powered
 
     @property
@@ -362,7 +363,7 @@ class Unit(object):
     @property
     def is_selected(self) -> bool:
         return self._proto.is_selected
-
+    
     @property
     def orders(self) -> List["UnitOrder"]:
         return [UnitOrder.from_proto(o, self._game_data) for o in self._proto.orders]
@@ -393,6 +394,25 @@ class Unit(object):
     def is_collecting(self) -> bool:
         """ Combines the two properties above. """
         return len(self.orders) > 0 and self.orders[0].ability.id in {AbilityId.HARVEST_GATHER, AbilityId.HARVEST_RETURN}
+    
+    @property
+    def is_constructing_scv(self) -> bool:
+        """ Checks if the unit is an SCV that is currently building. """
+        return self.orders and self.orders[0].ability.id in {
+            AbilityId.TERRANBUILD_ARMORY,
+            AbilityId.TERRANBUILD_BARRACKS,
+            AbilityId.TERRANBUILD_BUNKER,
+            AbilityId.TERRANBUILD_COMMANDCENTER,
+            AbilityId.TERRANBUILD_ENGINEERINGBAY,
+            AbilityId.TERRANBUILD_FACTORY,
+            AbilityId.TERRANBUILD_FUSIONCORE,
+            AbilityId.TERRANBUILD_GHOSTACADEMY,
+            AbilityId.TERRANBUILD_MISSILETURRET,
+            AbilityId.TERRANBUILD_REFINERY,
+            AbilityId.TERRANBUILD_SENSORTOWER,
+            AbilityId.TERRANBUILD_STARPORT,
+            AbilityId.TERRANBUILD_SUPPLYDEPOT,
+        }
 
     @property
     def order_target(self) -> Optional[Union[int, Point2]]:
