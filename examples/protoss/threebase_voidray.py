@@ -58,8 +58,7 @@ class ThreebaseVoidrayBot(sc2.BotAI):
 
         if self.units(NEXUS).amount < 3 and not self.already_pending(NEXUS):
             if self.can_afford(NEXUS):
-                location = await self.get_next_expansion()
-                await self.build(NEXUS, near=location)
+                await self.expand_now()
 
         if self.units(PYLON).ready.exists:
             pylon = self.units(PYLON).ready.random
