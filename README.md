@@ -10,6 +10,8 @@ For automaticly running multiple matches, check out [Dentosal/sc2-bot-match-runn
 
 ## Installation
 
+By installing this library you agree to be bound by the terms of the [AI and Machine Learning License](http://blzdistsc2-a.akamaihd.net/AI_AND_MACHINE_LEARNING_LICENSE.html).
+
 You'll need Python 3.6 or newer.
 
 ```
