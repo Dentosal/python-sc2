@@ -11,6 +11,17 @@ import logging
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId
 
+#####################################################
+# HACK: Just to get the rendering to work
+import pyglet
+from pyglet import gl
+
+MAP_WIDTH = 1028
+MAP_HEIGHT = 768
+MINIMAP_WIDTH = 256
+MINIMAP_HEIGHT = 256
+#####################################################
+
 logger = logging.getLogger(__name__)
 
 from .cache import method_cache_forever
@@ -37,12 +48,27 @@ class Client(Protocol):
         self._debug_boxes = list()
         self._debug_spheres = list()
 
+        #####################################################
+        # HACK: Just to get the rendering to work
+        self.window = None
+        self.map_image = None
+        self.minimap_image = None
+        #####################################################
+
     @property
     def in_game(self):
         return self._status == Status.in_game
 
     async def join_game(self, race=None, observed_player_id=None, portconfig=None):
         ifopts = sc_pb.InterfaceOptions(raw=True, score=True)
+
+        #####################################################
+        # HACK: Just to get the rendering to work
+        ifopts.render.resolution.x = MAP_WIDTH
+        ifopts.render.resolution.y = MAP_HEIGHT
+        ifopts.render.minimap_resolution.x = MINIMAP_WIDTH
+        ifopts.render.minimap_resolution.y = MINIMAP_HEIGHT
+        #####################################################
 
         if race is None:
             assert isinstance(observed_player_id, int)
@@ -107,6 +133,38 @@ class Client(Protocol):
             for pr in result.observation.player_result:
                 player_id_to_result[pr.player_id] = Result(pr.result)
             self._game_result = player_id_to_result
+
+        #####################################################
+        # HACK: Just to get the rendering to work
+        map_size = result.observation.observation.render_data.map.size
+        map_data = result.observation.observation.render_data.map.data
+        minimap_size = result.observation.observation.render_data.minimap.size
+        minimap_data = result.observation.observation.render_data.minimap.data
+
+        map_width, map_height = map_size.x, map_size.y
+        map_pitch = -map_width * 3
+
+        minimap_width, minimap_height = minimap_size.x, minimap_size.y
+        minimap_pitch = -minimap_width * 3
+
+        if not self.window:
+            self.window = pyglet.window.Window(width=map_width, height=map_height)
+            self.map_image = pyglet.image.ImageData(map_width, map_height, 'RGB', map_data, map_pitch)
+            self.minimap_image = pyglet.image.ImageData(minimap_width, minimap_height, 'RGB', minimap_data, minimap_pitch)
+        else:
+            self.map_image.set_data('RGB', map_pitch, map_data)
+            self.minimap_image.set_data('RGB', minimap_pitch, minimap_data)
+
+        pyglet.clock.tick()
+        self.window.switch_to()
+        self.window.dispatch_events()
+        gl.glClearColor(0, 0, 0, 1)
+        self.window.clear()
+        self.map_image.blit(0, 0)
+        self.minimap_image.blit(0, 0)
+        self.window.flip()
+        #####################################################
+
         return result
 
     async def step(self):
