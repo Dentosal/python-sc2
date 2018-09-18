@@ -175,7 +175,7 @@ class Client(Protocol):
         self.window.dispatch_events()
         await self._on_draw()
         self.window.flip()
-        if self._x and self._y:
+        if self.in_game and (not self._game_result) and self._x and self._y:
             action = sc_pb.Action(
                 action_render=spatial_pb.ActionSpatial(
                     camera_move=spatial_pb.ActionSpatialCameraMove(
