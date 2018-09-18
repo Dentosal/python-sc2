@@ -4,6 +4,7 @@ from s2clientprotocol import (
     query_pb2 as query_pb,
     debug_pb2 as debug_pb,
     raw_pb2 as raw_pb,
+    spatial_pb2 as spatial_pb,
 )
 
 import logging
@@ -15,6 +16,7 @@ from sc2.ids.unit_typeid import UnitTypeId
 # HACK: Just to get the rendering to work
 import pyglet
 from pyglet import gl
+from pyglet.window import mouse
 
 MAP_WIDTH = 1028
 MAP_HEIGHT = 768
@@ -53,6 +55,7 @@ class Client(Protocol):
         self.window = None
         self.map_image = None
         self.minimap_image = None
+        self._x, self._y = None, None
         #####################################################
 
     @property
@@ -149,23 +152,68 @@ class Client(Protocol):
 
         if not self.window:
             self.window = pyglet.window.Window(width=map_width, height=map_height)
+            self.window.on_draw = self._on_draw
+            self.window.on_mouse_press = self._on_mouse_press
+            self.window.on_mouse_release = self._on_mouse_release
+            self.window.on_mouse_drag = self._on_mouse_drag
             self.map_image = pyglet.image.ImageData(map_width, map_height, 'RGB', map_data, map_pitch)
             self.minimap_image = pyglet.image.ImageData(minimap_width, minimap_height, 'RGB', minimap_data, minimap_pitch)
         else:
             self.map_image.set_data('RGB', map_pitch, map_data)
             self.minimap_image.set_data('RGB', minimap_pitch, minimap_data)
 
+        await self._update_window()
+        #####################################################
+
+        return result
+
+    #####################################################
+    # HACK: Just to get the rendering to work
+    async def _update_window(self):
         pyglet.clock.tick()
         self.window.switch_to()
         self.window.dispatch_events()
+        await self._on_draw()
+        self.window.flip()
+        if self._x and self._y:
+            action = sc_pb.Action(
+                action_render=spatial_pb.ActionSpatial(
+                    camera_move=spatial_pb.ActionSpatialCameraMove(
+                        center_minimap=common_pb.PointI(x=self._x, y=MINIMAP_WIDTH - self._y)
+                    )
+                )
+            )
+            await self._execute(action=sc_pb.RequestAction(actions=[action]))
+            self._x, self._y = None, None
+
+    async def _on_draw(self):
         gl.glClearColor(0, 0, 0, 1)
         self.window.clear()
         self.map_image.blit(0, 0)
         self.minimap_image.blit(0, 0)
-        self.window.flip()
-        #####################################################
 
-        return result
+    def _on_mouse_press(self, x, y, button, modifiers):
+        if button != mouse.LEFT:
+            return
+        if x > MINIMAP_WIDTH or y > MINIMAP_HEIGHT:
+            return
+        self._x, self._y = x, y
+
+    def _on_mouse_release(self, x, y, button, modifiers):
+        if button != mouse.LEFT:
+            return
+        if x > MINIMAP_WIDTH or y > MINIMAP_HEIGHT:
+            return
+        self._x, self._y = x, y
+
+    def _on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        if not buttons & mouse.LEFT:
+            return
+        if x > MINIMAP_WIDTH or y > MINIMAP_HEIGHT:
+            return
+        self._x, self._y = x, y
+
+    #####################################################
 
     async def step(self):
         """ EXPERIMENTAL: Change self._client.game_step during the step function to increase or decrease steps per second """
