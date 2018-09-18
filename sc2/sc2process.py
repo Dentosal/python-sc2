@@ -32,10 +32,12 @@ class kill_switch(object):
             p._clean()
 
 class SC2Process:
-    def __init__(self, host: str = "127.0.0.1", port: Optional[int] = None, fullscreen: bool = False) -> None:
+    def __init__(self, host: str = "127.0.0.1", port: Optional[int] = None, fullscreen: bool = False,
+                 render: bool = False) -> None:
         assert isinstance(host, str)
         assert isinstance(port, int) or port is None
 
+        self._render = render
         self._fullscreen = fullscreen
         self._host = host
         if port is None:
@@ -80,8 +82,10 @@ class SC2Process:
             "-port", str(self._port),
             "-displayMode", "1" if self._fullscreen else "0",
             "-dataDir", str(Paths.BASE),
-            "-tempDir", self._tmp_dir
+            "-tempDir", self._tmp_dir,
         ]
+        if self._render:
+            args.extend(["-eglpath", "libEGL.so"])
 
         if logger.getEffectiveLevel() <= logging.DEBUG:
             args.append("-verbose")
