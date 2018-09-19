@@ -123,8 +123,8 @@ class UnitTypeData(object):
         self._proto = proto
 
     def __repr__(self) -> str:
-        return "UnitTypeData(name={} - creation ability: {}, {})".format(self.name, self.creation_ability, self._game_data.calculate_ability_cost(self.creation_ability))
-
+        return "UnitTypeData(name={})".format(self.name)
+    
     @property
     def id(self) -> UnitTypeId:
         return UnitTypeId(self._proto.unit_id)
