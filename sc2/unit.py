@@ -2,7 +2,7 @@ from s2clientprotocol import sc2api_pb2 as sc_pb, raw_pb2 as raw_pb
 from sc2.ids.buff_id import BuffId
 
 from .position import Point2, Point3
-from .data import Alliance, Attribute, DisplayType, warpgate_abilities, TargetType, Race
+from .data import Alliance, Attribute, DisplayType, warpgate_abilities, TargetType, Race, CloakState
 from .game_data import GameData
 from .ids.unit_typeid import UnitTypeId
 from .ids.ability_id import AbilityId
@@ -90,7 +90,7 @@ class Unit(object):
         return self.build_progress == 1.0
 
     @property
-    def cloak(self):
+    def cloak(self) -> CloakState:
         return self._proto.cloak
 
     @property
@@ -394,7 +394,7 @@ class Unit(object):
     def is_collecting(self) -> bool:
         """ Combines the two properties above. """
         return len(self.orders) > 0 and self.orders[0].ability.id in {AbilityId.HARVEST_GATHER, AbilityId.HARVEST_RETURN}
-    
+
     @property
     def is_constructing_scv(self) -> bool:
         """ Checks if the unit is an SCV that is currently building. """
@@ -416,7 +416,7 @@ class Unit(object):
 
     @property
     def order_target(self) -> Optional[Union[int, Point2]]:
-        """ Returns the target tag (if it is a Unit) or Point2 (if it is a Position) from the first order """
+        """ Returns the target tag (if it is a Unit) or Point2 (if it is a Position) from the first order, reutrn None if the unit is idle """
         if len(self.orders) > 0:
             if isinstance(self.orders[0].target, int):
                 return self.orders[0].target
@@ -455,7 +455,7 @@ class Unit(object):
         return -(self._proto.ideal_harvesters - self._proto.assigned_harvesters)
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._type_data.name
 
     def train(self, unit, *args, **kwargs):
@@ -542,7 +542,7 @@ class PassengerUnit(object):
         return self._game_data.units[self._proto.unit_type]
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._type_data.name
 
     @property
@@ -580,6 +580,11 @@ class PassengerUnit(object):
     @property
     def is_massive(self) -> bool:
         return Attribute.Massive.value in self._type_data.attributes
+
+    @property
+    def cargo_size(self) -> Union[float, int]:
+        """ How much cargo this unit uses up in cargo_space """
+        return self._type_data.cargo_size
 
     @property
     def can_attack_ground(self) -> bool:

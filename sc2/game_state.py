@@ -83,6 +83,8 @@ class GameState(object):
     def __init__(self, response_observation, game_data):
         self.actions = response_observation.actions # successful actions since last loop
         self.action_errors = response_observation.action_errors # error actions since last loop
+        # https://github.com/Blizzard/s2client-proto/blob/51662231c0965eba47d5183ed0a6336d5ae6b640/s2clientprotocol/sc2api.proto#L575
+        # TODO: implement alerts https://github.com/Blizzard/s2client-proto/blob/51662231c0965eba47d5183ed0a6336d5ae6b640/s2clientprotocol/sc2api.proto#L640
         self.observation = response_observation.observation
         self.player_result = response_observation.player_result
         self.chat = response_observation.chat
@@ -120,9 +122,9 @@ class GameState(object):
                          self.observation.raw_data.player.upgrade_ids}  # usage: if TERRANINFANTRYWEAPONSLEVEL1 in self.state.upgrades: do stuff
 
     @property
-    def mineral_field(self):
+    def mineral_field(self) -> Units:
         return self.units.mineral_field
 
     @property
-    def vespene_geyser(self):
+    def vespene_geyser(self) -> Units:
         return self.units.vespene_geyser
