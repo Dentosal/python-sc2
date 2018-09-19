@@ -12,7 +12,7 @@ from .game_data import GameData
 logger = logging.getLogger(__name__)
 
 from .position import Point2, Point3
-from .data import Race, ActionResult, Attribute, race_worker, race_townhalls, race_gas, Target
+from .data import Race, ActionResult, Attribute, race_worker, race_townhalls, race_gas, Target, Result
 from .unit import Unit
 from .cache import property_cache_forever
 from .game_data import AbilityData, Cost
@@ -447,9 +447,10 @@ class BotAI(object):
 
     def is_visible(self, pos: Union[Point2, Point3, Unit]) -> bool:
         """ Returns True if you have vision on a grid point. """
+        # more info: https://github.com/Blizzard/s2client-proto/blob/9906df71d6909511907d8419b33acc1a3bd51ec0/s2clientprotocol/spatial.proto#L19
         assert isinstance(pos, (Point2, Point3, Unit))
         pos = pos.position.to2.rounded
-        return self.state.visibility[pos] != 0
+        return self.state.visibility[pos] == 2
 
     def has_creep(self, pos: Union[Point2, Point3, Unit]) -> bool:
         """ Returns True if there is creep on the grid point. """
@@ -465,7 +466,7 @@ class BotAI(object):
 
         self.player_id: int = player_id
         self.race: Race = Race(self._game_info.player_races[self.player_id])
-        self._units_previous_map = dict()
+        self._units_previous_map: dict = dict()
         self.units: Units = Units([], game_data)
 
     def _prepare_first_step(self):
@@ -527,11 +528,11 @@ class BotAI(object):
         """ Override this in your bot class. """
         pass
 
-    async def on_unit_created(self, unit):
+    async def on_unit_created(self, unit: Unit):
         """ Override this in your bot class. """
         pass
 
-    async def on_building_construction_complete(self, unit):
+    async def on_building_construction_complete(self, unit: Unit):
         """ Override this in your bot class. """
         pass
 
@@ -539,11 +540,11 @@ class BotAI(object):
         """Allows initializing the bot when the game data is available."""
         pass
 
-    async def on_step(self, iteration):
+    async def on_step(self, iteration: int):
         """Ran on every game step (looped in realtime mode)."""
         raise NotImplementedError
 
-    def on_end(self, game_result):
+    def on_end(self, game_result: Result):
         """Ran at the end of a game."""
         pass
 
