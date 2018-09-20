@@ -80,7 +80,8 @@ class SC2Process:
             "-port", str(self._port),
             "-displayMode", "1" if self._fullscreen else "0",
             "-dataDir", str(Paths.BASE),
-            "-tempDir", self._tmp_dir
+            "-tempDir", self._tmp_dir,
+            "-eglpath", "libEGL.so",
         ]
 
         if logger.getEffectiveLevel() <= logging.DEBUG:

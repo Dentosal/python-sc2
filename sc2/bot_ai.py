@@ -409,6 +409,8 @@ class BotAI(object):
         return r
 
     async def do_actions(self, actions: List["UnitCommand"]):
+        if not actions:
+            return None
         for action in actions:
             cost = self._game_data.calculate_ability_cost(action.ability)
             self.minerals -= cost.minerals
@@ -419,9 +421,41 @@ class BotAI(object):
 
     async def chat_send(self, message: str):
         """Send a chat message."""
-
         assert isinstance(message, str)
         await self._client.chat_send(message, False)
+
+    # For the functions below, make sure you are inside the boundries of the map size.
+    def get_terrain_height(self, pos: Union[Point2, Point3, Unit]) -> int:
+        """ Returns terrain height at a position. Caution: terrain height is not anywhere near a unit's z-coordinate. """
+        assert isinstance(pos, (Point2, Point3, Unit))
+        pos = pos.position.to2.rounded
+        return self._game_info.terrain_height[pos] # returns int
+
+    def in_placement_grid(self, pos: Union[Point2, Point3, Unit]) -> bool:
+        """ Returns True if you can place something at a position. Remember, buildings usually use 2x2, 3x3 or 5x5 of these grid points.
+        Caution: some x and y offset might be required, see ramp code:
+        https://github.com/Dentosal/python-sc2/blob/master/sc2/game_info.py#L17-L18 """
+        assert isinstance(pos, (Point2, Point3, Unit))
+        pos = pos.position.to2.rounded
+        return self._game_info.placement_grid[pos] != 0
+
+    def in_pathing_grid(self, pos: Union[Point2, Point3, Unit]) -> bool:
+        """ Returns True if a unit can pass through a grid point. """
+        assert isinstance(pos, (Point2, Point3, Unit))
+        pos = pos.position.to2.rounded
+        return self._game_info.pathing_grid[pos] == 0
+
+    def is_visible(self, pos: Union[Point2, Point3, Unit]) -> bool:
+        """ Returns True if you have vision on a grid point. """
+        assert isinstance(pos, (Point2, Point3, Unit))
+        pos = pos.position.to2.rounded
+        return self.state.visibility[pos] != 0
+
+    def has_creep(self, pos: Union[Point2, Point3, Unit]) -> bool:
+        """ Returns True if there is creep on the grid point. """
+        assert isinstance(pos, (Point2, Point3, Unit))
+        pos = pos.position.to2.rounded
+        return self.state.creep[pos] != 0
 
     def _prepare_start(self, client, player_id, game_info, game_data):
         """Ran until game start to set game and player data."""

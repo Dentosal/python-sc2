@@ -16,4 +16,4 @@ before_install:
 
 script:
   # Run tests
-  - docker run test_image -c "python test/travis_test_script.py test/autotest_bot.py"
+  - docker run test_image -c "export DISPLAY=:99.0; sh -e /etc/init.d/xvfb start; sleep 3; python test/travis_test_script.py test/autotest_bot.py"

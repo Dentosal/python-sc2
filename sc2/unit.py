@@ -562,11 +562,6 @@ class PassengerUnit(object):
         return Attribute.Massive.value in self._type_data.attributes
 
     @property
-    def cargo_size(self) -> Union[float, int]:
-        """ How much cargo this unit uses up in cargo_space """
-        return self._type_data.cargo_size
-
-    @property
     def can_attack_ground(self) -> bool:
         if hasattr(self._type_data._proto, "weapons"):
             weapons = self._type_data._proto.weapons

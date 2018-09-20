@@ -4,12 +4,25 @@ from s2clientprotocol import (
     query_pb2 as query_pb,
     debug_pb2 as debug_pb,
     raw_pb2 as raw_pb,
+    spatial_pb2 as spatial_pb,
 )
 
 import logging
 
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId
+
+#####################################################
+# HACK: Just to get the rendering to work
+import pyglet
+from pyglet import gl
+from pyglet.window import mouse
+
+MAP_WIDTH = 1028
+MAP_HEIGHT = 768
+MINIMAP_WIDTH = 256
+MINIMAP_HEIGHT = 256
+#####################################################
 
 logger = logging.getLogger(__name__)
 
@@ -37,12 +50,28 @@ class Client(Protocol):
         self._debug_boxes = list()
         self._debug_spheres = list()
 
+        #####################################################
+        # HACK: Just to get the rendering to work
+        self.window = None
+        self.map_image = None
+        self.minimap_image = None
+        self._x, self._y = None, None
+        #####################################################
+
     @property
     def in_game(self):
         return self._status == Status.in_game
 
     async def join_game(self, race=None, observed_player_id=None, portconfig=None):
         ifopts = sc_pb.InterfaceOptions(raw=True, score=True)
+
+        #####################################################
+        # HACK: Just to get the rendering to work
+        ifopts.render.resolution.x = MAP_WIDTH
+        ifopts.render.resolution.y = MAP_HEIGHT
+        ifopts.render.minimap_resolution.x = MINIMAP_WIDTH
+        ifopts.render.minimap_resolution.y = MINIMAP_HEIGHT
+        #####################################################
 
         if race is None:
             assert isinstance(observed_player_id, int)
@@ -107,7 +136,84 @@ class Client(Protocol):
             for pr in result.observation.player_result:
                 player_id_to_result[pr.player_id] = Result(pr.result)
             self._game_result = player_id_to_result
+
+        #####################################################
+        # HACK: Just to get the rendering to work
+        map_size = result.observation.observation.render_data.map.size
+        map_data = result.observation.observation.render_data.map.data
+        minimap_size = result.observation.observation.render_data.minimap.size
+        minimap_data = result.observation.observation.render_data.minimap.data
+
+        map_width, map_height = map_size.x, map_size.y
+        map_pitch = -map_width * 3
+
+        minimap_width, minimap_height = minimap_size.x, minimap_size.y
+        minimap_pitch = -minimap_width * 3
+
+        if not self.window:
+            self.window = pyglet.window.Window(width=map_width, height=map_height)
+            self.window.on_draw = self._on_draw
+            self.window.on_mouse_press = self._on_mouse_press
+            self.window.on_mouse_release = self._on_mouse_release
+            self.window.on_mouse_drag = self._on_mouse_drag
+            self.map_image = pyglet.image.ImageData(map_width, map_height, 'RGB', map_data, map_pitch)
+            self.minimap_image = pyglet.image.ImageData(minimap_width, minimap_height, 'RGB', minimap_data, minimap_pitch)
+        else:
+            self.map_image.set_data('RGB', map_pitch, map_data)
+            self.minimap_image.set_data('RGB', minimap_pitch, minimap_data)
+
+        await self._update_window()
+        #####################################################
+
         return result
+
+    #####################################################
+    # HACK: Just to get the rendering to work
+    async def _update_window(self):
+        pyglet.clock.tick()
+        self.window.switch_to()
+        self.window.dispatch_events()
+        await self._on_draw()
+        self.window.flip()
+        if self.in_game and (not self._game_result) and self._x and self._y:
+            action = sc_pb.Action(
+                action_render=spatial_pb.ActionSpatial(
+                    camera_move=spatial_pb.ActionSpatialCameraMove(
+                        center_minimap=common_pb.PointI(x=self._x, y=MINIMAP_WIDTH - self._y)
+                    )
+                )
+            )
+            await self._execute(action=sc_pb.RequestAction(actions=[action]))
+            self._x, self._y = None, None
+
+    async def _on_draw(self):
+        gl.glClearColor(0, 0, 0, 1)
+        self.window.clear()
+        self.map_image.blit(0, 0)
+        self.minimap_image.blit(0, 0)
+
+    def _on_mouse_press(self, x, y, button, modifiers):
+        if button != mouse.LEFT:
+            return
+        if x > MINIMAP_WIDTH or y > MINIMAP_HEIGHT:
+            return
+        self._x, self._y = x, y
+
+    def _on_mouse_release(self, x, y, button, modifiers):
+        if button != mouse.LEFT:
+            return
+        if x > MINIMAP_WIDTH or y > MINIMAP_HEIGHT:
+            return
+        self._x, self._y = x, y
+
+    def _on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        if not buttons & mouse.LEFT:
+            return
+        if x > MINIMAP_WIDTH or y > MINIMAP_HEIGHT:
+            return
+        self._x, self._y = x, y
+
+    #####################################################
 
     async def step(self):
         """ EXPERIMENTAL: Change self._client.game_step during the step function to increase or decrease steps per second """
