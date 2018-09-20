@@ -421,10 +421,9 @@ class Unit(object):
             AbilityId.EFFECT_REPAIR,
             AbilityId.EFFECT_REPAIR_MULE,
             AbilityId.EFFECT_REPAIR_SCV,
-        }
+        }    
     
-    
-        @property
+    @property
     def order_target(self) -> Optional[Union[int, Point2]]:
         """ Returns the target tag (if it is a Unit) or Point2 (if it is a Position) from the first order, reutrn None if the unit is idle """
         if len(self.orders) > 0:
@@ -506,7 +505,7 @@ class Unit(object):
 
     def repair(self, *args, **kwargs):
         return self(AbilityId.EFFECT_REPAIR, *args, **kwargs)
-        
+
     def __hash__(self):
         return hash(self.tag)
 
