@@ -1,6 +1,7 @@
 from math import sqrt, pi, sin, cos, atan2
 import random
 import itertools
+import math
 from typing import List, Dict, Set, Tuple, Any, Optional, Union # for mypy type checking
 
 FLOAT_DIGITS = 8
@@ -20,31 +21,78 @@ class Pointlike(tuple):
     def position(self) -> "Pointlike":
         return self
 
-    def distance_to(self, p: Union["Unit", "Pointlike"]) -> Union[int, float]:
+    def distance_to(self, p: Union["Unit", "Point2", "Point3"]) -> Union[int, float]:
         p = p.position
         assert isinstance(p, Pointlike)
         if self == p:
             return 0
         return sqrt(sum(self.__class__((b-a)**2 for a, b in itertools.zip_longest(self, p, fillvalue=0))))
 
-    def sort_by_distance(self, ps):
+    def distance_to_point2(self, p2: "Point2") -> Union[int, float]:
+        """ Same as the function above, but should be 3-4 times faster because of the dropped asserts and conversions and because it doesnt use a loop (itertools or zip). """
+        return ((self[0]-p2[0])**2 + (self[1]-p2[1])**2)**0.5
+
+    def _distance_squared(self, p2: "Point2") -> Union[int, float]:
+        """ Function used to not take the square root as the distances will stay proportionally the same. This is to speed up the sorting process. """
+        return ((self[0]-p2[0])**2 + (self[1]-p2[1])**2)
+
+    def sort_by_distance(self, ps: Union["Units", List["Point2"]]):
+        """ This returns the target points sorted. You should not pass a set or dict since those are not sortable. """
+        if ps and all(not isinstance(p, (Unit, Point3)) and isinstance(p, Point2) for p in ps):
+            return sorted(ps, key=lambda p: self._distance_squared(p))
         return sorted(ps, key=lambda p: self.distance_to(p))
 
-    def closest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union["Unit", "Pointlike"]:
+    def closest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union["Unit", "Point2"]:
+        """ This function assumes the 2d distance is meant """
         assert len(ps) > 0
-        return min(ps, key=lambda p: self.distance_to(p))
+        closest_distance_squared = math.inf
+        for p2 in ps:
+            p2pos = p2
+            if not isinstance(p2pos, Point2):
+                p2pos = p2.position
+            distance = (self[0] - p2pos[0])**2 + (self[1] - p2pos[1])**2
+            if distance < closest_distance_squared:
+                closest_distance_squared = distance
+                closest_element = p2
+        return closest_element
 
     def distance_to_closest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union[int, float]:
+        """ This function assumes the 2d distance is meant """
         assert len(ps) > 0
-        return min(ps, key=lambda p: self.distance_to(p)).distance_to(self)
+        closest_distance_squared = math.inf
+        for p2 in ps:
+            if not isinstance(p2, Point2):
+                p2 = p2.position
+            distance = (self[0] - p2[0])**2 + (self[1] - p2[1])**2
+            if distance < closest_distance_squared:
+                closest_distance_squared = distance
+        return closest_distance_squared**0.5
 
     def furthest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union["Unit", "Pointlike"]:
+        """ This function assumes the 2d distance is meant """
         assert len(ps) > 0
-        return max(ps, key=lambda p: self.distance_to(p))
+        furthest_distance_squared = 0
+        for p2 in ps:
+            p2pos = p2
+            if not isinstance(p2pos, Point2):
+                p2pos = p2.position
+            distance = (self[0] - p2pos[0])**2 + (self[1] - p2pos[1])**2
+            if furthest_distance_squared < distance:
+                furthest_distance_squared = distance
+                furthest_element = p2
+        return furthest_element
 
     def distance_to_furthest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union[int, float]:
+        """ This function assumes the 2d distance is meant """
         assert len(ps) > 0
-        return max(ps, key=lambda p: self.distance_to(p)).distance_to(self)
+        furthest_distance_squared = 0
+        for p2 in ps:
+            if not isinstance(p2, Point2):
+                p2 = p2.position
+            distance = (self[0] - p2[0])**2 + (self[1] - p2[1])**2
+            if furthest_distance_squared < distance:
+                furthest_distance_squared = distance
+        return furthest_distance_squared**0.5
 
     def offset(self, p) -> "Pointlike":
         return self.__class__(a+b for a, b in itertools.zip_longest(self, p[:len(self)], fillvalue=0))
