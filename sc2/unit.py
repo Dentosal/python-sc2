@@ -63,7 +63,8 @@ class Unit(object):
         return Point3.from_proto(self._proto.pos)
 
     def distance_to(self, p: Union["Unit", Point2, Point3]) -> Union[int, float]:
-        return self.position.to2.distance_to(p.position.to2)
+        """ Using the 2d distance between self and p. To calculate the 3d distance, use unit.position3d.distance_to(p) """
+        return self.position.distance_to_point2(p.position)
 
     @property
     def facing(self) -> Union[int, float]:
@@ -413,7 +414,7 @@ class Unit(object):
             AbilityId.TERRANBUILD_STARPORT,
             AbilityId.TERRANBUILD_SUPPLYDEPOT,
         }
-    
+
     @property
     def is_repairing(self) -> bool:
         return len(self.orders) > 0 and self.orders[0].ability.id in {
@@ -422,8 +423,8 @@ class Unit(object):
             AbilityId.EFFECT_REPAIR_SCV,
         }
     
-
-    @property
+    
+        @property
     def order_target(self) -> Optional[Union[int, Point2]]:
         """ Returns the target tag (if it is a Unit) or Point2 (if it is a Position) from the first order, reutrn None if the unit is idle """
         if len(self.orders) > 0:
@@ -502,10 +503,10 @@ class Unit(object):
 
     def stop(self, *args, **kwargs):
         return self(AbilityId.STOP, *args, **kwargs)
-    
+
     def repair(self, *args, **kwargs):
         return self(AbilityId.EFFECT_REPAIR, *args, **kwargs)
-
+        
     def __hash__(self):
         return hash(self.tag)
 

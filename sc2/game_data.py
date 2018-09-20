@@ -124,7 +124,7 @@ class UnitTypeData(object):
 
     def __repr__(self) -> str:
         return "UnitTypeData(name={})".format(self.name)
-    
+
     @property
     def id(self) -> UnitTypeId:
         return UnitTypeId(self._proto.unit_id)
