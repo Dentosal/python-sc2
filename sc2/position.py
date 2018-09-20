@@ -38,7 +38,7 @@ class Pointlike(tuple):
 
     def sort_by_distance(self, ps: Union["Units", List["Point2"]]):
         """ This returns the target points sorted. You should not pass a set or dict since those are not sortable. """
-        if ps and all(not isinstance(p, (Unit, Point3)) and isinstance(p, Point2) for p in ps):
+        if ps and all(isinstance(p, Point2) for p in ps):
             return sorted(ps, key=lambda p: self._distance_squared(p))
         return sorted(ps, key=lambda p: self.distance_to(p))
 
