@@ -413,6 +413,15 @@ class Unit(object):
             AbilityId.TERRANBUILD_STARPORT,
             AbilityId.TERRANBUILD_SUPPLYDEPOT,
         }
+    
+    @property
+    def is_repairing(self) -> bool:
+        return len(self.orders) > 0 and self.orders[0].ability.id in {
+            AbilityId.EFFECT_REPAIR,
+            AbilityId.EFFECT_REPAIR_MULE,
+            AbilityId.EFFECT_REPAIR_SCV,
+        }
+    
 
     @property
     def order_target(self) -> Optional[Union[int, Point2]]:
@@ -493,6 +502,9 @@ class Unit(object):
 
     def stop(self, *args, **kwargs):
         return self(AbilityId.STOP, *args, **kwargs)
+    
+    def repair(self, *args, **kwargs):
+        return self(AbilityId.EFFECT_REPAIR, *args, **kwargs)
 
     def __hash__(self):
         return hash(self.tag)
