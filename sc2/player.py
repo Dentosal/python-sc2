@@ -71,5 +71,5 @@ class Player(AbstractPlayer):
 
     def __init__(self, player_id, type, requested_race, difficulty=None, actual_race=None):
         super().__init__(type, requested_race, difficulty)
-        self.id = player_id
-        self.actual_race = actual_race
+        self.id: int = player_id
+        self.actual_race: Race = actual_race

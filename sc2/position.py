@@ -30,19 +30,19 @@ class Pointlike(tuple):
     def sort_by_distance(self, ps):
         return sorted(ps, key=lambda p: self.distance_to(p))
 
-    def closest(self, ps) -> Union["Unit", "Pointlike"]:
+    def closest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union["Unit", "Pointlike"]:
         assert len(ps) > 0
         return min(ps, key=lambda p: self.distance_to(p))
 
-    def distance_to_closest(self, ps) -> Union[int, float]:
+    def distance_to_closest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union[int, float]:
         assert len(ps) > 0
         return min(ps, key=lambda p: self.distance_to(p)).distance_to(self)
 
-    def furthest(self, ps) -> Union["Unit", "Pointlike"]:
+    def furthest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union["Unit", "Pointlike"]:
         assert len(ps) > 0
         return max(ps, key=lambda p: self.distance_to(p))
 
-    def distance_to_furthest(self, ps) -> Union[int, float]:
+    def distance_to_furthest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union[int, float]:
         assert len(ps) > 0
         return max(ps, key=lambda p: self.distance_to(p)).distance_to(self)
 
@@ -99,7 +99,7 @@ class Point2(Pointlike):
         dx, dy = cos(angle), sin(angle)
         return Point2((self.x + dx * distance, self.y + dy * distance))
 
-    def towards_with_random_angle(self, p, distance=1, max_difference=(pi/4)):
+    def towards_with_random_angle(self, p: Union["Point2", "Point3"], distance: Union[int, float]=1, max_difference: Union[int, float]=(pi/4)) -> "Point2":
         tx, ty = self.to2.towards(p.to2, 1)
         angle = atan2(ty - self.y, tx - self.x)
         angle = (angle - max_difference) + max_difference * 2 * random.random()
@@ -163,11 +163,11 @@ class Point3(Point2):
 
 class Size(Point2):
     @property
-    def width(self):
+    def width(self) -> Union[int, float]:
         return self[0]
 
     @property
-    def height(self):
+    def height(self) -> Union[int, float]:
         return self[1]
 
 class Rect(tuple):
@@ -177,27 +177,27 @@ class Rect(tuple):
         return cls((data.p0.x, data.p0.y, data.p1.x - data.p0.x, data.p1.y - data.p0.y))
 
     @property
-    def x(self):
+    def x(self) -> Union[int, float]:
         return self[0]
 
     @property
-    def y(self):
+    def y(self) -> Union[int, float]:
         return self[1]
 
     @property
-    def width(self):
+    def width(self) -> Union[int, float]:
         return self[2]
 
     @property
-    def height(self):
+    def height(self) -> Union[int, float]:
         return self[3]
 
     @property
-    def size(self):
+    def size(self) -> Size:
         return Size(self[2], self[3])
 
     @property
-    def center(self):
+    def center(self) -> Point2:
         return Point2((self.x + self.width / 2, self.y + self.height / 2))
 
     def offset(self, p):

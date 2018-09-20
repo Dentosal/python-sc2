@@ -92,9 +92,9 @@ class Units(list):
         else:
             return self.subgroup(random.sample(self, n))
 
-    def in_attack_range_of(self, unit: Unit) -> "Units":
+    def in_attack_range_of(self, unit: Unit, bonus_distance: Union[int, float]=0) -> "Units":
         """ Filters units that are in attack range of the unit in parameter """
-        return self.filter(lambda x: unit.target_in_range(x))
+        return self.filter(lambda x: unit.target_in_range(x, bonus_distance=bonus_distance))
 
     def closest_distance_to(self, position: Union[Unit, Point2, Point3]) -> Union[int, float]:
         """ Returns the distance between the closest unit from this group to the target unit """
