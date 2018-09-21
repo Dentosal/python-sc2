@@ -2,7 +2,7 @@ from s2clientprotocol import sc2api_pb2 as sc_pb, raw_pb2 as raw_pb
 from sc2.ids.buff_id import BuffId
 
 from .position import Point2, Point3
-from .data import Alliance, Attribute, DisplayType, warpgate_abilities, TargetType, Race
+from .data import Alliance, Attribute, DisplayType, warpgate_abilities, TargetType, Race, CloakState
 from .game_data import GameData
 from .ids.unit_typeid import UnitTypeId
 from .ids.ability_id import AbilityId
@@ -63,7 +63,8 @@ class Unit(object):
         return Point3.from_proto(self._proto.pos)
 
     def distance_to(self, p: Union["Unit", Point2, Point3]) -> Union[int, float]:
-        return self.position.to2.distance_to(p.position.to2)
+        """ Using the 2d distance between self and p. To calculate the 3d distance, use unit.position3d.distance_to(p) """
+        return self.position.distance_to_point2(p.position)
 
     @property
     def facing(self) -> Union[int, float]:
@@ -90,16 +91,17 @@ class Unit(object):
         return self.build_progress == 1.0
 
     @property
-    def cloak(self):
+    def cloak(self) -> CloakState:
         return self._proto.cloak
 
     @property
     def is_blip(self) -> bool:
-        """Detected by sensor tower."""
+        """ Detected by sensor tower. """
         return self._proto.is_blip
 
     @property
     def is_powered(self) -> bool:
+        """ Is powered by a pylon nearby. """
         return self._proto.is_powered
 
     @property
@@ -362,7 +364,7 @@ class Unit(object):
     @property
     def is_selected(self) -> bool:
         return self._proto.is_selected
-
+    
     @property
     def orders(self) -> List["UnitOrder"]:
         return [UnitOrder.from_proto(o, self._game_data) for o in self._proto.orders]
@@ -395,8 +397,35 @@ class Unit(object):
         return len(self.orders) > 0 and self.orders[0].ability.id in {AbilityId.HARVEST_GATHER, AbilityId.HARVEST_RETURN}
 
     @property
+    def is_constructing_scv(self) -> bool:
+        """ Checks if the unit is an SCV that is currently building. """
+        return self.orders and self.orders[0].ability.id in {
+            AbilityId.TERRANBUILD_ARMORY,
+            AbilityId.TERRANBUILD_BARRACKS,
+            AbilityId.TERRANBUILD_BUNKER,
+            AbilityId.TERRANBUILD_COMMANDCENTER,
+            AbilityId.TERRANBUILD_ENGINEERINGBAY,
+            AbilityId.TERRANBUILD_FACTORY,
+            AbilityId.TERRANBUILD_FUSIONCORE,
+            AbilityId.TERRANBUILD_GHOSTACADEMY,
+            AbilityId.TERRANBUILD_MISSILETURRET,
+            AbilityId.TERRANBUILD_REFINERY,
+            AbilityId.TERRANBUILD_SENSORTOWER,
+            AbilityId.TERRANBUILD_STARPORT,
+            AbilityId.TERRANBUILD_SUPPLYDEPOT,
+        }
+
+    @property
+    def is_repairing(self) -> bool:
+        return len(self.orders) > 0 and self.orders[0].ability.id in {
+            AbilityId.EFFECT_REPAIR,
+            AbilityId.EFFECT_REPAIR_MULE,
+            AbilityId.EFFECT_REPAIR_SCV,
+        }    
+    
+    @property
     def order_target(self) -> Optional[Union[int, Point2]]:
-        """ Returns the target tag (if it is a Unit) or Point2 (if it is a Position) from the first order """
+        """ Returns the target tag (if it is a Unit) or Point2 (if it is a Position) from the first order, reutrn None if the unit is idle """
         if len(self.orders) > 0:
             if isinstance(self.orders[0].target, int):
                 return self.orders[0].target
@@ -435,7 +464,7 @@ class Unit(object):
         return -(self._proto.ideal_harvesters - self._proto.assigned_harvesters)
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._type_data.name
 
     def train(self, unit, *args, **kwargs):
@@ -473,6 +502,9 @@ class Unit(object):
 
     def stop(self, *args, **kwargs):
         return self(AbilityId.STOP, *args, **kwargs)
+
+    def repair(self, *args, **kwargs):
+        return self(AbilityId.EFFECT_REPAIR, *args, **kwargs)
 
     def __hash__(self):
         return hash(self.tag)
@@ -522,7 +554,7 @@ class PassengerUnit(object):
         return self._game_data.units[self._proto.unit_type]
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._type_data.name
 
     @property

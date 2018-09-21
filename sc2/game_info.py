@@ -139,8 +139,8 @@ class GameInfo(object):
     def __init__(self, proto):
         # TODO: this might require an update during the game because placement grid and playable grid are greyed out on minerals, start locations and ramps (debris)
         self._proto = proto       
-        self.players = [Player.from_proto(p) for p in proto.player_info]
-        self.map_size = Size.from_proto(proto.start_raw.map_size)
+        self.players: List[Player] = [Player.from_proto(p) for p in proto.player_info]
+        self.map_size: Size = Size.from_proto(proto.start_raw.map_size)
         self.pathing_grid: PixelMap = PixelMap(proto.start_raw.pathing_grid)
         self.terrain_height: PixelMap = PixelMap(proto.start_raw.terrain_height)
         self.placement_grid: PixelMap = PixelMap(proto.start_raw.placement_grid)
@@ -151,7 +151,7 @@ class GameInfo(object):
         self.player_start_location: Point2 = None # Filled later by BotAI._prepare_first_step
 
     @property
-    def map_center(self):
+    def map_center(self) -> Point2:
         return self.playable_area.center
 
     def _find_ramps(self) -> List[Ramp]:

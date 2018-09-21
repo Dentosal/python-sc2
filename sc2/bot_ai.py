@@ -12,7 +12,7 @@ from .game_data import GameData
 logger = logging.getLogger(__name__)
 
 from .position import Point2, Point3
-from .data import Race, ActionResult, Attribute, race_worker, race_townhalls, race_gas, Target
+from .data import Race, ActionResult, Attribute, race_worker, race_townhalls, race_gas, Target, Result
 from .unit import Unit
 from .cache import property_cache_forever
 from .game_data import AbilityData, Cost
@@ -409,6 +409,8 @@ class BotAI(object):
         return r
 
     async def do_actions(self, actions: List["UnitCommand"]):
+        if not actions:
+            return None
         for action in actions:
             cost = self._game_data.calculate_ability_cost(action.ability)
             self.minerals -= cost.minerals
@@ -419,9 +421,42 @@ class BotAI(object):
 
     async def chat_send(self, message: str):
         """Send a chat message."""
-
         assert isinstance(message, str)
         await self._client.chat_send(message, False)
+
+    # For the functions below, make sure you are inside the boundries of the map size.
+    def get_terrain_height(self, pos: Union[Point2, Point3, Unit]) -> int:
+        """ Returns terrain height at a position. Caution: terrain height is not anywhere near a unit's z-coordinate. """
+        assert isinstance(pos, (Point2, Point3, Unit))
+        pos = pos.position.to2.rounded
+        return self._game_info.terrain_height[pos] # returns int
+
+    def in_placement_grid(self, pos: Union[Point2, Point3, Unit]) -> bool:
+        """ Returns True if you can place something at a position. Remember, buildings usually use 2x2, 3x3 or 5x5 of these grid points.
+        Caution: some x and y offset might be required, see ramp code:
+        https://github.com/Dentosal/python-sc2/blob/master/sc2/game_info.py#L17-L18 """
+        assert isinstance(pos, (Point2, Point3, Unit))
+        pos = pos.position.to2.rounded
+        return self._game_info.placement_grid[pos] != 0
+
+    def in_pathing_grid(self, pos: Union[Point2, Point3, Unit]) -> bool:
+        """ Returns True if a unit can pass through a grid point. """
+        assert isinstance(pos, (Point2, Point3, Unit))
+        pos = pos.position.to2.rounded
+        return self._game_info.pathing_grid[pos] == 0
+
+    def is_visible(self, pos: Union[Point2, Point3, Unit]) -> bool:
+        """ Returns True if you have vision on a grid point. """
+        # more info: https://github.com/Blizzard/s2client-proto/blob/9906df71d6909511907d8419b33acc1a3bd51ec0/s2clientprotocol/spatial.proto#L19
+        assert isinstance(pos, (Point2, Point3, Unit))
+        pos = pos.position.to2.rounded
+        return self.state.visibility[pos] == 2
+
+    def has_creep(self, pos: Union[Point2, Point3, Unit]) -> bool:
+        """ Returns True if there is creep on the grid point. """
+        assert isinstance(pos, (Point2, Point3, Unit))
+        pos = pos.position.to2.rounded
+        return self.state.creep[pos] != 0
 
     def _prepare_start(self, client, player_id, game_info, game_data):
         """Ran until game start to set game and player data."""
@@ -431,13 +466,13 @@ class BotAI(object):
 
         self.player_id: int = player_id
         self.race: Race = Race(self._game_info.player_races[self.player_id])
-        self._units_previous_map = dict()
+        self._units_previous_map: dict = dict()
         self.units: Units = Units([], game_data)
 
     def _prepare_first_step(self):
         """First step extra preparations. Must not be called before _prepare_step."""
-        assert len(self.townhalls) == 1
-        self._game_info.player_start_location = self.townhalls.first.position
+        if self.townhalls:
+            self._game_info.player_start_location = self.townhalls.first.position
 
     def _prepare_step(self, state):
         """Set attributes from new state before on_step."""
@@ -493,11 +528,11 @@ class BotAI(object):
         """ Override this in your bot class. """
         pass
 
-    async def on_unit_created(self, unit):
+    async def on_unit_created(self, unit: Unit):
         """ Override this in your bot class. """
         pass
 
-    async def on_building_construction_complete(self, unit):
+    async def on_building_construction_complete(self, unit: Unit):
         """ Override this in your bot class. """
         pass
 
@@ -505,11 +540,11 @@ class BotAI(object):
         """Allows initializing the bot when the game data is available."""
         pass
 
-    async def on_step(self, iteration):
+    async def on_step(self, iteration: int):
         """Ran on every game step (looped in realtime mode)."""
         raise NotImplementedError
 
-    def on_end(self, game_result):
+    def on_end(self, game_result: Result):
         """Ran at the end of a game."""
         pass
 
