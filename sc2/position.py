@@ -237,7 +237,7 @@ class Point2(Pointlike):
         return abs(other.x - self.x) + abs(other.y - self.y)
 
     @staticmethod
-    def center(a: ["Point2"]) -> "Point2":
+    def center(a: Union[Set["Point2"], List["Point2"]]) -> "Point2":
         """ Returns the central point for points in list """
         s = Point2((0, 0))
         for p in a:
