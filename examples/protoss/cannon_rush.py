@@ -1,4 +1,7 @@
+import os
 import random
+import platform
+from pathlib import Path
 
 import sc2
 from sc2 import Race, Difficulty
@@ -51,6 +54,37 @@ class CannonRushBot(sc2.BotAI):
                         break
 
 def main():
+    basedir = {
+        "Windows": "C:/Program Files (x86)/StarCraft II",
+        "Darwin": "/Applications/StarCraft II",
+        "Linux": "~/StarCraftII"
+    }
+    binpath = {
+        "Windows": "SC2_x64.exe",
+        "Darwin": "SC2.app/Contents/MacOS/SC2",
+        "Linux": "SC2_x64"
+    }
+    pf = platform.system()
+    base = Path(os.environ.get("SC2PATH", basedir[pf])).expanduser()
+    if (base / "maps").exists():
+        maps = base / "maps"
+    else:
+        maps = base / "Maps"
+    if not maps.exists():
+        maps.mkdir()
+
+    try:
+        sc2.maps.get("(2)CatalystLE")
+    except KeyError:
+        ladder2017_season4_url = 'http://blzdistsc2-a.akamaihd.net/MapPacks/Ladder2017Season4.zip'
+        maps_password = "iagreetotheeula"
+
+        os.system(
+            f'wget -O /tmp/z.$$ {ladder2017_season4_url} && '
+            f'unzip -P {maps_password} -j /tmp/z.$$ "Ladder2017Season4/CatalystLE.SC2Map" -d "{str(maps)}"'
+            f'&& mv "{str(maps)}/CatalystLE.SC2Map" "{str(maps)}/(2)CatalystLE.SC2Map"'
+        )
+
     sc2.run_game(sc2.maps.get("(2)CatalystLE"), [
         Bot(Race.Protoss, CannonRushBot()),
         Computer(Race.Protoss, Difficulty.Medium)
