@@ -195,6 +195,55 @@ class Point2(Pointlike):
             Point2((self.x + 1, self.y + 1)),
         }
 
+    def negative_offset(self, other: "Point2") -> "Point2":
+        return self.__class__((self.x - other.x, self.y - other.y))
+
+    def __add__(self, other: "Point2") -> "Point2":
+        return self.offset(other)
+
+    def __sub__(self, other: "Point2") -> "Point2":
+        return self.negative_offset(other)
+
+    def __neg__(self) -> "Point2":
+        return self.__class__(-a for a in self)
+
+    def __abs__(self) -> Union[int, float]:
+        return math.hypot(self.x, self.y)
+
+    def __bool__(self) -> bool:
+        return self.x != 0 or self.y != 0
+
+    def __mul__(self, other: Union[int, float, "Point2"]) -> "Point2":
+        if isinstance(other, self.__class__):
+            return self.__class__((self.x * other.x, self.y * other.y))
+        return self.__class__((self.x * other, self.y * other))
+
+    def __rmul__(self, other: Union[int, float, "Point2"]) -> "Point2":
+        return self.__mul__(other)
+
+    def __truediv__(self, other: Union[int, float, "Point2"]) -> "Point2":
+        if isinstance(other, self.__class__):
+            return self.__class__((self.x / other.x, self.y / other.y))
+        return self.__class__((self.x / other, self.y / other))
+
+    def is_same_as(self, other: "Point2", dist=0.1) -> bool:
+        return self._distance_squared(other) <= dist ** 2
+
+    def direction_vector(self, other: "Point2") -> "Point2":
+        """ Converts a vector to a direction that can face vertically, horizontally or diagonal or be zero, e.g. (0, 0), (1, -1), (1, 0) """
+        return self.__class__((_sign(other.x - self.x), _sign(other.y - self.y)))
+
+    def manhattan_distance(self, other: "Point2") -> Union[int, float]:
+        return abs(other.x - self.x) + abs(other.y - self.y)
+
+    @staticmethod
+    def center(a: Union[Set["Point2"], List["Point2"]]) -> "Point2":
+        """ Returns the central point for points in list """
+        s = Point2((0, 0))
+        for p in a:
+            s += p
+        return s / len(a)
+
 
 class Point3(Point2):
     @classmethod
