@@ -421,7 +421,7 @@ class Unit(object):
             AbilityId.EFFECT_REPAIR,
             AbilityId.EFFECT_REPAIR_MULE,
             AbilityId.EFFECT_REPAIR_SCV,
-        }    
+        }
     
     @property
     def order_target(self) -> Optional[Union[int, Point2]]:
@@ -505,7 +505,7 @@ class Unit(object):
 
     def repair(self, *args, **kwargs):
         return self(AbilityId.EFFECT_REPAIR, *args, **kwargs)
-
+        
     def __hash__(self):
         return hash(self.tag)
 
