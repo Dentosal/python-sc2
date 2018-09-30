@@ -70,7 +70,7 @@ class GameData(object):
 
 class AbilityData(object):
     @staticmethod
-    def id_exists(ability_id) -> bool:
+    def id_exists(ability_id: int) -> bool:
         assert isinstance(ability_id, int), f"Wrong type: {ability_id} is not int"
         return ability_id != 0 and ability_id in (a.value for a in AbilityId)
 
