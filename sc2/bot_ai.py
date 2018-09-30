@@ -81,14 +81,14 @@ class BotAI(object):
     def expansion_locations(self) -> Dict[Point2, Units]:
         """List of possible expansion locations."""
 
-        RESOURCE_SPREAD_THRESHOLD = 8.0  # Tried with Abyssal Reef LE, this was fine
+        RESOURCE_SPREAD_THRESHOLD = 81  # Tried with Abyssal Reef LE, this was fine
         resources = self.state.mineral_field | self.state.vespene_geyser
 
         # Group nearby minerals together to form expansion locations
         r_groups = []
         for mf in resources:
             for g in r_groups:
-                if any(mf.position.to2.distance_to(p.position.to2) < RESOURCE_SPREAD_THRESHOLD for p in g):
+                if any(mf.position._distance_squared(p.position) < RESOURCE_SPREAD_THRESHOLD for p in g):
                     g.append(mf)
                     break
             else:  # not found
@@ -98,21 +98,21 @@ class BotAI(object):
         r_groups = [g for g in r_groups if len(g) > 1]
 
         # distance offsets from a gas geysir
-        offsets = [(x, y) for x in range(-9, 10) for y in range(-9, 10) if 10 >= (x ** 2 + y ** 2) ** 0.5 >= 6]
+        offsets = [(x, y) for x in range(-9, 10) for y in range(-9, 10) if 100 >= x ** 2 + y ** 2 >= 36]
         centers = {}
-        # for every ressource group:
-        for ressources in r_groups:
+        # for every resource group:
+        for resources in r_groups:
             # possible expansion points
             possible_points = [
-                Point2((offset[0] + ressources[-1].position.x, offset[1] + ressources[-1].position.y))
+                Point2((offset[0] + resources[-1].position.x, offset[1] + resources[-1].position.y))
                 for offset in offsets
             ]
-            # order by distance to ressources, 7.162 magic distance number (avg ressource distance of current ladder maps)
+            # order by distance to resources, 7.162 magic distance number (avg resource distance of current ladder maps)
             possible_points.sort(
-                key=lambda p: statistics.mean([abs(p.distance_to(ressource) - 7.162) for ressource in ressources])
-            ) 
+                key=lambda p: statistics.mean([abs(p.distance_to(resource) - 7.162) for resource in resources])
+            )
             #choose best fitting point
-            centers[possible_points[0]] = ressources
+            centers[possible_points[0]] = resources
 
         
         """ Returns dict with center of resources as key, resources (mineral field, vespene geyser) as value """
