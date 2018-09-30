@@ -1,5 +1,6 @@
 import math
 import random
+import statistics
 from functools import partial
 
 import logging
@@ -88,18 +89,32 @@ class BotAI(object):
         for mf in resources:
             for g in r_groups:
                 if any(mf.position.to2.distance_to(p.position.to2) < RESOURCE_SPREAD_THRESHOLD for p in g):
-                    g.add(mf)
+                    g.append(mf)
                     break
             else:  # not found
-                r_groups.append({mf})
+                r_groups.append([mf])
 
         # Filter out bases with only one mineral field
         r_groups = [g for g in r_groups if len(g) > 1]
 
-        # Find centers
-        avg = lambda l: sum(l) / len(l)
-        pos = lambda u: u.position.to2
-        centers = {Point2(tuple(map(avg, zip(*map(pos, g))))).rounded: g for g in r_groups}
+        # distance offsets from a gas geysir
+        offsets = [(x, y) for x in range(-9, 10) for y in range(-9, 10) if 10 >= (x ** 2 + y ** 2) ** 0.5 >= 6]
+        centers = {}
+        # for every ressource group:
+        for ressources in r_groups:
+            # possible expansion points
+            possible_points = [
+                Point2((offset[0] + ressources[-1].position.x, offset[1] + ressources[-1].position.y))
+                for offset in offsets
+            ]
+            # order by distance to ressources, 7.162 magic distance number (avg ressource distance of current ladder maps)
+            possible_points.sort(
+                key=lambda p: statistics.mean([abs(p.distance_to(ressource) - 7.162) for ressource in ressources])
+            ) 
+            #choose best fitting point
+            centers[possible_points[0]] = ressources
+
+        
         """ Returns dict with center of resources as key, resources (mineral field, vespene geyser) as value """
         return centers
 
