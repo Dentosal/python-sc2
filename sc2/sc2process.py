@@ -128,7 +128,7 @@ class SC2Process:
             if self._process.poll() is None:
                 for _ in range(3):
                     self._process.terminate()
-                    time.sleep(2)
+                    time.sleep(0.5)
                     if self._process.poll() is not None:
                         break
                 else:

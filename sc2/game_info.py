@@ -168,26 +168,32 @@ class GameInfo(object):
 
 
     def _find_groups(self, points: Set[Point2], minimum_points_per_group: int=8, max_distance_between_points: int=2) -> List[Set[Point2]]:
-        """ From a set/list of points, this function will try to group points """
+        """ From a set/list of points, this function will try to group points together """
         foundGroups = []
         currentGroup = set()
+        newlyAdded = set()
         pointsPool = set(points)
 
         while pointsPool or currentGroup:
-            if len(currentGroup) == 0:
+            if not currentGroup:
                 randomPoint = pointsPool.pop()
                 currentGroup.add(randomPoint)
+                newlyAdded.add(randomPoint)
 
-            sizeChanged = False
-            for p1 in set(currentGroup): # create copy
-                for p2 in set(pointsPool): # create copy as we change set size during iteration
+            newlyAddedOld = newlyAdded
+            newlyAdded = set()
+            for p1 in newlyAddedOld:
+                # create copy as we change set size during iteration
+                for p2 in pointsPool.copy():
                     if abs(p1.x - p2.x) + abs(p1.y - p2.y) <= max_distance_between_points:
-                        sizeChanged = True
                         currentGroup.add(p2)
-                        pointsPool.remove(p2)
+                        newlyAdded.add(p2)
+                        pointsPool.discard(p2)
 
-            if not sizeChanged: # all connected points found
-                if len(currentGroup) >= minimum_points_per_group: # add to group if number of points reached threshold - discard group if not enough points
+            # Check if all connected points were found
+            if not newlyAdded:
+                # Add to group if number of points reached threshold - discard group if not enough points
+                if len(currentGroup) >= minimum_points_per_group:
                     foundGroups.append(currentGroup)
                 currentGroup = set()
         """ Returns groups of points as list
