@@ -81,24 +81,26 @@ class BotAI(object):
     def expansion_locations(self) -> Dict[Point2, Units]:
         """List of possible expansion locations."""
 
-        RESOURCE_SPREAD_THRESHOLD = 81  # Tried with Abyssal Reef LE, this was fine
+        RESOURCE_SPREAD_THRESHOLD = 100  # Tried with Abyssal Reef LE, this was fine
         resources = self.state.mineral_field | self.state.vespene_geyser
 
         # Group nearby minerals together to form expansion locations
         r_groups = []
         for mf in resources:
             for g in r_groups:
-                if any(mf.position._distance_squared(p.position) < RESOURCE_SPREAD_THRESHOLD for p in g):
+                if any(
+                    self.get_terrain_height(mf.position) == self.get_terrain_height(p.position)
+                    and mf.position._distance_squared(p.position) < RESOURCE_SPREAD_THRESHOLD
+                    for p in g
+                ):
                     g.append(mf)
                     break
             else:  # not found
                 r_groups.append([mf])
-
         # Filter out bases with only one mineral field
         r_groups = [g for g in r_groups if len(g) > 1]
-
         # distance offsets from a gas geysir
-        offsets = [(x, y) for x in range(-9, 10) for y in range(-9, 10) if 100 >= x ** 2 + y ** 2 >= 36]
+        offsets = [(x, y) for x in range(-9, 10) for y in range(-9, 10) if 75 >= x ** 2 + y ** 2 >= 49]
         centers = {}
         # for every resource group:
         for resources in r_groups:
@@ -111,10 +113,8 @@ class BotAI(object):
             possible_points.sort(
                 key=lambda p: statistics.mean([abs(p.distance_to(resource) - 7.162) for resource in resources])
             )
-            #choose best fitting point
+            # choose best fitting point
             centers[possible_points[0]] = resources
-
-        
         """ Returns dict with center of resources as key, resources (mineral field, vespene geyser) as value """
         return centers
 
