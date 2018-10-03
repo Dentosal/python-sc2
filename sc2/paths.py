@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 import platform
-
+import re
 import logging
 logger = logging.getLogger(__name__)
 
@@ -9,6 +9,12 @@ BASEDIR = {
     "Windows": "C:/Program Files (x86)/StarCraft II",
     "Darwin": "/Applications/StarCraft II",
     "Linux": "~/StarCraftII"
+}
+
+USERPATH = {
+    "Windows": "\Documents\StarCraft II\ExecuteInfo.txt",
+    "Darwin": "/Library/Application Support/Blizzard/StarCraft II/ExecuteInfo.txt",
+    "Linux": None
 }
 
 BINPATH = {
@@ -46,7 +52,19 @@ class _MetaPaths(type):
             exit(1)
 
         try:
-            self.BASE = Path(os.environ.get("SC2PATH", BASEDIR[PF])).expanduser()
+            base = os.environ.get("SC2PATH")
+            if base is None and USERPATH[PF] is not None:
+                einfo = str(Path.home().expanduser()) + USERPATH[PF]
+                if os.path.isfile(einfo):
+                    with open(einfo) as f:
+                        content = f.read()
+                    if content:
+                        base = re.search(r" = (.*)Versions", content).group(1)
+                        if not os.path.exists(base):
+                            base = None
+            if base is None:
+                base = BASEDIR[PF]
+            self.BASE = Path(base).expanduser()
             self.EXECUTABLE = latest_executeble(self.BASE / "Versions")
             self.CWD = self.BASE / CWD[PF] if CWD[PF] else None
 
