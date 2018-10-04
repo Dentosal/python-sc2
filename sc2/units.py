@@ -178,6 +178,47 @@ class Units(list):
             other = set(other)
         return self.filter(lambda unit: unit.type_id not in other)
 
+    def same_tech(self, other: Union[UnitTypeId, Set[UnitTypeId], List[UnitTypeId], Dict[UnitTypeId, Any]]) -> "Units":
+        """ Usage:
+        'self.units.same_tech(UnitTypeId.COMMANDCENTER)' or 'self.units.same_tech(UnitTypeId.ORBITALCOMMAND)'
+        returns all CommandCenter, CommandCenterFlying, OrbitalCommand, OrbitalCommandFlying, PlanetaryFortress
+        This also works with a set/list/dict parameter, e.g. 'self.units.same_tech({UnitTypeId.COMMANDCENTER, UnitTypeId.SUPPLYDEPOT})'
+        Untested: This should return the equivalents for Hatchery, WarpPrism, Observer, Overseer, SupplyDepot and others
+        """
+        if isinstance(other, UnitTypeId):
+            other = {other}
+        tech_alias_types = set(other)
+        for unitType in other:
+            tech_alias = self.game_data.units[unitType.value].tech_alias
+            if tech_alias:
+                for same in tech_alias:
+                    tech_alias_types.add(same)
+        return self.filter(lambda unit:
+                unit.type_id in tech_alias_types
+                or unit._type_data.tech_alias is not None
+                and any(same in tech_alias_types for same in unit._type_data.tech_alias))
+
+    def same_unit(self, other: Union[UnitTypeId, Set[UnitTypeId], List[UnitTypeId], Dict[UnitTypeId, Any]]) -> "Units":
+        """ Usage:
+        'self.units.same_tech(UnitTypeId.COMMANDCENTER)'
+        returns CommandCenter and CommandCenterFlying,
+        'self.units.same_tech(UnitTypeId.ORBITALCOMMAND)'
+        returns OrbitalCommand and OrbitalCommandFlying
+        This also works with a set/list/dict parameter, e.g. 'self.units.same_tech({UnitTypeId.COMMANDCENTER, UnitTypeId.SUPPLYDEPOT})'
+        Untested: This should return the equivalents for WarpPrism, Observer, Overseer, SupplyDepot and others
+        """
+        if isinstance(other, UnitTypeId):
+            other = {other}
+        unit_alias_types = set(other)
+        for unitType in other:
+            unit_alias = self.game_data.units[unitType.value].unit_alias
+            if unit_alias:
+                unit_alias_types.add(unit_alias)
+        return self.filter(lambda unit:
+                unit.type_id in unit_alias_types
+                or unit._type_data.unit_alias is not None
+                and unit._type_data.unit_alias in unit_alias_types)
+
     @property
     def center(self) -> Point2:
         """ Returns the central point of all units in this list """

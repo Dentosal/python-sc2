@@ -36,8 +36,9 @@ class Pointlike(tuple):
         """ Function used to not take the square root as the distances will stay proportionally the same. This is to speed up the sorting process. """
         return ((self[0]-p2[0])**2 + (self[1]-p2[1])**2)
 
-    def sort_by_distance(self, ps: Union["Units", List["Point2"]]):
-        """ This returns the target points sorted. You should not pass a set or dict since those are not sortable. """
+    def sort_by_distance(self, ps: Union["Units", List["Point2"]]) -> List["Point2"]:
+        """ This returns the target points sorted as list. You should not pass a set or dict since those are not sortable.
+        If you want to sort your units towards a point, use 'units.sorted_by_distance_to(point)' instead. """
         if ps and all(isinstance(p, Point2) for p in ps):
             return sorted(ps, key=lambda p: self._distance_squared(p))
         return sorted(ps, key=lambda p: self.distance_to(p))
@@ -71,7 +72,7 @@ class Pointlike(tuple):
     def furthest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union["Unit", "Pointlike"]:
         """ This function assumes the 2d distance is meant """
         assert len(ps) > 0
-        furthest_distance_squared = 0
+        furthest_distance_squared = -math.inf
         for p2 in ps:
             p2pos = p2
             if not isinstance(p2pos, Point2):
@@ -85,7 +86,7 @@ class Pointlike(tuple):
     def distance_to_furthest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union[int, float]:
         """ This function assumes the 2d distance is meant """
         assert len(ps) > 0
-        furthest_distance_squared = 0
+        furthest_distance_squared = -math.inf
         for p2 in ps:
             if not isinstance(p2, Point2):
                 p2 = p2.position
@@ -101,6 +102,7 @@ class Pointlike(tuple):
         return self.__class__(_sign(b - a) for a, b in itertools.zip_longest(self, p[:len(self)], fillvalue=0))
 
     def towards(self, p: Union["Unit", "Pointlike"], distance: Union[int, float]=1, limit: bool=False) -> "Pointlike":
+        p = p.position
         assert self != p
         d = self.distance_to(p)
         if limit:
@@ -194,6 +196,55 @@ class Point2(Pointlike):
             Point2((self.x + 1, self.y - 1)),
             Point2((self.x + 1, self.y + 1)),
         }
+
+    def negative_offset(self, other: "Point2") -> "Point2":
+        return self.__class__((self.x - other.x, self.y - other.y))
+
+    def __add__(self, other: "Point2") -> "Point2":
+        return self.offset(other)
+
+    def __sub__(self, other: "Point2") -> "Point2":
+        return self.negative_offset(other)
+
+    def __neg__(self) -> "Point2":
+        return self.__class__(-a for a in self)
+
+    def __abs__(self) -> Union[int, float]:
+        return math.hypot(self.x, self.y)
+
+    def __bool__(self) -> bool:
+        return self.x != 0 or self.y != 0
+
+    def __mul__(self, other: Union[int, float, "Point2"]) -> "Point2":
+        if isinstance(other, self.__class__):
+            return self.__class__((self.x * other.x, self.y * other.y))
+        return self.__class__((self.x * other, self.y * other))
+
+    def __rmul__(self, other: Union[int, float, "Point2"]) -> "Point2":
+        return self.__mul__(other)
+
+    def __truediv__(self, other: Union[int, float, "Point2"]) -> "Point2":
+        if isinstance(other, self.__class__):
+            return self.__class__((self.x / other.x, self.y / other.y))
+        return self.__class__((self.x / other, self.y / other))
+
+    def is_same_as(self, other: "Point2", dist=0.1) -> bool:
+        return self._distance_squared(other) <= dist ** 2
+
+    def direction_vector(self, other: "Point2") -> "Point2":
+        """ Converts a vector to a direction that can face vertically, horizontally or diagonal or be zero, e.g. (0, 0), (1, -1), (1, 0) """
+        return self.__class__((_sign(other.x - self.x), _sign(other.y - self.y)))
+
+    def manhattan_distance(self, other: "Point2") -> Union[int, float]:
+        return abs(other.x - self.x) + abs(other.y - self.y)
+
+    @staticmethod
+    def center(a: Union[Set["Point2"], List["Point2"]]) -> "Point2":
+        """ Returns the central point for points in list """
+        s = Point2((0, 0))
+        for p in a:
+            s += p
+        return s / len(a)
 
 
 class Point3(Point2):
