@@ -247,7 +247,8 @@ class BotAI(object):
 
     def can_feed(self, unit_type: UnitTypeId) -> bool:
         """ Checks if you have enough free supply to build the unit """
-        return self.supply_left >= self._game_data.units[unit_type.value]._proto.food_required
+        required = self._game_data.units[unit_type.value]._proto.food_required
+        return required == 0 or self.supply_left >= required
 
     def can_afford(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId], check_supply_cost: bool=True) -> "CanAffordWrapper":
         """Tests if the player has enough resources to build a unit or cast an ability."""
