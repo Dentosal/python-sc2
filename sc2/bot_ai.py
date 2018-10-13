@@ -151,8 +151,8 @@ class BotAI(object):
                 # already taken
                 continue
 
-            th = self.townhalls.first
-            d = await self._client.query_pathing(th.position, el)
+            startp = self._game_info.player_start_location
+            d = await self._client.query_pathing(startp, el)
             if d is None:
                 continue
 
