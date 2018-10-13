@@ -410,7 +410,10 @@ class BotAI(object):
         return await self.do(unit.build(building, p))
 
     async def do(self, action):
-        assert self.can_afford(action)
+        if not self.can_afford(action):
+            logger.warning(f"Cannot afford action {action}")
+            return ActionResult.Error
+
         r = await self._client.actions(action, game_data=self._game_data)
 
         if not r:  # success
