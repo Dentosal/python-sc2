@@ -207,10 +207,10 @@ class BotAI(object):
                 if worker_pool:
                     w = worker_pool.pop()
                     if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
-                        actions.push(w.move(g))
-                        actions.push(w.return_resource(queue=True))
+                        actions.append(w.move(g))
+                        actions.append(w.return_resource(queue=True))
                     else:
-                        actions.push(w.gather(g))
+                        actions.append(w.gather(g))
 
         for location, townhall in owned_expansions.items():
             actual = townhall.assigned_harvesters
@@ -222,11 +222,11 @@ class BotAI(object):
                     w = worker_pool.pop()
                     mf = self.state.mineral_field.closest_to(townhall)
                     if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
-                        actions.push(w.move(townhall))
-                        actions.push(w.return_resource(queue=True))
-                        actions.push(w.gather(mf, queue=True))
+                        actions.append(w.move(townhall))
+                        actions.append(w.return_resource(queue=True))
+                        actions.append(w.gather(mf, queue=True))
                     else:
-                        actions.push(w.gather(mf))
+                        actions.append(w.gather(mf))
 
         await self.do_actions(actions)
 
