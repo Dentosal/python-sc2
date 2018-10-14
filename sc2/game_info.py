@@ -6,7 +6,9 @@ import itertools
 from .position import Point2, Size, Rect
 from .pixel_map import PixelMap
 from .player import Player
-from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type checking
+from .cache import property_cache_forever
+
+from typing import List, Dict, Set, Tuple, Any, Optional, Union
 
 
 class Ramp:
@@ -49,6 +51,11 @@ class Ramp:
     @property
     def upper2_for_ramp_wall(self) -> Set[Point2]:
         """ Returns the 2 upper ramp points of the main base ramp required for the supply depot and barracks placement properties used in this file. """
+        if len(self.upper) > 2:
+            # NOTE: this was way too slow on large ramps
+            return set() # HACK: makes this work for now
+            # FIXME: please do
+
         upper2 = sorted(list(self.upper), key=lambda x: x.distance_to(self.bottom_center), reverse=True)
         while len(upper2) > 2:
             upper2.pop()
