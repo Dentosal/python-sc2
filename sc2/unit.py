@@ -15,6 +15,9 @@ class Unit(object):
         assert isinstance(game_data, GameData)
         self._proto = proto_data
         self._game_data = game_data
+        self._weapons = None
+        self._ground_weapon = None
+        self._air_weapon = None
 
     @property
     def type_id(self) -> UnitTypeId:
@@ -143,7 +146,7 @@ class Unit(object):
     @property
     def is_psionic(self) -> bool:
         return Attribute.Psionic.value in self._type_data.attributes
-        
+
     @property
     def is_mineral_field(self) -> bool:
         return self._type_data.has_minerals
@@ -228,9 +231,21 @@ class Unit(object):
         return self._proto.vespene_contents > 0
 
     @property
+    def weapons(self):
+        """Gets the weapons of the unit"""
+        if self._weapons:
+            return self._weapons
+
+        if hasattr(self._type_data._proto, "weapons"):
+            self._weapons = self._type_data._proto.weapons
+            return self._weapons
+
+        return None
+
+    @property
     def weapon_cooldown(self) -> Union[int, float]:
         """ Returns some time (more than game loops) until the unit can fire again, returns -1 for units that can't attack
-        Usage: 
+        Usage:
         if unit.weapon_cooldown == 0:
             await self.do(unit.attack(target))
         elif unit.weapon_cooldown < 0:
@@ -272,60 +287,65 @@ class Unit(object):
         return {unit.tag for unit in self._proto.passengers}
 
     @property
+    def ground_weapon(self):
+        """Gets the ground weapons of the unit"""
+        if self._ground_weapon:
+            return self._ground_weapon
+
+        if self.weapons:
+            self._ground_weapon = next((weapon for weapon in self.weapons if weapon.type in {TargetType.Ground.value, TargetType.Any.value}), None)
+            return self._ground_weapon
+
+        return None
+
+    @property
+    def air_weapon(self):
+        """Gets the air weapons of the unit"""
+        if self._air_weapon:
+            return self._air_weapon
+
+        if self.weapons:
+            self._air_weapon = next((weapon for weapon in self.weapons if weapon.type in {TargetType.Air.value, TargetType.Any.value}), None)
+            return self._air_weapon
+
+        return None
+
+    @property
     def can_attack_ground(self) -> bool:
-        if hasattr(self._type_data._proto, "weapons"):
-            weapons = self._type_data._proto.weapons
-            weapon = next((weapon for weapon in weapons if weapon.type in {TargetType.Ground.value, TargetType.Any.value}), None)
-            return weapon is not None
-        return False
-    
+        """Can the unit attack the ground"""
+        return self.ground_weapon is not None
+
     @property
     def ground_dps(self) -> Union[int, float]:
         """ Does not include upgrades """
-        if hasattr(self._type_data._proto, "weapons"):
-            weapons = self._type_data._proto.weapons
-            weapon = next((weapon for weapon in weapons if weapon.type in {TargetType.Ground.value, TargetType.Any.value}), None)            
-            if weapon:
-                return (weapon.damage * weapon.attacks) / weapon.speed
+        if self.ground_weapon:
+            return (self.ground_weapon.damage * self.ground_weapon.attacks) / self.ground_weapon.speed
         return 0
 
     @property
     def ground_range(self) -> Union[int, float]:
         """ Does not include upgrades """
-        if hasattr(self._type_data._proto, "weapons"):
-            weapons = self._type_data._proto.weapons
-            weapon = next((weapon for weapon in weapons if weapon.type in {TargetType.Ground.value, TargetType.Any.value}), None)
-            if weapon:
-                return weapon.range
+        if self.ground_weapon:
+            return self.ground_weapon.range
         return 0
 
     @property
     def can_attack_air(self) -> bool:
         """ Does not include upgrades """
-        if hasattr(self._type_data._proto, "weapons"):
-            weapons = self._type_data._proto.weapons
-            weapon = next((weapon for weapon in weapons if weapon.type in {TargetType.Air.value, TargetType.Any.value}), None)
-            return weapon is not None
-        return False
+        return self.air_weapon is not None
 
     @property
     def air_dps(self) -> Union[int, float]:
         """ Does not include upgrades """
-        if hasattr(self._type_data._proto, "weapons"):
-            weapons = self._type_data._proto.weapons
-            weapon = next((weapon for weapon in weapons if weapon.type in {TargetType.Air.value, TargetType.Any.value}), None)
-            if weapon:
-                return (weapon.damage * weapon.attacks) / weapon.speed
+        if self.air_weapon:
+            return (self.air_weapon.damage * self.air_weapon.attacks) / self.air_weapon.speed
         return 0
 
     @property
     def air_range(self) -> Union[int, float]:
         """ Does not include upgrades """
-        if hasattr(self._type_data._proto, "weapons"):
-            weapons = self._type_data._proto.weapons
-            weapon = next((weapon for weapon in weapons if weapon.type in {TargetType.Air.value, TargetType.Any.value}), None)
-            if weapon:
-                return weapon.range
+        if self.air_weapon:
+            return self.air_weapon.range
         return 0
 
     def target_in_range(self, target: "Unit", bonus_distance: Union[int, float]=0) -> bool:
@@ -364,7 +384,7 @@ class Unit(object):
     @property
     def is_selected(self) -> bool:
         return self._proto.is_selected
-    
+
     @property
     def orders(self) -> List["UnitOrder"]:
         return [UnitOrder.from_proto(o, self._game_data) for o in self._proto.orders]
@@ -422,7 +442,7 @@ class Unit(object):
             AbilityId.EFFECT_REPAIR_MULE,
             AbilityId.EFFECT_REPAIR_SCV,
         }
-    
+
     @property
     def order_target(self) -> Optional[Union[int, Point2]]:
         """ Returns the target tag (if it is a Unit) or Point2 (if it is a Position) from the first order, reutrn None if the unit is idle """
@@ -505,7 +525,7 @@ class Unit(object):
 
     def repair(self, *args, **kwargs):
         return self(AbilityId.EFFECT_REPAIR, *args, **kwargs)
-        
+
     def __hash__(self):
         return hash(self.tag)
 
