@@ -51,7 +51,7 @@ class Ramp:
     @property
     def upper2_for_ramp_wall(self) -> Set[Point2]:
         """ Returns the 2 upper ramp points of the main base ramp required for the supply depot and barracks placement properties used in this file. """
-        if len(self.upper) > 2:
+        if len(self.upper) > 5:
             # NOTE: this was way too slow on large ramps
             return set() # HACK: makes this work for now
             # FIXME: please do
