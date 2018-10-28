@@ -6,7 +6,7 @@ An easy-to-use library for writing AI Bots for StarCraft II in Python 3. The ult
 
 Documentation is in [the Wiki](https://github.com/Dentosal/python-sc2/wiki).
 
-For automaticly running multiple matches, check out [Dentosal/sc2-bot-match-runner](https://github.com/Dentosal/sc2-bot-match-runner).
+For automatically running multiple matches, check out [Dentosal/sc2-bot-match-runner](https://github.com/Dentosal/sc2-bot-match-runner).
 
 ## Installation
 
