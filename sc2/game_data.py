@@ -1,3 +1,4 @@
+from bisect import bisect_left
 from functools import lru_cache, reduce
 from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type checking
 
