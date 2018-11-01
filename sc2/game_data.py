@@ -69,10 +69,19 @@ class GameData(object):
         return Cost(0, 0)
 
 class AbilityData(object):
-    @staticmethod
-    def id_exists(ability_id: int) -> bool:
+    ability_ids: List[int] = []  # sorted list
+    for ability_id in AbilityId:  # 1000 items Enum is slow
+        ability_ids.append(ability_id.value)
+    ability_ids.remove(0)
+    ability_ids.sort()
+
+    @classmethod
+    def id_exists(cls, ability_id):
         assert isinstance(ability_id, int), f"Wrong type: {ability_id} is not int"
-        return ability_id != 0 and ability_id in (a.value for a in AbilityId)
+        if ability_id == 0:
+            return False
+        i = bisect_left(cls.ability_ids, ability_id)  # quick binary search
+        return i != len(cls.ability_ids) and cls.ability_ids[i] == ability_id
 
     def __init__(self, game_data, proto):
         self._game_data = game_data
