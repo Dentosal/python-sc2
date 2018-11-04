@@ -496,6 +496,7 @@ class BotAI(object):
         """First step extra preparations. Must not be called before _prepare_step."""
         if self.townhalls:
             self._game_info.player_start_location = self.townhalls.first.position
+        self._game_info.map_ramps = self._game_info._find_ramps()
 
     def _prepare_step(self, state):
         """Set attributes from new state before on_step."""

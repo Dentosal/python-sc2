@@ -153,7 +153,7 @@ class GameInfo(object):
         self.terrain_height: PixelMap = PixelMap(proto.start_raw.terrain_height)
         self.placement_grid: PixelMap = PixelMap(proto.start_raw.placement_grid)
         self.playable_area = Rect.from_proto(proto.start_raw.playable_area)
-        self.map_ramps: List[Ramp] = self._find_ramps()
+        self.map_ramps: List[Ramp] = None # Filled later by BotAI._prepare_first_step
         self.player_races: Dict[int, "Race"] = {p.player_id: p.race_actual or p.race_requested for p in proto.player_info}
         self.start_locations: List[Point2] = [Point2.from_proto(sl) for sl in proto.start_raw.start_locations]
         self.player_start_location: Point2 = None # Filled later by BotAI._prepare_first_step
