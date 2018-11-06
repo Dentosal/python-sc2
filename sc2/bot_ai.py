@@ -100,7 +100,7 @@ class BotAI(object):
         # Filter out bases with only one mineral field
         r_groups = [g for g in r_groups if len(g) > 1]
         # distance offsets from a gas geysir
-        offsets = [(x, y) for x in range(-9, 10) for y in range(-9, 10) if 66 >= x ** 2 + y ** 2 >= 49]
+        offsets = [(x, y) for x in range(-9, 10) for y in range(-9, 10) if 75 >= x ** 2 + y ** 2 >= 49]
         centers = {}
         # for every resource group:
         for resources in r_groups:
