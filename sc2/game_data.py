@@ -1,3 +1,4 @@
+from bisect import bisect_left
 from functools import lru_cache, reduce
 from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type checking
 
@@ -24,7 +25,8 @@ def split_camel_case(text) -> list:
 
 class GameData(object):
     def __init__(self, data):
-        self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities if AbilityData.id_exists(a.ability_id)}
+        ids = tuple(a.value for a in AbilityId if a.value != 0)
+        self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities if a.ability_id in ids}
         self.units = {u.unit_id: UnitTypeData(self, u) for u in data.units if u.available}
         self.upgrades = {u.upgrade_id: UpgradeData(self, u) for u in data.upgrades}
 
@@ -69,10 +71,19 @@ class GameData(object):
         return Cost(0, 0)
 
 class AbilityData(object):
-    @staticmethod
-    def id_exists(ability_id: int) -> bool:
+    ability_ids: List[int] = []  # sorted list
+    for ability_id in AbilityId:  # 1000 items Enum is slow
+        ability_ids.append(ability_id.value)
+    ability_ids.remove(0)
+    ability_ids.sort()
+
+    @classmethod
+    def id_exists(cls, ability_id):
         assert isinstance(ability_id, int), f"Wrong type: {ability_id} is not int"
-        return ability_id != 0 and ability_id in (a.value for a in AbilityId)
+        if ability_id == 0:
+            return False
+        i = bisect_left(cls.ability_ids, ability_id)  # quick binary search
+        return i != len(cls.ability_ids) and cls.ability_ids[i] == ability_id
 
     def __init__(self, game_data, proto):
         self._game_data = game_data

@@ -139,6 +139,11 @@ class Point2(Pointlike):
     def to3(self) -> "Point3":
         return Point3((*self, 0))
 
+    def distance2_to(self, other: "Point2"):
+        """Squared distance to a point."""
+        assert isinstance(other, Point2)
+        return (self[0] - other[0])**2 + (self[1] - other[1])**2
+
     def random_on_distance(self, distance):
         if isinstance(distance, (tuple, list)): # interval
             distance = distance[0] + random.random() * (distance[1] - distance[0])
