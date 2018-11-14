@@ -95,8 +95,8 @@ async def _play_game(player, client, realtime, portconfig, step_time_limit=None,
     logging.info(f"Result for player id: {player_id}: {result}")
     return result
 
-async def _setup_host_game(server, map_settings, players, realtime):
-    r = await server.create_game(map_settings, players, realtime)
+async def _setup_host_game(server, map_settings, players, realtime, random_seed=None):
+    r = await server.create_game(map_settings, players, realtime, random_seed)
     if r.create_game.HasField("error"):
         err = f"Could not create game: {CreateGameError(r.create_game.error)}"
         if r.create_game.HasField("error_details"):
@@ -108,7 +108,7 @@ async def _setup_host_game(server, map_settings, players, realtime):
 
 
 async def _host_game(map_settings, players, realtime, portconfig=None, save_replay_as=None, step_time_limit=None,
-                     game_time_limit=None, rgb_render_config=None):
+                     game_time_limit=None, rgb_render_config=None, random_seed=None):
     assert len(players) > 0, "Can't create a game without players"
 
     assert any(isinstance(p, (Human, Bot)) for p in players)
@@ -116,7 +116,7 @@ async def _host_game(map_settings, players, realtime, portconfig=None, save_repl
     async with SC2Process(render=rgb_render_config is not None) as server:
         await server.ping()
 
-        client = await _setup_host_game(server, map_settings, players, realtime)
+        client = await _setup_host_game(server, map_settings, players, realtime, random_seed)
 
         try:
             result = await _play_game(players[0], client, realtime, portconfig, step_time_limit, game_time_limit, rgb_render_config)
@@ -182,7 +182,7 @@ async def _join_game(players, realtime, portconfig, save_replay_as=None, step_ti
 
 def run_game(map_settings, players, **kwargs):
     if sum(isinstance(p, (Human, Bot)) for p in players) > 1:
-        host_only_args = ["save_replay_as", "rgb_render_config"]
+        host_only_args = ["save_replay_as", "rgb_render_config", "random_seed"]
         join_kwargs = {k: v for k, v in kwargs.items() if k not in host_only_args}
 
         portconfig = Portconfig()
