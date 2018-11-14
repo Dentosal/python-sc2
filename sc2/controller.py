@@ -14,7 +14,7 @@ class Controller(Protocol):
     def running(self):
         return self.__process._process is not None
 
-    async def create_game(self, game_map, players, realtime):
+    async def create_game(self, game_map, players, realtime, random_seed=None):
         assert isinstance(realtime, bool)
         req = sc_pb.RequestCreateGame(
             local_map=sc_pb.LocalMap(
@@ -22,6 +22,8 @@ class Controller(Protocol):
             ),
             realtime=realtime
         )
+        if random_seed is not None:
+            req.random_seed = random_seed
 
         for player in players:
             p = req.player_setup.add()
