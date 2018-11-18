@@ -6,29 +6,18 @@ from s2clientprotocol import (
     common_pb2 as common_pb,
     error_pb2 as error_pb
 )
-from .ids.unit_typeid import PROBE, SCV, DRONE
-from .ids.unit_typeid import NEXUS
-from .ids.unit_typeid import COMMANDCENTER, ORBITALCOMMAND, PLANETARYFORTRESS
-from .ids.unit_typeid import HATCHERY, LAIR, HIVE
-from .ids.unit_typeid import ASSIMILATOR, REFINERY, EXTRACTOR
+from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type checking
 
-from .ids.ability_id import (
-    GATEWAYTRAIN_ZEALOT,
-    GATEWAYTRAIN_STALKER,
-    GATEWAYTRAIN_HIGHTEMPLAR,
-    GATEWAYTRAIN_DARKTEMPLAR,
-    GATEWAYTRAIN_SENTRY,
-    TRAIN_ADEPT
-)
+from .ids.unit_typeid import UnitTypeId
+from .ids.ability_id import AbilityId
 
-from .ids.ability_id import (
-    WARPGATETRAIN_ZEALOT,
-    WARPGATETRAIN_STALKER,
-    WARPGATETRAIN_HIGHTEMPLAR,
-    WARPGATETRAIN_DARKTEMPLAR,
-    WARPGATETRAIN_SENTRY,
-    TRAINWARP_ADEPT
-)
+""" For the list of enums, see here
+
+https://github.com/Blizzard/s2client-api/blob/d9ba0a33d6ce9d233c2a4ee988360c188fbe9dbf/include/sc2api/sc2_gametypes.h
+https://github.com/Blizzard/s2client-api/blob/d9ba0a33d6ce9d233c2a4ee988360c188fbe9dbf/include/sc2api/sc2_action.h
+https://github.com/Blizzard/s2client-api/blob/d9ba0a33d6ce9d233c2a4ee988360c188fbe9dbf/include/sc2api/sc2_unit.h
+https://github.com/Blizzard/s2client-api/blob/d9ba0a33d6ce9d233c2a4ee988360c188fbe9dbf/include/sc2api/sc2_data.h
+"""
 
 CreateGameError = enum.Enum("CreateGameError", sc_pb.ResponseCreateGame.Error.items())
 
@@ -47,32 +36,33 @@ CloakState = enum.Enum("CloakState", raw_pb.CloakState.items())
 
 Attribute = enum.Enum("Attribute", data_pb.Attribute.items())
 TargetType = enum.Enum("TargetType", data_pb.Weapon.TargetType.items())
+Target = enum.Enum("Target", data_pb.AbilityData.Target.items())
 
 ActionResult = enum.Enum("ActionResult", error_pb.ActionResult.items())
 
-race_worker = {
-    Race.Protoss: PROBE,
-    Race.Terran: SCV,
-    Race.Zerg: DRONE
+race_worker: Dict[Race, UnitTypeId] = {
+    Race.Protoss: UnitTypeId.PROBE,
+    Race.Terran: UnitTypeId.SCV,
+    Race.Zerg: UnitTypeId.DRONE
 }
 
-race_townhalls = {
-    Race.Protoss: {NEXUS},
-    Race.Terran: {COMMANDCENTER, ORBITALCOMMAND, PLANETARYFORTRESS},
-    Race.Zerg: {HATCHERY, LAIR, HIVE}
+race_townhalls: Dict[Race, Set[UnitTypeId]] = {
+    Race.Protoss: {UnitTypeId.NEXUS},
+    Race.Terran: {UnitTypeId.COMMANDCENTER, UnitTypeId.ORBITALCOMMAND, UnitTypeId.PLANETARYFORTRESS},
+    Race.Zerg: {UnitTypeId.HATCHERY, UnitTypeId.LAIR, UnitTypeId.HIVE}
 }
 
-warpgate_abilities = {
-    GATEWAYTRAIN_ZEALOT: WARPGATETRAIN_ZEALOT,
-    GATEWAYTRAIN_STALKER: WARPGATETRAIN_STALKER,
-    GATEWAYTRAIN_HIGHTEMPLAR: WARPGATETRAIN_HIGHTEMPLAR,
-    GATEWAYTRAIN_DARKTEMPLAR: WARPGATETRAIN_DARKTEMPLAR,
-    GATEWAYTRAIN_SENTRY: WARPGATETRAIN_SENTRY,
-    TRAIN_ADEPT: TRAINWARP_ADEPT
+warpgate_abilities: Dict[AbilityId, AbilityId] = {
+    AbilityId.GATEWAYTRAIN_ZEALOT: AbilityId.WARPGATETRAIN_ZEALOT,
+    AbilityId.GATEWAYTRAIN_STALKER: AbilityId.WARPGATETRAIN_STALKER,
+    AbilityId.GATEWAYTRAIN_HIGHTEMPLAR: AbilityId.WARPGATETRAIN_HIGHTEMPLAR,
+    AbilityId.GATEWAYTRAIN_DARKTEMPLAR: AbilityId.WARPGATETRAIN_DARKTEMPLAR,
+    AbilityId.GATEWAYTRAIN_SENTRY: AbilityId.WARPGATETRAIN_SENTRY,
+    AbilityId.TRAIN_ADEPT: AbilityId.TRAINWARP_ADEPT
 }
 
-race_gas = {
-    Race.Protoss: ASSIMILATOR,
-    Race.Terran: REFINERY,
-    Race.Zerg: EXTRACTOR
+race_gas: Dict[Race, UnitTypeId] = {
+    Race.Protoss: UnitTypeId.ASSIMILATOR,
+    Race.Terran: UnitTypeId.REFINERY,
+    Race.Zerg: UnitTypeId.EXTRACTOR
 }

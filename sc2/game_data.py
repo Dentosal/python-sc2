@@ -1,3 +1,4 @@
+from bisect import bisect_left
 from functools import lru_cache, reduce
 from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type checking
 
@@ -14,7 +15,7 @@ FREE_MORPH_ABILITY_CATEGORIES = [
     "Land",  "Lift",  # Flying buildings
 ]
 
-def split_camel_case(text):
+def split_camel_case(text) -> list:
     """Splits words from CamelCase text."""
     return list(reduce(
         lambda a, b: (a + [b] if b.isupper() else a[:-1] + [a[-1] + b]),
@@ -24,12 +25,13 @@ def split_camel_case(text):
 
 class GameData(object):
     def __init__(self, data):
-        self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities if AbilityData.id_exists(a.ability_id)}
+        ids = tuple(a.value for a in AbilityId if a.value != 0)
+        self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities if a.ability_id in ids}
         self.units = {u.unit_id: UnitTypeData(self, u) for u in data.units if u.available}
         self.upgrades = {u.upgrade_id: UpgradeData(self, u) for u in data.upgrades}
 
     @lru_cache(maxsize=256)
-    def calculate_ability_cost(self, ability):
+    def calculate_ability_cost(self, ability) -> "Cost":
         if isinstance(ability, AbilityId):
             ability = self.abilities[ability.value]
         elif isinstance(ability, UnitCommand):
@@ -69,16 +71,28 @@ class GameData(object):
         return Cost(0, 0)
 
 class AbilityData(object):
-    @staticmethod
-    def id_exists(ability_id):
+    ability_ids: List[int] = []  # sorted list
+    for ability_id in AbilityId:  # 1000 items Enum is slow
+        ability_ids.append(ability_id.value)
+    ability_ids.remove(0)
+    ability_ids.sort()
+
+    @classmethod
+    def id_exists(cls, ability_id):
         assert isinstance(ability_id, int), f"Wrong type: {ability_id} is not int"
-        return ability_id != 0 and ability_id in (a.value for a in AbilityId)
+        if ability_id == 0:
+            return False
+        i = bisect_left(cls.ability_ids, ability_id)  # quick binary search
+        return i != len(cls.ability_ids) and cls.ability_ids[i] == ability_id
 
     def __init__(self, game_data, proto):
         self._game_data = game_data
         self._proto = proto
 
         assert self.id != 0
+
+    def __repr__(self) -> str:
+        return f"AbilityData(name={self._proto.button_name})"
 
     @property
     def id(self) -> AbilityId:
@@ -89,6 +103,7 @@ class AbilityData(object):
     @property
     def link_name(self) -> str:
         """ For Stimpack this returns 'BarracksTechLabResearch' """
+        # TODO: this may be wrong as it returns the same as the property below, ".button_name"
         return self._proto.button_name
 
     @property
@@ -110,16 +125,16 @@ class AbilityData(object):
         return False
 
     @property
-    def cost(self):
+    def cost(self) -> "Cost":
         return self._game_data.calculate_ability_cost(self.id)
-
-    def __repr__(self):
-        return f"AbilityData(name={self._proto.button_name})"
 
 class UnitTypeData(object):
     def __init__(self, game_data, proto):
         self._game_data = game_data
         self._proto = proto
+
+    def __repr__(self) -> str:
+        return "UnitTypeData(name={})".format(self.name)
 
     @property
     def id(self) -> UnitTypeId:
@@ -130,7 +145,7 @@ class UnitTypeData(object):
         return self._proto.name
 
     @property
-    def creation_ability(self):
+    def creation_ability(self) -> AbilityData:
         if self._proto.ability_id == 0:
             return None
         if self._proto.ability_id not in self._game_data.abilities:
@@ -138,23 +153,23 @@ class UnitTypeData(object):
         return self._game_data.abilities[self._proto.ability_id]
 
     @property
-    def attributes(self):
+    def attributes(self) -> List[Attribute]:
         return self._proto.attributes
 
-    def has_attribute(self, attr):
+    def has_attribute(self, attr) -> bool:
         assert isinstance(attr, Attribute)
         return attr in self.attributes
 
     @property
-    def has_minerals(self):
+    def has_minerals(self) -> bool:
         return self._proto.has_minerals
 
     @property
-    def has_vespene(self):
+    def has_vespene(self) -> bool:
         return self._proto.has_vespene
 
     @property
-    def cargo_size(self):
+    def cargo_size(self) -> int:
         """ How much cargo this unit uses up in cargo_space """
         return self._proto.cargo_size
 
@@ -192,7 +207,7 @@ class UnitTypeData(object):
         return UnitTypeId(self._proto.unit_alias)
 
     @property
-    def race(self):
+    def race(self) -> Race:
         return Race(self._proto.race)
 
     @property
@@ -221,7 +236,8 @@ class UnitTypeData(object):
     @property
     def morph_cost(self) -> Optional["Cost"]:
         """ This returns 150 minerals for OrbitalCommand instead of 550 """
-        if self.tech_alias is None:
+        # Fix for BARRACKSREACTOR which has tech alias [REACTOR] which has (0, 0) cost
+        if self.tech_alias is None or self.tech_alias[0] in {UnitTypeId.TECHLAB, UnitTypeId.REACTOR}:
             return None
         # Morphing a HIVE would have HATCHERY and LAIR in the tech alias - now subtract HIVE cost from LAIR cost instead of from HATCHERY cost
         tech_alias_cost_minerals = max([self._game_data.units[tech_alias.value].cost.minerals for tech_alias in self.tech_alias])
@@ -238,8 +254,11 @@ class UpgradeData(object):
         self._game_data = game_data
         self._proto = proto
 
+    def __repr__(self):
+        return "UpgradeData({} - research ability: {}, {})".format(self.name, self.research_ability, self.cost)
+
     @property
-    def name(self):
+    def name(self) -> str:
         return self._proto.name
 
     @property
@@ -251,7 +270,7 @@ class UpgradeData(object):
         return self._game_data.abilities[self._proto.ability_id]
 
     @property
-    def cost(self):
+    def cost(self) -> "Cost":
         return Cost(
             self._proto.mineral_cost,
             self._proto.vespene_cost,
@@ -264,11 +283,11 @@ class Cost(object):
         self.vespene = vespene
         self.time = time
 
-    def __eq__(self, other):
+    def __repr__(self) -> str:
+        return f"Cost({self.minerals}, {self.vespene})"
+
+    def __eq__(self, other) -> bool:
         return self.minerals == other.minerals and self.vespene == other.vespene
 
-    def __ne__(self, other):
+    def __ne__(self, other) -> bool:
         return self.minerals != other.minerals or self.vespene != other.vespene
-
-    def __repr__(self):
-        return f"Cost({self.minerals}, {self.vespene})"

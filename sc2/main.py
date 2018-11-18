@@ -36,11 +36,13 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
     while True:
         state = await client.observation()
         if client._game_result:
+            ai.on_end(client._game_result[player_id])
             return client._game_result[player_id]
 
         gs = GameState(state.observation, game_data)
 
         if game_time_limit and (gs.game_loop * 0.725 * (1 / 16)) > game_time_limit:
+            ai.on_end(Result.Tie)
             return Result.Tie
 
         ai._prepare_step(gs)
@@ -51,7 +53,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
         logger.debug(f"Running AI step, realtime={realtime}")
 
         try:
-            ai.issue_events()
+            await ai.issue_events()
             if realtime:
                 await ai.on_step(iteration)
             else:
@@ -65,12 +67,14 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
             # NOTE: this message is caught by pytest suite
             logger.exception(f"AI step threw an error") # DO NOT EDIT!
             logger.error(f"resigning due to previous error")
+            ai.on_end(Result.Defeat)
             return Result.Defeat
 
         logger.debug(f"Running AI step: done")
 
         if not realtime:
             if not client.in_game:  # Client left (resigned) the game
+                ai.on_end(client._game_result[player_id])
                 return client._game_result[player_id]
 
             await client.step()

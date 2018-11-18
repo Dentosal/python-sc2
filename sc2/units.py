@@ -92,39 +92,45 @@ class Units(list):
         else:
             return self.subgroup(random.sample(self, n))
 
-    def in_attack_range_of(self, unit: Unit) -> "Units":
+    def in_attack_range_of(self, unit: Unit, bonus_distance: Union[int, float]=0) -> "Units":
         """ Filters units that are in attack range of the unit in parameter """
-        return self.filter(lambda x: unit.target_in_range(x))
+        return self.filter(lambda x: unit.target_in_range(x, bonus_distance=bonus_distance))
 
     def closest_distance_to(self, position: Union[Unit, Point2, Point3]) -> Union[int, float]:
         """ Returns the distance between the closest unit from this group to the target unit """
         assert self.exists
         if isinstance(position, Unit):
             position = position.position
-        return min({unit.position.to2.distance_to(position.to2) for unit in self})
+        return position.distance_to_closest([u.position for u in self]) # Note: list comprehension creation is 0-5% faster than set comprehension
+
+    def furthest_distance_to(self, position: Union[Unit, Point2, Point3]) -> Union[int, float]:
+        """ Returns the distance between the furthest unit from this group to the target unit """
+        assert self.exists
+        if isinstance(position, Unit):
+            position = position.position
+        return position.distance_to_furthest([u.position for u in self])
 
     def closest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
         assert self.exists
         if isinstance(position, Unit):
             position = position.position
-        return min(self, key=lambda unit: unit.position.to2.distance_to(position.to2))
+        return position.closest(self)
 
     def furthest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
-        """ Returns the distance between the furthest unit from this group to the target unit """
         assert self.exists
         if isinstance(position, Unit):
             position = position.position
-        return max(self, key=lambda unit: unit.position.to2.distance_to(position.to2))
+        return position.furthest(self)
 
     def closer_than(self, distance: Union[int, float], position: Union[Unit, Point2, Point3]) -> "Units":
         if isinstance(position, Unit):
             position = position.position
-        return self.filter(lambda unit: unit.position.to2.distance_to(position.to2) < distance)
+        return self.filter(lambda unit: unit.position.distance_to_point2(position.to2) < distance)
 
     def further_than(self, distance: Union[int, float], position: Union[Unit, Point2, Point3]) -> "Units":
         if isinstance(position, Unit):
             position = position.position
-        return self.filter(lambda unit: unit.position.to2.distance_to(position.to2) > distance)
+        return self.filter(lambda unit: unit.position.distance_to_point2(position.to2) > distance)
 
     def subgroup(self, units):
         return Units(list(units), self.game_data)
@@ -134,6 +140,11 @@ class Units(list):
 
     def sorted(self, keyfn: callable, reverse: bool=False) -> "Units":
         return self.subgroup(sorted(self, key=keyfn, reverse=reverse))
+
+    def sorted_by_distance_to(self, position: Union[Unit, Point2], reverse: bool=False) -> "Units":
+        """ This function should be a bit faster than using units.sorted(keyfn=lambda u: u.distance_to(position)) """
+        position = position.position
+        return self.sorted(keyfn=lambda unit: unit.position._distance_squared(position), reverse=reverse)
 
     def tags_in(self, other: Union[Set[int], List[int], Dict[int, Any]]) -> "Units":
         """ Filters all units that have their tags in the 'other' set/list/dict """
@@ -166,6 +177,47 @@ class Units(list):
         if isinstance(other, list):
             other = set(other)
         return self.filter(lambda unit: unit.type_id not in other)
+
+    def same_tech(self, other: Union[UnitTypeId, Set[UnitTypeId], List[UnitTypeId], Dict[UnitTypeId, Any]]) -> "Units":
+        """ Usage:
+        'self.units.same_tech(UnitTypeId.COMMANDCENTER)' or 'self.units.same_tech(UnitTypeId.ORBITALCOMMAND)'
+        returns all CommandCenter, CommandCenterFlying, OrbitalCommand, OrbitalCommandFlying, PlanetaryFortress
+        This also works with a set/list/dict parameter, e.g. 'self.units.same_tech({UnitTypeId.COMMANDCENTER, UnitTypeId.SUPPLYDEPOT})'
+        Untested: This should return the equivalents for Hatchery, WarpPrism, Observer, Overseer, SupplyDepot and others
+        """
+        if isinstance(other, UnitTypeId):
+            other = {other}
+        tech_alias_types = set(other)
+        for unitType in other:
+            tech_alias = self.game_data.units[unitType.value].tech_alias
+            if tech_alias:
+                for same in tech_alias:
+                    tech_alias_types.add(same)
+        return self.filter(lambda unit:
+                unit.type_id in tech_alias_types
+                or unit._type_data.tech_alias is not None
+                and any(same in tech_alias_types for same in unit._type_data.tech_alias))
+
+    def same_unit(self, other: Union[UnitTypeId, Set[UnitTypeId], List[UnitTypeId], Dict[UnitTypeId, Any]]) -> "Units":
+        """ Usage:
+        'self.units.same_tech(UnitTypeId.COMMANDCENTER)'
+        returns CommandCenter and CommandCenterFlying,
+        'self.units.same_tech(UnitTypeId.ORBITALCOMMAND)'
+        returns OrbitalCommand and OrbitalCommandFlying
+        This also works with a set/list/dict parameter, e.g. 'self.units.same_tech({UnitTypeId.COMMANDCENTER, UnitTypeId.SUPPLYDEPOT})'
+        Untested: This should return the equivalents for WarpPrism, Observer, Overseer, SupplyDepot and others
+        """
+        if isinstance(other, UnitTypeId):
+            other = {other}
+        unit_alias_types = set(other)
+        for unitType in other:
+            unit_alias = self.game_data.units[unitType.value].unit_alias
+            if unit_alias:
+                unit_alias_types.add(unit_alias)
+        return self.filter(lambda unit:
+                unit.type_id in unit_alias_types
+                or unit._type_data.unit_alias is not None
+                and unit._type_data.unit_alias in unit_alias_types)
 
     @property
     def center(self) -> Point2:
@@ -226,6 +278,14 @@ class Units(list):
     @property
     def gathering(self) -> "Units":
         return self.filter(lambda unit: unit.is_gathering)
+
+    @property
+    def returning(self) -> "Units":
+        return self.filter(lambda unit: unit.is_returning)
+
+    @property
+    def collecting(self) -> "Units":
+        return self.filter(lambda unit: unit.is_collecting)
 
     @property
     def mineral_field(self) -> "Units":

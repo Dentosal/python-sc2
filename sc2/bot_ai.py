@@ -1,5 +1,6 @@
 import math
 import random
+import statistics
 from functools import partial
 
 import logging
@@ -12,7 +13,7 @@ from .game_data import GameData
 logger = logging.getLogger(__name__)
 
 from .position import Point2, Point3
-from .data import Race, ActionResult, Attribute, race_worker, race_townhalls, race_gas
+from .data import Race, ActionResult, Attribute, race_worker, race_townhalls, race_gas, Target, Result
 from .unit import Unit
 from .cache import property_cache_forever
 from .game_data import AbilityData, Cost
@@ -68,35 +69,52 @@ class BotAI(object):
     @property
     def main_base_ramp(self) -> "Ramp":
         """ Returns the Ramp instance of the closest main-ramp to start location. Look in game_info.py for more information """
-        return min(
-            {ramp for ramp in self.game_info.map_ramps if len(ramp.upper) == 2},
+        if hasattr(self, "cached_main_base_ramp"):
+            return self.cached_main_base_ramp
+        self.cached_main_base_ramp = min(
+            {ramp for ramp in self.game_info.map_ramps if len(ramp.upper2_for_ramp_wall) == 2},
             key=(lambda r: self.start_location.distance_to(r.top_center))
         )
+        return self.cached_main_base_ramp
 
     @property_cache_forever
     def expansion_locations(self) -> Dict[Point2, Units]:
         """List of possible expansion locations."""
 
-        RESOURCE_SPREAD_THRESHOLD = 8.0  # Tried with Abyssal Reef LE, this was fine
+        RESOURCE_SPREAD_THRESHOLD = 100  # Tried with Abyssal Reef LE, this was fine
         resources = self.state.mineral_field | self.state.vespene_geyser
 
         # Group nearby minerals together to form expansion locations
         r_groups = []
         for mf in resources:
             for g in r_groups:
-                if any(mf.position.to2.distance_to(p.position.to2) < RESOURCE_SPREAD_THRESHOLD for p in g):
-                    g.add(mf)
+                if any(
+                    self.get_terrain_height(mf.position) == self.get_terrain_height(p.position)
+                    and mf.position._distance_squared(p.position) < RESOURCE_SPREAD_THRESHOLD
+                    for p in g
+                ):
+                    g.append(mf)
                     break
             else:  # not found
-                r_groups.append({mf})
-
+                r_groups.append([mf])
         # Filter out bases with only one mineral field
         r_groups = [g for g in r_groups if len(g) > 1]
-
-        # Find centers
-        avg = lambda l: sum(l) / len(l)
-        pos = lambda u: u.position.to2
-        centers = {Point2(tuple(map(avg, zip(*map(pos, g))))).rounded: g for g in r_groups}
+        # distance offsets from a gas geysir
+        offsets = [(x, y) for x in range(-9, 10) for y in range(-9, 10) if 75 >= x ** 2 + y ** 2 >= 49]
+        centers = {}
+        # for every resource group:
+        for resources in r_groups:
+            # possible expansion points
+            possible_points = [
+                Point2((offset[0] + resources[-1].position.x, offset[1] + resources[-1].position.y))
+                for offset in offsets
+            ]
+            # order by distance to resources, 7.162 magic distance number (avg resource distance of current ladder maps)
+            possible_points.sort(
+                key=lambda p: statistics.mean([abs(p.distance_to(resource) - 7.162) for resource in resources if resource in self.state.mineral_field])
+            )
+            # choose best fitting point
+            centers[possible_points[0]] = resources
         """ Returns dict with center of resources as key, resources (mineral field, vespene geyser) as value """
         return centers
 
@@ -109,12 +127,9 @@ class BotAI(object):
         """Takes new expansion."""
 
         if not building:
-            if self.race == Race.Protoss:
-                building = UnitTypeId.NEXUS
-            elif self.race == Race.Terran:
-                building = UnitTypeId.COMMANDCENTER
-            elif self.race == Race.Zerg:
-                building = UnitTypeId.HATCHERY
+            # self.race is never Race.Random
+            start_townhall_type = {Race.Protoss: UnitTypeId.NEXUS, Race.Terran: UnitTypeId.COMMANDCENTER, Race.Zerg: UnitTypeId.HATCHERY}
+            building = start_townhall_type[self.race]
 
         assert isinstance(building, UnitTypeId)
 
@@ -136,8 +151,8 @@ class BotAI(object):
                 # already taken
                 continue
 
-            th = self.townhalls.first
-            d = await self._client.query_pathing(th.position, el)
+            startp = self._game_info.player_start_location
+            d = await self._client.query_pathing(startp, el)
             if d is None:
                 continue
 
@@ -160,9 +175,11 @@ class BotAI(object):
         expansion_locations = self.expansion_locations
         owned_expansions = self.owned_expansions
         worker_pool = []
+        actions = []
+
         for idle_worker in self.workers.idle:
             mf = self.state.mineral_field.closest_to(idle_worker)
-            await self.do(idle_worker.gather(mf))
+            actions.append(idle_worker.gather(mf))
 
         for location, townhall in owned_expansions.items():
             workers = self.workers.closer_than(20, location)
@@ -190,10 +207,10 @@ class BotAI(object):
                 if worker_pool:
                     w = worker_pool.pop()
                     if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
-                        await self.do(w.move(g))
-                        await self.do(w.return_resource(queue=True))
+                        actions.append(w.move(g))
+                        actions.append(w.return_resource(queue=True))
                     else:
-                        await self.do(w.gather(g))
+                        actions.append(w.gather(g))
 
         for location, townhall in owned_expansions.items():
             actual = townhall.assigned_harvesters
@@ -205,11 +222,13 @@ class BotAI(object):
                     w = worker_pool.pop()
                     mf = self.state.mineral_field.closest_to(townhall)
                     if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
-                        await self.do(w.move(townhall))
-                        await self.do(w.return_resource(queue=True))
-                        await self.do(w.gather(mf, queue=True))
+                        actions.append(w.move(townhall))
+                        actions.append(w.return_resource(queue=True))
+                        actions.append(w.gather(mf, queue=True))
                     else:
-                        await self.do(w.gather(mf))
+                        actions.append(w.gather(mf))
+
+        await self.do_actions(actions)
 
     @property
     def owned_expansions(self):
@@ -228,7 +247,8 @@ class BotAI(object):
 
     def can_feed(self, unit_type: UnitTypeId) -> bool:
         """ Checks if you have enough free supply to build the unit """
-        return self.supply_left >= self._game_data.units[unit_type.value]._proto.food_required
+        required = self._game_data.units[unit_type.value]._proto.food_required
+        return required == 0 or self.supply_left >= required
 
     def can_afford(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId], check_supply_cost: bool=True) -> "CanAffordWrapper":
         """Tests if the player has enough resources to build a unit or cast an ability."""
@@ -262,12 +282,14 @@ class BotAI(object):
                 return True
             cast_range = self._game_data.abilities[ability_id.value]._proto.cast_range
             ability_target = self._game_data.abilities[ability_id.value]._proto.target
-            # check if target is in range (or is a self cast like stimpack)
-            if ability_target == 1 or ability_target == 5 and isinstance(target, (Point2, Point3)) and unit.distance_to(target) <= cast_range: # TODO: replace numbers with enums
+            # Check if target is in range (or is a self cast like stimpack)
+            if ability_target == 1 or ability_target == Target.PointOrNone.value and isinstance(target, (Point2, Point3)) and unit.distance_to(target) <= cast_range: # cant replace 1 with "Target.None.value" because ".None" doesnt seem to be a valid enum name
                 return True
-            elif ability_target in [3, 4] and isinstance(target, Unit) and unit.distance_to(target) <= cast_range:
+            # Check if able to use ability on a unit
+            elif ability_target in {Target.Unit.value, Target.PointOrUnit.value} and isinstance(target, Unit) and unit.distance_to(target) <= cast_range:
                 return True
-            elif ability_target in [2, 4] and isinstance(target, (Point2, Point3)) and unit.distance_to(target) <= cast_range:
+            # Check if able to use ability on a position
+            elif ability_target in {Target.Point.value, Target.PointOrUnit.value} and isinstance(target, (Point2, Point3)) and unit.distance_to(target) <= cast_range:
                 return True
         return False
 
@@ -393,7 +415,10 @@ class BotAI(object):
         return await self.do(unit.build(building, p))
 
     async def do(self, action):
-        assert self.can_afford(action)
+        if not self.can_afford(action):
+            logger.warning(f"Cannot afford action {action}")
+            return ActionResult.Error
+
         r = await self._client.actions(action, game_data=self._game_data)
 
         if not r:  # success
@@ -407,6 +432,8 @@ class BotAI(object):
         return r
 
     async def do_actions(self, actions: List["UnitCommand"]):
+        if not actions:
+            return None
         for action in actions:
             cost = self._game_data.calculate_ability_cost(action.ability)
             self.minerals -= cost.minerals
@@ -417,9 +444,42 @@ class BotAI(object):
 
     async def chat_send(self, message: str):
         """Send a chat message."""
-
         assert isinstance(message, str)
         await self._client.chat_send(message, False)
+
+    # For the functions below, make sure you are inside the boundries of the map size.
+    def get_terrain_height(self, pos: Union[Point2, Point3, Unit]) -> int:
+        """ Returns terrain height at a position. Caution: terrain height is not anywhere near a unit's z-coordinate. """
+        assert isinstance(pos, (Point2, Point3, Unit))
+        pos = pos.position.to2.rounded
+        return self._game_info.terrain_height[pos] # returns int
+
+    def in_placement_grid(self, pos: Union[Point2, Point3, Unit]) -> bool:
+        """ Returns True if you can place something at a position. Remember, buildings usually use 2x2, 3x3 or 5x5 of these grid points.
+        Caution: some x and y offset might be required, see ramp code:
+        https://github.com/Dentosal/python-sc2/blob/master/sc2/game_info.py#L17-L18 """
+        assert isinstance(pos, (Point2, Point3, Unit))
+        pos = pos.position.to2.rounded
+        return self._game_info.placement_grid[pos] != 0
+
+    def in_pathing_grid(self, pos: Union[Point2, Point3, Unit]) -> bool:
+        """ Returns True if a unit can pass through a grid point. """
+        assert isinstance(pos, (Point2, Point3, Unit))
+        pos = pos.position.to2.rounded
+        return self._game_info.pathing_grid[pos] == 0
+
+    def is_visible(self, pos: Union[Point2, Point3, Unit]) -> bool:
+        """ Returns True if you have vision on a grid point. """
+        # more info: https://github.com/Blizzard/s2client-proto/blob/9906df71d6909511907d8419b33acc1a3bd51ec0/s2clientprotocol/spatial.proto#L19
+        assert isinstance(pos, (Point2, Point3, Unit))
+        pos = pos.position.to2.rounded
+        return self.state.visibility[pos] == 2
+
+    def has_creep(self, pos: Union[Point2, Point3, Unit]) -> bool:
+        """ Returns True if there is creep on the grid point. """
+        assert isinstance(pos, (Point2, Point3, Unit))
+        pos = pos.position.to2.rounded
+        return self.state.creep[pos] != 0
 
     def _prepare_start(self, client, player_id, game_info, game_data):
         """Ran until game start to set game and player data."""
@@ -429,18 +489,19 @@ class BotAI(object):
 
         self.player_id: int = player_id
         self.race: Race = Race(self._game_info.player_races[self.player_id])
-        self._units_previous_map = dict()
+        self._units_previous_map: dict = dict()
         self.units: Units = Units([], game_data)
 
     def _prepare_first_step(self):
         """First step extra preparations. Must not be called before _prepare_step."""
-        assert len(self.townhalls) == 1
-        self._game_info.player_start_location = self.townhalls.first.position
+        if self.townhalls:
+            self._game_info.player_start_location = self.townhalls.first.position
+        self._game_info.map_ramps = self._game_info._find_ramps()
 
     def _prepare_step(self, state):
         """Set attributes from new state before on_step."""
         self.state: GameState = state
-        # need this for checking for new units
+        # Required for events
         self._units_previous_map.clear()
         for unit in self.units:
             self._units_previous_map[unit.tag] = unit
@@ -456,52 +517,60 @@ class BotAI(object):
         self.supply_cap: Union[float, int] = state.common.food_cap
         self.supply_left: Union[float, int] = self.supply_cap - self.supply_used
 
-    def issue_events(self):
-        self._issue_unit_dead_events()
-        self._issue_unit_added_events()
+    async def issue_events(self):
+        """ This function will be automatically run from main.py and triggers the following functions:
+        - on_unit_created
+        - on_unit_destroyed
+        - on_building_construction_complete
+        """
+        await self._issue_unit_dead_events()
+        await self._issue_unit_added_events()
         for unit in self.units:
-            self._issue_building_complete_event(unit)
+            await self._issue_building_complete_event(unit)
 
-    def _issue_unit_added_events(self):
+    async def _issue_unit_added_events(self):
         for unit in self.units:
             if unit.tag not in self._units_previous_map:
-                self.on_unit_created(unit)
+                await self.on_unit_created(unit)
 
-    def _issue_building_complete_event(self, unit):
+    async def _issue_building_complete_event(self, unit):
         if unit.build_progress < 1:
             return
         if unit.tag not in self._units_previous_map:
             return
         unit_prev = self._units_previous_map[unit.tag]
         if unit_prev.build_progress < 1:
-            self.on_building_construction_complete(unit)
+            await self.on_building_construction_complete(unit)
 
-    def _issue_unit_dead_events(self):
+    async def _issue_unit_dead_events(self):
         event = self.state.observation.raw_data.event
         if event is not None:
             for tag in event.dead_units:
-                self.on_unit_destroyed(tag)
+                await self.on_unit_destroyed(tag)
+
+    async def on_unit_destroyed(self, unit_tag):
+        """ Override this in your bot class. """
+        pass
+
+    async def on_unit_created(self, unit: Unit):
+        """ Override this in your bot class. """
+        pass
+
+    async def on_building_construction_complete(self, unit: Unit):
+        """ Override this in your bot class. """
+        pass
 
     def on_start(self):
         """Allows initializing the bot when the game data is available."""
         pass
 
-    async def on_step(self, iteration):
+    async def on_step(self, iteration: int):
         """Ran on every game step (looped in realtime mode)."""
         raise NotImplementedError
 
-    def on_unit_destroyed(self, unit_tag):
-        """ Override this in your bot class """
+    def on_end(self, game_result: Result):
+        """Ran at the end of a game."""
         pass
-
-    def on_unit_created(self, unit):
-        """ Override this in your bot class """
-        pass
-
-    def on_building_construction_complete(self, unit):
-        """ Override this in your bot class """
-        pass
-
 
 class CanAffordWrapper(object):
     def __init__(self, can_afford_minerals, can_afford_vespene, have_enough_supply):
