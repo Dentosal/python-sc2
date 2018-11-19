@@ -332,7 +332,7 @@ class Unit(object):
         """ Includes the target's radius when calculating distance to target """
         if self.can_attack_ground and not target.is_flying:
             unit_attack_range = self.ground_range
-        elif self.can_attack_air and target.is_flying:
+        elif self.can_attack_air and target.is_flying or target.type_id == UnitTypeId.COLOSSUS:
             unit_attack_range = self.air_range
         else:
             unit_attack_range = -1
