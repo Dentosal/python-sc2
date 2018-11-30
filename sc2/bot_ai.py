@@ -111,7 +111,7 @@ class BotAI(object):
             ]
             # order by distance to resources, 7.162 magic distance number (avg resource distance of current ladder maps)
             possible_points.sort(
-                key=lambda p: statistics.mean([abs(p.distance_to(resource) - 7.162) for resource in resources])
+                key=lambda p: statistics.mean([abs(p.distance_to(resource) - 7.162) for resource in resources if resource in self.state.mineral_field])
             )
             # choose best fitting point
             centers[possible_points[0]] = resources
