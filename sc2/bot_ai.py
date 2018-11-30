@@ -111,7 +111,7 @@ class BotAI(object):
             ]
             # order by distance to resources, 7.162 magic distance number (avg resource distance of current ladder maps)
             possible_points.sort(
-                key=lambda p: statistics.mean([abs(p.distance_to(resource) - 7.162) for resource in resources])
+                key=lambda p: statistics.mean([abs(p.distance_to(resource) - 7.162) for resource in resources if resource in self.state.mineral_field])
             )
             # choose best fitting point
             centers[possible_points[0]] = resources
@@ -496,6 +496,7 @@ class BotAI(object):
         """First step extra preparations. Must not be called before _prepare_step."""
         if self.townhalls:
             self._game_info.player_start_location = self.townhalls.first.position
+        self._game_info.map_ramps = self._game_info._find_ramps()
 
     def _prepare_step(self, state):
         """Set attributes from new state before on_step."""
