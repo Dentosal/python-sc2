@@ -10,6 +10,7 @@ class WarpGateBot(sc2.BotAI):
     def __init__(self):
         self.warpgate_started = False
         self.proxy_built = False
+        self.actions = []
 
     def select_target(self, state):
         return self.enemy_start_locations[0]
@@ -25,15 +26,17 @@ class WarpGateBot(sc2.BotAI):
                     #return ActionResult.CantFindPlacementLocation
                     print("can't place")
                     return
-                await self.do(warpgate.warp_in(STALKER, placement))
+                self.actions.append(warpgate.warp_in(STALKER, placement))
 
 
     async def on_step(self, iteration):
+        self.actions = []
         await self.distribute_workers()
 
         if not self.units(NEXUS).ready.exists:
             for worker in self.workers:
-                await self.do(worker.attack(self.enemy_start_locations[0]))
+                self.actions.append(worker.attack(self.enemy_start_locations[0]))
+            await self.do_actions(self.actions)
             return
         else:
             nexus = self.units(NEXUS).ready.random
@@ -41,11 +44,12 @@ class WarpGateBot(sc2.BotAI):
         if self.supply_left < 2 and not self.already_pending(PYLON):
             if self.can_afford(PYLON):
                 await self.build(PYLON, near=nexus)
+            await self.do_actions(self.actions)
             return
 
         if self.workers.amount < self.units(NEXUS).amount*22 and nexus.noqueue:
             if self.can_afford(PROBE):
-                await self.do(nexus.train(PROBE))
+                self.actions.append(nexus.train(PROBE))
 
         elif self.units(PYLON).amount < 5 and not self.already_pending(PYLON):
             if self.can_afford(PYLON):
@@ -73,24 +77,24 @@ class WarpGateBot(sc2.BotAI):
                     break
 
                 if not self.units(ASSIMILATOR).closer_than(1.0, vg).exists:
-                    await self.do(worker.build(ASSIMILATOR, vg))
+                    self.actions.append(worker.build(ASSIMILATOR, vg))
 
         if self.units(CYBERNETICSCORE).ready.exists and self.can_afford(RESEARCH_WARPGATE) and not self.warpgate_started:
             ccore = self.units(CYBERNETICSCORE).ready.first
-            await self.do(ccore(RESEARCH_WARPGATE))
+            self.actions.append(ccore(RESEARCH_WARPGATE))
             self.warpgate_started = True
 
         for gateway in self.units(GATEWAY).ready:
             abilities = await self.get_available_abilities(gateway)
             if AbilityId.MORPH_WARPGATE in abilities and self.can_afford(AbilityId.MORPH_WARPGATE):
-                await self.do(gateway(MORPH_WARPGATE))
+                self.actions.append(gateway(MORPH_WARPGATE))
 
         if self.proxy_built:
             await self.warp_new_units(proxy)
 
         if self.units(STALKER).amount > 3:
             for vr in self.units(STALKER).ready.idle:
-                await self.do(vr.attack(self.select_target(self.state)))
+                self.actions.append(vr.attack(self.select_target(self.state)))
 
         if self.units(CYBERNETICSCORE).amount >= 1 and not self.proxy_built and self.can_afford(PYLON):
             p = self.game_info.map_center.towards(self.enemy_start_locations[0], 20)
@@ -101,13 +105,15 @@ class WarpGateBot(sc2.BotAI):
             if not nexus.has_buff(BuffId.CHRONOBOOSTENERGYCOST):
                 abilities = await self.get_available_abilities(nexus)
                 if AbilityId.EFFECT_CHRONOBOOSTENERGYCOST in abilities:
-                    await self.do(nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, nexus))
+                    self.actions.append(nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, nexus))
         else:
             ccore = self.units(CYBERNETICSCORE).ready.first
             if not ccore.has_buff(BuffId.CHRONOBOOSTENERGYCOST):
                 abilities = await self.get_available_abilities(nexus)
                 if AbilityId.EFFECT_CHRONOBOOSTENERGYCOST in abilities:
-                    await self.do(nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, ccore))
+                    self.actions.append(nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, ccore))
+
+        await self.do_actions(self.actions)
 
 
 def main():
