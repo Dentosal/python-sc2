@@ -20,24 +20,28 @@ class Hydralisk(sc2.BotAI):
     async def on_step(self, iteration):
         larvae = self.units(LARVA)
         forces = self.units(ZERGLING) | self.units(HYDRALISK)
+        actions = []
 
         if self.units(HYDRALISK).amount > 10 and iteration % 50 == 0:
             for unit in forces.idle:
-                await self.do(unit.attack(self.select_target()))
+                actions.append(unit.attack(self.select_target()))
 
         if self.supply_left < 2:
             if self.can_afford(OVERLORD) and larvae.exists:
-                await self.do(larvae.random.train(OVERLORD))
+                actions.append(larvae.random.train(OVERLORD))
+                await self.do_actions(actions)
                 return
 
         if self.units(HYDRALISKDEN).ready.exists:
             if self.can_afford(HYDRALISK) and larvae.exists:
-                await self.do(larvae.random.train(HYDRALISK))
+                actions.append(larvae.random.train(HYDRALISK))
+                await self.do_actions(actions)
                 return
 
         if not self.townhalls.exists:
             for unit in self.units(DRONE) | self.units(QUEEN) | forces:
-                await self.do(unit.attack(self.enemy_start_locations[0]))
+                actions.append(unit.attack(self.enemy_start_locations[0]))
+            await self.do_actions(actions)
             return
         else:
             hq = self.townhalls.first
@@ -45,7 +49,7 @@ class Hydralisk(sc2.BotAI):
         for queen in self.units(QUEEN).idle:
             abilities = await self.get_available_abilities(queen)
             if AbilityId.EFFECT_INJECTLARVA in abilities:
-                await self.do(queen(EFFECT_INJECTLARVA, hq))
+                actions.append(queen(EFFECT_INJECTLARVA, hq))
 
         if not (self.units(SPAWNINGPOOL).exists or self.already_pending(SPAWNINGPOOL)):
             if self.can_afford(SPAWNINGPOOL):
@@ -54,7 +58,7 @@ class Hydralisk(sc2.BotAI):
         if self.units(SPAWNINGPOOL).ready.exists:
             if not self.units(LAIR).exists and hq.noqueue:
                 if self.can_afford(LAIR):
-                    await self.do(hq.build(LAIR))
+                    actions.append(hq.build(LAIR))
 
         if self.units(LAIR).ready.exists:
             if not (self.units(HYDRALISKDEN).exists or self.already_pending(HYDRALISKDEN)):
@@ -65,28 +69,31 @@ class Hydralisk(sc2.BotAI):
             if self.can_afford(EXTRACTOR):
                 drone = self.workers.random
                 target = self.state.vespene_geyser.closest_to(drone.position)
-                err = await self.do(drone.build(EXTRACTOR, target))
+                err = actions.append(drone.build(EXTRACTOR, target))
 
         if hq.assigned_harvesters < hq.ideal_harvesters:
             if self.can_afford(DRONE) and larvae.exists:
                 larva = larvae.random
-                await self.do(larva.train(DRONE))
+                actions.append(larva.train(DRONE))
+                await self.do_actions(actions)
                 return
 
         for a in self.units(EXTRACTOR):
             if a.assigned_harvesters < a.ideal_harvesters:
                 w = self.workers.closer_than(20, a)
                 if w.exists:
-                    await self.do(w.random.gather(a))
+                    actions.append(w.random.gather(a))
 
         if self.units(SPAWNINGPOOL).ready.exists:
             if not self.units(QUEEN).exists and hq.is_ready and hq.noqueue:
                 if self.can_afford(QUEEN):
-                    await self.do(hq.train(QUEEN))
+                    actions.append(hq.train(QUEEN))
 
         if self.units(ZERGLING).amount < 20 and self.minerals > 1000:
             if larvae.exists and self.can_afford(ZERGLING):
-                await self.do(larvae.random.train(ZERGLING))
+                actions.append(larvae.random.train(ZERGLING))
+
+        await self.do_actions(actions)
 
 def main():
     sc2.run_game(sc2.maps.get("(2)CatalystLE"), [
