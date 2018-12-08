@@ -530,7 +530,7 @@ class BotAI(object):
         """
         await self._issue_unit_dead_events()
         await self._issue_unit_added_events()
-        for unit in self.units:
+        for unit in self.units.structure:
             await self._issue_building_complete_event(unit)
 
     async def _issue_unit_added_events(self):
