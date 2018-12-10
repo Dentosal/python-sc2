@@ -81,7 +81,7 @@ class BotAI(object):
     def expansion_locations(self) -> Dict[Point2, Units]:
         """List of possible expansion locations."""
 
-        RESOURCE_SPREAD_THRESHOLD = 100  # Tried with Abyssal Reef LE, this was fine
+        RESOURCE_SPREAD_THRESHOLD = 144  # Tried with Abyssal Reef LE, this was fine
         resources = self.state.mineral_field | self.state.vespene_geyser
 
         # Group nearby minerals together to form expansion locations
@@ -105,13 +105,24 @@ class BotAI(object):
         # for every resource group:
         for resources in r_groups:
             # possible expansion points
-            possible_points = [
+            # resources[-1] is a gas geysir which always has x.5, y.5 coordinates, just like an expansion
+            possible_points = (
                 Point2((offset[0] + resources[-1].position.x, offset[1] + resources[-1].position.y))
                 for offset in offsets
+            )
+            # filter out points that are too near
+            possible_points = [
+                point for point in possible_points if all(point.distance_to(resource) >= 6 for resource in resources)
             ]
-            # order by distance to resources, 7.162 magic distance number (avg resource distance of current ladder maps)
+            # order by distance to resources, 7.2 magic distance number (avg resource distance of current ladder maps)
             possible_points.sort(
-                key=lambda p: statistics.mean([abs(p.distance_to(resource) - 7.162) for resource in resources if resource in self.state.mineral_field])
+                key=lambda p: statistics.mean(
+                    [
+                        abs(p.distance_to(resource) - 7.2)
+                        for resource in resources
+                        if resource in self.state.mineral_field
+                    ]
+                )
             )
             # choose best fitting point
             centers[possible_points[0]] = resources
@@ -206,7 +217,7 @@ class BotAI(object):
             for x in range(0, deficit):
                 if worker_pool:
                     w = worker_pool.pop()
-                    if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
+                    if len(w.orders) == 1 and w.orders[0].ability.id is AbilityId.HARVEST_RETURN:
                         actions.append(w.move(g))
                         actions.append(w.return_resource(queue=True))
                     else:
@@ -221,7 +232,7 @@ class BotAI(object):
                 if worker_pool:
                     w = worker_pool.pop()
                     mf = self.state.mineral_field.closest_to(townhall)
-                    if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
+                    if len(w.orders) == 1 and w.orders[0].ability.id is AbilityId.HARVEST_RETURN:
                         actions.append(w.move(townhall))
                         actions.append(w.return_resource(queue=True))
                         actions.append(w.gather(mf, queue=True))
@@ -298,9 +309,9 @@ class BotAI(object):
 
         workers = self.workers.closer_than(20, pos) or self.workers
         for worker in workers.prefer_close_to(pos).prefer_idle:
-            if not worker.orders or len(worker.orders) == 1 and worker.orders[0].ability.id in [AbilityId.MOVE,
+            if not worker.orders or len(worker.orders) == 1 and worker.orders[0].ability.id in {AbilityId.MOVE,
                                                                                                 AbilityId.HARVEST_GATHER,
-                                                                                                AbilityId.HARVEST_RETURN]:
+                                                                                                AbilityId.HARVEST_RETURN}:
                 return worker
 
         return workers.random if force else None
