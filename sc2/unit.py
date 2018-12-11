@@ -371,30 +371,30 @@ class Unit(object):
 
     @property
     def noqueue(self) -> bool:
-        return len(self.orders) == 0
+        return not self.orders
 
     @property
     def is_moving(self) -> bool:
-        return len(self.orders) > 0 and self.orders[0].ability.id in [AbilityId.MOVE]
+        return self.orders and self.orders[0].ability.id is AbilityId.MOVE
 
     @property
     def is_attacking(self) -> bool:
-        return len(self.orders) > 0 and self.orders[0].ability.id in [AbilityId.ATTACK, AbilityId.ATTACK_ATTACK, AbilityId.ATTACK_ATTACKTOWARDS, AbilityId.ATTACK_ATTACKBARRAGE, AbilityId.SCAN_MOVE]
+        return self.orders and self.orders[0].ability.id in {AbilityId.ATTACK, AbilityId.ATTACK_ATTACK, AbilityId.ATTACK_ATTACKTOWARDS, AbilityId.ATTACK_ATTACKBARRAGE, AbilityId.SCAN_MOVE}
 
     @property
     def is_gathering(self) -> bool:
         """ Checks if a unit is on its way to a mineral field / vespene geyser to mine. """
-        return len(self.orders) > 0 and self.orders[0].ability.id in {AbilityId.HARVEST_GATHER}
+        return self.orders and self.orders[0].ability.id is AbilityId.HARVEST_GATHER
 
     @property
     def is_returning(self) -> bool:
         """ Checks if a unit is returning from mineral field / vespene geyser to deliver resources to townhall. """
-        return len(self.orders) > 0 and self.orders[0].ability.id in {AbilityId.HARVEST_RETURN}
+        return self.orders and self.orders[0].ability.id is AbilityId.HARVEST_RETURN
 
     @property
     def is_collecting(self) -> bool:
         """ Combines the two properties above. """
-        return len(self.orders) > 0 and self.orders[0].ability.id in {AbilityId.HARVEST_GATHER, AbilityId.HARVEST_RETURN}
+        return self.orders and self.orders[0].ability.id in {AbilityId.HARVEST_GATHER, AbilityId.HARVEST_RETURN}
 
     @property
     def is_constructing_scv(self) -> bool:
@@ -417,7 +417,7 @@ class Unit(object):
 
     @property
     def is_repairing(self) -> bool:
-        return len(self.orders) > 0 and self.orders[0].ability.id in {
+        return self.orders and self.orders[0].ability.id in {
             AbilityId.EFFECT_REPAIR,
             AbilityId.EFFECT_REPAIR_MULE,
             AbilityId.EFFECT_REPAIR_SCV,
@@ -426,7 +426,7 @@ class Unit(object):
     @property
     def order_target(self) -> Optional[Union[int, Point2]]:
         """ Returns the target tag (if it is a Unit) or Point2 (if it is a Position) from the first order, reutrn None if the unit is idle """
-        if len(self.orders) > 0:
+        if self.orders:
             if isinstance(self.orders[0].target, int):
                 return self.orders[0].target
             else:
@@ -496,6 +496,9 @@ class Unit(object):
 
     def move(self, *args, **kwargs):
         return self(AbilityId.MOVE, *args, **kwargs)
+    
+    def scan_move(self, *args, **kwargs):
+        return self(AbilityId.SCAN_MOVE, *args, **kwargs)
 
     def hold_position(self, *args, **kwargs):
         return self(AbilityId.HOLDPOSITION, *args, **kwargs)
