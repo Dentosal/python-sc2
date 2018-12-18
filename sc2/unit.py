@@ -238,7 +238,7 @@ class Unit(object):
         else:
             await self.do(unit.move(retreatPosition))
         """
-        if self.can_attack_ground or self.can_attack_air:
+        if self.can_attack:
             return self._proto.weapon_cooldown
         return -1
 
