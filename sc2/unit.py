@@ -270,7 +270,14 @@ class Unit(object):
     @property
     def passengers_tags(self) -> Set[int]:
         return {unit.tag for unit in self._proto.passengers}
-
+    
+    @property
+    def can_attack(self) -> bool:
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            return bool(weapons)
+        return False
+    
     @property
     def can_attack_ground(self) -> bool:
         if hasattr(self._type_data._proto, "weapons"):
