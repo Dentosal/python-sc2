@@ -277,7 +277,7 @@ class Client(Protocol):
         if isinstance(position, Unit):
             position = position.position
         await self._execute(action=sc_pb.RequestAction(
-            action=[sc_pb.Action(
+            actions=[sc_pb.Action(
                 action_raw=raw_pb.ActionRaw(
                     camera_move=raw_pb.ActionRawCameraMove(
                         center_world_space=common_pb.Point(x=position.x, y=position.y)
