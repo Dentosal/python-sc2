@@ -292,6 +292,8 @@ class BuffId(enum.Enum):
     INFESTORENSNAREMAKEPRECURSORREHEIGHTSOURCE = 285
     NEXUSSHIELDOVERCHARGE = 286
     PARASITICBOMBDELAYTIMEDLIFE = 287
+    TRANSFUSION = 288
+
 
 for item in BuffId:
     assert not item.name in globals()
