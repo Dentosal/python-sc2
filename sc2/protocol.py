@@ -14,7 +14,7 @@ class ProtocolError(Exception):
 class ConnectionAlreadyClosed(ProtocolError):
     pass
 
-class Protocol(object):
+class Protocol:
     def __init__(self, ws):
         assert ws
         self._ws = ws

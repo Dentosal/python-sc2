@@ -49,7 +49,7 @@ class Units(list):
 
     @property
     def exists(self) -> bool:
-        return not self.empty
+        return bool(self.amount)
 
     def find_by_tag(self, tag) -> Optional[Unit]:
         for unit in self:
@@ -286,6 +286,10 @@ class Units(list):
     @property
     def collecting(self) -> "Units":
         return self.filter(lambda unit: unit.is_collecting)
+
+    @property
+    def visible(self) -> "Units":
+        return self.filter(lambda unit: unit.is_visible)
 
     @property
     def mineral_field(self) -> "Units":

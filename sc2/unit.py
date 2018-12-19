@@ -1,15 +1,18 @@
-from s2clientprotocol import sc2api_pb2 as sc_pb, raw_pb2 as raw_pb
+from typing import Any, Dict, List, Optional, Set, Tuple, Union  # mypy type checking
+
+from s2clientprotocol import raw_pb2 as raw_pb
+from s2clientprotocol import sc2api_pb2 as sc_pb
 from sc2.ids.buff_id import BuffId
 
-from .position import Point2, Point3
-from .data import Alliance, Attribute, DisplayType, warpgate_abilities, TargetType, Race, CloakState
-from .game_data import GameData
-from .ids.unit_typeid import UnitTypeId
-from .ids.ability_id import AbilityId
 from . import unit_command
-from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type checking
+from .data import Alliance, Attribute, CloakState, DisplayType, Race, TargetType, warpgate_abilities
+from .game_data import GameData
+from .ids.ability_id import AbilityId
+from .ids.unit_typeid import UnitTypeId
+from .position import Point2, Point3
 
-class Unit(object):
+
+class Unit:
     def __init__(self, proto_data, game_data):
         assert isinstance(proto_data, raw_pb.Unit)
         assert isinstance(game_data, GameData)
@@ -143,7 +146,7 @@ class Unit(object):
     @property
     def is_psionic(self) -> bool:
         return Attribute.Psionic.value in self._type_data.attributes
-        
+
     @property
     def is_mineral_field(self) -> bool:
         return self._type_data.has_minerals
@@ -225,20 +228,20 @@ class Unit(object):
     @property
     def has_vespene(self) -> bool:
         """ Checks if a geyser has any gas remaining (can't build extractors on empty geysers), useful for lategame """
-        return self._proto.vespene_contents > 0
+        return bool(self._proto.vespene_contents)
 
     @property
     def weapon_cooldown(self) -> Union[int, float]:
         """ Returns some time (more than game loops) until the unit can fire again, returns -1 for units that can't attack
-        Usage: 
-        if unit.weapon_cooldown == 0:
+        Usage:
+        if not unit.weapon_cooldown:
             await self.do(unit.attack(target))
         elif unit.weapon_cooldown < 0:
             await self.do(unit.move(closest_allied_unit_because_cant_attack))
         else:
             await self.do(unit.move(retreatPosition))
         """
-        if self.can_attack_ground or self.can_attack_air:
+        if self.can_attack:
             return self._proto.weapon_cooldown
         return -1
 
@@ -250,7 +253,7 @@ class Unit(object):
     @property
     def has_cargo(self) -> bool:
         """ If this unit has units loaded """
-        return self._proto.cargo_space_taken > 0
+        return bool(self._proto.cargo_space_taken)
 
     @property
     def cargo_used(self) -> Union[float, int]:
@@ -270,7 +273,14 @@ class Unit(object):
     @property
     def passengers_tags(self) -> Set[int]:
         return {unit.tag for unit in self._proto.passengers}
-
+    
+    @property
+    def can_attack(self) -> bool:
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            return bool(weapons)
+        return False
+    
     @property
     def can_attack_ground(self) -> bool:
         if hasattr(self._type_data._proto, "weapons"):
@@ -354,47 +364,62 @@ class Unit(object):
     @property
     def is_carrying_minerals(self) -> bool:
         """ Checks if a worker (or MULE) is carrying (gold-)minerals. """
-        return self.has_buff(BuffId.CARRYMINERALFIELDMINERALS) or self.has_buff(BuffId.CARRYHIGHYIELDMINERALFIELDMINERALS)
-
+        return any(
+            buff.value in self._proto.buff_ids
+            for buff in {BuffId.CARRYMINERALFIELDMINERALS, BuffId.CARRYHIGHYIELDMINERALFIELDMINERALS}
+        )
     @property
     def is_carrying_vespene(self) -> bool:
         """ Checks if a worker is carrying vespene. """
-        return self.has_buff(BuffId.CARRYHARVESTABLEVESPENEGEYSERGAS) or self.has_buff(BuffId.CARRYHARVESTABLEVESPENEGEYSERGASPROTOSS) or self.has_buff(BuffId.CARRYHARVESTABLEVESPENEGEYSERGASZERG)
+        return any(
+            buff.value in self._proto.buff_ids
+            for buff in {
+                BuffId.CARRYHARVESTABLEVESPENEGEYSERGAS,
+                BuffId.CARRYHARVESTABLEVESPENEGEYSERGASPROTOSS,
+                BuffId.CARRYHARVESTABLEVESPENEGEYSERGASZERG,
+            }
+        )
 
     @property
     def is_selected(self) -> bool:
         return self._proto.is_selected
-    
+
     @property
     def orders(self) -> List["UnitOrder"]:
         return [UnitOrder.from_proto(o, self._game_data) for o in self._proto.orders]
 
     @property
     def noqueue(self) -> bool:
-        return len(self.orders) == 0
+        return not self.orders
 
     @property
     def is_moving(self) -> bool:
-        return len(self.orders) > 0 and self.orders[0].ability.id in [AbilityId.MOVE]
+        return self.orders and self.orders[0].ability.id is AbilityId.MOVE
 
     @property
     def is_attacking(self) -> bool:
-        return len(self.orders) > 0 and self.orders[0].ability.id in [AbilityId.ATTACK, AbilityId.ATTACK_ATTACK, AbilityId.ATTACK_ATTACKTOWARDS, AbilityId.ATTACK_ATTACKBARRAGE, AbilityId.SCAN_MOVE]
+        return self.orders and self.orders[0].ability.id in {
+            AbilityId.ATTACK,
+            AbilityId.ATTACK_ATTACK,
+            AbilityId.ATTACK_ATTACKTOWARDS,
+            AbilityId.ATTACK_ATTACKBARRAGE,
+            AbilityId.SCAN_MOVE,
+        }
 
     @property
     def is_gathering(self) -> bool:
         """ Checks if a unit is on its way to a mineral field / vespene geyser to mine. """
-        return len(self.orders) > 0 and self.orders[0].ability.id in {AbilityId.HARVEST_GATHER}
+        return self.orders and self.orders[0].ability.id is AbilityId.HARVEST_GATHER
 
     @property
     def is_returning(self) -> bool:
         """ Checks if a unit is returning from mineral field / vespene geyser to deliver resources to townhall. """
-        return len(self.orders) > 0 and self.orders[0].ability.id in {AbilityId.HARVEST_RETURN}
+        return self.orders and self.orders[0].ability.id is AbilityId.HARVEST_RETURN
 
     @property
     def is_collecting(self) -> bool:
         """ Combines the two properties above. """
-        return len(self.orders) > 0 and self.orders[0].ability.id in {AbilityId.HARVEST_GATHER, AbilityId.HARVEST_RETURN}
+        return self.orders and self.orders[0].ability.id in {AbilityId.HARVEST_GATHER, AbilityId.HARVEST_RETURN}
 
     @property
     def is_constructing_scv(self) -> bool:
@@ -417,7 +442,7 @@ class Unit(object):
 
     @property
     def is_repairing(self) -> bool:
-        return len(self.orders) > 0 and self.orders[0].ability.id in {
+        return self.orders and self.orders[0].ability.id in {
             AbilityId.EFFECT_REPAIR,
             AbilityId.EFFECT_REPAIR_MULE,
             AbilityId.EFFECT_REPAIR_SCV,
@@ -426,7 +451,7 @@ class Unit(object):
     @property
     def order_target(self) -> Optional[Union[int, Point2]]:
         """ Returns the target tag (if it is a Unit) or Point2 (if it is a Position) from the first order, reutrn None if the unit is idle """
-        if len(self.orders) > 0:
+        if self.orders:
             if isinstance(self.orders[0].target, int):
                 return self.orders[0].target
             else:
@@ -497,6 +522,9 @@ class Unit(object):
     def move(self, *args, **kwargs):
         return self(AbilityId.MOVE, *args, **kwargs)
 
+    def scan_move(self, *args, **kwargs):
+        return self(AbilityId.SCAN_MOVE, *args, **kwargs)
+
     def hold_position(self, *args, **kwargs):
         return self(AbilityId.HOLDPOSITION, *args, **kwargs)
 
@@ -505,7 +533,7 @@ class Unit(object):
 
     def repair(self, *args, **kwargs):
         return self(AbilityId.EFFECT_REPAIR, *args, **kwargs)
-        
+
     def __hash__(self):
         return hash(self.tag)
 
@@ -516,7 +544,7 @@ class Unit(object):
         return f"Unit(name={self.name !r}, tag={self.tag})"
 
 
-class UnitOrder(object):
+class UnitOrder:
     @classmethod
     def from_proto(cls, proto, game_data):
         return cls(
@@ -536,7 +564,7 @@ class UnitOrder(object):
         return f"UnitOrder({self.ability}, {self.target}, {self.progress})"
 
 
-class PassengerUnit(object):
+class PassengerUnit:
     def __init__(self, proto_data, game_data):
         assert isinstance(game_data, GameData)
         self._proto = proto_data
@@ -597,6 +625,13 @@ class PassengerUnit(object):
     def cargo_size(self) -> Union[float, int]:
         """ How much cargo this unit uses up in cargo_space """
         return self._type_data.cargo_size
+
+    @property
+    def can_attack(self) -> bool:
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            return bool(weapons)
+        return False
 
     @property
     def can_attack_ground(self) -> bool:

@@ -1,4 +1,4 @@
-from typing import Any, Optional, List
+	from typing import Any, Optional, List
 
 import sys
 import signal
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 from .paths import Paths
 from .controller import Controller
 
-class kill_switch(object):
+class kill_switch:
     _to_kill: List[Any] = []
 
     @classmethod
@@ -50,7 +50,7 @@ class SC2Process:
     async def __aenter__(self):
         kill_switch.add(self)
 
-        def signal_handler(signal, frame):
+        def signal_handler():
             kill_switch.kill_all()
 
         signal.signal(signal.SIGINT, signal_handler)
@@ -93,7 +93,7 @@ class SC2Process:
 
     async def _connect(self):
         for i in range(60):
-            if self._process == None:
+            if self._process is None:
                 # The ._clean() was called, clearing the process
                 logger.debug("Process cleanup complete, exit")
                 sys.exit()

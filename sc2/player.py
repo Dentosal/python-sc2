@@ -1,14 +1,14 @@
 from .data import PlayerType, Race, Difficulty
 from .bot_ai import BotAI
 
-class AbstractPlayer(object):
-    def __init__(self, type, race=None, difficulty=None):
-        assert isinstance(type, PlayerType)
+class AbstractPlayer:
+    def __init__(self, p_type, race=None, difficulty=None):
+        assert isinstance(p_type, PlayerType)
 
-        if type == PlayerType.Computer:
+        if p_type == PlayerType.Computer:
             assert isinstance(difficulty, Difficulty)
 
-        elif type == PlayerType.Observer:
+        elif p_type == PlayerType.Observer:
             assert race is None
             assert difficulty is None
 
@@ -16,10 +16,10 @@ class AbstractPlayer(object):
             assert isinstance(race, Race)
             assert difficulty is None
 
-        self.type = type
+        self.type = p_type
         if race is not None:
             self.race = race
-        if type == PlayerType.Computer:
+        if p_type == PlayerType.Computer:
             self.difficulty = difficulty
 
 class Human(AbstractPlayer):

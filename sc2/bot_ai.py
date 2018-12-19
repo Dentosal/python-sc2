@@ -1,7 +1,5 @@
 import math
 import random
-import statistics
-from functools import partial
 
 import logging
 from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type checking
@@ -23,7 +21,7 @@ from .ids.upgrade_id import UpgradeId
 from .units import Units
 
 
-class BotAI(object):
+class BotAI:
     """Base class for bots."""
 
     EXPANSION_GAP_THRESHOLD = 15
@@ -81,15 +79,16 @@ class BotAI(object):
     def expansion_locations(self) -> Dict[Point2, Units]:
         """List of possible expansion locations."""
 
-        RESOURCE_SPREAD_THRESHOLD = 100  # Tried with Abyssal Reef LE, this was fine
-        resources = self.state.mineral_field | self.state.vespene_geyser
+        RESOURCE_SPREAD_THRESHOLD = 144
+        all_resources = self.state.mineral_field | self.state.vespene_geyser
 
         # Group nearby minerals together to form expansion locations
         r_groups = []
-        for mf in resources:
+        for mf in all_resources:
+            mf_height = self.get_terrain_height(mf.position)
             for g in r_groups:
                 if any(
-                    self.get_terrain_height(mf.position) == self.get_terrain_height(p.position)
+                    mf_height == self.get_terrain_height(p.position)
                     and mf.position._distance_squared(p.position) < RESOURCE_SPREAD_THRESHOLD
                     for p in g
                 ):
@@ -105,16 +104,23 @@ class BotAI(object):
         # for every resource group:
         for resources in r_groups:
             # possible expansion points
-            possible_points = [
+            # resources[-1] is a gas geysir which always has (x.5, y.5) coordinates, just like an expansion
+            possible_points = (
                 Point2((offset[0] + resources[-1].position.x, offset[1] + resources[-1].position.y))
                 for offset in offsets
-            ]
-            # order by distance to resources, 7.162 magic distance number (avg resource distance of current ladder maps)
-            possible_points.sort(
-                key=lambda p: statistics.mean([abs(p.distance_to(resource) - 7.162) for resource in resources if resource in self.state.mineral_field])
             )
+            # filter out points that are too near
+            possible_points = [
+                point
+                for point in possible_points
+                if all(
+                    point.distance_to(resource) >= (6 if resource in self.state.mineral_field else 7)
+                    for resource in resources
+                )
+            ]
             # choose best fitting point
-            centers[possible_points[0]] = resources
+            result = min(possible_points, key=lambda p: sum(p.distance_to(resource) for resource in resources))
+            centers[result] = resources
         """ Returns dict with center of resources as key, resources (mineral field, vespene geyser) as value """
         return centers
 
@@ -171,8 +177,6 @@ class BotAI(object):
         # TODO:
         # OPTIMIZE: Assign idle workers smarter
         # OPTIMIZE: Never use same worker mutltiple times
-
-        expansion_locations = self.expansion_locations
         owned_expansions = self.owned_expansions
         worker_pool = []
         actions = []
@@ -203,10 +207,10 @@ class BotAI(object):
             ideal = g.ideal_harvesters
             deficit = ideal - actual
 
-            for x in range(0, deficit):
+            for _ in range(deficit):
                 if worker_pool:
                     w = worker_pool.pop()
-                    if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
+                    if len(w.orders) == 1 and w.orders[0].ability.id is AbilityId.HARVEST_RETURN:
                         actions.append(w.move(g))
                         actions.append(w.return_resource(queue=True))
                     else:
@@ -221,7 +225,7 @@ class BotAI(object):
                 if worker_pool:
                     w = worker_pool.pop()
                     mf = self.state.mineral_field.closest_to(townhall)
-                    if len(w.orders) == 1 and w.orders[0].ability.id in [AbilityId.HARVEST_RETURN]:
+                    if len(w.orders) == 1 and w.orders[0].ability.id is AbilityId.HARVEST_RETURN:
                         actions.append(w.move(townhall))
                         actions.append(w.return_resource(queue=True))
                         actions.append(w.gather(mf, queue=True))
@@ -298,9 +302,9 @@ class BotAI(object):
 
         workers = self.workers.closer_than(20, pos) or self.workers
         for worker in workers.prefer_close_to(pos).prefer_idle:
-            if not worker.orders or len(worker.orders) == 1 and worker.orders[0].ability.id in [AbilityId.MOVE,
+            if not worker.orders or len(worker.orders) == 1 and worker.orders[0].ability.id in {AbilityId.MOVE,
                                                                                                 AbilityId.HARVEST_GATHER,
-                                                                                                AbilityId.HARVEST_RETURN]:
+                                                                                                AbilityId.HARVEST_RETURN}:
                 return worker
 
         return workers.random if force else None
@@ -363,11 +367,16 @@ class BotAI(object):
         assert isinstance(upgrade_type, UpgradeId)
         if upgrade_type in self.state.upgrades:
             return 1
+        level = None
+        if "LEVEL" in upgrade_type.name:
+            level = upgrade_type.name[-1]
         creationAbilityID = self._game_data.upgrades[upgrade_type.value].research_ability.id
-        for s in self.units.structure.ready:
-            for o in s.orders:
-                if o.ability.id == creationAbilityID:
-                    return o.progress
+        for structure in self.units.structure.ready:
+            for order in structure.orders:
+                if order.ability.id is creationAbilityID:
+                    if level and order.ability.button_name[-1] != level:
+                        return 0
+                    return order.progress
         return 0
 
     def already_pending(self, unit_type: Union[UpgradeId, UnitTypeId], all_units: bool=False) -> int:
@@ -525,11 +534,11 @@ class BotAI(object):
         """
         await self._issue_unit_dead_events()
         await self._issue_unit_added_events()
-        for unit in self.units:
+        for unit in self.units.structure:
             await self._issue_building_complete_event(unit)
 
     async def _issue_unit_added_events(self):
-        for unit in self.units:
+        for unit in self.units.not_structure:
             if unit.tag not in self._units_previous_map:
                 await self.on_unit_created(unit)
 
@@ -572,7 +581,8 @@ class BotAI(object):
         """Ran at the end of a game."""
         pass
 
-class CanAffordWrapper(object):
+
+class CanAffordWrapper:
     def __init__(self, can_afford_minerals, can_afford_vespene, have_enough_supply):
         self.can_afford_minerals = can_afford_minerals
         self.can_afford_vespene = can_afford_vespene
