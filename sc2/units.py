@@ -125,12 +125,14 @@ class Units(list):
     def closer_than(self, distance: Union[int, float], position: Union[Unit, Point2, Point3]) -> "Units":
         if isinstance(position, Unit):
             position = position.position
-        return self.filter(lambda unit: unit.position.distance_to_point2(position.to2) < distance)
+        distance_squared = distance ** 2
+        return self.filter(lambda unit: unit.position._distance_squared(position.to2) < distance_squared)
 
     def further_than(self, distance: Union[int, float], position: Union[Unit, Point2, Point3]) -> "Units":
         if isinstance(position, Unit):
             position = position.position
-        return self.filter(lambda unit: unit.position.distance_to_point2(position.to2) > distance)
+        distance_squared = distance ** 2
+        return self.filter(lambda unit: unit.position._distance_squared(position.to2) > distance_squared)
 
     def subgroup(self, units):
         return Units(list(units), self.game_data)
