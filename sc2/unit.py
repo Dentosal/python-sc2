@@ -338,7 +338,7 @@ class Unit:
                 return weapon.range
         return 0
 
-    def target_in_range(self, target: "Unit", bonus_distance: Union[int, float]=0) -> bool:
+     def target_in_range(self, target: "Unit", bonus_distance: Union[int, float] = 0) -> bool:
         """ Includes the target's radius when calculating distance to target """
         if self.can_attack_ground and not target.is_flying:
             unit_attack_range = self.ground_range
@@ -346,7 +346,8 @@ class Unit:
             unit_attack_range = self.air_range
         else:
             unit_attack_range = -1
-        return self.distance_to(target) + bonus_distance <= self.radius + target.radius + unit_attack_range
+        return self.position._distance_squared(target.position) <= (self.radius + target.radius + unit_attack_range - bonus_distance) ** 2
+
 
     @property
     def armor(self) -> Union[int, float]:
