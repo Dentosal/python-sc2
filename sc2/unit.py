@@ -522,6 +522,9 @@ class Unit:
 
     def move(self, *args, **kwargs):
         return self(AbilityId.MOVE, *args, **kwargs)
+    
+    def scan_move(self, *args, **kwargs):
+        return self(AbilityId.SCAN_MOVE, *args, **kwargs)
 
     def scan_move(self, *args, **kwargs):
         return self(AbilityId.SCAN_MOVE, *args, **kwargs)
