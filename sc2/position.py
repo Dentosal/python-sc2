@@ -7,7 +7,6 @@ from typing import List, Dict, Set, Tuple, Any, Optional, Union # for mypy type 
 FLOAT_DIGITS = 8
 EPSILON = 10 ** (-FLOAT_DIGITS)
 
-
 def _sign(num):
     if num == 0:
         return 0
