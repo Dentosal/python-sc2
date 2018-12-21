@@ -147,7 +147,7 @@ class Units(list):
 
     def sorted_by_distance_to(self, position: Union[Unit, Point2], reverse: bool=False) -> "Units":
         """ This function should be a bit faster than using units.sorted(keyfn=lambda u: u.distance_to(position)) """
-        if len(self) == 1:
+        if len(self) in [0, 1]:
             return self
         position = position.position
         return self.sorted(keyfn=lambda unit: unit.position._distance_squared(position), reverse=reverse)
