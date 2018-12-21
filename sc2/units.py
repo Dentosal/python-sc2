@@ -141,6 +141,8 @@ class Units(list):
         return self.subgroup(filter(pred, self))
 
     def sorted(self, keyfn: callable, reverse: bool=False) -> "Units":
+        if len(self) in [0, 1]:
+            return self
         return self.subgroup(sorted(self, key=keyfn, reverse=reverse))
 
     def sorted_by_distance_to(self, position: Union[Unit, Point2], reverse: bool=False) -> "Units":
@@ -308,7 +310,8 @@ class Units(list):
         return self.sorted(lambda unit: unit.is_idle, reverse=True)
 
     def prefer_close_to(self, p: Union[Unit, Point2, Point3]) -> "Units":
-        return self.sorted(lambda unit: unit.distance_to(p))
+        # TODO redundant?
+        return self.sorted_by_distance_to(p)
 
 
 class UnitSelection(Units):
