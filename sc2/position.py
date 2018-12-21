@@ -40,6 +40,8 @@ class Pointlike(tuple):
     def sort_by_distance(self, ps: Union["Units", List["Point2"]]) -> List["Point2"]:
         """ This returns the target points sorted as list. You should not pass a set or dict since those are not sortable.
         If you want to sort your units towards a point, use 'units.sorted_by_distance_to(point)' instead. """
+        if len(ps) == 1:
+            return ps[0]
         if ps and all(isinstance(p, Point2) for p in ps):
             return sorted(ps, key=lambda p: self._distance_squared(p))
         return sorted(ps, key=lambda p: self.distance_to(p))
@@ -47,6 +49,8 @@ class Pointlike(tuple):
     def closest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union["Unit", "Point2"]:
         """ This function assumes the 2d distance is meant """
         assert ps
+        if len(ps) == 1:
+            return ps[0]
         closest_distance_squared = math.inf
         for p2 in ps:
             p2pos = p2
@@ -73,6 +77,8 @@ class Pointlike(tuple):
     def furthest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union["Unit", "Pointlike"]:
         """ This function assumes the 2d distance is meant """
         assert ps
+        if len(ps) == 1:
+            return ps[0]
         furthest_distance_squared = -math.inf
         for p2 in ps:
             p2pos = p2
