@@ -100,8 +100,7 @@ class GameState:
         self.abilities = self.observation.abilities  # abilities of selected units
 
         # Fix for enemy units detected by my sensor tower, as blips have less unit information than normal visible units
-        visibleUnits = hiddenUnits, minerals, geysers = [], [], [], []
-        destructables, enemy, own = [], [], []
+        visibleUnits, hiddenUnits, minerals, geysers, destructables, enemy, own = ([] for _ in range(7))
         # TODO find a better place for these sets:
         mineral_enums = {
             UnitTypeId.RICHMINERALFIELD,
