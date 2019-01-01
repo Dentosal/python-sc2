@@ -57,12 +57,18 @@ class BotAI:
     @property
     def known_enemy_units(self) -> Units:
         """List of known enemy units, including structures."""
-        return self.state.units.enemy
+        # return self.state.enemy_units
+        if not self.cached_known_enemy_units:
+            self.cached_known_enemy_units = self.state.enemy_units
+        return self.cached_known_enemy_units
 
     @property
     def known_enemy_structures(self) -> Units:
         """List of known enemy units, structures only."""
-        return self.state.units.enemy.structure
+        # return self.state.enemy_units.structure
+        if not self.cached_known_enemy_structures:
+            self.cached_known_enemy_structures = self.state.enemy_units.structure
+        return self.cached_known_enemy_structures
 
     @property
     def main_base_ramp(self) -> "Ramp":
@@ -71,7 +77,7 @@ class BotAI:
             return self.cached_main_base_ramp
         self.cached_main_base_ramp = min(
             {ramp for ramp in self.game_info.map_ramps if len(ramp.upper2_for_ramp_wall) == 2},
-            key=(lambda r: self.start_location.distance_to(r.top_center))
+            key=(lambda r: self.start_location.distance_to(r.top_center)),
         )
         return self.cached_main_base_ramp
 
@@ -80,29 +86,34 @@ class BotAI:
         """List of possible expansion locations."""
 
         RESOURCE_SPREAD_THRESHOLD = 144
-        all_resources = self.state.mineral_field | self.state.vespene_geyser
+        minerals = self.state.mineral_field
+        geysers = self.state.vespene_geyser
+        all_resources = minerals | geysers
 
         # Group nearby minerals together to form expansion locations
-        r_groups = []
+        resource_groups = []
         for mf in all_resources:
             mf_height = self.get_terrain_height(mf.position)
-            for g in r_groups:
+            for cluster in resource_groups:
+                # bases on standard maps dont have more than 10 resources
+                if len(cluster) == 10:
+                    continue
                 if any(
-                    mf_height == self.get_terrain_height(p.position)
-                    and mf.position._distance_squared(p.position) < RESOURCE_SPREAD_THRESHOLD
-                    for p in g
+                    mf.position._distance_squared(p.position) < RESOURCE_SPREAD_THRESHOLD
+                    and mf_height == self.get_terrain_height(p.position)
+                    for p in cluster
                 ):
-                    g.append(mf)
+                    cluster.append(mf)
                     break
             else:  # not found
-                r_groups.append([mf])
+                resource_groups.append([mf])
         # Filter out bases with only one mineral field
-        r_groups = [g for g in r_groups if len(g) > 1]
+        resource_groups = [cluster for cluster in resource_groups if len(cluster) > 1]
         # distance offsets from a gas geysir
         offsets = [(x, y) for x in range(-9, 10) for y in range(-9, 10) if 75 >= x ** 2 + y ** 2 >= 49]
         centers = {}
         # for every resource group:
-        for resources in r_groups:
+        for resources in resource_groups:
             # possible expansion points
             # resources[-1] is a gas geysir which always has (x.5, y.5) coordinates, just like an expansion
             possible_points = (
@@ -113,10 +124,7 @@ class BotAI:
             possible_points = [
                 point
                 for point in possible_points
-                if all(
-                    point.distance_to(resource) >= (6 if resource in self.state.mineral_field else 7)
-                    for resource in resources
-                )
+                if all(point.distance_to(resource) >= (7 if resource in geysers else 6) for resource in resources)
             ]
             # choose best fitting point
             result = min(possible_points, key=lambda p: sum(p.distance_to(resource) for resource in resources))
@@ -518,7 +526,7 @@ class BotAI:
         for unit in self.units:
             self._units_previous_map[unit.tag] = unit
 
-        self.units: Units = state.units.owned
+        self.units: Units = state.own_units
         self.workers: Units = self.units(race_worker[self.race])
         self.townhalls: Units = self.units(race_townhalls[self.race])
         self.geysers: Units = self.units(race_gas[self.race])
@@ -528,6 +536,9 @@ class BotAI:
         self.supply_used: Union[float, int] = state.common.food_used
         self.supply_cap: Union[float, int] = state.common.food_cap
         self.supply_left: Union[float, int] = self.supply_cap - self.supply_used
+        # reset cached values
+        self.cached_known_enemy_structures = None
+        self.cached_known_enemy_units = None
 
     async def issue_events(self):
         """ This function will be automatically run from main.py and triggers the following functions:

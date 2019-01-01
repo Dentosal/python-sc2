@@ -38,12 +38,13 @@ class PixelMap:
         return int.from_bytes(data, byteorder="little", signed=False)
 
     def __setitem__(self, pos, val):
+        """ Example usage: self._game_info.pathing_grid[Point2((20, 20))] = [255] """
         x, y = pos
 
         assert 0 <= x < self.width, f"x is {x}, self.width is {self.width}"
         assert 0 <= y < self.height, f"y is {y}, self.height is {self.height}"
 
-        index = self.width * y + x
+        index = -self.width * y + x
         start = index * self.bytes_per_pixel
         self.data[start : start + self.bytes_per_pixel] = val
 
