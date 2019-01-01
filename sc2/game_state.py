@@ -1,12 +1,15 @@
-from .units import Units
-from .power_source import PsionicMatrix
-from .pixel_map import PixelMap
-from .ids.upgrade_id import UpgradeId
-from .ids.effect_id import EffectId
-from .position import Point2, Point3
+from typing import Any, Dict, List, Optional, Set, Tuple, Union  # mypy type checking
+
 from .data import Alliance, DisplayType
+from .ids.effect_id import EffectId
+from .ids.upgrade_id import UpgradeId
+from .ids.unit_typeid import UnitTypeId
+from .pixel_map import PixelMap
+from .position import Point2, Point3
+from .power_source import PsionicMatrix
 from .score import ScoreDetails
-from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type checking
+from .units import Units
+
 
 class Blip:
     def __init__(self, proto):
