@@ -84,8 +84,8 @@ class BotAI:
     @property_cache_forever
     def expansion_locations(self) -> Dict[Point2, Units]:
         """List of possible expansion locations."""
-
-        RESOURCE_SPREAD_THRESHOLD = 144
+        # RESOURCE_SPREAD_THRESHOLD = 144
+        RESOURCE_SPREAD_THRESHOLD = 225
         minerals = self.state.mineral_field
         geysers = self.state.vespene_geyser
         all_resources = minerals | geysers
@@ -98,13 +98,13 @@ class BotAI:
                 # bases on standard maps dont have more than 10 resources
                 if len(cluster) == 10:
                     continue
-                if any(
-                    mf.position._distance_squared(p.position) < RESOURCE_SPREAD_THRESHOLD
-                    and mf_height == self.get_terrain_height(p.position)
-                    for p in cluster
-                ):
+                if mf.position._distance_squared(
+                    cluster[0].position
+                ) < RESOURCE_SPREAD_THRESHOLD and mf_height == self.get_terrain_height(cluster[0].position):
                     cluster.append(mf)
                     break
+                else:
+                    continue
             else:  # not found
                 resource_groups.append([mf])
         # Filter out bases with only one mineral field
