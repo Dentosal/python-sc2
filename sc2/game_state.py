@@ -102,27 +102,27 @@ class GameState:
         # Fix for enemy units detected by my sensor tower, as blips have less unit information than normal visible units
         visibleUnits, hiddenUnits, minerals, geysers, destructables, enemy, own = ([] for _ in range(7))
         # TODO find a better place for these sets:
-        mineral_enums = {
-            UnitTypeId.RICHMINERALFIELD,
-            UnitTypeId.RICHMINERALFIELD750,
-            UnitTypeId.MINERALFIELD,
-            UnitTypeId.MINERALFIELD750,
-            UnitTypeId.LABMINERALFIELD,
-            UnitTypeId.LABMINERALFIELD750,
-            UnitTypeId.PURIFIERRICHMINERALFIELD,
-            UnitTypeId.PURIFIERRICHMINERALFIELD750,
-            UnitTypeId.PURIFIERMINERALFIELD,
-            UnitTypeId.PURIFIERMINERALFIELD750,
-            UnitTypeId.BATTLESTATIONMINERALFIELD,
-            UnitTypeId.BATTLESTATIONMINERALFIELD750,
+        mineral_ids = {
+            UnitTypeId.RICHMINERALFIELD.value,
+            UnitTypeId.RICHMINERALFIELD750.value,
+            UnitTypeId.MINERALFIELD.value,
+            UnitTypeId.MINERALFIELD750.value,
+            UnitTypeId.LABMINERALFIELD.value,
+            UnitTypeId.LABMINERALFIELD750.value,
+            UnitTypeId.PURIFIERRICHMINERALFIELD.value,
+            UnitTypeId.PURIFIERRICHMINERALFIELD750.value,
+            UnitTypeId.PURIFIERMINERALFIELD.value,
+            UnitTypeId.PURIFIERMINERALFIELD750.value,
+            UnitTypeId.BATTLESTATIONMINERALFIELD.value,
+            UnitTypeId.BATTLESTATIONMINERALFIELD750.value,
         }
-        geyser_enums = {
-            UnitTypeId.VESPENEGEYSER,
-            UnitTypeId.SPACEPLATFORMGEYSER,
-            UnitTypeId.RICHVESPENEGEYSER,
-            UnitTypeId.PROTOSSVESPENEGEYSER,
-            UnitTypeId.PURIFIERVESPENEGEYSER,
-            UnitTypeId.SHAKURASVESPENEGEYSER,
+        geyser_ids = {
+            UnitTypeId.VESPENEGEYSER.value,
+            UnitTypeId.SPACEPLATFORMGEYSER.value,
+            UnitTypeId.RICHVESPENEGEYSER.value,
+            UnitTypeId.PROTOSSVESPENEGEYSER.value,
+            UnitTypeId.PURIFIERVESPENEGEYSER.value,
+            UnitTypeId.SHAKURASVESPENEGEYSER.value,
         }
         for unit in self.observation.raw_data.units:
             if unit.is_blip:
@@ -134,15 +134,15 @@ class GameState:
                     destructables.append(unit)
                 elif unit.alliance == 3:
                     # mineral field enums
-                    if u.unit_type in mineral_enums:
-                        minerals.append(u)
+                    if unit.unit_type in mineral_ids:
+                        minerals.append(unit)
                     # geyser enums
-                    elif u.unit_type in geyser_enums:
-                        geysers.append(u)
-                elif u.alliance == 1:
-                    own.append(u)
-                elif u.alliance == 4:
-                    enemy.append(u)
+                    elif unit.unit_type in geyser_ids:
+                        geysers.append(unit)
+                elif unit.alliance == 1:
+                    own.append(unit)
+                elif unit.alliance == 4:
+                    enemy.append(unit)
 
         self.own_units: Units = Units.from_proto(own, game_data)
         self.enemy_units: Units = Units.from_proto(enemy, game_data)
