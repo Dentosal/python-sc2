@@ -103,8 +103,7 @@ class AbilityData:
     @property
     def link_name(self) -> str:
         """ For Stimpack this returns 'BarracksTechLabResearch' """
-        # TODO: this may be wrong as it returns the same as the property below, ".button_name"
-        return self._proto.button_name
+        return self._proto.link_name
 
     @property
     def button_name(self) -> str:
@@ -134,7 +133,7 @@ class UnitTypeData:
         self._proto = proto
 
     def __repr__(self) -> str:
-        return "UnitTypeData(name={})".format(self.name)
+        return f"UnitTypeData(name={self.name})"
 
     @property
     def id(self) -> UnitTypeId:
@@ -255,7 +254,7 @@ class UpgradeData:
         self._proto = proto
 
     def __repr__(self):
-        return "UpgradeData({} - research ability: {}, {})".format(self.name, self.research_ability, self.cost)
+        return f"UpgradeData({self.name} - research ability: {self.research_ability}, {self.cost})"
 
     @property
     def name(self) -> str:

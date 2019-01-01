@@ -91,7 +91,7 @@ class Unit:
 
     @property
     def is_ready(self) -> bool:
-        return self.build_progress == 1.0
+        return self.build_progress == 1
 
     @property
     def cloak(self) -> CloakState:
@@ -234,7 +234,7 @@ class Unit:
     def weapon_cooldown(self) -> Union[int, float]:
         """ Returns some time (more than game loops) until the unit can fire again, returns -1 for units that can't attack
         Usage:
-        if not unit.weapon_cooldown:
+        if unit.weapon_cooldown == 0:
             await self.do(unit.attack(target))
         elif unit.weapon_cooldown < 0:
             await self.do(unit.move(closest_allied_unit_because_cant_attack))
@@ -408,6 +408,11 @@ class Unit:
         }
 
     @property
+    def is_patrolling(self) -> bool:
+        """ Checks if a unit is patrolling. """
+        return self.orders and self.orders[0].ability.id is AbilityId.PATROL
+
+    @property
     def is_gathering(self) -> bool:
         """ Checks if a unit is on its way to a mineral field / vespene geyser to mine. """
         return self.orders and self.orders[0].ability.id is AbilityId.HARVEST_GATHER
@@ -522,9 +527,6 @@ class Unit:
 
     def move(self, *args, **kwargs):
         return self(AbilityId.MOVE, *args, **kwargs)
-    
-    def scan_move(self, *args, **kwargs):
-        return self(AbilityId.SCAN_MOVE, *args, **kwargs)
 
     def scan_move(self, *args, **kwargs):
         return self(AbilityId.SCAN_MOVE, *args, **kwargs)
@@ -534,6 +536,9 @@ class Unit:
 
     def stop(self, *args, **kwargs):
         return self(AbilityId.STOP, *args, **kwargs)
+
+    def patrol(self, *args, **kwargs):
+        return self(AbilityId.PATROL, *args, **kwargs)
 
     def repair(self, *args, **kwargs):
         return self(AbilityId.EFFECT_REPAIR, *args, **kwargs)

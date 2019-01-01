@@ -25,16 +25,28 @@ class Units(list):
         return UnitSelection(self, *args, **kwargs)
 
     def __or__(self, other: "Units") -> "Units":
+        if self is None:
+            return other
+        if other is None:
+            return self
         tags = {unit.tag for unit in self}
         units = self + [unit for unit in other if unit.tag not in tags]
         return Units(units, self.game_data)
 
     def __and__(self, other: "Units") -> "Units":
+        if self is None:
+            return other
+        if other is None:
+            return self
         tags = {unit.tag for unit in self}
         units = [unit for unit in other if unit.tag in tags]
         return Units(units, self.game_data)
 
     def __sub__(self, other: "Units") -> "Units":
+        if self is None:
+            return None
+        if other is None:
+            return self
         tags = {unit.tag for unit in other}
         units = [unit for unit in self if unit.tag not in tags]
         return Units(units, self.game_data)
@@ -45,11 +57,11 @@ class Units(list):
 
     @property
     def empty(self) -> bool:
-        return self.amount == 0
+        return not bool(self)
 
     @property
     def exists(self) -> bool:
-        return bool(self.amount)
+        return bool(self)
 
     def find_by_tag(self, tag) -> Optional[Unit]:
         for unit in self:
@@ -65,7 +77,7 @@ class Units(list):
 
     @property
     def first(self) -> Unit:
-        assert self.exists
+        assert self
         return self[0]
 
     def take(self, n: int, require_all: bool=True) -> "Units":
@@ -84,6 +96,7 @@ class Units(list):
             return other
 
     def random_group_of(self, n):
+        # TODO allow n > amount with n = min(n,amount)?
         assert 0 <= n <= self.amount
         if n == 0:
             return self.subgroup([])
@@ -140,8 +153,8 @@ class Units(list):
     def filter(self, pred: callable) -> "Units":
         return self.subgroup(filter(pred, self))
 
-    def sorted(self, keyfn: callable, reverse: bool=False) -> "Units":
-        if len(self) in [0, 1]:
+    def sorted(self, keyfn: callable, reverse: bool = False) -> "Units":
+        if len(self) in {0, 1}:
             return self
         return self.subgroup(sorted(self, key=keyfn, reverse=reverse))
 
