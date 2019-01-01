@@ -100,22 +100,45 @@ class GameState:
         self.abilities = self.observation.abilities  # abilities of selected units
 
         # Fix for enemy units detected by my sensor tower, as blips have less unit information than normal visible units
-        visibleUnits, hiddenUnits, minerals, geysers, = [], [], [], []
+        visibleUnits = hiddenUnits, minerals, geysers = [], [], [], []
         destructables, enemy, own = [], [], []
-        for u in self.observation.raw_data.units:
-            if u.is_blip:
-                hiddenUnits.append(u)
+        # TODO find a better place for these sets:
+        mineral_enums = {
+            UnitTypeId.RICHMINERALFIELD,
+            UnitTypeId.RICHMINERALFIELD750,
+            UnitTypeId.MINERALFIELD,
+            UnitTypeId.MINERALFIELD750,
+            UnitTypeId.LABMINERALFIELD,
+            UnitTypeId.LABMINERALFIELD750,
+            UnitTypeId.PURIFIERRICHMINERALFIELD,
+            UnitTypeId.PURIFIERRICHMINERALFIELD750,
+            UnitTypeId.PURIFIERMINERALFIELD,
+            UnitTypeId.PURIFIERMINERALFIELD750,
+            UnitTypeId.BATTLESTATIONMINERALFIELD,
+            UnitTypeId.BATTLESTATIONMINERALFIELD750,
+        }
+        geyser_enums = {
+            UnitTypeId.VESPENEGEYSER,
+            UnitTypeId.SPACEPLATFORMGEYSER,
+            UnitTypeId.RICHVESPENEGEYSER,
+            UnitTypeId.PROTOSSVESPENEGEYSER,
+            UnitTypeId.PURIFIERVESPENEGEYSER,
+            UnitTypeId.SHAKURASVESPENEGEYSER,
+        }
+        for unit in self.observation.raw_data.units:
+            if unit.is_blip:
+                hiddenUnits.append(unit)
             else:
-                visibleUnits.append(u)
+                visibleUnits.append(unit)
                 # all destructable rocks except the one below the main base ramps
-                if u.alliance == 3 and u.radius > 1.5:
-                    destructables.append(u)
-                if u.alliance == 3:
+                if unit.alliance == 3 and unit.radius > 1.5:
+                    destructables.append(unit)
+                elif unit.alliance == 3:
                     # mineral field enums
-                    if u.unit_type in {146, 147, 341, 483, 665, 666, 796, 797, 884, 885, 886, 887}:
+                    if u.unit_type in mineral_enums:
                         minerals.append(u)
                     # geyser enums
-                    elif u.unit_type in {342, 343, 344, 608, 880, 881}:
+                    elif u.unit_type in geyser_enums:
                         geysers.append(u)
                 elif u.alliance == 1:
                     own.append(u)
@@ -128,6 +151,7 @@ class GameState:
         self.vespene_geyser: Units = Units.from_proto(geysers, game_data)
         self.destructables: Units = Units.from_proto(destructables, game_data)
         self.units: Units = Units.from_proto(visibleUnits, game_data)
+        self.distance_units: Units = Units.from_proto(own + enemy + minerals + geysers, game_data)
         self.blips: Set[Blip] = {Blip(unit) for unit in hiddenUnits}
 
         self.visibility: PixelMap = PixelMap(self.observation.raw_data.map_state.visibility)
