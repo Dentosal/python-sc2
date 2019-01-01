@@ -82,7 +82,7 @@ class Ramp:
             p1 = points.pop().offset((self.x_offset, self.y_offset))
             p2 = points.pop().offset((self.x_offset, self.y_offset))
             # Offset from top point to barracks center is (2, 1)
-            intersects = p1.circle_intersection(p2, (2 ** 2 + 1 ** 2) ** 0.5)
+            intersects = p1.circle_intersection(p2, 5 ** 0.5)
             anyLowerPoint = next(iter(self.lower))
             return max(intersects, key=lambda p: p.distance_to(anyLowerPoint))
         raise Exception('Not implemented. Trying to access a ramp that has a wrong amount of upper points.')
@@ -95,7 +95,7 @@ class Ramp:
             p1 = points.pop().offset((self.x_offset, self.y_offset)) # still an error with pixelmap?
             p2 = points.pop().offset((self.x_offset, self.y_offset))
             # Offset from top point to depot center is (1.5, 0.5)
-            intersects = p1.circle_intersection(p2, (1.5 ** 2 + 0.5 ** 2) ** 0.5)
+            intersects = p1.circle_intersection(p2, 2.5 ** 0.5)
             anyLowerPoint = next(iter(self.lower))
             return max(intersects, key=lambda p: p.distance_to(anyLowerPoint))
         raise Exception('Not implemented. Trying to access a ramp that has a wrong amount of upper points.')
@@ -110,7 +110,7 @@ class Ramp:
             center = p1.towards(p2, p1.distance_to(p2) / 2)
             depotPosition = self.depot_in_middle
             # Offset from middle depot to corner depots is (2, 1)
-            intersects = center.circle_intersection(depotPosition, (2 ** 2 + 1 ** 2) ** 0.5)
+            intersects = center.circle_intersection(depotPosition, 5 ** 0.5)
             return intersects
         raise Exception('Not implemented. Trying to access a ramp that has a wrong amount of upper points.')
 
