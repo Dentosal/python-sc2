@@ -2,7 +2,7 @@ from typing import Callable, Set, FrozenSet, List
 
 from .position import Point2
 
-class PixelMap(object):
+class PixelMap:
     def __init__(self, proto):
         self._proto = proto
         assert self.bits_per_pixel % 8 == 0, "Unsupported pixel density"
@@ -28,8 +28,8 @@ class PixelMap(object):
     def __getitem__(self, pos):
         x, y = pos
 
-        assert 0 <= x < self.width
-        assert 0 <= y < self.height
+        assert 0 <= x < self.width, f"x is {x}, self.width is {self.width}"
+        assert 0 <= y < self.height, f"y is {y}, self.height is {self.height}"
 
         index = -self.width * y + x
         # print(f"INDEX IS {index} FOR {pos}")
@@ -40,8 +40,8 @@ class PixelMap(object):
     def __setitem__(self, pos, val):
         x, y = pos
 
-        assert 0 <= x < self.width
-        assert 0 <= y < self.height
+        assert 0 <= x < self.width, f"x is {x}, self.width is {self.width}"
+        assert 0 <= y < self.height, f"y is {y}, self.height is {self.height}"
 
         index = self.width * y + x
         start = index * self.bytes_per_pixel
@@ -72,10 +72,10 @@ class PixelMap(object):
             if pred(self[x, y]):
                 nodes.add(Point2((x, y)))
 
-                queue.append(Point2((x+1, y)))
-                queue.append(Point2((x-1, y)))
-                queue.append(Point2((x, y+1)))
-                queue.append(Point2((x, y-1)))
+                queue.append(Point2((x + 1, y)))
+                queue.append(Point2((x - 1, y)))
+                queue.append(Point2((x, y + 1)))
+                queue.append(Point2((x, y - 1)))
 
         return nodes
 
@@ -99,8 +99,9 @@ class PixelMap(object):
             print("")
 
     def save_image(self, filename):
-        data = [(0,0,self[x, y]) for y in range(self.height) for x in range(self.width)]
+        data = [(0, 0, self[x, y]) for y in range(self.height) for x in range(self.width)]
         from PIL import Image
-        im= Image.new('RGB', (self.width, self.height))
+
+        im = Image.new("RGB", (self.width, self.height))
         im.putdata(data)
         im.save(filename)

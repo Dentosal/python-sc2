@@ -81,10 +81,10 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
 
         iteration += 1
 
-async def _play_game(player, client, realtime, portconfig, step_time_limit=None, game_time_limit=None):
+async def _play_game(player, client, realtime, portconfig, step_time_limit=None, game_time_limit=None, rgb_render_config=None):
     assert isinstance(realtime, bool), repr(realtime)
 
-    player_id = await client.join_game(player.race, portconfig=portconfig)
+    player_id = await client.join_game(player.race, portconfig=portconfig, rgb_render_config=rgb_render_config)
     logging.info(f"Player id: {player_id}")
 
     if isinstance(player, Human):
@@ -107,18 +107,19 @@ async def _setup_host_game(server, map_settings, players, realtime):
     return Client(server._ws)
 
 
-async def _host_game(map_settings, players, realtime, portconfig=None, save_replay_as=None, step_time_limit=None, game_time_limit=None):
+async def _host_game(map_settings, players, realtime, portconfig=None, save_replay_as=None, step_time_limit=None,
+                     game_time_limit=None, rgb_render_config=None):
     assert len(players) > 0, "Can't create a game without players"
 
     assert any(isinstance(p, (Human, Bot)) for p in players)
 
-    async with SC2Process() as server:
+    async with SC2Process(render=rgb_render_config is not None) as server:
         await server.ping()
 
         client = await _setup_host_game(server, map_settings, players, realtime)
 
         try:
-            result = await _play_game(players[0], client, realtime, portconfig, step_time_limit, game_time_limit)
+            result = await _play_game(players[0], client, realtime, portconfig, step_time_limit, game_time_limit, rgb_render_config)
             if save_replay_as is not None:
                 await client.save_replay(save_replay_as)
             await client.leave()
@@ -130,7 +131,7 @@ async def _host_game(map_settings, players, realtime, portconfig=None, save_repl
         return result
 
 async def _host_game_aiter(map_settings, players, realtime, portconfig=None, save_replay_as=None, step_time_limit=None, game_time_limit=None):
-    assert len(players) > 0, "Can't create a game without players"
+    assert players, "Can't create a game without players"
 
     assert any(isinstance(p, (Human, Bot)) for p in players)
 
@@ -181,7 +182,8 @@ async def _join_game(players, realtime, portconfig, save_replay_as=None, step_ti
 
 def run_game(map_settings, players, **kwargs):
     if sum(isinstance(p, (Human, Bot)) for p in players) > 1:
-        join_kwargs = {k: v for k, v in kwargs.items() if k != "save_replay_as"}
+        host_only_args = ["save_replay_as", "rgb_render_config"]
+        join_kwargs = {k: v for k, v in kwargs.items() if k not in host_only_args}
 
         portconfig = Portconfig()
         result = asyncio.get_event_loop().run_until_complete(asyncio.gather(

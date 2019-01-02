@@ -12,8 +12,12 @@ class ControlGroup(set):
         return {t for t in self if units.find_by_tag(t) is None}
 
     @property
-    def empty(self):
+    def amount(self) -> int:
         return len(self)
+
+    @property
+    def empty(self) -> bool:
+        return self.amount == 0
 
     def add_unit(self, unit):
         self.add(unit.tag)
