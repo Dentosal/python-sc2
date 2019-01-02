@@ -308,7 +308,7 @@ class Rect(tuple):
 
     @property
     def center(self) -> Point2:
-        return Point2(((self.x + self.width) / 2, (self.y + self.height) / 2))
+        return Point2((self.x + self.width / 2, self.y + self.height / 2))
 
     def offset(self, p):
         return self.__class__((self[0] + p[0], self[1] + p[1], self[2], self[3]))
