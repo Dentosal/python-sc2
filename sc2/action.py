@@ -4,7 +4,7 @@ from s2clientprotocol import raw_pb2 as raw_pb, common_pb2 as common_pb
 from .position import Point2
 from .unit import Unit
 
-def combine_actions(action_iter, game_data):
+def combine_actions(action_iter):
     for key, items in groupby(action_iter, key=lambda a: a.combining_tuple):
         ability, target, queue = key
 

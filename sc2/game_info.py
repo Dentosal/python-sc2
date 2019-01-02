@@ -1,15 +1,9 @@
-from typing import Tuple, Set, FrozenSet, Sequence, Generator
-
 from collections import deque
-from copy import deepcopy
-import itertools
+from typing import Any, Dict, FrozenSet, Generator, List, Optional, Sequence, Set, Tuple, Union
 
-from .position import Point2, Size, Rect
 from .pixel_map import PixelMap
 from .player import Player
-from .cache import property_cache_forever
-
-from typing import List, Dict, Set, Tuple, Any, Optional, Union
+from .position import Point2, Rect, Size
 
 
 class Ramp:
@@ -43,12 +37,8 @@ class Ramp:
     def upper(self) -> Set[Point2]:
         """ Returns the upper points of a ramp. """
         max_height = max([self.height_at(p) for p in self._points])
-        return {
-            p
-            for p in self._points
-            if self.height_at(p) == max_height
-        }
-    
+        return {p for p in self._points if self.height_at(p) == max_height}
+
     @property
     def upper2_for_ramp_wall(self) -> Set[Point2]:
         """ Returns the 2 upper ramp points of the main base ramp required for the supply depot and barracks placement properties used in this file. """
@@ -92,7 +82,7 @@ class Ramp:
             p1 = points.pop().offset((self.x_offset, self.y_offset))
             p2 = points.pop().offset((self.x_offset, self.y_offset))
             # Offset from top point to barracks center is (2, 1)
-            intersects = p1.circle_intersection(p2, (2**2 + 1**2)**0.5)
+            intersects = p1.circle_intersection(p2, (2 ** 2 + 1 ** 2) ** 0.5)
             anyLowerPoint = next(iter(self.lower))
             return max(intersects, key=lambda p: p.distance_to(anyLowerPoint))
         raise Exception('Not implemented. Trying to access a ramp that has a wrong amount of upper points.')
@@ -105,7 +95,7 @@ class Ramp:
             p1 = points.pop().offset((self.x_offset, self.y_offset)) # still an error with pixelmap?
             p2 = points.pop().offset((self.x_offset, self.y_offset))
             # Offset from top point to depot center is (1.5, 0.5)
-            intersects = p1.circle_intersection(p2, (1.5**2 + 0.5**2)**0.5)
+            intersects = p1.circle_intersection(p2, (1.5 ** 2 + 0.5 ** 2) ** 0.5)
             anyLowerPoint = next(iter(self.lower))
             return max(intersects, key=lambda p: p.distance_to(anyLowerPoint))
         raise Exception('Not implemented. Trying to access a ramp that has a wrong amount of upper points.')
@@ -120,7 +110,7 @@ class Ramp:
             center = p1.towards(p2, p1.distance_to(p2) / 2)
             depotPosition = self.depot_in_middle
             # Offset from middle depot to corner depots is (2, 1)
-            intersects = center.circle_intersection(depotPosition, (2**2 + 1**2)**0.5)
+            intersects = center.circle_intersection(depotPosition, (2 ** 2 + 1 ** 2) ** 0.5)
             return intersects
         raise Exception('Not implemented. Trying to access a ramp that has a wrong amount of upper points.')
 
@@ -143,7 +133,7 @@ class Ramp:
         raise Exception('Not implemented. Trying to access a ramp that has a wrong amount of upper points.')
 
 
-class GameInfo(object):
+class GameInfo:
     def __init__(self, proto):
         # TODO: this might require an update during the game because placement grid and playable grid are greyed out on minerals, start locations and ramps (debris)
         self._proto = proto       

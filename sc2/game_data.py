@@ -23,9 +23,9 @@ def split_camel_case(text) -> list:
         []
     ))
 
-class GameData(object):
+class GameData:
     def __init__(self, data):
-        ids = tuple(a.value for a in AbilityId if a.value != 0)
+        ids = set(a.value for a in AbilityId if a.value != 0)
         self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities if a.ability_id in ids}
         self.units = {u.unit_id: UnitTypeData(self, u) for u in data.units if u.available}
         self.upgrades = {u.upgrade_id: UpgradeData(self, u) for u in data.upgrades}
@@ -70,7 +70,7 @@ class GameData(object):
 
         return Cost(0, 0)
 
-class AbilityData(object):
+class AbilityData:
     ability_ids: List[int] = []  # sorted list
     for ability_id in AbilityId:  # 1000 items Enum is slow
         ability_ids.append(ability_id.value)
@@ -128,7 +128,7 @@ class AbilityData(object):
     def cost(self) -> "Cost":
         return self._game_data.calculate_ability_cost(self.id)
 
-class UnitTypeData(object):
+class UnitTypeData:
     def __init__(self, game_data, proto):
         self._game_data = game_data
         self._proto = proto
@@ -249,7 +249,7 @@ class UnitTypeData(object):
             )
 
 
-class UpgradeData(object):
+class UpgradeData:
     def __init__(self, game_data, proto):
         self._game_data = game_data
         self._proto = proto
@@ -277,7 +277,7 @@ class UpgradeData(object):
             self._proto.research_time
         )
 
-class Cost(object):
+class Cost:
     def __init__(self, minerals, vespene, time=None):
         self.minerals = minerals
         self.vespene = vespene

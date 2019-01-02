@@ -2,7 +2,7 @@ from .position import Point2
 from .ids.ability_id import AbilityId
 from . import unit as unit_module
 
-class UnitCommand(object):
+class UnitCommand:
     def __init__(self, ability, unit, target=None, queue=False):
         assert ability in AbilityId
         assert isinstance(unit, unit_module.Unit)

@@ -298,6 +298,8 @@ class UpgradeId(enum.Enum):
     CYCLONERAPIDFIRELAUNCHERS = 291
     RAVENENHANCEDMUNITIONS = 292
     DIGGINGCLAWS = 293
+    CARRIERCARRIERCAPACITY = 294
+    CARRIERLEASHRANGEUPGRADE = 295
 
 for item in UpgradeId:
     assert not item.name in globals()

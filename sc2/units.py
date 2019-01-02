@@ -49,7 +49,7 @@ class Units(list):
 
     @property
     def exists(self) -> bool:
-        return not self.empty
+        return bool(self.amount)
 
     def find_by_tag(self, tag) -> Optional[Unit]:
         for unit in self:
@@ -125,12 +125,14 @@ class Units(list):
     def closer_than(self, distance: Union[int, float], position: Union[Unit, Point2, Point3]) -> "Units":
         if isinstance(position, Unit):
             position = position.position
-        return self.filter(lambda unit: unit.position.distance_to_point2(position.to2) < distance)
+        distance_squared = distance ** 2
+        return self.filter(lambda unit: unit.position._distance_squared(position.to2) < distance_squared)
 
     def further_than(self, distance: Union[int, float], position: Union[Unit, Point2, Point3]) -> "Units":
         if isinstance(position, Unit):
             position = position.position
-        return self.filter(lambda unit: unit.position.distance_to_point2(position.to2) > distance)
+        distance_squared = distance ** 2
+        return self.filter(lambda unit: unit.position._distance_squared(position.to2) > distance_squared)
 
     def subgroup(self, units):
         return Units(list(units), self.game_data)
@@ -139,10 +141,14 @@ class Units(list):
         return self.subgroup(filter(pred, self))
 
     def sorted(self, keyfn: callable, reverse: bool=False) -> "Units":
+        if len(self) in [0, 1]:
+            return self
         return self.subgroup(sorted(self, key=keyfn, reverse=reverse))
 
     def sorted_by_distance_to(self, position: Union[Unit, Point2], reverse: bool=False) -> "Units":
         """ This function should be a bit faster than using units.sorted(keyfn=lambda u: u.distance_to(position)) """
+        if len(self) in [0, 1]:
+            return self
         position = position.position
         return self.sorted(keyfn=lambda unit: unit.position._distance_squared(position), reverse=reverse)
 
@@ -288,6 +294,10 @@ class Units(list):
         return self.filter(lambda unit: unit.is_collecting)
 
     @property
+    def visible(self) -> "Units":
+        return self.filter(lambda unit: unit.is_visible)
+
+    @property
     def mineral_field(self) -> "Units":
         return self.filter(lambda unit: unit.is_mineral_field)
 
@@ -300,7 +310,8 @@ class Units(list):
         return self.sorted(lambda unit: unit.is_idle, reverse=True)
 
     def prefer_close_to(self, p: Union[Unit, Point2, Point3]) -> "Units":
-        return self.sorted(lambda unit: unit.distance_to(p))
+        # TODO redundant?
+        return self.sorted_by_distance_to(p)
 
 
 class UnitSelection(Units):

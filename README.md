@@ -6,7 +6,7 @@ An easy-to-use library for writing AI Bots for StarCraft II in Python 3. The ult
 
 Documentation is in [the Wiki](https://github.com/Dentosal/python-sc2/wiki).
 
-For automaticly running multiple matches, check out [Dentosal/sc2-bot-match-runner](https://github.com/Dentosal/sc2-bot-match-runner).
+For automatically running multiple matches, check out [Dentosal/sc2-bot-match-runner](https://github.com/Dentosal/sc2-bot-match-runner).
 
 ## Installation
 
@@ -59,7 +59,7 @@ You can find more examples in the [`examples/`](/examples) folder.
 
 ## Help and support
 
-You have questions but don't want to create an issue? Join the [Starcraft 2 AI Discord](https://discord.gg/qTZ65sh). Questions about this repository can be asked in channel #python-sc2.
+You have questions but don't want to create an issue? Join the [Starcraft 2 AI Discord](https://discordapp.com/invite/zXHU4wM). Questions about this repository can be asked in channel #python-sc2.
 
 ## Bug reports, feature requests and ideas
 

@@ -131,7 +131,7 @@ async def _host_game(map_settings, players, realtime, portconfig=None, save_repl
         return result
 
 async def _host_game_aiter(map_settings, players, realtime, portconfig=None, save_replay_as=None, step_time_limit=None, game_time_limit=None):
-    assert len(players) > 0, "Can't create a game without players"
+    assert players, "Can't create a game without players"
 
     assert any(isinstance(p, (Human, Bot)) for p in players)
 
