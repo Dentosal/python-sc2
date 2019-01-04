@@ -39,7 +39,13 @@ class BotAI:
     @property
     def time(self) -> Union[int, float]:
         """ Returns time in seconds, assumes the game is played on 'faster' """
-        return self.state.game_loop / 22.4 # / (1/1.4) * (1/16)
+        return self.state.game_loop / 22.4  # / (1/1.4) * (1/16)
+
+    @property
+    def time_formatted(self) -> str:
+        """ Returns time as string in min:sec format """
+        t = self.time
+        return f"{int(t // 60):02}:{int(t % 60):02}"
 
     @property
     def game_info(self) -> "GameInfo":
@@ -103,8 +109,6 @@ class BotAI:
                 ) < RESOURCE_SPREAD_THRESHOLD and mf_height == self.get_terrain_height(cluster[0].position):
                     cluster.append(mf)
                     break
-                else:
-                    continue
             else:  # not found
                 resource_groups.append([mf])
         # Filter out bases with only one mineral field
