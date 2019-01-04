@@ -41,9 +41,9 @@ class Pointlike(tuple):
         If you want to sort your units towards a point, use 'units.sorted_by_distance_to(point)' instead. """
         if len(ps) == 1:
             return ps[0]
-        if ps and all(isinstance(p, Point2) for p in ps):
-            return sorted(ps, key=lambda p: self._distance_squared(p))
-        return sorted(ps, key=lambda p: self.distance_to(p))
+        # if ps and all(isinstance(p, Point2) for p in ps):
+        #     return sorted(ps, key=lambda p: self._distance_squared(p))
+        return sorted(ps, key=lambda p: self._distance_squared(p.position))
 
     def closest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union["Unit", "Point2"]:
         """ This function assumes the 2d distance is meant """
@@ -109,7 +109,11 @@ class Pointlike(tuple):
 
     def towards(self, p: Union["Unit", "Pointlike"], distance: Union[int, float]=1, limit: bool=False) -> "Pointlike":
         p = p.position
-        assert self != p, f"self is {self}, p is {p}"
+        # assert self != p, f"self is {self}, p is {p}"
+        # TODO test and fix this if statement
+        if self == p:
+            return self
+        # end of test
         d = self.distance_to(p)
         if limit:
             distance = min(d, distance)
