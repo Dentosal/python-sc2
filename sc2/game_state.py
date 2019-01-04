@@ -9,6 +9,7 @@ from .position import Point2, Point3
 from .power_source import PsionicMatrix
 from .score import ScoreDetails
 from .units import Units
+from .constants import geyser_ids, mineral_ids
 
 
 class Blip:
@@ -104,29 +105,7 @@ class GameState:
 
         # Fix for enemy units detected by my sensor tower, as blips have less unit information than normal visible units
         visibleUnits, hiddenUnits, minerals, geysers, destructables, enemy, own = ([] for _ in range(7))
-        # TODO find a better place for these sets:
-        mineral_ids = {
-            UnitTypeId.RICHMINERALFIELD.value,
-            UnitTypeId.RICHMINERALFIELD750.value,
-            UnitTypeId.MINERALFIELD.value,
-            UnitTypeId.MINERALFIELD750.value,
-            UnitTypeId.LABMINERALFIELD.value,
-            UnitTypeId.LABMINERALFIELD750.value,
-            UnitTypeId.PURIFIERRICHMINERALFIELD.value,
-            UnitTypeId.PURIFIERRICHMINERALFIELD750.value,
-            UnitTypeId.PURIFIERMINERALFIELD.value,
-            UnitTypeId.PURIFIERMINERALFIELD750.value,
-            UnitTypeId.BATTLESTATIONMINERALFIELD.value,
-            UnitTypeId.BATTLESTATIONMINERALFIELD750.value,
-        }
-        geyser_ids = {
-            UnitTypeId.VESPENEGEYSER.value,
-            UnitTypeId.SPACEPLATFORMGEYSER.value,
-            UnitTypeId.RICHVESPENEGEYSER.value,
-            UnitTypeId.PROTOSSVESPENEGEYSER.value,
-            UnitTypeId.PURIFIERVESPENEGEYSER.value,
-            UnitTypeId.SHAKURASVESPENEGEYSER.value,
-        }
+
         for unit in self.observation.raw_data.units:
             if unit.is_blip:
                 hiddenUnits.append(unit)
@@ -154,14 +133,15 @@ class GameState:
         self.destructables: Units = Units.from_proto(destructables, game_data)
         self.units: Units = Units.from_proto(visibleUnits, game_data)
         self.distance_units: Units = Units.from_proto(own + enemy + minerals + geysers, game_data)
-        self.blips: Set[Blip] = {Blip(unit) for unit in hiddenUnits}
-
-        self.visibility: PixelMap = PixelMap(self.observation.raw_data.map_state.visibility)
-        self.creep: PixelMap = PixelMap(self.observation.raw_data.map_state.creep)
-
+        self.upgrades: Set[UpgradeId] = {UpgradeId(upgrade) for upgrade in self.observation.raw_data.player.upgrade_ids}
         self.dead_units: Set[int] = {
             dead_unit_tag for dead_unit_tag in self.observation.raw_data.event.dead_units
         }  # set of unit tags that died this step - sometimes has multiple entries
+
+        self.blips: Set[Blip] = {Blip(unit) for unit in hiddenUnits}
+        self.visibility: PixelMap = PixelMap(self.observation.raw_data.map_state.visibility)
+        self.creep: PixelMap = PixelMap(self.observation.raw_data.map_state.creep)
+
         self.effects: Set[EffectData] = {
             EffectData(effect) for effect in self.observation.raw_data.effects
         }  # effects like ravager bile shot, lurker attack, everything in effect_id.py
@@ -172,4 +152,3 @@ class GameState:
                 # dodge the ravager biles
         """
 
-        self.upgrades: Set[UpgradeId] = {UpgradeId(upgrade) for upgrade in self.observation.raw_data.player.upgrade_ids}
