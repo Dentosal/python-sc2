@@ -2,6 +2,7 @@ from typing import Callable, Set, FrozenSet, List
 
 from .position import Point2
 
+
 class PixelMap:
     def __init__(self, proto):
         self._proto = proto
@@ -72,11 +73,10 @@ class PixelMap:
 
             if pred(self[x, y]):
                 nodes.add(Point2((x, y)))
-
-                queue.append(Point2((x + 1, y)))
-                queue.append(Point2((x - 1, y)))
-                queue.append(Point2((x, y + 1)))
-                queue.append(Point2((x, y - 1)))
+                for a in [-1, 0, 1]:
+                    for b in [-1, 0, +1]:
+                        if not (a == 0 and b == 0):
+                            queue.append(Point2((x + a, y + b)))
 
         return nodes
 
