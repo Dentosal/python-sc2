@@ -103,7 +103,10 @@ class Client(Protocol):
             await self._execute(leave_game=sc_pb.RequestLeaveGame())
         except ProtocolError:
             if is_resign:
-                raise
+                raise    
+     
+    async def debug_leave(self):
+        await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(end_game=debug_pb.DebugEndGame())]))
 
     async def save_replay(self, path):
         logger.debug(f"Requesting replay from server")
@@ -441,3 +444,6 @@ class Client(Protocol):
             world_pos=pt3d,
             size=size
         )
+    
+    async def debug_leave_game(self):
+        await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(end_game=debug_pb.DebugEndGame())]))
