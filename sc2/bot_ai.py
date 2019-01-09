@@ -92,9 +92,8 @@ class BotAI:
         """List of possible expansion locations."""
         # RESOURCE_SPREAD_THRESHOLD = 144
         RESOURCE_SPREAD_THRESHOLD = 225
-        minerals = self.state.mineral_field
         geysers = self.state.vespene_geyser
-        all_resources = minerals | geysers
+        all_resources = self.state.resources
 
         # Group nearby minerals together to form expansion locations
         resource_groups = []
