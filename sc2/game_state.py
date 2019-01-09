@@ -130,6 +130,7 @@ class GameState:
         self.enemy_units: Units = Units.from_proto(enemy, game_data)
         self.mineral_field: Units = Units.from_proto(minerals, game_data)
         self.vespene_geyser: Units = Units.from_proto(geysers, game_data)
+        self.resources: Units = Units.from_proto(minerals + geysers, game_data)
         self.destructables: Units = Units.from_proto(destructables, game_data)
         self.units: Units = Units.from_proto(visibleUnits, game_data)
         self.distance_units: Units = Units.from_proto(own + enemy + minerals + geysers, game_data)
