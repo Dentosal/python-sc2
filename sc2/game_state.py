@@ -133,7 +133,6 @@ class GameState:
         self.resources: Units = Units.from_proto(minerals + geysers, game_data)
         self.destructables: Units = Units.from_proto(destructables, game_data)
         self.units: Units = Units.from_proto(visibleUnits, game_data)
-        self.distance_units: Units = Units.from_proto(own + enemy + minerals + geysers, game_data)
         self.upgrades: Set[UpgradeId] = {UpgradeId(upgrade) for upgrade in self.observation.raw_data.player.upgrade_ids}
         self.dead_units: Set[int] = {
             dead_unit_tag for dead_unit_tag in self.observation.raw_data.event.dead_units
