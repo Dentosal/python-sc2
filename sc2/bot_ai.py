@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 from .position import Point2, Point3
 from .data import Race, ActionResult, Attribute, race_worker, race_townhalls, race_gas, Target, Result
 from .unit import Unit
-from .cache import property_cache_forever
+from .cache import property_cache_forever, property_cache_once_per_frame
 from .game_data import AbilityData, Cost
 from .ids.unit_typeid import UnitTypeId
 from .ids.ability_id import AbilityId
@@ -60,7 +60,7 @@ class BotAI:
         """Possible start locations for enemies."""
         return self._game_info.start_locations
 
-    @property
+    @property_cache_once_per_frame
     def known_enemy_units(self) -> Units:
         """List of known enemy units, including structures."""
         # return self.state.enemy_units
@@ -68,7 +68,7 @@ class BotAI:
             self.cached_known_enemy_units = self.state.enemy_units
         return self.cached_known_enemy_units
 
-    @property
+    @property_cache_once_per_frame
     def known_enemy_structures(self) -> Units:
         """List of known enemy units, structures only."""
         # return self.state.enemy_units.structure

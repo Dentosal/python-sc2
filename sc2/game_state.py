@@ -112,18 +112,18 @@ class GameState:
             else:
                 visibleUnits.append(unit)
                 # all destructable rocks except the one below the main base ramps
-                if unit.alliance == 3 and unit.radius > 1.5:
+                if unit.alliance == Alliance.Neutral.value and unit.radius > 1.5:
                     destructables.append(unit)
-                elif unit.alliance == 3:
+                elif unit.alliance == Alliance.Neutral.value:
                     # mineral field enums
                     if unit.unit_type in mineral_ids:
                         minerals.append(unit)
                     # geyser enums
                     elif unit.unit_type in geyser_ids:
                         geysers.append(unit)
-                elif unit.alliance == 1:
+                elif unit.alliance == Alliance.Self.value:
                     own.append(unit)
-                elif unit.alliance == 4:
+                elif unit.alliance == Alliance.Enemy.value:
                     enemy.append(unit)
 
         self.own_units: Units = Units.from_proto(own, game_data)
