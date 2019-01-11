@@ -25,10 +25,6 @@ class Units(list):
         return UnitSelection(self, *args, **kwargs)
 
     def __or__(self, other: "Units") -> "Units":
-        if self is None:
-            return other
-        if other is None:
-            return self
         tags = {unit.tag for unit in self}
         units = self + [unit for unit in other if unit.tag not in tags]
         return Units(units, self.game_data)
@@ -43,10 +39,6 @@ class Units(list):
         return Units(units, self.game_data)
 
     def __sub__(self, other: "Units") -> "Units":
-        if self is None:
-            return None
-        if other is None:
-            return self
         tags = {unit.tag for unit in other}
         units = [unit for unit in self if unit.tag not in tags]
         return Units(units, self.game_data)
