@@ -1,21 +1,27 @@
-from math import sqrt, pi, sin, cos, atan2
-import random
 import itertools
 import math
-from typing import List, Dict, Set, Tuple, Any, Optional, Union # for mypy type checking
+import random
+from math import atan2, cos, pi, sin
+from typing import Any, Dict, List, Optional, Set, Tuple, Union  # for mypy type checking
 
 FLOAT_DIGITS = 8
 EPSILON = 10 ** (-FLOAT_DIGITS)
+
 
 def _sign(num):
     if num == 0:
         return 0
     return 1 if num > 0 else -1
 
+
 class Pointlike(tuple):
     @property
     def rounded(self) -> "Pointlike":
         return self.__class__(round(q) for q in self)
+
+    @property
+    def rounded_adj(self) -> "Pointlike":
+        return Point2((round(self[0] - 0.5), round(self[1] + 0.49999999)))
 
     @property
     def position(self) -> "Pointlike":
@@ -105,9 +111,11 @@ class Pointlike(tuple):
         return self.__class__(a + b for a, b in itertools.zip_longest(self, p[: len(self)], fillvalue=0))
 
     def unit_axes_towards(self, p):
-        return self.__class__(_sign(b - a) for a, b in itertools.zip_longest(self, p[:len(self)], fillvalue=0))
+        return self.__class__(_sign(b - a) for a, b in itertools.zip_longest(self, p[: len(self)], fillvalue=0))
 
-    def towards(self, p: Union["Unit", "Pointlike"], distance: Union[int, float]=1, limit: bool=False) -> "Pointlike":
+    def towards(
+        self, p: Union["Unit", "Pointlike"], distance: Union[int, float] = 1, limit: bool = False
+    ) -> "Pointlike":
         p = p.position
         # assert self != p, f"self is {self}, p is {p}"
         # TODO test and fix this if statement
@@ -117,7 +125,9 @@ class Pointlike(tuple):
         d = self.distance_to(p)
         if limit:
             distance = min(d, distance)
-        return self.__class__(a + (b - a) / d * distance for a, b in itertools.zip_longest(self, p[:len(self)], fillvalue=0))
+        return self.__class__(
+            a + (b - a) / d * distance for a, b in itertools.zip_longest(self, p[: len(self)], fillvalue=0)
+        )
 
     def __eq__(self, other):
         if not isinstance(other, tuple):
@@ -125,7 +135,7 @@ class Pointlike(tuple):
         return all(abs(a - b) < EPSILON for a, b in itertools.zip_longest(self, other, fillvalue=0))
 
     def __hash__(self):
-        return hash(tuple(int(c * FLOAT_DIGITS)  for c in self))
+        return hash(tuple(int(c * FLOAT_DIGITS) for c in self))
 
 
 class Point2(Pointlike):
@@ -155,7 +165,7 @@ class Point2(Pointlike):
         return (self[0] - other[0]) ** 2 + (self[1] - other[1]) ** 2
 
     def random_on_distance(self, distance):
-        if isinstance(distance, (tuple, list)): # interval
+        if isinstance(distance, (tuple, list)):  # interval
             distance = distance[0] + random.random() * (distance[1] - distance[0])
 
         assert distance > 0
@@ -164,7 +174,12 @@ class Point2(Pointlike):
         dx, dy = cos(angle), sin(angle)
         return Point2((self.x + dx * distance, self.y + dy * distance))
 
-    def towards_with_random_angle(self, p: Union["Point2", "Point3"], distance: Union[int, float]=1, max_difference: Union[int, float]=(pi / 4)) -> "Point2":
+    def towards_with_random_angle(
+        self,
+        p: Union["Point2", "Point3"],
+        distance: Union[int, float] = 1,
+        max_difference: Union[int, float] = (pi / 4),
+    ) -> "Point2":
         tx, ty = self.to2.towards(p.to2, 1)
         angle = atan2(ty - self.y, tx - self.x)
         angle = (angle - max_difference) + max_difference * 2 * random.random()
@@ -275,6 +290,7 @@ class Point3(Point2):
     def to3(self) -> "Point3":
         return Point3(self)
 
+
 class Size(Point2):
     @property
     def width(self) -> Union[int, float]:
@@ -283,6 +299,7 @@ class Size(Point2):
     @property
     def height(self) -> Union[int, float]:
         return self[1]
+
 
 class Rect(tuple):
     @classmethod
