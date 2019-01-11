@@ -410,5 +410,3 @@ class Client(Protocol):
             size=size
         )
     
-    async def debug_leave_game(self):
-        await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(end_game=debug_pb.DebugEndGame())]))
