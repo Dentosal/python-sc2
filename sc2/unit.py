@@ -23,8 +23,8 @@ class PassengerUnit:
         return f"{self.__name__}(name={self.name !r}, tag={self.tag})"
 
     @property_immutable_cache
-    """ UnitTypeId found in sc2/ids/unit_typeid"""
     def type_id(self) -> UnitTypeId:
+        """ UnitTypeId found in sc2/ids/unit_typeid """
         return UnitTypeId(self._proto.unit_type)
 
     @property_immutable_cache
@@ -259,13 +259,13 @@ class Unit(PassengerUnit):
         return self.position.distance_to_point2(p.position)
 
     @property_immutable_cache
-    """ Returns float in range [0,2p). 0 means in direction of x axis."""
     def facing(self) -> Union[int, float]:
+        """ Returns float in range [0,2p). 0 means in direction of x axis."""
         return self._proto.facing
 
     @property_immutable_cache
-    """ Half of unit size. See https://liquipedia.net/starcraft2/Unit_Statistics_(Legacy_of_the_Void) """
     def radius(self) -> Union[int, float]:
+        """ Half of unit size. See https://liquipedia.net/starcraft2/Unit_Statistics_(Legacy_of_the_Void) """
         return self._proto.radius
 
     @property_immutable_cache
@@ -277,8 +277,8 @@ class Unit(PassengerUnit):
         return self._proto.radar_range
 
     @property_immutable_cache
-    """ Returns completion in range [0,1]."""
     def build_progress(self) -> Union[int, float]:
+        """ Returns completion in range [0,1]."""
         return self._proto.build_progress
 
     @property_immutable_cache
@@ -290,10 +290,10 @@ class Unit(PassengerUnit):
         """ Returns cloak state.
         See https://github.com/Blizzard/s2client-api/blob/d9ba0a33d6ce9d233c2a4ee988360c188fbe9dbf/include/sc2api/sc2_unit.h#L95 """
         return self._proto.cloak
-    
+
     @property_immutable_cache
     def is_cloaked(self) -> bool:
-        return self._proto.cloak in {CloakState.Cloaked.value,CloakState.CloakedDetected.value}
+        return self._proto.cloak in {CloakState.Cloaked.value, CloakState.CloakedDetected.value}
 
     @property_immutable_cache
     def is_blip(self) -> bool:
@@ -328,7 +328,7 @@ class Unit(PassengerUnit):
     @property
     def tech_alias(self) -> Optional[List[UnitTypeId]]:
         """ Building tech equality, e.g. OrbitalCommand is the same as CommandCenter
-        or Hive, this returns [UnitTypeId.Hatchery, UnitTypeId.Lair]
+        For Hive, this returns [UnitTypeId.Hatchery, UnitTypeId.Lair]
         For SCV, this returns None """
         return self._type_data.tech_alias
 
@@ -544,7 +544,7 @@ class Unit(PassengerUnit):
     def surplus_harvesters(self) -> int:
         """ Returns a positive number if it has too many harvesters mining,
         a negative number if it has too few mining """
-        return  self._proto.assigned_harvesters - self._proto.ideal_harvesters
+        return self._proto.assigned_harvesters - self._proto.ideal_harvesters
 
     def train(self, unit, *args, **kwargs):
         return self(self._game_data.units[unit.value].creation_ability.id, *args, **kwargs)

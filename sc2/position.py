@@ -1,7 +1,6 @@
 import itertools
 import math
 import random
-from math import atan2, cos, pi, sin
 from typing import Any, Dict, List, Optional, Set, Tuple, Union  # for mypy type checking
 
 FLOAT_DIGITS = 8
@@ -18,10 +17,6 @@ class Pointlike(tuple):
     @property
     def rounded(self) -> "Pointlike":
         return self.__class__(round(q) for q in self)
-
-    @property
-    def rounded_adj(self) -> "Pointlike":
-        return Point2((round(self[0] - 0.5), round(self[1] + 0.49999999)))
 
     @property
     def position(self) -> "Pointlike":
@@ -169,21 +164,21 @@ class Point2(Pointlike):
             distance = distance[0] + random.random() * (distance[1] - distance[0])
 
         assert distance > 0
-        angle = random.random() * 2 * pi
+        angle = random.random() * 2 * math.pi
 
-        dx, dy = cos(angle), sin(angle)
+        dx, dy = math.cos(angle), math.sin(angle)
         return Point2((self.x + dx * distance, self.y + dy * distance))
 
     def towards_with_random_angle(
         self,
         p: Union["Point2", "Point3"],
         distance: Union[int, float] = 1,
-        max_difference: Union[int, float] = (pi / 4),
+        max_difference: Union[int, float] = (math.pi / 4),
     ) -> "Point2":
         tx, ty = self.to2.towards(p.to2, 1)
-        angle = atan2(ty - self.y, tx - self.x)
+        angle = math.atan2(ty - self.y, tx - self.x)
         angle = (angle - max_difference) + max_difference * 2 * random.random()
-        return Point2((self.x + cos(angle) * distance, self.y + sin(angle) * distance))
+        return Point2((self.x + math.cos(angle) * distance, self.y + math.sin(angle) * distance))
 
     def circle_intersection(self, p: "Point2", r: Union[int, float]) -> Set["Point2"]:
         """ self is point1, p is point2, r is the radius for circles originating in both points
