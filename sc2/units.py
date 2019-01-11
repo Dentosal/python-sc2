@@ -50,6 +50,9 @@ class Units(list):
         tags = {unit.tag for unit in other}
         units = [unit for unit in self if unit.tag not in tags]
         return Units(units, self.game_data)
+    
+    def __hash__(self):
+        return hash(unit.tag for unit in self)
 
     @property
     def amount(self) -> int:
