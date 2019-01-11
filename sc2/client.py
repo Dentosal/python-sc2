@@ -14,8 +14,6 @@ from sc2.renderer import Renderer
 
 logger = logging.getLogger(__name__)
 
-from .cache import method_cache_forever
-
 from .protocol import Protocol, ProtocolError
 from .game_info import GameInfo
 from .game_data import GameData, AbilityData
@@ -25,7 +23,8 @@ from .action import combine_actions
 from .position import Point2, Point3
 from .unit import Unit
 from .units import Units
-from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type checking
+from typing import List, Dict, Set, Tuple, Any, Optional, Union  # mypy type checking
+
 
 class Client(Protocol):
     def __init__(self, ws):
@@ -64,16 +63,10 @@ class Client(Protocol):
         if race is None:
             assert isinstance(observed_player_id, int)
             # join as observer
-            req = sc_pb.RequestJoinGame(
-                observed_player_id=observed_player_id,
-                options=ifopts
-            )
+            req = sc_pb.RequestJoinGame(observed_player_id=observed_player_id, options=ifopts)
         else:
             assert isinstance(race, Race)
-            req = sc_pb.RequestJoinGame(
-                race=race.value,
-                options=ifopts
-            )
+            req = sc_pb.RequestJoinGame(race=race.value, options=ifopts)
 
         if portconfig:
             req.shared_port = portconfig.shared
@@ -103,8 +96,8 @@ class Client(Protocol):
             await self._execute(leave_game=sc_pb.RequestLeaveGame())
         except ProtocolError:
             if is_resign:
-                raise    
-     
+                raise
+
     async def debug_leave(self):
         await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(end_game=debug_pb.DebugEndGame())]))
 
@@ -140,11 +133,7 @@ class Client(Protocol):
         return result
 
     async def get_game_data(self) -> GameData:
-        result = await self._execute(data=sc_pb.RequestData(
-            ability_id=True,
-            unit_type_id=True,
-            upgrade_id=True
-        ))
+        result = await self._execute(data=sc_pb.RequestData(ability_id=True, unit_type_id=True, upgrade_id=True))
         return GameData(result.data)
 
     async def get_game_info(self) -> GameInfo:
@@ -161,9 +150,7 @@ class Client(Protocol):
         else:
             actions = combine_actions(actions)
 
-            res = await self._execute(action=sc_pb.RequestAction(
-                actions=[sc_pb.Action(action_raw=a) for a in actions]
-            ))
+            res = await self._execute(action=sc_pb.RequestAction(actions=[sc_pb.Action(action_raw=a) for a in actions]))
 
             res = [ActionResult(r) for r in res.action.result]
             if return_successes:
@@ -171,24 +158,31 @@ class Client(Protocol):
             else:
                 return [r for r in res if r != ActionResult.Success]
 
-    async def query_pathing(self, start: Union[Unit, Point2, Point3], end: Union[Point2, Point3]) -> Optional[Union[int, float]]:
+    async def query_pathing(
+        self, start: Union[Unit, Point2, Point3], end: Union[Point2, Point3]
+    ) -> Optional[Union[int, float]]:
         """ Caution: returns 0 when path not found """
         assert isinstance(start, (Point2, Unit))
         assert isinstance(end, Point2)
         if isinstance(start, Point2):
-            result = await self._execute(query=query_pb.RequestQuery(
-                pathing=[query_pb.RequestQueryPathing(
-                    start_pos=common_pb.Point2D(x=start.x, y=start.y),
-                    end_pos=common_pb.Point2D(x=end.x, y=end.y)
-                )]
-            ))
+            result = await self._execute(
+                query=query_pb.RequestQuery(
+                    pathing=[
+                        query_pb.RequestQueryPathing(
+                            start_pos=common_pb.Point2D(x=start.x, y=start.y),
+                            end_pos=common_pb.Point2D(x=end.x, y=end.y),
+                        )
+                    ]
+                )
+            )
         else:
-            result = await self._execute(query=query_pb.RequestQuery(
-                pathing=[query_pb.RequestQueryPathing(
-                    unit_tag=start.tag,
-                    end_pos=common_pb.Point2D(x=end.x, y=end.y)
-                )]
-            ))
+            result = await self._execute(
+                query=query_pb.RequestQuery(
+                    pathing=[
+                        query_pb.RequestQueryPathing(unit_tag=start.tag, end_pos=common_pb.Point2D(x=end.x, y=end.y))
+                    ]
+                )
+            )
         distance = float(result.query.pathing[0].distance)
         if distance <= 0.0:
             return None
@@ -207,34 +201,48 @@ class Client(Protocol):
         assert isinstance(zipped_list[0][0], (Point2, Unit))
         assert isinstance(zipped_list[0][1], Point2)
         if isinstance(zipped_list[0][0], Point2):
-            results = await self._execute(query=query_pb.RequestQuery(
-                pathing=[query_pb.RequestQueryPathing(
-                    start_pos=common_pb.Point2D(x=p1.x, y=p1.y),
-                    end_pos=common_pb.Point2D(x=p2.x, y=p2.y)
-                ) for p1, p2 in zipped_list]
-            ))
+            results = await self._execute(
+                query=query_pb.RequestQuery(
+                    pathing=[
+                        query_pb.RequestQueryPathing(
+                            start_pos=common_pb.Point2D(x=p1.x, y=p1.y), end_pos=common_pb.Point2D(x=p2.x, y=p2.y)
+                        )
+                        for p1, p2 in zipped_list
+                    ]
+                )
+            )
         else:
-            results = await self._execute(query=query_pb.RequestQuery(
-                pathing=[query_pb.RequestQueryPathing(
-                    unit_tag=p1.tag,
-                    end_pos=common_pb.Point2D(x=p2.x, y=p2.y)
-                ) for p1, p2 in zipped_list]
-            ))
+            results = await self._execute(
+                query=query_pb.RequestQuery(
+                    pathing=[
+                        query_pb.RequestQueryPathing(unit_tag=p1.tag, end_pos=common_pb.Point2D(x=p2.x, y=p2.y))
+                        for p1, p2 in zipped_list
+                    ]
+                )
+            )
         results = [float(d.distance) for d in results.query.pathing]
         return results
 
-    async def query_building_placement(self, ability: AbilityId, positions: List[Union[Unit, Point2, Point3]], ignore_resources: bool=True) -> List[ActionResult]:
+    async def query_building_placement(
+        self, ability: AbilityId, positions: List[Union[Unit, Point2, Point3]], ignore_resources: bool = True
+    ) -> List[ActionResult]:
         assert isinstance(ability, AbilityData)
-        result = await self._execute(query=query_pb.RequestQuery(
-            placements=[query_pb.RequestQueryBuildingPlacement(
-                ability_id=ability.id.value,
-                target_pos=common_pb.Point2D(x=position.x, y=position.y)
-            ) for position in positions],
-            ignore_resource_requirements=ignore_resources
-        ))
+        result = await self._execute(
+            query=query_pb.RequestQuery(
+                placements=[
+                    query_pb.RequestQueryBuildingPlacement(
+                        ability_id=ability.id.value, target_pos=common_pb.Point2D(x=position.x, y=position.y)
+                    )
+                    for position in positions
+                ],
+                ignore_resource_requirements=ignore_resources,
+            )
+        )
         return [ActionResult(p.result) for p in result.query.placements]
 
-    async def query_available_abilities(self, units: Union[List[Unit], "Units"], ignore_resource_requirements: bool=False) -> List[List[AbilityId]]:
+    async def query_available_abilities(
+        self, units: Union[List[Unit], "Units"], ignore_resource_requirements: bool = False
+    ) -> List[List[AbilityId]]:
         """ Query abilities of multiple units """
         if not isinstance(units, list):
             """ Deprecated, accepting a single unit may be removed in the future, query a list of units instead """
@@ -244,10 +252,11 @@ class Client(Protocol):
         else:
             input_was_a_list = True
         assert units
-        result = await self._execute(query=query_pb.RequestQuery(
-            abilities=[query_pb.RequestQueryAvailableAbilities(
-                unit_tag=unit.tag) for unit in units],
-            ignore_resource_requirements=ignore_resource_requirements)
+        result = await self._execute(
+            query=query_pb.RequestQuery(
+                abilities=[query_pb.RequestQueryAvailableAbilities(unit_tag=unit.tag) for unit in units],
+                ignore_resource_requirements=ignore_resource_requirements,
+            )
         )
         """ Fix for bots that only query a single unit """
         if not input_was_a_list:
@@ -257,12 +266,11 @@ class Client(Protocol):
     async def chat_send(self, message: str, team_only: bool):
         """ Writes a message to the chat """
         ch = ChatChannel.Team if team_only else ChatChannel.Broadcast
-        r = await self._execute(action=sc_pb.RequestAction(
-            actions=[sc_pb.Action(action_chat=sc_pb.ActionChat(
-                channel=ch.value,
-                message=message
-            ))]
-        ))
+        r = await self._execute(
+            action=sc_pb.RequestAction(
+                actions=[sc_pb.Action(action_chat=sc_pb.ActionChat(channel=ch.value, message=message))]
+            )
+        )
 
     async def debug_create_unit(self, unit_spawn_commands: List[List[Union[UnitTypeId, int, Point2, Point3]]]):
         """ Usage example (will spawn 1 marine in the center of the map for player ID 1):
@@ -276,40 +284,49 @@ class Client(Protocol):
         assert isinstance(unit_spawn_commands[0][2], (Point2, Point3))
         assert 1 <= unit_spawn_commands[0][3] <= 2
 
-        await self._execute(debug=sc_pb.RequestDebug(
-            debug=[debug_pb.DebugCommand(create_unit=debug_pb.DebugCreateUnit(
-                unit_type=unit_type.value,
-                owner=owner_id,
-                pos=common_pb.Point2D(x=position.x, y=position.y),
-                quantity=amount_of_units
-            )) for unit_type, amount_of_units, position, owner_id in unit_spawn_commands]
-        ))
+        await self._execute(
+            debug=sc_pb.RequestDebug(
+                debug=[
+                    debug_pb.DebugCommand(
+                        create_unit=debug_pb.DebugCreateUnit(
+                            unit_type=unit_type.value,
+                            owner=owner_id,
+                            pos=common_pb.Point2D(x=position.x, y=position.y),
+                            quantity=amount_of_units,
+                        )
+                    )
+                    for unit_type, amount_of_units, position, owner_id in unit_spawn_commands
+                ]
+            )
+        )
 
     async def debug_kill_unit(self, unit_tags: Union[Units, List[int], Set[int]]):
         if isinstance(unit_tags, Units):
             unit_tags = unit_tags.tags
         assert unit_tags
 
-        await self._execute(debug=sc_pb.RequestDebug(
-            debug=[debug_pb.DebugCommand(kill_unit=debug_pb.DebugKillUnit(
-                tag=unit_tags
-            ))]
-        ))
+        await self._execute(
+            debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(kill_unit=debug_pb.DebugKillUnit(tag=unit_tags))])
+        )
 
     async def move_camera(self, position: Union[Unit, Point2, Point3]):
         """ Moves camera to the target position """
         assert isinstance(position, (Unit, Point2, Point3))
         if isinstance(position, Unit):
             position = position.position
-        await self._execute(action=sc_pb.RequestAction(
-            actions=[sc_pb.Action(
-                action_raw=raw_pb.ActionRaw(
-                    camera_move=raw_pb.ActionRawCameraMove(
-                        center_world_space=common_pb.Point(x=position.x, y=position.y)
+        await self._execute(
+            action=sc_pb.RequestAction(
+                actions=[
+                    sc_pb.Action(
+                        action_raw=raw_pb.ActionRaw(
+                            camera_move=raw_pb.ActionRawCameraMove(
+                                center_world_space=common_pb.Point(x=position.x, y=position.y)
+                            )
+                        )
                     )
-                )
-            )]
-        ))
+                ]
+            )
+        )
 
     async def move_camera_spatial(self, position: Union[Point2, Point3]):
         """ Moves camera to the target position using the spatial aciton interface """
@@ -334,16 +351,25 @@ class Client(Protocol):
                 texts = [texts] * len(positions)
             assert len(texts) == len(positions)
 
-            await self._execute(debug=sc_pb.RequestDebug(
-                debug=[debug_pb.DebugCommand(draw=debug_pb.DebugDraw(
-                    text=[debug_pb.DebugText(
-                        text=t,
-                        color=debug_pb.Color(r=color[0], g=color[1], b=color[2]),
-                        world_pos=common_pb.Point(x=p.x, y=p.y, z=getattr(p, "z", 10)),
-                        size=size_px
-                    ) for t, p in zip(texts, positions)]
-                ))]
-            ))
+            await self._execute(
+                debug=sc_pb.RequestDebug(
+                    debug=[
+                        debug_pb.DebugCommand(
+                            draw=debug_pb.DebugDraw(
+                                text=[
+                                    debug_pb.DebugText(
+                                        text=t,
+                                        color=debug_pb.Color(r=color[0], g=color[1], b=color[2]),
+                                        world_pos=common_pb.Point(x=p.x, y=p.y, z=getattr(p, "z", 10)),
+                                        size=size_px,
+                                    )
+                                    for t, p in zip(texts, positions)
+                                ]
+                            )
+                        )
+                    ]
+                )
+            )
         else:
             await self.debug_text([texts], [positions], color)
 
@@ -351,7 +377,7 @@ class Client(Protocol):
         """ Draws a text in the top left corner of the screen (up to a max of 6 messages it seems). Don't forget to add 'await self._client.send_debug'. """
         self._debug_texts.append(self.to_debug_message(text))
 
-    def debug_text_screen(self, text: str, pos: Union[Point2, Point3, tuple, list], color=None, size: int=8):
+    def debug_text_screen(self, text: str, pos: Union[Point2, Point3, tuple, list], color=None, size: int = 8):
         """ Draws a text on the screen with coordinates 0 <= x, y <= 1. Don't forget to add 'await self._client.send_debug'. """
         assert len(pos) >= 2
         assert 0 <= pos[0] <= 1
@@ -359,52 +385,60 @@ class Client(Protocol):
         pos = Point2((pos[0], pos[1]))
         self._debug_texts.append(self.to_debug_message(text, color, pos, size))
 
-    def debug_text_2d(self, text: str, pos: Union[Point2, Point3, tuple, list], color=None, size: int=8):
+    def debug_text_2d(self, text: str, pos: Union[Point2, Point3, tuple, list], color=None, size: int = 8):
         return self.debug_text_screen(text, pos, color, size)
 
-    def debug_text_world(self, text: str, pos: Union[Unit, Point2, Point3], color=None, size: int=8):
+    def debug_text_world(self, text: str, pos: Union[Unit, Point2, Point3], color=None, size: int = 8):
         """ Draws a text at Point3 position. Don't forget to add 'await self._client.send_debug'.
         To grab a unit's 3d position, use unit.position3d
         Usually the Z value of a Point3 is between 8 and 14 (except for flying units)
         """
-        if isinstance(pos, Point2) and not isinstance(pos, Point3): # a Point3 is also a Point2
+        if isinstance(pos, Point2) and not isinstance(pos, Point3):  # a Point3 is also a Point2
             pos = Point3((pos.x, pos.y, 0))
         self._debug_texts.append(self.to_debug_message(text, color, pos, size))
 
-    def debug_text_3d(self, text: str, pos: Union[Unit, Point2, Point3], color=None, size: int=8):
+    def debug_text_3d(self, text: str, pos: Union[Unit, Point2, Point3], color=None, size: int = 8):
         return self.debug_text_world(text, pos, color, size)
 
     def debug_line_out(self, p0: Union[Unit, Point2, Point3], p1: Union[Unit, Point2, Point3], color=None):
         """ Draws a line from p0 to p1. Don't forget to add 'await self._client.send_debug'. """
-        self._debug_lines.append(debug_pb.DebugLine(
-            line=debug_pb.Line(p0=self.to_debug_point(p0), p1=self.to_debug_point(p1)),
-            color=self.to_debug_color(color)))
+        self._debug_lines.append(
+            debug_pb.DebugLine(
+                line=debug_pb.Line(p0=self.to_debug_point(p0), p1=self.to_debug_point(p1)),
+                color=self.to_debug_color(color),
+            )
+        )
 
     def debug_box_out(self, p_min: Union[Unit, Point2, Point3], p_max: Union[Unit, Point2, Point3], color=None):
         """ Draws a box with p_min and p_max as corners. Don't forget to add 'await self._client.send_debug'. """
-        self._debug_boxes.append(debug_pb.DebugBox(
-            min=self.to_debug_point(p_min),
-            max=self.to_debug_point(p_max),
-            color=self.to_debug_color(color)
-        ))
+        self._debug_boxes.append(
+            debug_pb.DebugBox(
+                min=self.to_debug_point(p_min), max=self.to_debug_point(p_max), color=self.to_debug_color(color)
+            )
+        )
 
     def debug_sphere_out(self, p: Union[Unit, Point2, Point3], r: Union[int, float], color=None):
         """ Draws a sphere at point p with radius r. Don't forget to add 'await self._client.send_debug'. """
-        self._debug_spheres.append(debug_pb.DebugSphere(
-            p=self.to_debug_point(p),
-            r=r,
-            color=self.to_debug_color(color)
-        ))
+        self._debug_spheres.append(
+            debug_pb.DebugSphere(p=self.to_debug_point(p), r=r, color=self.to_debug_color(color))
+        )
 
     async def send_debug(self):
         """ Sends the debug draw execution. Put this after your debug creation functions. """
-        await self._execute(debug=sc_pb.RequestDebug(
-            debug=[debug_pb.DebugCommand(draw=debug_pb.DebugDraw(
-                text=self._debug_texts if self._debug_texts else None,
-                lines=self._debug_lines if self._debug_lines else None,
-                boxes=self._debug_boxes if self._debug_boxes else None,
-                spheres=self._debug_spheres if self._debug_spheres else None
-            ))]))
+        await self._execute(
+            debug=sc_pb.RequestDebug(
+                debug=[
+                    debug_pb.DebugCommand(
+                        draw=debug_pb.DebugDraw(
+                            text=self._debug_texts if self._debug_texts else None,
+                            lines=self._debug_lines if self._debug_lines else None,
+                            boxes=self._debug_boxes if self._debug_boxes else None,
+                            spheres=self._debug_spheres if self._debug_spheres else None,
+                        )
+                    )
+                ]
+            )
+        )
         self._debug_texts.clear()
         self._debug_lines.clear()
         self._debug_boxes.clear()
@@ -431,17 +465,13 @@ class Client(Protocol):
             point = point.position3d
         return common_pb.Point(x=point.x, y=point.y, z=getattr(point, "z", 0))
 
-    def to_debug_message(self, text: str, color=None, pos: Optional[Union[Point2, Point3]]=None, size: int=8) -> debug_pb.DebugText:
+    def to_debug_message(
+        self, text: str, color=None, pos: Optional[Union[Point2, Point3]] = None, size: int = 8
+    ) -> debug_pb.DebugText:
         """ Helper function to create debug texts """
         color = self.to_debug_color(color)
         pt3d = self.to_debug_point(pos) if isinstance(pos, Point3) else None
         virtual_pos = self.to_debug_point(pos) if not isinstance(pos, Point3) else None
 
-        return debug_pb.DebugText(
-            color=color,
-            text=text,
-            virtual_pos=virtual_pos,
-            world_pos=pt3d,
-            size=size
-        )
-    
+        return debug_pb.DebugText(color=color, text=text, virtual_pos=virtual_pos, world_pos=pt3d, size=size)
+
