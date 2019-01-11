@@ -13,30 +13,6 @@ def cache_forever(f):
     return inner
 
 
-def method_cache_forever(f):
-    f.cache = {}
-
-    @wraps(f)
-    def inner(self, *args):
-        if args not in f.cache:
-            f.cache[args] = f(self, *args)
-        return f.cache[args]
-
-    return inner
-
-
-def property_cache_forever(f):
-    f.cached = None
-
-    @wraps(f)
-    def inner(self):
-        if f.cached is None:
-            f.cached = f(self)
-        return f.cached
-
-    return property(inner)
-
-
 def method_cache_once_per_frame(f):
     """ Untested but should work for functions with arguments
     Only works on properties of the bot object because it requires access to self.state.game_loop """
