@@ -19,7 +19,7 @@ class PassengerUnit:
         self.cache = {}
 
     def __repr__(self):
-        return f"{self.__name__}(name={self.name !r}, tag={self.tag})"
+        return f"{self.__class__.__name__}(name={self.name !r}, tag={self.tag})"
 
     @property_immutable_cache
     def type_id(self) -> UnitTypeId:
