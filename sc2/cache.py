@@ -72,3 +72,23 @@ def property_cache_once_per_frame(f):
 
     return property(inner)
 
+
+def property_immutable_cache(f):
+    @wraps(f)
+    def inner(self):
+        if f.__name__ not in self.cache:
+            self.cache[f.__name__] = f(self)
+        return self.cache[f.__name__]
+
+    return property(inner)
+
+
+def property_mutable_cache(f):
+    @wraps(f)
+    def inner(self):
+        if f.__name__ not in self.cache:
+            self.cache[f.__name__] = f(self)
+        return self.cache[f.__name__].copy()
+
+    return property(inner)
+    
