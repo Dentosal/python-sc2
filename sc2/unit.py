@@ -1,6 +1,5 @@
 from typing import Any, Dict, List, Optional, Set, Tuple, Union  # mypy type checking
 
-from s2clientprotocol import raw_pb2 as raw_pb
 from sc2.ids.buff_id import BuffId
 
 from .cache import property_mutable_cache, property_immutable_cache
@@ -504,7 +503,7 @@ class Unit(PassengerUnit):
     @property_immutable_cache
     def order_target(self) -> Optional[Union[int, Point2]]:
         """ Returns the target tag (if it is a Unit) or Point2 (if it is a Position)
-        from the first order, reutrn None if the unit is idle """
+        from the first order, returns None if the unit is idle """
         if self.orders:
             if isinstance(self.orders[0].target, int):
                 return self.orders[0].target
@@ -537,7 +536,7 @@ class Unit(PassengerUnit):
 
     @property_immutable_cache
     def ideal_harvesters(self) -> int:
-        """ Return three for geysers, 2*n for n mineral patches on that base."""
+        """ Returns 3 for geysers, 2*n for n mineral patches on that base."""
         return self._proto.ideal_harvesters
 
     @property_immutable_cache
@@ -573,10 +572,11 @@ class Unit(PassengerUnit):
         return self(AbilityId.HARVEST_GATHER, *args, **kwargs)
 
     def return_resource(self, *args, **kwargs):
+        """ Does not need a target """
         return self(AbilityId.HARVEST_RETURN, *args, **kwargs)
 
     def move(self, *args, **kwargs):
-        """ Target can be a Unit (to follow that unit ) or Point2 """
+        """ Target can be a Unit (to follow that unit) or Point2 """
         return self(AbilityId.MOVE, *args, **kwargs)
 
     def scan_move(self, *args, **kwargs):
@@ -615,7 +615,6 @@ class UnitOrder:
         self.ability = ability
         self.target = target
         self.progress = progress
-        self.cache = {}
 
     def __repr__(self):
         return f"UnitOrder({self.ability}, {self.target}, {self.progress})"
