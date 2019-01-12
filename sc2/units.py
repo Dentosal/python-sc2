@@ -43,7 +43,7 @@ class Units(list):
 
     def __sub__(self, other: "Units") -> "Units":
         if self is None:
-            return None
+            return Units([], self.game_data)
         if other is None:
             return self
         tags = {unit.tag for unit in other}
