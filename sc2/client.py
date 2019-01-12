@@ -194,12 +194,12 @@ class Client(Protocol):
         Caution: returns 0 when path not found
         Might merge this function with the function above
         """
-        assert zipped_list
-        assert isinstance(zipped_list, list)
-        assert isinstance(zipped_list[0], list)
-        assert len(zipped_list[0]) == 2
-        assert isinstance(zipped_list[0][0], (Point2, Unit))
-        assert isinstance(zipped_list[0][1], Point2)
+        assert zipped_list, "No zipped_list"
+        assert isinstance(zipped_list, list), f"{type(zipped_list)}"
+        assert isinstance(zipped_list[0], list), f"{type(zipped_list[0])}"
+        assert len(zipped_list[0]) == 2, f"{len(zipped_list[0])}"
+        assert isinstance(zipped_list[0][0], (Point2, Unit)), f"{type(zipped_list[0][0])}"
+        assert isinstance(zipped_list[0][1], Point2), f"{type(zipped_list[0][1])}"
         if isinstance(zipped_list[0][0], Point2):
             results = await self._execute(
                 query=query_pb.RequestQuery(
@@ -266,7 +266,7 @@ class Client(Protocol):
     async def chat_send(self, message: str, team_only: bool):
         """ Writes a message to the chat """
         ch = ChatChannel.Team if team_only else ChatChannel.Broadcast
-        r = await self._execute(
+        await self._execute(
             action=sc_pb.RequestAction(
                 actions=[sc_pb.Action(action_chat=sc_pb.ActionChat(channel=ch.value, message=message))]
             )
