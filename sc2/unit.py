@@ -19,6 +19,7 @@ class PassengerUnit:
         self.cache = {}
 
     def __repr__(self):
+        """ Will return string of this form: Unit(name='SCV', tag=4396941328) """
         return f"{self.__class__.__name__}(name={self.name !r}, tag={self.tag})"
 
     @property_immutable_cache
