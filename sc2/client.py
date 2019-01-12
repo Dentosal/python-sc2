@@ -10,6 +10,7 @@ import logging
 
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId
+from sc2.renderer import Renderer
 
 logger = logging.getLogger(__name__)
 
@@ -36,12 +37,28 @@ class Client(Protocol):
         self._debug_boxes = list()
         self._debug_spheres = list()
 
+        self._renderer = None
+
     @property
     def in_game(self):
         return self._status == Status.in_game
 
-    async def join_game(self, race=None, observed_player_id=None, portconfig=None):
+    async def join_game(self, race=None, observed_player_id=None, portconfig=None, rgb_render_config=None):
         ifopts = sc_pb.InterfaceOptions(raw=True, score=True)
+
+        if rgb_render_config:
+            assert isinstance(rgb_render_config, dict)
+            assert 'window_size' in rgb_render_config and 'minimap_size' in rgb_render_config
+            window_size = rgb_render_config['window_size']
+            minimap_size = rgb_render_config['minimap_size']
+            self._renderer = Renderer(self, window_size, minimap_size)
+            map_width, map_height = window_size
+            minimap_width, minimap_height = minimap_size
+
+            ifopts.render.resolution.x = map_width
+            ifopts.render.resolution.y = map_height
+            ifopts.render.minimap_resolution.x = minimap_width
+            ifopts.render.minimap_resolution.y = minimap_height
 
         if race is None:
             assert isinstance(observed_player_id, int)
@@ -103,6 +120,11 @@ class Client(Protocol):
             for pr in result.observation.player_result:
                 player_id_to_result[pr.player_id] = Result(pr.result)
             self._game_result = player_id_to_result
+
+        # if render_data is available, then RGB rendering was requested
+        if self._renderer and result.observation.observation.HasField('render_data'):
+            await self._renderer.render(result.observation)
+
         return result
 
     async def step(self):
@@ -305,6 +327,19 @@ class Client(Protocol):
                 ]
             )
         )
+
+    async def move_camera_spatial(self, position: Union[Point2, Point3]):
+        """ Moves camera to the target position using the spatial aciton interface """
+        from s2clientprotocol import spatial_pb2 as spatial_pb
+        assert isinstance(position, (Point2, Point3))
+        action = sc_pb.Action(
+            action_render=spatial_pb.ActionSpatial(
+                camera_move=spatial_pb.ActionSpatialCameraMove(
+                    center_minimap=common_pb.PointI(x=position.x, y=position.y)
+                )
+            )
+        )
+        await self._execute(action=sc_pb.RequestAction(actions=[action]))
 
     async def debug_text(self, texts: Union[str, list], positions: Union[list, set], color=(0, 255, 0), size_px=16):
         """ Deprecated, may be removed soon """
