@@ -1245,7 +1245,6 @@ class AbilityId(enum.Enum):
     VIPERPARASITICBOMBRELAY_PARASITICBOMB = 3789
     PARASITICBOMBRELAYDODGE_PARASITICBOMB = 3791
 
-
 for item in AbilityId:
     assert not item.name in globals()
     globals()[item.name] = item
