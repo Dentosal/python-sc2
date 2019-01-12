@@ -158,6 +158,18 @@ class PassengerUnit:
         return 0
 
     @property_immutable_cache
+    def bonus_damage(self):
+        """ Returns a tuple of form 'bonus damage, armor type' if unit does bonus damage against armor type
+        Light = 1; Armored = 2; Biological = 3; Mechanical = 4; Robotic = 5; Psionic = 6; Massive = 7;
+        Structure = 8; Hover = 9; Heroic = 10; Summoned = 11 """
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            for weapon in weapons:
+                if weapon.damage_bonus:
+                    b = weapon.damage_bonus[0]
+                    return b.bonus, b.attribute
+
+    @property_immutable_cache
     def armor(self) -> Union[int, float]:
         """ Does not include upgrades """
         return self._type_data._proto.armor

@@ -14,7 +14,7 @@ from .position import Point2, Point3
 from .data import Race, ActionResult, Attribute, race_worker, race_townhalls, race_gas, Target, Result
 from .unit import Unit
 from .cache import property_cache_forever, property_cache_once_per_frame
-from .game_data import AbilityData, Cost
+from .game_data import AbilityData
 from .ids.unit_typeid import UnitTypeId
 from .ids.ability_id import AbilityId
 from .ids.upgrade_id import UpgradeId
