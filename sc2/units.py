@@ -23,6 +23,9 @@ class Units(list):
     def select(self, *args, **kwargs):
         return UnitSelection(self, *args, **kwargs)
 
+    def copy(self):
+        return self.subgroup(self)
+
     def __or__(self, other: "Units") -> "Units":
         if self is None:
             return other
