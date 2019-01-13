@@ -1,5 +1,6 @@
 import asyncio
 import async_timeout
+import time
 
 import logging
 logger = logging.getLogger(__name__)
@@ -11,6 +12,29 @@ from .player import Human, Bot
 from .data import Race, Difficulty, Result, ActionResult, CreateGameError
 from .game_state import GameState
 from .protocol import ConnectionAlreadyClosed
+
+class SlidingTimeWindow:
+    def __init__(self, size: int):
+        assert size > 0
+
+        self.window_size = size
+        self.window = []
+
+    def push(self, value: float):
+        self.window = (self.window + [value])[-self.window_size:]
+
+    @property
+    def sum(self) -> float:
+        return sum(self.window)
+
+    @property
+    def available(self) -> float:
+        return sum(self.window[1:])
+
+    @property
+    def available_fmt(self) -> float:
+        return ",".join(f"{w:.2f}" for w in self.window[1:])
+
 
 async def _play_game_human(client, player_id, realtime, game_time_limit):
     while True:
@@ -26,6 +50,41 @@ async def _play_game_human(client, player_id, realtime, game_time_limit):
             await client.step()
 
 async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_time_limit):
+    if realtime:
+        assert step_time_limit is None
+
+    # step_time_limit works like this:
+    # * If None, then step time is not limited
+    # * If given integer or float, the bot will simpy resign if any step takes longer than that
+    # * Otherwise step_time_limit must be an object, with following settings:
+    #
+    # Key         | Value      | Description
+    # ------------|------------|-------------
+    # penalty     | None       | No penalty, the bot can continue on next step
+    # penalty     | N: int     | Cooldown penalty, BotAI.on_step will not be called for N steps
+    # penalty     | "resign"   | Bot resigns when going over time limit
+    # time_limit  | int/float  | Time limit for a single step
+    # window_size | N: int     | The time limit will be used for last N steps, instad of 1
+    #
+    # Cooldown is a harsh penalty. The both loses the ability to act, but even worse,
+    # the observation data from skipped steps is also lost. It's like falling asleep in
+    # a middle of the game.
+    time_penalty_cooldown = 0
+    if step_time_limit is None:
+        time_limit = None
+        time_window = None
+        time_penalty = None
+    elif isinstance(step_time_limit, (int, float)):
+        time_limit = float(step_time_limit)
+        time_window = SlidingTimeWindow(1)
+        time_penalty = "resign"
+    else:
+        assert isinstance(step_time_limit, dict)
+        time_penalty = step_time_limit.get("penalty", None)
+        time_window = SlidingTimeWindow(int(step_time_limit.get("window_size", 1)))
+        time_limit = float(step_time_limit.get("time_limit", None))
+
+
     game_data = await client.get_game_data()
     game_info = await client.get_game_info()
 
@@ -50,19 +109,49 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
         if iteration == 0:
             ai._prepare_first_step()
 
-        logger.debug(f"Running AI step, realtime={realtime}")
+        logger.debug(f"Running AI step, it={iteration} {gs.game_loop * 0.725 * (1 / 16):.2f}s)")
 
         try:
             await ai.issue_events()
             if realtime:
                 await ai.on_step(iteration)
             else:
-                logger.debug(f"Running AI step, timeout={step_time_limit}")
-                try:
-                    async with async_timeout.timeout(step_time_limit):
-                        await ai.on_step(iteration)
-                except asyncio.TimeoutError:
-                    logger.warning(f"Running AI step: out of time")
+                if time_penalty_cooldown > 0:
+                    time_penalty_cooldown -= 1
+                    logger.warning(f"Running AI step: penalty cooldown: {time_penalty_cooldown}")
+                    iteration -= 1 # Do not increment the iteration on this round
+                elif time_limit is None:
+                    await ai.on_step(iteration)
+                else:
+                    out_of_budget = False
+                    budget = time_limit - time_window.available
+
+                    if budget < 0:
+                        logger.warning(f"Running AI step: out of budget before step")
+                        step_time = 0.0
+                        out_of_budget = True
+                    else:
+                        step_start = time.monotonic()
+                        try:
+                            async with async_timeout.timeout(budget):
+                                await ai.on_step(iteration)
+                        except asyncio.TimeoutError:
+                            step_time = time.monotonic() - step_start
+                            logger.warning(
+                                f"Running AI step: out of budget; " +
+                                f"budget={budget:.2f}, steptime={step_time:.2f}, " +
+                                f"window={time_window.available_fmt}"
+                            )
+                            out_of_budget = True
+                        step_time = time.monotonic() - step_start
+
+                    time_window.push(step_time)
+
+                    if out_of_budget and time_penalty != None:
+                        if time_penalty == "resign":
+                            raise RuntimeError("Out of time")
+                        else:
+                            time_penalty_cooldown = int(time_penalty)
         except Exception as e:
             # NOTE: this message is caught by pytest suite
             logger.exception(f"AI step threw an error") # DO NOT EDIT!
