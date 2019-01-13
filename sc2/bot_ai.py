@@ -19,6 +19,7 @@ from .ids.unit_typeid import UnitTypeId
 from .ids.ability_id import AbilityId
 from .ids.upgrade_id import UpgradeId
 from .units import Units
+from collections import Counter
 
 
 class BotAI:
@@ -49,6 +50,7 @@ class BotAI:
 
     @property
     def game_info(self) -> "GameInfo":
+        """ See game_info.py """
         return self._game_info
 
     @property
@@ -126,16 +128,20 @@ class BotAI:
             # choose best fitting point
             result = min(possible_points, key=lambda p: sum(p.distance_to(resource) for resource in resources))
             centers[result] = resources
-        """ Returns dict with center of resources as key, resources (mineral field, vespene geyser) as value """
+        """ Returns dict with the correct expansion position Point2 key, resources (mineral field, vespene geyser) as value """
         return centers
 
     async def get_available_abilities(self, units: Union[List[Unit], Units], ignore_resource_requirements=False) -> List[List[AbilityId]]:
-        """ Returns available abilities of one or more units. """
-        # right know only checks cooldown, energy cost, and whether the ability has been researched
+        """ Returns available abilities of one or more units. Right know only checks cooldown, energy cost, and whether the ability has been researched.
+        Example usage:
+        units_abilities = await self.get_available_abilities(self.units)
+        or
+        units_abilities = await self.get_available_abilities([self.units.random]) """
         return await self._client.query_available_abilities(units, ignore_resource_requirements)
 
     async def expand_now(self, building: UnitTypeId=None, max_distance: Union[int, float]=10, location: Optional[Point2]=None):
-        """Takes new expansion."""
+        """ Not recommended as this function uses 'self.do' (reduces performance).
+        Finds the next possible expansion via 'self.get_next_expansion()'. If the target expansion is blocked (e.g. an enemy unit), it will misplace the expansion. """
 
         if not building:
             # self.race is never Race.Random
@@ -385,6 +391,32 @@ class BotAI:
                     return order.progress
         return 0
 
+    @property_cache_once_per_frame
+    def _abilities_all_units(self):
+        """ Cache for the already_pending function, includes protoss units warping in, and all units in production, and all structures """
+        abilities_amount = Counter()
+        for unit in self.units: # type: Unit
+            for order in unit.orders:
+                abilities_amount[order.ability] += 1
+            if not unit.is_ready:
+                abilities_amount[self._game_data.units[unit.type_id.value].creation_ability] += 1
+
+        return abilities_amount
+
+    @property_cache_once_per_frame
+    def _abilities_workers_and_eggs(self):
+        """ Cache for the already_pending function, includes all worker orders (including pending), zerg units in production (except queens and morphing units) and structures in production, counts double for terran """
+        abilities_amount = Counter()
+        for worker in self.workers: # type: Unit
+            for order in worker.orders:
+                abilities_amount[order.ability] += 1
+        for egg in self.units(UnitTypeId.EGG): # type: Unit
+            for order in egg.orders:
+                abilities_amount[order.ability] += 1
+        for unit in self.units.structure.not_ready: # type: Unit
+            abilities_amount[self._game_data.units[unit.type_id.value].creation_ability] += 1
+        return abilities_amount
+
     def already_pending(self, unit_type: Union[UpgradeId, UnitTypeId], all_units: bool=False) -> int:
         """
         Returns a number of buildings or units already in progress, or if a
@@ -402,18 +434,14 @@ class BotAI:
             
         ability = self._game_data.units[unit_type.value].creation_ability
 
-        amount = len(self.units(unit_type).not_ready)
-
         if all_units:
-            amount += sum([o.ability == ability for u in self.units for o in u.orders])
+            return self._abilities_all_units[ability]
         else:
-            amount += sum([o.ability == ability for w in self.workers for o in w.orders])
-            amount += sum([egg.orders[0].ability == ability for egg in self.units(UnitTypeId.EGG)])
-
-        return amount
+            return self._abilities_workers_and_eggs[ability]
 
     async def build(self, building: UnitTypeId, near: Union[Point2, Point3], max_distance: int=20, unit: Optional[Unit]=None, random_alternative: bool=True, placement_step: int=2):
-        """Build a building."""
+        """ Not recommended as this function uses 'self.do' (reduces performance).
+        Also if the position is not placeable, this function tries to find a nearby position to place the structure. Then uses 'self.do' to give the worker the order to start the construction. """
 
         if isinstance(near, Unit):
             near = near.position.to2
@@ -432,6 +460,11 @@ class BotAI:
         return await self.do(unit.build(building, p))
 
     async def do(self, action):
+        """ Not recommended. Use self.do_actions once per iteration instead to reduce lag:
+        self.actions = []
+        cc = self.units(COMMANDCENTER).random
+        self.actions.append(cc.train(SCV))
+        await self.do_action(self.actions) """
         if not self.can_afford(action):
             logger.warning(f"Cannot afford action {action}")
             return ActionResult.Error
@@ -449,6 +482,7 @@ class BotAI:
         return r
 
     async def do_actions(self, actions: List["UnitCommand"]):
+        """ Unlike 'self.do()', this function does not instantly subtract minerals and vespene. """
         if not actions:
             return None
         for action in actions:
@@ -469,7 +503,7 @@ class BotAI:
         """ Returns terrain height at a position. Caution: terrain height is not anywhere near a unit's z-coordinate. """
         assert isinstance(pos, (Point2, Point3, Unit))
         pos = pos.position.to2.rounded
-        return self._game_info.terrain_height[pos] # returns int
+        return self._game_info.terrain_height[pos]
 
     def in_placement_grid(self, pos: Union[Point2, Point3, Unit]) -> bool:
         """ Returns True if you can place something at a position. Remember, buildings usually use 2x2, 3x3 or 5x5 of these grid points.
@@ -517,7 +551,7 @@ class BotAI:
 
     def _prepare_step(self, state):
         """Set attributes from new state before on_step."""
-        self.state: GameState = state
+        self.state: GameState = state # See game_state.py
         # Required for events
         self._units_previous_map.clear()
         for unit in self.units:
