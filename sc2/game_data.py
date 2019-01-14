@@ -29,6 +29,7 @@ class GameData:
         self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities if a.ability_id in ids}
         self.units = {u.unit_id: UnitTypeData(self, u) for u in data.units if u.available}
         self.upgrades = {u.upgrade_id: UpgradeData(self, u) for u in data.upgrades}
+        self.unit_types: Dict[int, UnitTypeId] = {}
 
     @lru_cache(maxsize=256)
     def calculate_ability_cost(self, ability) -> "Cost":
