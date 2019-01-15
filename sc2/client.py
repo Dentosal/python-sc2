@@ -515,7 +515,7 @@ class Client(Protocol):
         await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=3)]))
 
     async def debug_free(self):
-        """ Units, structures and upgrades are free. Using it a second time disables it again.  """
+        """ Units, structures and upgrades are free of mineral and gas cost. Using it a second time disables it again.  """
         await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=4)]))
 
     async def debug_all_resources(self):
