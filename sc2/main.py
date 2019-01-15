@@ -23,6 +23,9 @@ class SlidingTimeWindow:
     def push(self, value: float):
         self.window = (self.window + [value])[-self.window_size:]
 
+    def clear(self):
+        self.window = []
+
     @property
     def sum(self) -> float:
         return sum(self.window)
@@ -155,6 +158,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                             raise RuntimeError("Out of time")
                         else:
                             time_penalty_cooldown = int(time_penalty)
+                            time_window.clear()
         except Exception as e:
             # NOTE: this message is caught by pytest suite
             logger.exception(f"AI step threw an error") # DO NOT EDIT!
