@@ -23,7 +23,7 @@ from .action import combine_actions
 from .position import Point2, Point3
 from .unit import Unit
 from .units import Units
-from typing import List, Dict, Set, Tuple, Any, Optional, Union  # mypy type checking
+from typing import List, Dict, Set, Tuple, Any, Optional, Union, Iterable
 
 
 class Client(Protocol):
@@ -475,3 +475,74 @@ class Client(Protocol):
 
         return debug_pb.DebugText(color=color, text=text, virtual_pos=virtual_pos, world_pos=pt3d, size=size)
 
+    async def debug_set_unit_value(self, unit_tags: Union[Iterable[int], Units, Unit], unit_value: int, value: float):
+        """ Sets a "unit value" (Energy, Life or Shields) of the given units to the given value.
+        Can't set the life of a unit to 0, use "debug_kill_unit" for that. Also can't set the life above the unit's maximum.
+        The following example sets the health of all your workers to 1:
+        await self.debug_set_unit_value(self.workers, 2, value=1) """
+        if isinstance(unit_tags, Units):
+            unit_tags = unit_tags.tags
+        if isinstance(unit_tags, Unit):
+            unit_tags = [unit_tags.tag]
+        assert hasattr(unit_tags, "__iter__"), f"unit_tags argument needs to be an iterable (list, dict, set, Units), given argument is {type(unit_tags).__name__}"
+        assert 1 <= unit_value <= 3, f"unit_value needs to be between 1 and 3 (1 for energy, 2 for life, 3 for shields), given argument is {unit_value}"
+        assert all(tag > 0 for tag in unit_tags), f"Unit tags have invalid value: {unit_tags}"
+        assert isinstance(value, (int, float)), "Value needs to be of type int or float"
+        assert value >= 0, "Value can't be negative"
+        await self._execute(debug=sc_pb.RequestDebug(debug=[
+                    debug_pb.DebugCommand(unit_value=debug_pb.DebugSetUnitValue(unit_value=unit_value, value=float(value), unit_tag=unit_tag))
+                    for unit_tag in unit_tags
+        ]))
+
+    async def debug_hang(self, delay_in_seconds: float):
+        """ Freezes the SC2 client. Not recommended to be used. """
+        delay_in_ms = int(round(delay_in_seconds * 1000))
+        await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(test_process =debug_pb.DebugTestProcess(test=1, delay_ms=delay_in_ms))]))
+
+    async def debug_show_map(self):
+        """ Reveals the whole map for the bot. Using it a second time disables it again. """
+        await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=1)]))
+
+    async def debug_control_enemy(self):
+        """ Allows control over enemy units and structures similar to team games control - does not allow the bot to spend the opponent's ressources. Using it a second time disables it again.  """
+        await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=2)]))
+
+    async def debug_food(self):
+        """ Should disable food usage (does not seem to work?). Using it a second time disables it again.  """
+        await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=3)]))
+
+    async def debug_free(self):
+        """ Units, structures and upgrades are free. Using it a second time disables it again.  """
+        await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=4)]))
+
+    async def debug_all_resources(self):
+        """ Gives 5000 minerals and 5000 vespene to the bot. """
+        await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=5)]))
+
+    async def debug_god(self):
+        """ Your units and structures no longer take any damage. Using it a second time disables it again. """
+        await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=6)]))
+
+    async def debug_minerals(self):
+        """ Gives 5000 minerals to the bot. """
+        await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=7)]))
+
+    async def debug_gas(self):
+        """ Gives 5000 vespene to the bot. """
+        await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=8)]))
+
+    async def debug_cooldown(self):
+        """ Disables cooldowns of unit abilities for the bot. Using it a second time disables it again. """
+        await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=9)]))
+
+    async def debug_tech_tree(self):
+        """ Removes all tech requirements (e.g. can build a factory without having a barracks). Using it a second time disables it again. """
+        await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=10)]))
+
+    async def debug_upgrade(self):
+        """ Researches all currently available upgrades. E.g. using it once unlocks combat shield, stimpack and 1-1. Using it a second time unlocks 2-2 and all other upgrades stay researched. """
+        await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=11)]))
+
+    async def debug_fast_build(self):
+        """ Sets the build time of units and structures and upgrades to zero. Using it a second time disables it again. """
+        await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=12)]))

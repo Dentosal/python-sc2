@@ -392,7 +392,7 @@ class BotAI:
         return 0
 
     @property_cache_once_per_frame
-    def _abilities_all_units(self):
+    def _abilities_all_units(self) -> Counter:
         """ Cache for the already_pending function, includes protoss units warping in, and all units in production, and all structures """
         abilities_amount = Counter()
         for unit in self.units: # type: Unit
@@ -404,7 +404,7 @@ class BotAI:
         return abilities_amount
 
     @property_cache_once_per_frame
-    def _abilities_workers_and_eggs(self):
+    def _abilities_workers_and_eggs(self) -> Counter:
         """ Cache for the already_pending function, includes all worker orders (including pending), zerg units in production (except queens and morphing units) and structures in production, counts double for terran """
         abilities_amount = Counter()
         for worker in self.workers: # type: Unit
