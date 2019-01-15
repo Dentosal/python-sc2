@@ -85,7 +85,7 @@ class PassengerUnit:
         return self._type_data.cargo_size
 
     @property_immutable_cache
-    def _weapons(self) -> bool:
+    def _weapons(self):
         if hasattr(self._type_data._proto, "weapons"):
             return self._type_data._proto.weapons
         return False
