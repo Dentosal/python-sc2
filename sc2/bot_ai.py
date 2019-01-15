@@ -618,6 +618,10 @@ class BotAI:
         """Allows initializing the bot when the game data is available."""
         pass
 
+    async def on_start_async(self):
+        """ This function is run after "on_start". At this point, game_data, game_info and first iteration of game_state (self.state) is available. """
+        pass
+
     async def on_step(self, iteration: int):
         """Ran on every game step (looped in realtime mode)."""
         raise NotImplementedError
