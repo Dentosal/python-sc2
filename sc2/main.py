@@ -126,6 +126,9 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                     out_of_budget = False
                     budget = time_limit - time_window.available
 
+                    # Tell the bot how much time it has left attribute
+                    ai.time_budget_available = budget
+
                     if budget < 0:
                         logger.warning(f"Running AI step: out of budget before step")
                         step_time = 0.0
