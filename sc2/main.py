@@ -130,9 +130,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                     budget = time_limit - time_window.available
 
                     logger.debug(
-                        f"^ Limits:" +
-                        f"budget={budget:.2f}, steptime={step_time:.2f}, " +
-                        f"window={time_window.available_fmt}"
+                        f"^ Limits: budget={budget:.2f}, window={time_window.available_fmt}"
                     )
 
                     # Tell the bot how much time it has left attribute
