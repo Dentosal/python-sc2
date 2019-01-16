@@ -112,7 +112,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
         if iteration == 0:
             ai._prepare_first_step()
 
-        logger.debug(f"Running AI step, it={iteration} {gs.game_loop * 0.725 * (1 / 16):.2f}s)")
+        logger.debug(f"Running AI step, it={iteration} {gs.game_loop * 0.725 * (1 / 16):.2f}s")
 
         try:
             await ai.issue_events()
@@ -128,6 +128,12 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                 else:
                     out_of_budget = False
                     budget = time_limit - time_window.available
+
+                    logger.debug(
+                        f"^ Limits:" +
+                        f"budget={budget:.2f}, steptime={step_time:.2f}, " +
+                        f"window={time_window.available_fmt}"
+                    )
 
                     # Tell the bot how much time it has left attribute
                     ai.time_budget_available = budget
