@@ -450,7 +450,7 @@ class BotAI:
         else:
             return
 
-        p = await self.find_placement(building, near.rounded, max_distance, random_alternative, placement_step)
+        p = await self.find_placement(building, near, max_distance, random_alternative, placement_step)
         if p is None:
             return ActionResult.CantFindPlacementLocation
 

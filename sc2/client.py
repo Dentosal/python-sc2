@@ -549,3 +549,17 @@ class Client(Protocol):
     async def debug_fast_build(self):
         """ Sets the build time of units and structures and upgrades to zero. Using it a second time disables it again. """
         await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(game_state=12)]))
+
+    async def quick_save(self):
+        """ Saves the current game state to an in-memory bookmark.
+        See: https://github.com/Blizzard/s2client-proto/blob/eeaf5efaea2259d7b70247211dff98da0a2685a2/s2clientprotocol/sc2api.proto#L93 """
+        await self._execute(quick_save=sc_pb.RequestQuickSave())
+
+    async def quick_load(self):
+        """ Loads the game state from the previously stored in-memory bookmark.
+        Caution:
+            - The SC2 Client will crash if the game wasn't quicksaved
+            - The bot step iteration counter will not reset
+            - self.state.game_loop will be set to zero after the quickload, and self.time is dependant on it
+        """
+        await self._execute(quick_load=sc_pb.RequestQuickLoad())
