@@ -393,13 +393,15 @@ class BotAI:
 
     @property_cache_once_per_frame
     def _abilities_all_units(self) -> Counter:
-        """ Cache for the already_pending function, includes protoss units warping in, and all units in production, and all structures """
+        """ Cache for the already_pending function, includes protoss units warping in, and all units in production, and all structures, and all morphs """
         abilities_amount = Counter()
         for unit in self.units: # type: Unit
             for order in unit.orders:
                 abilities_amount[order.ability] += 1
             if not unit.is_ready:
-                abilities_amount[self._game_data.units[unit.type_id.value].creation_ability] += 1
+                if self.race != Race.Terran or not unit.is_structure:
+                    # If an SCV is constructing a building, already_pending would count this structure twice (once from the SCV order, and once from "not structure.is_ready")
+                    abilities_amount[self._game_data.units[unit.type_id.value].creation_ability] += 1
 
         return abilities_amount
 
@@ -413,8 +415,10 @@ class BotAI:
         for egg in self.units(UnitTypeId.EGG): # type: Unit
             for order in egg.orders:
                 abilities_amount[order.ability] += 1
-        for unit in self.units.structure.not_ready: # type: Unit
-            abilities_amount[self._game_data.units[unit.type_id.value].creation_ability] += 1
+        if self.race != Race.Terran:
+            # If an SCV is constructing a building, already_pending would count this structure twice (once from the SCV order, and once from "not structure.is_ready")
+            for unit in self.units.structure.not_ready: # type: Unit
+                abilities_amount[self._game_data.units[unit.type_id.value].creation_ability] += 1
         return abilities_amount
 
     def already_pending(self, unit_type: Union[UpgradeId, UnitTypeId], all_units: bool=False) -> int:
@@ -426,8 +430,6 @@ class BotAI:
         If all_units==True, then build queues of other units (such as Carriers
         (Interceptors) or Oracles (Stasis Ward)) are also included.
         """
-
-        # TODO / FIXME: SCV building a structure might be counted as two units
 
         if isinstance(unit_type, UpgradeId):
             return self.already_pending_upgrade(unit_type)
