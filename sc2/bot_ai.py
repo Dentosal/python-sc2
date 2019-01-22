@@ -421,7 +421,7 @@ class BotAI:
                 abilities_amount[self._game_data.units[unit.type_id.value].creation_ability] += 1
         return abilities_amount
 
-    def already_pending(self, unit_type: Union[UpgradeId, UnitTypeId], all_units: bool=False) -> int:
+    def already_pending(self, unit_type: Union[UpgradeId, UnitTypeId], all_units: bool=True) -> int:
         """
         Returns a number of buildings or units already in progress, or if a
         worker is en route to build it. This also includes queued orders for
