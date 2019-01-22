@@ -474,7 +474,7 @@ class Client(Protocol):
         """ Helper function to create debug texts """
         color = self.to_debug_color(color)
         pt3d = self.to_debug_point(pos) if isinstance(pos, Point3) else None
-        virtual_pos = self.to_debug_point(pos) if not isinstance(pos, Point3) else None
+        virtual_pos = self.to_debug_point(pos) if pos is not None and not isinstance(pos, Point3) else None
 
         return debug_pb.DebugText(color=color, text=text, virtual_pos=virtual_pos, world_pos=pt3d, size=size)
 
