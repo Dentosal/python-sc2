@@ -86,8 +86,9 @@ class BotAI:
         """List of possible expansion locations."""
         # RESOURCE_SPREAD_THRESHOLD = 144
         RESOURCE_SPREAD_THRESHOLD = 225
+        minerals = self.state.mineral_field
         geysers = self.state.vespene_geyser
-        all_resources = self.state.resources
+        all_resources = minerals | geysers
 
         # Group nearby minerals together to form expansion locations
         resource_groups = []
@@ -405,10 +406,10 @@ class BotAI:
         amount = len(self.units(unit_type).not_ready)
 
         if all_units:
-            amount += sum([o.ability == ability for u in self.units for o in u.orders])
+            amount += sum(o.ability == ability for u in self.units for o in u.orders)
         else:
-            amount += sum([o.ability == ability for w in self.workers for o in w.orders])
-            amount += sum([egg.orders[0].ability == ability for egg in self.units(UnitTypeId.EGG)])
+            amount += sum(o.ability == ability for w in self.workers for o in w.orders)
+            amount += sum(egg.orders[0].ability == ability for egg in self.units(UnitTypeId.EGG))
 
         return amount
 

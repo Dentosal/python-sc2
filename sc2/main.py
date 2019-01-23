@@ -181,14 +181,14 @@ async def _play_game(player, client, realtime, portconfig, step_time_limit=None,
     assert isinstance(realtime, bool), repr(realtime)
 
     player_id = await client.join_game(player.race, portconfig=portconfig, rgb_render_config=rgb_render_config)
-    logging.info(f"Player id: {player_id}")
+    logging.info(f"Player {player_id}")
 
     if isinstance(player, Human):
         result = await _play_game_human(client, player_id, realtime, game_time_limit)
     else:
         result = await _play_game_ai(client, player_id, player.ai, realtime, step_time_limit, game_time_limit)
 
-    logging.info(f"Result for player id: {player_id}: {result}")
+    logging.info(f"Result for player {player_id}({player.ai.__class__.__name__}): {result._name_}")
     return result
 
 async def _setup_host_game(server, map_settings, players, realtime, random_seed=None):

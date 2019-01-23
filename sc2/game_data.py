@@ -72,9 +72,7 @@ class GameData:
         return Cost(0, 0)
 
 class AbilityData:
-    ability_ids: List[int] = []  # sorted list
-    for ability_id in AbilityId:  # 1000 items Enum is slow
-        ability_ids.append(ability_id.value)
+    ability_ids: List[int] = [ability_id.value for ability_id in AbilityId]  # sorted list
     ability_ids.remove(0)
     ability_ids.sort()
 
