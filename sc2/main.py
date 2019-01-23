@@ -89,25 +89,28 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
     game_info = await client.get_game_info()
 
     ai._prepare_start(client, player_id, game_info, game_data)
+    state = await client.observation()
+    gs = GameState(state.observation, game_data)
+    ai._prepare_step(gs)
+    ai._prepare_first_step()
     ai.on_start()
+    await ai.on_start_async()
 
     iteration = 0
     while True:
-        state = await client.observation()
         if client._game_result:
             ai.on_end(client._game_result[player_id])
             return client._game_result[player_id]
 
-        gs = GameState(state.observation, game_data)
+        if iteration != 0:
+            state = await client.observation()
+            gs = GameState(state.observation, game_data)
 
-        if game_time_limit and (gs.game_loop * 0.725 * (1 / 16)) > game_time_limit:
-            ai.on_end(Result.Tie)
-            return Result.Tie
+            if game_time_limit and (gs.game_loop * 0.725 * (1 / 16)) > game_time_limit:
+                ai.on_end(Result.Tie)
+                return Result.Tie
 
-        ai._prepare_step(gs)
-
-        if iteration == 0:
-            ai._prepare_first_step()
+            ai._prepare_step(gs)
 
         logger.debug(f"Running AI step, it={iteration} {gs.game_loop * 0.725 * (1 / 16):.2f}s)")
 
@@ -181,7 +184,7 @@ async def _play_game(player, client, realtime, portconfig, step_time_limit=None,
     else:
         result = await _play_game_ai(client, player_id, player.ai, realtime, step_time_limit, game_time_limit)
 
-    logging.info(f"Result for player id: {player_id}: {result}")
+    logging.info(f"Result for player {player_id}({player.ai.__class__.__name__}): {result._name_}")
     return result
 
 async def _setup_host_game(server, map_settings, players, realtime, random_seed=None):

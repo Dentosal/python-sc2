@@ -95,7 +95,7 @@ class GameState:
         self.chat = response_observation.chat
         self.common: Common = Common(self.observation.player_common)
         self.psionic_matrix: PsionicMatrix = PsionicMatrix.from_proto(
-            self.observation.raw_data.player.power_sources
+            self.observation_raw.player.power_sources
         )  # what area pylon covers
         self.game_loop: int = self.observation.game_loop  # game loop, 22.4 per second on faster game speed
 
@@ -107,7 +107,7 @@ class GameState:
         # Fix for enemy units detected by my sensor tower, as blips have less unit information than normal visible units
         visibleUnits, hiddenUnits, minerals, geysers, destructables, enemy, own = ([] for _ in range(7))
 
-        for unit in self.observation.raw_data.units:
+        for unit in self.observation_raw.units:
             if unit.is_blip:
                 hiddenUnits.append(unit)
             else:

@@ -86,8 +86,9 @@ class BotAI:
         """List of possible expansion locations."""
         # RESOURCE_SPREAD_THRESHOLD = 144
         RESOURCE_SPREAD_THRESHOLD = 225
+        minerals = self.state.mineral_field
         geysers = self.state.vespene_geyser
-        all_resources = self.state.resources
+        all_resources = minerals | geysers
 
         # Group nearby minerals together to form expansion locations
         resource_groups = []
@@ -146,9 +147,8 @@ class BotAI:
 
         if not location:
             location = await self.get_next_expansion()
-        
-        if location:
-            await self.build(building, near=location, max_distance=max_distance, random_alternative=False, placement_step=1)
+		else:
+        	await self.build(building, near=location, max_distance=max_distance, random_alternative=False, placement_step=1)
 
     async def get_next_expansion(self) -> Optional[Point2]:
         """Find next expansion location."""
@@ -507,6 +507,7 @@ class BotAI:
         self.player_id: int = player_id
         self.race: Race = Race(self._game_info.player_races[self.player_id])
         self._units_previous_map: dict = dict()
+        self._previous_upgrades: Set[UpgradeId] = set()
         self.units: Units = Units([], game_data)
 
     def _prepare_first_step(self):
@@ -542,11 +543,16 @@ class BotAI:
         - on_unit_created
         - on_unit_destroyed
         - on_building_construction_complete
+        - on_upgrade_complete
         """
         await self._issue_unit_dead_events()
         await self._issue_unit_added_events()
         for unit in self.units.structure:
             await self._issue_building_complete_event(unit)
+        if len(self._previous_upgrades) != len(self.state.upgrades):
+            for upgrade_completed in self.state.upgrades - self._previous_upgrades:
+                await self.on_upgrade_complete(upgrade_completed)
+            self._previous_upgrades = self.state.upgrades
 
     async def _issue_unit_added_events(self):
         for unit in self.units.not_structure:
@@ -580,8 +586,16 @@ class BotAI:
         """ Override this in your bot class. """
         pass
 
+    async def on_upgrade_complete(self, upgrade: UpgradeId):
+        """ Override this in your bot class. """
+        pass
+
     def on_start(self):
-        """Allows initializing the bot when the game data is available."""
+        """ Allows initializing the bot when the game data is available. """
+        pass
+
+    async def on_start_async(self):
+        """ This function is run after "on_start". At this point, game_data, game_info and first iteration of game_state (self.state) is available. """
         pass
 
     async def on_step(self, iteration: int):
