@@ -612,6 +612,9 @@ class BotAI:
         for unit in self.units.not_structure:
             if unit.tag not in self._units_previous_map:
                 await self.on_unit_created(unit)
+        for unit in self.units.structure:
+            if unit.tag not in self._units_previous_map:
+                await self.on_building_construction_started(unit)
 
     async def _issue_building_complete_event(self, unit):
         if unit.build_progress < 1:
@@ -633,6 +636,10 @@ class BotAI:
         pass
 
     async def on_unit_created(self, unit: Unit):
+        """ Override this in your bot class. """
+        pass
+
+    async def on_building_construction_started(self, unit: Unit):
         """ Override this in your bot class. """
         pass
 

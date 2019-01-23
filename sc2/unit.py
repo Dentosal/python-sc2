@@ -96,6 +96,7 @@ class PassengerUnit:
         # TODO BATTLECRUISER doesnt have weapons in proto?!
         return bool(self._weapons) or self.type_id == UnitTypeId.BATTLECRUISER
 
+
     @property_immutable_cache
     def can_attack_ground(self) -> bool:
         if self._weapons:
