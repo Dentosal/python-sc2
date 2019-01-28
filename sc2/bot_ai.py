@@ -32,11 +32,6 @@ class BotAI:
         self.opponent_id: int = None
 
     @property
-    def enemy_race(self) -> Race:
-        self.enemy_id = 3 - self.player_id
-        return Race(self._game_info.player_races[self.enemy_id])
-
-    @property
     def time(self) -> Union[int, float]:
         """ Returns time in seconds, assumes the game is played on 'faster' """
         return self.state.game_loop / 22.4  # / (1/1.4) * (1/16)
@@ -228,7 +223,7 @@ class BotAI:
             ideal = townhall.ideal_harvesters
 
             deficit = ideal - actual
-            for x in range(0, deficit):
+            for _ in range(deficit):
                 if worker_pool:
                     w = worker_pool.pop()
                     mf = self.state.mineral_field.closest_to(townhall)
@@ -507,6 +502,7 @@ class BotAI:
 
         self.player_id: int = player_id
         self.race: Race = Race(self._game_info.player_races[self.player_id])
+        self.enemy_race = Race(self._game_info.player_races[3 - self.player_id])
         self._units_previous_map: dict = dict()
         self.units: Units = Units([], game_data)
 

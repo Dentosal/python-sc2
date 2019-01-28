@@ -52,7 +52,9 @@ class SC2Process:
     async def __aenter__(self):
         kill_switch.add(self)
 
-        def signal_handler():
+        def signal_handler(signal, frame):
+            # unused arguments: signal handling library expects all signal
+            # callback handlers to accept two positional arguments
             kill_switch.kill_all()
 
         signal.signal(signal.SIGINT, signal_handler)

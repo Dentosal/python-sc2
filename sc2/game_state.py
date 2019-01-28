@@ -71,8 +71,9 @@ class Common:
 
 
 class EffectData:
-    def __init__(self, proto):
+    def __init__(self, proto, game_data):
         self._proto = proto
+        self.game_data_effects = game_data.effects
 
     @property
     def id(self) -> EffectId:
@@ -81,6 +82,18 @@ class EffectData:
     @property
     def positions(self) -> List[Point2]:
         return [Point2.from_proto(p) for p in self._proto.pos]
+
+    @property
+    def radius(self) -> float:
+        return self.game_data_effects[self._proto.effect_id].radius
+
+    @property
+    def name(self) -> float:
+        return self.game_data_effects[self._proto.effect_id].name
+
+    @property
+    def friendly_name(self) -> float:
+        return self.game_data_effects[self._proto.effect_id].friendly_name
 
 
 class GameState:
@@ -144,7 +157,7 @@ class GameState:
         self.creep: PixelMap = PixelMap(self.observation_raw.map_state.creep)
 
         self.effects: Set[EffectData] = {
-            EffectData(effect) for effect in self.observation_raw.effects
+            EffectData(effect, game_data) for effect in self.observation_raw.effects
         }  # effects like ravager bile shot, lurker attack, everything in effect_id.py
         """ Usage:
         for effect in self.state.effects:

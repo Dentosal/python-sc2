@@ -3,10 +3,10 @@ from functools import lru_cache, reduce
 from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type checking
 
 from .data import Attribute, Race
-from .unit_command import UnitCommand
-
-from .ids.unit_typeid import UnitTypeId
 from .ids.ability_id import AbilityId
+from .ids.unit_typeid import UnitTypeId
+from .ids.effect_id import EffectId
+from .unit_command import UnitCommand
 
 from .constants import ZERGLING
 
@@ -30,6 +30,7 @@ class GameData:
         self.units = {u.unit_id: UnitTypeData(self, u) for u in data.units if u.available}
         self.upgrades = {u.upgrade_id: UpgradeData(self, u) for u in data.upgrades}
         self.unit_types: Dict[int, UnitTypeId] = {}
+        self.effects = {e.effect_id: EffectData(e) for e in data.effects}
 
     @lru_cache(maxsize=256)
     def calculate_ability_cost(self, ability) -> "Cost":
@@ -269,11 +270,29 @@ class UpgradeData:
 
     @property
     def cost(self) -> "Cost":
-        return Cost(
-            self._proto.mineral_cost,
-            self._proto.vespene_cost,
-            self._proto.research_time
-        )
+        return Cost(self._proto.mineral_cost, self._proto.vespene_cost, self._proto.research_time)
+
+
+class EffectData:
+    def __init__(self, proto):
+        self._proto = proto
+
+    @property
+    def id(self) -> EffectId:
+        return EffectId(self._proto.effect_id)
+
+    @property
+    def name(self) -> str:
+        return self._proto.name
+
+    @property
+    def friendly_name(self) -> str:
+        return self._proto.friendly_name
+
+    @property
+    def radius(self) -> float:
+        return self._proto.radius
+
 
 class Cost:
     def __init__(self, minerals, vespene, time=None):
