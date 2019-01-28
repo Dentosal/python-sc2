@@ -11,7 +11,7 @@ from .game_data import GameData
 logger = logging.getLogger(__name__)
 
 from .position import Point2, Point3
-from .data import Race, ActionResult, Attribute, race_worker, race_townhalls, race_gas, Target, Result
+from .data import Race, ActionResult, Alert, Attribute, race_worker, race_townhalls, race_gas, Target, Result
 from .unit import Unit
 from .cache import property_cache_forever, property_cache_once_per_frame
 from .game_data import AbilityData
@@ -50,6 +50,13 @@ class BotAI:
     @property
     def game_info(self) -> "GameInfo":
         return self._game_info
+
+    @property
+    def nuke_detected(self) -> bool:
+        return any(alert == Alert.NuclearLaunchDetected.value for alert in self.state.alerts)
+
+    def nydus_detected(self) -> bool:
+        return any(alert == Alert.NydusWormDetected.value for alert in self.state.alerts)
 
     @property
     def start_location(self) -> Point2:
@@ -532,6 +539,8 @@ class BotAI:
         self.vespene: Union[float, int] = state.common.vespene
         self.supply_used: Union[float, int] = state.common.food_used
         self.supply_cap: Union[float, int] = state.common.food_cap
+        self.supply_workers: Union[float, int] = state.common.food_workers  # Doesn't include workers in production
+        self.supply_army: Union[float, int] = state.common.food_army
         self.supply_left: Union[float, int] = self.supply_cap - self.supply_used
         # reset cached values
         self.cached_known_enemy_structures = None
