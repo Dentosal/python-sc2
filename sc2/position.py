@@ -52,6 +52,7 @@ class Pointlike(tuple):
         if len(ps) == 1:
             return ps[0]
         closest_distance_squared = math.inf
+        closest_element = ps[0]
         for p2 in ps:
             p2pos = p2
             if not isinstance(p2pos, Point2):
