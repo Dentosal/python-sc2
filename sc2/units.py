@@ -87,7 +87,7 @@ class Units(list):
 
     def take(self, n: int, require_all: bool = True) -> "Units":
         assert (not require_all) or len(self) >= n
-        return self.subgroup(self[:n])
+        return self[:n]
 
     @property
     def random(self) -> Unit:
@@ -255,8 +255,8 @@ class Units(list):
         assert self
         pos = Point2(
             (
-                sum([unit.position.x for unit in self]) / self.amount,
-                sum([unit.position.y for unit in self]) / self.amount,
+                sum(unit.position.x for unit in self) / self.amount,
+                sum(unit.position.y for unit in self) / self.amount,
             )
         )
         return pos

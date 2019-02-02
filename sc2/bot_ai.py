@@ -33,11 +33,6 @@ class BotAI:
         self.opponent_id: int = None
 
     @property
-    def enemy_race(self) -> Race:
-        self.enemy_id = 3 - self.player_id
-        return Race(self._game_info.player_races[self.enemy_id])
-
-    @property
     def time(self) -> Union[int, float]:
         """ Returns time in seconds, assumes the game is played on 'faster' """
         return self.state.game_loop / 22.4  # / (1/1.4) * (1/16)
@@ -80,7 +75,7 @@ class BotAI:
         """ The reason for len(ramp.upper) in {2, 5} is: 
         ParaSite map has 5 upper points, and most other maps have 2 upper points at the main ramp. The map Acolyte has 4 upper points at the wrong ramp (which is closest to the start position) """
         self.cached_main_base_ramp = min(
-            {ramp for ramp in self.game_info.map_ramps if len(ramp.upper) in {2, 5}},
+            {ramp for ramp in self.game_info.map_ramps if len(ramp.upper2_for_ramp_wall) == 2},
             key=(lambda r: self.start_location.distance_to(r.top_center)),
         )
         return self.cached_main_base_ramp
@@ -90,8 +85,9 @@ class BotAI:
         """List of possible expansion locations."""
         # RESOURCE_SPREAD_THRESHOLD = 144
         RESOURCE_SPREAD_THRESHOLD = 225
+        minerals = self.state.mineral_field
         geysers = self.state.vespene_geyser
-        all_resources = self.state.resources
+        all_resources = minerals | geysers
 
         # Group nearby minerals together to form expansion locations
         resource_groups = []
@@ -130,7 +126,7 @@ class BotAI:
             # choose best fitting point
             result = min(possible_points, key=lambda p: sum(p.distance_to(resource) for resource in resources))
             centers[result] = resources
-        """ Returns dict with the correct expansion position Point2 key, resources (mineral field, vespene geyser) as value """
+        """ Returns dict with center of resources as key, resources (mineral field, vespene geyser) as value """
         return centers
 
     async def get_available_abilities(self, units: Union[List[Unit], Units], ignore_resource_requirements=False) -> List[List[AbilityId]]:
@@ -235,7 +231,7 @@ class BotAI:
             ideal = townhall.ideal_harvesters
 
             deficit = ideal - actual
-            for x in range(0, deficit):
+            for _ in range(deficit):
                 if worker_pool:
                     w = worker_pool.pop()
                     mf = self.state.mineral_field.closest_to(townhall)
@@ -433,17 +429,32 @@ class BotAI:
         (Interceptors) or Oracles (Stasis Ward)) are also included.
         """
 
+        # TODO / FIXME: SCV building a structure might be counted as two units
+
         if isinstance(unit_type, UpgradeId):
             return self.already_pending_upgrade(unit_type)
-            
+
         ability = self._game_data.units[unit_type.value].creation_ability
 
-        if all_units:
-            return self._abilities_all_units[ability]
-        else:
-            return self._abilities_workers_and_eggs[ability]
+        amount = len(self.units(unit_type).not_ready)
 
-    async def build(self, building: UnitTypeId, near: Union[Point2, Point3], max_distance: int=20, unit: Optional[Unit]=None, random_alternative: bool=True, placement_step: int=2):
+        if all_units:
+            amount += sum(o.ability == ability for u in self.units for o in u.orders)
+        else:
+            amount += sum(o.ability == ability for w in self.workers for o in w.orders)
+            amount += sum(egg.orders[0].ability == ability for egg in self.units(UnitTypeId.EGG))
+
+        return amount
+
+    async def build(
+        self,
+        building: UnitTypeId,
+        near: Union[Point2, Point3],
+        max_distance: int = 20,
+        unit: Optional[Unit] = None,
+        random_alternative: bool = True,
+        placement_step: int = 2,
+    ):
         """ Not recommended as this function uses 'self.do' (reduces performance).
         Also if the position is not placeable, this function tries to find a nearby position to place the structure. Then uses 'self.do' to give the worker the order to start the construction. """
 
@@ -544,6 +555,7 @@ class BotAI:
 
         self.player_id: int = player_id
         self.race: Race = Race(self._game_info.player_races[self.player_id])
+        self.enemy_race = Race(self._game_info.player_races[3 - self.player_id])
         self._units_previous_map: dict = dict()
         self._previous_upgrades: Set[UpgradeId] = set()
         self.units: Units = Units([], game_data)
@@ -556,7 +568,7 @@ class BotAI:
 
     def _prepare_step(self, state):
         """Set attributes from new state before on_step."""
-        self.state: GameState = state # See game_state.py
+        self.state: GameState = state  # See game_state.py
         # Required for events
         self._units_previous_map.clear()
         for unit in self.units:
@@ -594,12 +606,12 @@ class BotAI:
 
 
     async def _issue_unit_added_events(self):
-        for unit in self.units.not_structure:
+        for unit in self.units:
             if unit.tag not in self._units_previous_map:
-                await self.on_unit_created(unit)
-        for unit in self.units.structure:
-            if unit.tag not in self._units_previous_map:
-                await self.on_building_construction_started(unit)
+                if unit.is_structure:
+                    await self.on_building_construction_started(unit)
+                else:
+                    await self.on_unit_created(unit)
 
     async def _issue_building_complete_event(self, unit):
         if unit.build_progress < 1:
@@ -637,7 +649,7 @@ class BotAI:
         pass
 
     def on_start(self):
-        """Allows initializing the bot when the game data is available."""
+        """ Allows initializing the bot when the game data is available. """
         pass
 
     async def on_start_async(self):

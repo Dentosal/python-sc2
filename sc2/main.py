@@ -147,9 +147,9 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                         except asyncio.TimeoutError:
                             step_time = time.monotonic() - step_start
                             logger.warning(
-                                f"Running AI step: out of budget; " +
-                                f"budget={budget:.2f}, steptime={step_time:.2f}, " +
-                                f"window={time_window.available_fmt}"
+                                f"Running AI step: out of budget; "
+                                + f"budget={budget:.2f}, steptime={step_time:.2f}, "
+                                + f"window={time_window.available_fmt}"
                             )
                             out_of_budget = True
                         step_time = time.monotonic() - step_start
@@ -161,11 +161,16 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                             raise RuntimeError("Out of time")
                         else:
                             time_penalty_cooldown = int(time_penalty)
-                            time_window.clear()
         except Exception as e:
+            # Handle error that happens when the bot queries something although the game is already over
+            if str(e) in ["['Game has already ended']", "['Not supported if game has already ended']"]:
+                # In realtime=True, client._game_result might be "None"
+                ai.on_end(client._game_result[player_id])
+                return client._game_result[player_id]
             # NOTE: this message is caught by pytest suite
-            logger.exception(f"AI step threw an error") # DO NOT EDIT!
-            logger.error(f"resigning due to previous error")
+            logger.exception(f"AI step threw an error")  # DO NOT EDIT!
+            logger.error(f"Error: {e}")
+            logger.error(f"Resigning due to previous error")
             ai.on_end(Result.Defeat)
             return Result.Defeat
 
@@ -191,7 +196,7 @@ async def _play_game(player, client, realtime, portconfig, step_time_limit=None,
     else:
         result = await _play_game_ai(client, player_id, player.ai, realtime, step_time_limit, game_time_limit)
 
-    logging.info(f"Result for player id: {player_id}: {result}")
+    logging.info(f"Result for player {player_id} ({player.ai.__class__.__name__}): {result._name_}")
     return result
 
 async def _setup_host_game(server, map_settings, players, realtime, random_seed=None):
@@ -208,7 +213,8 @@ async def _setup_host_game(server, map_settings, players, realtime, random_seed=
 
 async def _host_game(map_settings, players, realtime, portconfig=None, save_replay_as=None, step_time_limit=None,
                      game_time_limit=None, rgb_render_config=None, random_seed=None):
-    assert len(players) > 0, "Can't create a game without players"
+    
+    assert players, "Can't create a game without players"
 
     assert any(isinstance(p, (Human, Bot)) for p in players)
 
@@ -285,12 +291,12 @@ def run_game(map_settings, players, **kwargs):
         join_kwargs = {k: v for k, v in kwargs.items() if k not in host_only_args}
 
         portconfig = Portconfig()
-        result = asyncio.get_event_loop().run_until_complete(asyncio.gather(
-            _host_game(map_settings, players, **kwargs, portconfig=portconfig),
-            _join_game(players, **join_kwargs, portconfig=portconfig)
-        ))
-    else:
         result = asyncio.get_event_loop().run_until_complete(
-            _host_game(map_settings, players, **kwargs)
+            asyncio.gather(
+                _host_game(map_settings, players, **kwargs, portconfig=portconfig),
+                _join_game(players, **join_kwargs, portconfig=portconfig),
+            )
         )
+    else:
+        result = asyncio.get_event_loop().run_until_complete(_host_game(map_settings, players, **kwargs))
     return result
