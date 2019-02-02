@@ -593,8 +593,6 @@ class BotAI:
         self.supply_cap: Union[float, int] = state.common.food_cap
         self.supply_workers: Union[float, int] = state.common.food_workers  # Doesn't include workers in production
         self.supply_army: Union[float, int] = state.common.food_army
-        self.supply_workers: Union[float, int] = state.common.food_workers  # Doesn't include workers in production
-        self.supply_army: Union[float, int] = state.common.food_army
         self.supply_left: Union[float, int] = self.supply_cap - self.supply_used
         # reset cached values
         self.cached_known_enemy_structures = None
