@@ -1,7 +1,6 @@
 from functools import wraps
 from collections import Counter
 
-
 def cache_forever(f):
     f.cache = {}
 

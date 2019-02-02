@@ -55,11 +55,16 @@ class Blip:
 class Common:
     ATTRIBUTES = [
         "player_id",
-        "minerals", "vespene",
-        "food_cap", "food_used",
-        "food_army", "food_workers",
-        "idle_worker_count", "army_count",
-        "warp_gate_count", "larva_count"
+        "minerals",
+        "vespene",
+        "food_cap",
+        "food_used",
+        "food_army",
+        "food_workers",
+        "idle_worker_count",
+        "army_count",
+        "warp_gate_count",
+        "larva_count",
     ]
 
     def __init__(self, proto):

@@ -26,7 +26,6 @@ from .units import Units
 from typing import List, Dict, Set, Tuple, Any, Optional, Union, Iterable
 
 
-
 class Client(Protocol):
     def __init__(self, ws):
         super().__init__(ws)
