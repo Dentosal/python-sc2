@@ -193,6 +193,7 @@ class Client(Protocol):
         """ Usage: await self.query_pathings([[unit1, target2], [unit2, target2]])
         -> returns [distance1, distance2]
         Caution: returns 0 when path not found
+        Might merge this function with the function above
         """
         assert zipped_list, "No zipped_list"
         assert isinstance(zipped_list, list), f"{type(zipped_list)}"
@@ -224,7 +225,7 @@ class Client(Protocol):
         return results
 
     async def query_building_placement(
-        self, ability: AbilityId, positions: List[Union[Point2, Point3]], ignore_resources: bool = True
+        self, ability: AbilityId, positions: List[Union[Unit, Point2, Point3]], ignore_resources: bool = True
     ) -> List[ActionResult]:
         assert isinstance(ability, AbilityData)
         result = await self._execute(
@@ -250,6 +251,8 @@ class Client(Protocol):
             assert isinstance(units, Unit)
             units = [units]
             input_was_a_list = False
+        else:
+            input_was_a_list = True
         assert units
         result = await self._execute(
             query=query_pb.RequestQuery(
@@ -345,7 +348,7 @@ class Client(Protocol):
         await self._execute(action=sc_pb.RequestAction(actions=[action]))
 
     async def debug_text(self, texts: Union[str, list], positions: Union[list, set], color=(0, 255, 0), size_px=16):
-        """ Deprecated, may be removed soon """
+        """ Deprecated, may be removed soon. Use combination of "debug_text_simple", "debug_text_screen" or "debug_text_world" together with "send_debug" instead. """
         if isinstance(positions, (set, list)):
             if not positions:
                 return
@@ -474,9 +477,12 @@ class Client(Protocol):
         """ Helper function to create debug texts """
         color = self.to_debug_color(color)
         pt3d = self.to_debug_point(pos) if isinstance(pos, Point3) else None
-        virtual_pos = self.to_debug_point(pos) if pos is not None and not isinstance(pos, Point3) else None
+        virtual_pos = self.to_debug_point(pos) if not isinstance(pos, Point3) else None
 
         return debug_pb.DebugText(color=color, text=text, virtual_pos=virtual_pos, world_pos=pt3d, size=size)
+
+    async def debug_leave(self):
+        await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(end_game=debug_pb.DebugEndGame())]))
 
     async def debug_set_unit_value(self, unit_tags: Union[Iterable[int], Units, Unit], unit_value: int, value: float):
         """ Sets a "unit value" (Energy, Life or Shields) of the given units to the given value.
@@ -563,3 +569,4 @@ class Client(Protocol):
             - self.state.game_loop will be set to zero after the quickload, and self.time is dependant on it
         """
         await self._execute(quick_load=sc_pb.RequestQuickLoad())
+
