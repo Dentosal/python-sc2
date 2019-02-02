@@ -185,7 +185,7 @@ class Point2(Pointlike):
         Used in ramp finding """
         assert self != p
         distanceBetweenPoints = self.distance_to(p)
-        assert r > distanceBetweenPoints / 2
+        assert r >= distanceBetweenPoints / 2
         # remaining distance from center towards the intersection, using pythagoras
         remainingDistanceFromCenter = (r ** 2 - (distanceBetweenPoints / 2) ** 2) ** 0.5
         # center of both points
