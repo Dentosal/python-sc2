@@ -19,6 +19,7 @@ from .ids.unit_typeid import UnitTypeId
 from .ids.ability_id import AbilityId
 from .ids.upgrade_id import UpgradeId
 from .units import Units
+from collections import Counter
 
 
 class BotAI:
@@ -30,11 +31,6 @@ class BotAI:
         # Specific opponent bot ID used in sc2ai ladder games http://sc2ai.net/
         # The bot ID will stay the same each game so your bot can "adapt" to the opponent
         self.opponent_id: int = None
-
-    @property
-    def enemy_race(self) -> Race:
-        self.enemy_id = 3 - self.player_id
-        return Race(self._game_info.player_races[self.enemy_id])
 
     @property
     def time(self) -> Union[int, float]:
@@ -49,6 +45,7 @@ class BotAI:
 
     @property
     def game_info(self) -> "GameInfo":
+        """ See game_info.py """
         return self._game_info
 
     @property
@@ -83,6 +80,8 @@ class BotAI:
         """ Returns the Ramp instance of the closest main-ramp to start location. Look in game_info.py for more information """
         if hasattr(self, "cached_main_base_ramp"):
             return self.cached_main_base_ramp
+        """ The reason for len(ramp.upper) in {2, 5} is: 
+        ParaSite map has 5 upper points, and most other maps have 2 upper points at the main ramp. The map Acolyte has 4 upper points at the wrong ramp (which is closest to the start position) """
         self.cached_main_base_ramp = min(
             {ramp for ramp in self.game_info.map_ramps if len(ramp.upper2_for_ramp_wall) == 2},
             key=(lambda r: self.start_location.distance_to(r.top_center)),
@@ -94,8 +93,9 @@ class BotAI:
         """List of possible expansion locations."""
         # RESOURCE_SPREAD_THRESHOLD = 144
         RESOURCE_SPREAD_THRESHOLD = 225
+        minerals = self.state.mineral_field
         geysers = self.state.vespene_geyser
-        all_resources = self.state.resources
+        all_resources = minerals | geysers
 
         # Group nearby minerals together to form expansion locations
         resource_groups = []
@@ -138,12 +138,16 @@ class BotAI:
         return centers
 
     async def get_available_abilities(self, units: Union[List[Unit], Units], ignore_resource_requirements=False) -> List[List[AbilityId]]:
-        """ Returns available abilities of one or more units. """
-        # right know only checks cooldown, energy cost, and whether the ability has been researched
+        """ Returns available abilities of one or more units. Right know only checks cooldown, energy cost, and whether the ability has been researched.
+        Example usage:
+        units_abilities = await self.get_available_abilities(self.units)
+        or
+        units_abilities = await self.get_available_abilities([self.units.random]) """
         return await self._client.query_available_abilities(units, ignore_resource_requirements)
 
     async def expand_now(self, building: UnitTypeId=None, max_distance: Union[int, float]=10, location: Optional[Point2]=None):
-        """Takes new expansion."""
+        """ Not recommended as this function uses 'self.do' (reduces performance).
+        Finds the next possible expansion via 'self.get_next_expansion()'. If the target expansion is blocked (e.g. an enemy unit), it will misplace the expansion. """
 
         if not building:
             # self.race is never Race.Random
@@ -235,7 +239,7 @@ class BotAI:
             ideal = townhall.ideal_harvesters
 
             deficit = ideal - actual
-            for x in range(0, deficit):
+            for _ in range(deficit):
                 if worker_pool:
                     w = worker_pool.pop()
                     mf = self.state.mineral_field.closest_to(townhall)
@@ -393,7 +397,37 @@ class BotAI:
                     return order.progress
         return 0
 
-    def already_pending(self, unit_type: Union[UpgradeId, UnitTypeId], all_units: bool=False) -> int:
+    @property_cache_once_per_frame
+    def _abilities_all_units(self) -> Counter:
+        """ Cache for the already_pending function, includes protoss units warping in, and all units in production, and all structures, and all morphs """
+        abilities_amount = Counter()
+        for unit in self.units: # type: Unit
+            for order in unit.orders:
+                abilities_amount[order.ability] += 1
+            if not unit.is_ready:
+                if self.race != Race.Terran or not unit.is_structure:
+                    # If an SCV is constructing a building, already_pending would count this structure twice (once from the SCV order, and once from "not structure.is_ready")
+                    abilities_amount[self._game_data.units[unit.type_id.value].creation_ability] += 1
+
+        return abilities_amount
+
+    @property_cache_once_per_frame
+    def _abilities_workers_and_eggs(self) -> Counter:
+        """ Cache for the already_pending function, includes all worker orders (including pending), zerg units in production (except queens and morphing units) and structures in production, counts double for terran """
+        abilities_amount = Counter()
+        for worker in self.workers: # type: Unit
+            for order in worker.orders:
+                abilities_amount[order.ability] += 1
+        for egg in self.units(UnitTypeId.EGG): # type: Unit
+            for order in egg.orders:
+                abilities_amount[order.ability] += 1
+        if self.race != Race.Terran:
+            # If an SCV is constructing a building, already_pending would count this structure twice (once from the SCV order, and once from "not structure.is_ready")
+            for unit in self.units.structure.not_ready: # type: Unit
+                abilities_amount[self._game_data.units[unit.type_id.value].creation_ability] += 1
+        return abilities_amount
+
+    def already_pending(self, unit_type: Union[UpgradeId, UnitTypeId], all_units: bool=True) -> int:
         """
         Returns a number of buildings or units already in progress, or if a
         worker is en route to build it. This also includes queued orders for
@@ -407,21 +441,30 @@ class BotAI:
 
         if isinstance(unit_type, UpgradeId):
             return self.already_pending_upgrade(unit_type)
-            
+
         ability = self._game_data.units[unit_type.value].creation_ability
 
         amount = len(self.units(unit_type).not_ready)
 
         if all_units:
-            amount += sum([o.ability == ability for u in self.units for o in u.orders])
+            amount += sum(o.ability == ability for u in self.units for o in u.orders)
         else:
-            amount += sum([o.ability == ability for w in self.workers for o in w.orders])
-            amount += sum([egg.orders[0].ability == ability for egg in self.units(UnitTypeId.EGG)])
+            amount += sum(o.ability == ability for w in self.workers for o in w.orders)
+            amount += sum(egg.orders[0].ability == ability for egg in self.units(UnitTypeId.EGG))
 
         return amount
 
-    async def build(self, building: UnitTypeId, near: Union[Point2, Point3], max_distance: int=20, unit: Optional[Unit]=None, random_alternative: bool=True, placement_step: int=2):
-        """Build a building."""
+    async def build(
+        self,
+        building: UnitTypeId,
+        near: Union[Point2, Point3],
+        max_distance: int = 20,
+        unit: Optional[Unit] = None,
+        random_alternative: bool = True,
+        placement_step: int = 2,
+    ):
+        """ Not recommended as this function uses 'self.do' (reduces performance).
+        Also if the position is not placeable, this function tries to find a nearby position to place the structure. Then uses 'self.do' to give the worker the order to start the construction. """
 
         if isinstance(near, Unit):
             near = near.position.to2
@@ -430,7 +473,7 @@ class BotAI:
         else:
             return
 
-        p = await self.find_placement(building, near.rounded, max_distance, random_alternative, placement_step)
+        p = await self.find_placement(building, near, max_distance, random_alternative, placement_step)
         if p is None:
             return ActionResult.CantFindPlacementLocation
 
@@ -440,6 +483,11 @@ class BotAI:
         return await self.do(unit.build(building, p))
 
     async def do(self, action):
+        """ Not recommended. Use self.do_actions once per iteration instead to reduce lag:
+        self.actions = []
+        cc = self.units(COMMANDCENTER).random
+        self.actions.append(cc.train(SCV))
+        await self.do_action(self.actions) """
         if not self.can_afford(action):
             logger.warning(f"Cannot afford action {action}")
             return ActionResult.Error
@@ -457,6 +505,7 @@ class BotAI:
         return r
 
     async def do_actions(self, actions: List["UnitCommand"]):
+        """ Unlike 'self.do()', this function does not instantly subtract minerals and vespene. """
         if not actions:
             return None
         for action in actions:
@@ -477,7 +526,7 @@ class BotAI:
         """ Returns terrain height at a position. Caution: terrain height is not anywhere near a unit's z-coordinate. """
         assert isinstance(pos, (Point2, Point3, Unit))
         pos = pos.position.to2.rounded
-        return self._game_info.terrain_height[pos] # returns int
+        return self._game_info.terrain_height[pos]
 
     def in_placement_grid(self, pos: Union[Point2, Point3, Unit]) -> bool:
         """ Returns True if you can place something at a position. Remember, buildings usually use 2x2, 3x3 or 5x5 of these grid points.
@@ -514,7 +563,9 @@ class BotAI:
 
         self.player_id: int = player_id
         self.race: Race = Race(self._game_info.player_races[self.player_id])
+        self.enemy_race = Race(self._game_info.player_races[3 - self.player_id])
         self._units_previous_map: dict = dict()
+        self._previous_upgrades: Set[UpgradeId] = set()
         self.units: Units = Units([], game_data)
 
     def _prepare_first_step(self):
@@ -525,7 +576,7 @@ class BotAI:
 
     def _prepare_step(self, state):
         """Set attributes from new state before on_step."""
-        self.state: GameState = state
+        self.state: GameState = state  # See game_state.py
         # Required for events
         self._units_previous_map.clear()
         for unit in self.units:
@@ -552,16 +603,25 @@ class BotAI:
         - on_unit_created
         - on_unit_destroyed
         - on_building_construction_complete
+        - on_upgrade_complete
         """
         await self._issue_unit_dead_events()
         await self._issue_unit_added_events()
         for unit in self.units.structure:
             await self._issue_building_complete_event(unit)
+        if len(self._previous_upgrades) != len(self.state.upgrades):
+            for upgrade_completed in self.state.upgrades - self._previous_upgrades:
+                await self.on_upgrade_complete(upgrade_completed)
+            self._previous_upgrades = self.state.upgrades
+
 
     async def _issue_unit_added_events(self):
-        for unit in self.units.not_structure:
+        for unit in self.units:
             if unit.tag not in self._units_previous_map:
-                await self.on_unit_created(unit)
+                if unit.is_structure:
+                    await self.on_building_construction_started(unit)
+                else:
+                    await self.on_unit_created(unit)
 
     async def _issue_building_complete_event(self, unit):
         if unit.build_progress < 1:
@@ -586,12 +646,24 @@ class BotAI:
         """ Override this in your bot class. """
         pass
 
+    async def on_building_construction_started(self, unit: Unit):
+        """ Override this in your bot class. """
+        pass
+
     async def on_building_construction_complete(self, unit: Unit):
         """ Override this in your bot class. """
         pass
 
+    async def on_upgrade_complete(self, upgrade: UpgradeId):
+        """ Override this in your bot class. """
+        pass
+
     def on_start(self):
-        """Allows initializing the bot when the game data is available."""
+        """ Allows initializing the bot when the game data is available. """
+        pass
+
+    async def on_start_async(self):
+        """ This function is run after "on_start". At this point, game_data, game_info and first iteration of game_state (self.state) is available. """
         pass
 
     async def on_step(self, iteration: int):

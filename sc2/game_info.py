@@ -36,7 +36,7 @@ class Ramp:
     @property
     def upper(self) -> Set[Point2]:
         """ Returns the upper points of a ramp. """
-        max_height = max([self.height_at(p) for p in self._points])
+        max_height = max(self.height_at(p) for p in self._points)
         return {p for p in self._points if self.height_at(p) == max_height}
 
     @property
@@ -55,19 +55,19 @@ class Ramp:
     @property
     def top_center(self) -> Point2:
         pos = Point2(
-            (sum([p.x for p in self.upper]) / len(self.upper), sum([p.y for p in self.upper]) / len(self.upper))
+            (sum(p.x for p in self.upper) / len(self.upper), sum(p.y for p in self.upper) / len(self.upper))
         )
         return pos
 
     @property
     def lower(self) -> Set[Point2]:
-        min_height = min([self.height_at(p) for p in self._points])
+        min_height = min(self.height_at(p) for p in self._points)
         return {p for p in self._points if self.height_at(p) == min_height}
 
     @property
     def bottom_center(self) -> Point2:
         pos = Point2(
-            (sum([p.x for p in self.lower]) / len(self.lower), sum([p.y for p in self.lower]) / len(self.lower))
+            (sum(p.x for p in self.lower) / len(self.lower), sum(p.y for p in self.lower) / len(self.lower))
         )
         return pos
 
