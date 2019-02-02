@@ -55,11 +55,16 @@ class Blip:
 class Common:
     ATTRIBUTES = [
         "player_id",
-        "minerals", "vespene",
-        "food_cap", "food_used",
-        "food_army", "food_workers",
-        "idle_worker_count", "army_count",
-        "warp_gate_count", "larva_count"
+        "minerals",
+        "vespene",
+        "food_cap",
+        "food_used",
+        "food_army",
+        "food_workers",
+        "idle_worker_count",
+        "army_count",
+        "warp_gate_count",
+        "larva_count",
     ]
 
     def __init__(self, proto):
@@ -134,17 +139,17 @@ class GameState:
         self.resources: Units = Units.from_proto(minerals + geysers, game_data)
         self.destructables: Units = Units.from_proto(destructables, game_data)
         self.units: Units = Units.from_proto(visibleUnits, game_data)
-        self.upgrades: Set[UpgradeId] = {UpgradeId(upgrade) for upgrade in self.observation_raw.player.upgrade_ids}
+        self.upgrades: Set[UpgradeId] = {UpgradeId(upgrade) for upgrade in self.observation.raw_data.player.upgrade_ids}
         self.dead_units: Set[int] = {
-            dead_unit_tag for dead_unit_tag in self.observation_raw.event.dead_units
+            dead_unit_tag for dead_unit_tag in self.observation.raw_data.event.dead_units
         }  # set of unit tags that died this step - sometimes has multiple entries
 
         self.blips: Set[Blip] = {Blip(unit) for unit in hiddenUnits}
-        self.visibility: PixelMap = PixelMap(self.observation_raw.map_state.visibility)
-        self.creep: PixelMap = PixelMap(self.observation_raw.map_state.creep)
+        self.visibility: PixelMap = PixelMap(self.observation.raw_data.map_state.visibility)
+        self.creep: PixelMap = PixelMap(self.observation.raw_data.map_state.creep)
 
         self.effects: Set[EffectData] = {
-            EffectData(effect) for effect in self.observation_raw.effects
+            EffectData(effect) for effect in self.observation.raw_data.effects
         }  # effects like ravager bile shot, lurker attack, everything in effect_id.py
         """ Usage:
         for effect in self.state.effects:

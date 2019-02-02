@@ -22,14 +22,10 @@ class PassengerUnit:
         """ Will return string of this form: Unit(name='SCV', tag=4396941328) """
         return f"{self.__class__.__name__}(name={self.name !r}, tag={self.tag})"
 
-    @property
+    @property_immutable_cache
     def type_id(self) -> UnitTypeId:
-        """ UnitTypeId found in sc2/ids/unit_typeid
-        Caches all type_ids of the same unit type"""
-        unit_type = self._proto.unit_type
-        if unit_type not in self._game_data.unit_types:
-            self._game_data.unit_types[unit_type] = UnitTypeId(unit_type)
-        return self._game_data.unit_types[unit_type]
+        """ UnitTypeId found in sc2/ids/unit_typeid """
+        return UnitTypeId(self._proto.unit_type)
 
     @property_immutable_cache
     def _type_data(self) -> "UnitTypeData":
@@ -85,22 +81,19 @@ class PassengerUnit:
         return self._type_data.cargo_size
 
     @property_immutable_cache
-    def _weapons(self):
+    def can_attack(self) -> bool:
+        """ Can attack at all"""
         if hasattr(self._type_data._proto, "weapons"):
-            return self._type_data._proto.weapons
+            weapons = self._type_data._proto.weapons
+            return bool(weapons)
         return False
 
     @property_immutable_cache
-    def can_attack(self) -> bool:
-        """ Can attack at all"""
-        return bool(self._weapons)
-
-    @property_immutable_cache
     def can_attack_ground(self) -> bool:
-        if self._weapons:
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
             weapon = next(
-                (weapon for weapon in self._weapons if weapon.type in {TargetType.Ground.value, TargetType.Any.value}),
-                None,
+                (weapon for weapon in weapons if weapon.type in {TargetType.Ground.value, TargetType.Any.value}), None
             )
             return weapon is not None
         return False
@@ -108,10 +101,10 @@ class PassengerUnit:
     @property_immutable_cache
     def ground_dps(self) -> Union[int, float]:
         """ Does not include upgrades """
-        if self._weapons:
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
             weapon = next(
-                (weapon for weapon in self._weapons if weapon.type in {TargetType.Ground.value, TargetType.Any.value}),
-                None,
+                (weapon for weapon in weapons if weapon.type in {TargetType.Ground.value, TargetType.Any.value}), None
             )
             if weapon:
                 return (weapon.damage * weapon.attacks) / weapon.speed
@@ -120,10 +113,10 @@ class PassengerUnit:
     @property_immutable_cache
     def ground_range(self) -> Union[int, float]:
         """ Does not include upgrades """
-        if self._weapons:
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
             weapon = next(
-                (weapon for weapon in self._weapons if weapon.type in {TargetType.Ground.value, TargetType.Any.value}),
-                None,
+                (weapon for weapon in weapons if weapon.type in {TargetType.Ground.value, TargetType.Any.value}), None
             )
             if weapon:
                 return weapon.range
@@ -132,10 +125,10 @@ class PassengerUnit:
     @property_immutable_cache
     def can_attack_air(self) -> bool:
         """ Does not include upgrades """
-        if self._weapons:
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
             weapon = next(
-                (weapon for weapon in self._weapons if weapon.type in {TargetType.Air.value, TargetType.Any.value}),
-                None,
+                (weapon for weapon in weapons if weapon.type in {TargetType.Air.value, TargetType.Any.value}), None
             )
             return weapon is not None
         return False
@@ -143,10 +136,10 @@ class PassengerUnit:
     @property_immutable_cache
     def air_dps(self) -> Union[int, float]:
         """ Does not include upgrades """
-        if self._weapons:
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
             weapon = next(
-                (weapon for weapon in self._weapons if weapon.type in {TargetType.Air.value, TargetType.Any.value}),
-                None,
+                (weapon for weapon in weapons if weapon.type in {TargetType.Air.value, TargetType.Any.value}), None
             )
             if weapon:
                 return (weapon.damage * weapon.attacks) / weapon.speed
@@ -155,10 +148,10 @@ class PassengerUnit:
     @property_immutable_cache
     def air_range(self) -> Union[int, float]:
         """ Does not include upgrades """
-        if self._weapons:
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
             weapon = next(
-                (weapon for weapon in self._weapons if weapon.type in {TargetType.Air.value, TargetType.Any.value}),
-                None,
+                (weapon for weapon in weapons if weapon.type in {TargetType.Air.value, TargetType.Any.value}), None
             )
             if weapon:
                 return weapon.range
@@ -169,9 +162,9 @@ class PassengerUnit:
         """ Returns a tuple of form 'bonus damage, armor type' if unit does bonus damage against armor type
         Light = 1; Armored = 2; Biological = 3; Mechanical = 4; Robotic = 5; Psionic = 6; Massive = 7;
         Structure = 8; Hover = 9; Heroic = 10; Summoned = 11 """
-        # TODO Consider unit with ability attacks like Oracle, Thor, Baneling
-        if self._weapons:
-            for weapon in self._weapons:
+        if hasattr(self._type_data._proto, "weapons"):
+            weapons = self._type_data._proto.weapons
+            for weapon in weapons:
                 if weapon.damage_bonus:
                     b = weapon.damage_bonus[0]
                     return b.bonus, b.attribute
@@ -187,7 +180,6 @@ class PassengerUnit:
 
     @property_immutable_cache
     def movement_speed(self) -> Union[int, float]:
-        # TODO INCLUDE BUFFS AND DEBUFFS
         return self._type_data._proto.movement_speed
 
     @property_immutable_cache
