@@ -87,7 +87,7 @@ class Units(list):
 
     def take(self, n: int, require_all: bool = True) -> "Units":
         assert (not require_all) or len(self) >= n
-        return self[:n]
+        return self.subgroup(self[:n])
 
     @property
     def random(self) -> Unit:
@@ -116,7 +116,7 @@ class Units(list):
 
     def closest_distance_to(self, position: Union[Unit, Point2, Point3]) -> Union[int, float]:
         """ Returns the distance between the closest unit from this group to the target unit """
-        assert self.exists
+        assert self
         if isinstance(position, Unit):
             position = position.position
         return position.distance_to_closest(
@@ -125,19 +125,19 @@ class Units(list):
 
     def furthest_distance_to(self, position: Union[Unit, Point2, Point3]) -> Union[int, float]:
         """ Returns the distance between the furthest unit from this group to the target unit """
-        assert self.exists
+        assert self
         if isinstance(position, Unit):
             position = position.position
         return position.distance_to_furthest([u.position for u in self])
 
     def closest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
-        assert self.exists
+        assert self
         if isinstance(position, Unit):
             position = position.position
         return position.closest(self)
 
     def furthest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
-        assert self.exists
+        assert self
         if isinstance(position, Unit):
             position = position.position
         return position.furthest(self)
@@ -234,7 +234,7 @@ class Units(list):
         'self.units.same_tech(UnitTypeId.ORBITALCOMMAND)'
         returns OrbitalCommand and OrbitalCommandFlying
         This also works with a set/list/dict parameter, e.g. 'self.units.same_tech({UnitTypeId.COMMANDCENTER, UnitTypeId.SUPPLYDEPOT})'
-        Untested: This should return the equivalents for WarpPrism, Observer, Overseer, SupplyDepot and others
+        Untested: This should return the equivalents for WarpPrism, Observer, Overseer, SupplyDepot and other units that have different modes but still act as the same unit
         """
         if isinstance(other, UnitTypeId):
             other = {other}

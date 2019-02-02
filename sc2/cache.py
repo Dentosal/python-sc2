@@ -1,4 +1,5 @@
 from functools import wraps
+from collections import Counter
 
 
 def cache_forever(f):
@@ -33,17 +34,20 @@ def property_cache_once_per_frame(f):
 
     @wraps(f)
     def inner(self):
-        if f.frame != self.state.game_loop:
-            f.frame = self.state.game_loop
-            f.cache = None
-        if f.cache is None:
+        if f.cache is None or f.frame != self.state.game_loop:
             f.cache = f(self)
+            f.frame = self.state.game_loop
+        if type(f.cache).__name__ == "Units":
+            return f.cache.copy()
+        if isinstance(f.cache, (list, set, dict, Counter)):
+            return f.cache.copy()
         return f.cache
 
     return property(inner)
 
 
 def property_immutable_cache(f):
+    """ This cache should only be used on properties that return an immutable object """
     @wraps(f)
     def inner(self):
         if f.__name__ not in self.cache:
@@ -54,6 +58,7 @@ def property_immutable_cache(f):
 
 
 def property_mutable_cache(f):
+    """ This cache should only be used on properties that return a mutable object (Units, list, set, dict, Counter) """
     @wraps(f)
     def inner(self):
         if f.__name__ not in self.cache:
