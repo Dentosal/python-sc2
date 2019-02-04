@@ -188,7 +188,8 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
 async def _play_game(player, client, realtime, portconfig, step_time_limit=None, game_time_limit=None, rgb_render_config=None):
     assert isinstance(realtime, bool), repr(realtime)
 
-    player_id = await client.join_game(player.race, portconfig=portconfig, rgb_render_config=rgb_render_config)
+    player_id = await client.join_game(player.race, portconfig=portconfig, rgb_render_config=rgb_render_config,
+                                       name=player.name)
     logging.info(f"Player id: {player_id}")
 
     if isinstance(player, Human):
@@ -219,7 +220,7 @@ async def _host_game(map_settings, players, realtime, portconfig=None, save_repl
 
     assert any(isinstance(p, (Human, Bot)) for p in players)
 
-    async with SC2Process(render=rgb_render_config is not None) as server:
+    async with SC2Process(fullscreen=players[0].fullscreen, render=rgb_render_config is not None) as server:
         await server.ping()
 
         client = await _setup_host_game(server, map_settings, players, realtime, random_seed)
@@ -269,7 +270,7 @@ def _host_game_iter(*args, **kwargs):
 
 
 async def _join_game(players, realtime, portconfig, save_replay_as=None, step_time_limit=None, game_time_limit=None):
-    async with SC2Process() as server:
+    async with SC2Process(fullscreen=players[1].fullscreen) as server:
         await server.ping()
 
         client = Client(server._ws)

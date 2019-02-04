@@ -3,7 +3,7 @@ from .data import Difficulty, PlayerType, Race
 
 
 class AbstractPlayer:
-    def __init__(self, p_type, race=None, difficulty=None):
+    def __init__(self, p_type, race=None, difficulty=None, fullscreen=False, name=None):
         assert isinstance(p_type, PlayerType)
 
         if p_type == PlayerType.Computer:
@@ -22,23 +22,25 @@ class AbstractPlayer:
             self.race = race
         if p_type == PlayerType.Computer:
             self.difficulty = difficulty
+        self.fullscreen = fullscreen
+        self.name = name
 
 class Human(AbstractPlayer):
-    def __init__(self, race):
-        super().__init__(PlayerType.Participant, race)
+    def __init__(self, race, fullscreen=False, name=None):
+        super().__init__(PlayerType.Participant, race, fullscreen=fullscreen, name=name)
 
     def __str__(self):
         return f"Human({self.race._name_})"
 
 
 class Bot(AbstractPlayer):
-    def __init__(self, race, ai):
+    def __init__(self, race, ai, fullscreen=False, name=None):
         """
         AI can be None if this player object is just used to inform the
         server about player types.
         """
         assert isinstance(ai, BotAI) or ai is None
-        super().__init__(PlayerType.Participant, race)
+        super().__init__(PlayerType.Participant, race, fullscreen=fullscreen, name=name)
         self.ai = ai
 
     def __str__(self):
@@ -54,8 +56,8 @@ class Computer(AbstractPlayer):
 
 
 class Observer(AbstractPlayer):
-    def __init__(self):
-        super().__init__(PlayerType.Observer)
+    def __init__(self, fullscreen=False, name=None):
+        super().__init__(PlayerType.Observer, fullscreen=fullscreen, name=name)
 
     def __str__(self):
         return f"Observer"

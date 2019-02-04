@@ -43,7 +43,7 @@ class Client(Protocol):
     def in_game(self):
         return self._status == Status.in_game
 
-    async def join_game(self, race=None, observed_player_id=None, portconfig=None, rgb_render_config=None):
+    async def join_game(self, race=None, observed_player_id=None, portconfig=None, rgb_render_config=None, name=None):
         ifopts = sc_pb.InterfaceOptions(raw=True, score=True)
 
         if rgb_render_config:
@@ -66,7 +66,10 @@ class Client(Protocol):
             req = sc_pb.RequestJoinGame(observed_player_id=observed_player_id, options=ifopts)
         else:
             assert isinstance(race, Race)
-            req = sc_pb.RequestJoinGame(race=race.value, options=ifopts)
+            if name:
+                req = sc_pb.RequestJoinGame(race=race.value, options=ifopts, player_name=name)
+            else:
+                req = sc_pb.RequestJoinGame(race=race.value, options=ifopts)
 
         if portconfig:
             req.shared_port = portconfig.shared
