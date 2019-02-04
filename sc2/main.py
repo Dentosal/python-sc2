@@ -112,7 +112,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
         if iteration == 0:
             ai._prepare_first_step()
 
-        logger.debug(f"Running AI step, it={iteration} {gs.game_loop * 0.725 * (1 / 16):.2f}s)")
+        logger.debug(f"Running AI step, it={iteration} {gs.game_loop * 0.725 * (1 / 16):.2f}s")
 
         try:
             await ai.issue_events()

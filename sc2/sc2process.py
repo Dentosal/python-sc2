@@ -52,7 +52,7 @@ class SC2Process:
     async def __aenter__(self):
         kill_switch.add(self)
 
-        def signal_handler():
+        def signal_handler(*args):
             kill_switch.kill_all()
 
         signal.signal(signal.SIGINT, signal_handler)

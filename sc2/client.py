@@ -32,10 +32,10 @@ class Client(Protocol):
         self.game_step = 8
         self._player_id = None
         self._game_result = None
-        self._debug_texts = list()
-        self._debug_lines = list()
-        self._debug_boxes = list()
-        self._debug_spheres = list()
+        self._debug_texts = []
+        self._debug_lines = []
+        self._debug_boxes = []
+        self._debug_spheres = []
 
         self._renderer = None
 
@@ -110,6 +110,8 @@ class Client(Protocol):
 
     async def observation(self):
         result = await self._execute(observation=sc_pb.RequestObservation())
+        assert result.HasField("observation")
+
         if not self.in_game or result.observation.player_result:
             # Sometimes game ends one step before results are available
             if not result.observation.player_result:
