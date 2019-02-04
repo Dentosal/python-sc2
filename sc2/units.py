@@ -82,16 +82,16 @@ class Units(list):
 
     @property
     def first(self) -> Unit:
-        assert self
+        assert self, "Units object is empty"
         return self[0]
 
     def take(self, n: int, require_all: bool = True) -> "Units":
         assert (not require_all) or len(self) >= n
-        return self[:n]
+        return self.subgroup(self[:n])
 
     @property
     def random(self) -> Unit:
-        assert self.exists
+        assert self, "Units object is empty"
         return random.choice(self)
 
     def random_or(self, other: any) -> Unit:
@@ -116,7 +116,7 @@ class Units(list):
 
     def closest_distance_to(self, position: Union[Unit, Point2, Point3]) -> Union[int, float]:
         """ Returns the distance between the closest unit from this group to the target unit """
-        assert self
+        assert self, "Units object is empty"
         if isinstance(position, Unit):
             position = position.position
         return position.distance_to_closest(
@@ -125,19 +125,19 @@ class Units(list):
 
     def furthest_distance_to(self, position: Union[Unit, Point2, Point3]) -> Union[int, float]:
         """ Returns the distance between the furthest unit from this group to the target unit """
-        assert self
+        assert self, "Units object is empty"
         if isinstance(position, Unit):
             position = position.position
         return position.distance_to_furthest([u.position for u in self])
 
     def closest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
-        assert self
+        assert self, "Units object is empty"
         if isinstance(position, Unit):
             position = position.position
         return position.closest(self)
 
     def furthest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
-        assert self
+        assert self, "Units object is empty"
         if isinstance(position, Unit):
             position = position.position
         return position.furthest(self)
@@ -254,10 +254,7 @@ class Units(list):
         """ Returns the central point of all units in this list """
         assert self
         pos = Point2(
-            (
-                sum(unit.position.x for unit in self) / self.amount,
-                sum(unit.position.y for unit in self) / self.amount,
-            )
+            (sum(unit.position.x for unit in self) / self.amount, sum(unit.position.y for unit in self) / self.amount)
         )
         return pos
 

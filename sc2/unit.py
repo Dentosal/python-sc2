@@ -80,6 +80,25 @@ class PassengerUnit:
         return Attribute.Psionic.value in self._type_data.attributes
 
     @property_immutable_cache
+    def is_detector(self) -> bool:
+        """ Checks if the unit is a detector.
+        Has to be ready to detect and Photoncannons also need to be powered. """
+        return self.is_ready and (
+            self.type_id
+            in {
+                UnitTypeId.OBSERVER,
+                UnitTypeId.OBSERVERSIEGEMODE,
+                UnitTypeId.RAVEN,
+                UnitTypeId.MISSILETURRET,
+                UnitTypeId.OVERSEER,
+                UnitTypeId.OVERSEERSIEGEMODE,
+                UnitTypeId.SPORECRAWLER,
+            }
+            or self.type_id == UnitTypeId.PHOTONCANNON
+            and self.is_powered
+        )
+
+    @property_immutable_cache
     def cargo_size(self) -> Union[float, int]:
         """ How much cargo this unit uses up in cargo_space """
         return self._type_data.cargo_size
@@ -578,7 +597,7 @@ class Unit(PassengerUnit):
         return self(self._game_data.upgrades[upgrade.value].research_ability.id, *args, **kwargs)
 
     def has_buff(self, buff):
-        assert isinstance(buff, BuffId)
+        assert isinstance(buff, BuffId), f"{buff} is no BuffId"
         return buff.value in self._proto.buff_ids
 
     def warp_in(self, unit, placement, *args, **kwargs):

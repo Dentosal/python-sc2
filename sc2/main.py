@@ -3,6 +3,7 @@ import async_timeout
 import time
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 from .sc2process import SC2Process
@@ -13,6 +14,7 @@ from .data import Race, Difficulty, Result, ActionResult, CreateGameError
 from .game_state import GameState
 from .protocol import ConnectionAlreadyClosed
 
+
 class SlidingTimeWindow:
     def __init__(self, size: int):
         assert size > 0
@@ -21,7 +23,7 @@ class SlidingTimeWindow:
         self.window = []
 
     def push(self, value: float):
-        self.window = (self.window + [value])[-self.window_size:]
+        self.window = (self.window + [value])[-self.window_size :]
 
     def clear(self):
         self.window = []
@@ -51,6 +53,7 @@ async def _play_game_human(client, player_id, realtime, game_time_limit):
 
         if not realtime:
             await client.step()
+
 
 async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_time_limit):
     if realtime:
@@ -86,7 +89,6 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
         time_penalty = step_time_limit.get("penalty", None)
         time_window = SlidingTimeWindow(int(step_time_limit.get("window_size", 1)))
         time_limit = float(step_time_limit.get("time_limit", None))
-
 
     game_data = await client.get_game_data()
     game_info = await client.get_game_info()
@@ -125,7 +127,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                 if time_penalty_cooldown > 0:
                     time_penalty_cooldown -= 1
                     logger.warning(f"Running AI step: penalty cooldown: {time_penalty_cooldown}")
-                    iteration -= 1 # Do not increment the iteration on this round
+                    iteration -= 1  # Do not increment the iteration on this round
                 elif time_limit is None:
                     await ai.on_step(iteration)
                 else:
@@ -185,7 +187,10 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
 
         iteration += 1
 
-async def _play_game(player, client, realtime, portconfig, step_time_limit=None, game_time_limit=None, rgb_render_config=None):
+
+async def _play_game(
+    player, client, realtime, portconfig, step_time_limit=None, game_time_limit=None, rgb_render_config=None
+):
     assert isinstance(realtime, bool), repr(realtime)
 
     player_id = await client.join_game(player.race, portconfig=portconfig, rgb_render_config=rgb_render_config)
@@ -200,6 +205,7 @@ async def _play_game(player, client, realtime, portconfig, step_time_limit=None,
 
     return result
 
+
 async def _setup_host_game(server, map_settings, players, realtime, random_seed=None):
     r = await server.create_game(map_settings, players, realtime, random_seed)
     if r.create_game.HasField("error"):
@@ -212,9 +218,18 @@ async def _setup_host_game(server, map_settings, players, realtime, random_seed=
     return Client(server._ws)
 
 
-async def _host_game(map_settings, players, realtime, portconfig=None, save_replay_as=None, step_time_limit=None,
-                     game_time_limit=None, rgb_render_config=None, random_seed=None):
-    
+async def _host_game(
+    map_settings,
+    players,
+    realtime,
+    portconfig=None,
+    save_replay_as=None,
+    step_time_limit=None,
+    game_time_limit=None,
+    rgb_render_config=None,
+    random_seed=None,
+):
+
     assert players, "Can't create a game without players"
 
     assert any(isinstance(p, (Human, Bot)) for p in players)
@@ -225,7 +240,9 @@ async def _host_game(map_settings, players, realtime, portconfig=None, save_repl
         client = await _setup_host_game(server, map_settings, players, realtime, random_seed)
 
         try:
-            result = await _play_game(players[0], client, realtime, portconfig, step_time_limit, game_time_limit, rgb_render_config)
+            result = await _play_game(
+                players[0], client, realtime, portconfig, step_time_limit, game_time_limit, rgb_render_config
+            )
             if save_replay_as is not None:
                 await client.save_replay(save_replay_as)
             await client.leave()
@@ -236,7 +253,10 @@ async def _host_game(map_settings, players, realtime, portconfig=None, save_repl
 
         return result
 
-async def _host_game_aiter(map_settings, players, realtime, portconfig=None, save_replay_as=None, step_time_limit=None, game_time_limit=None):
+
+async def _host_game_aiter(
+    map_settings, players, realtime, portconfig=None, save_replay_as=None, step_time_limit=None, game_time_limit=None
+):
     assert players, "Can't create a game without players"
 
     assert any(isinstance(p, (Human, Bot)) for p in players)
@@ -260,6 +280,7 @@ async def _host_game_aiter(map_settings, players, realtime, portconfig=None, sav
             new_players = yield result
             if new_players is not None:
                 players = new_players
+
 
 def _host_game_iter(*args, **kwargs):
     game = _host_game_aiter(*args, **kwargs)
@@ -285,6 +306,7 @@ async def _join_game(players, realtime, portconfig, save_replay_as=None, step_ti
             return None
 
         return result
+
 
 def run_game(map_settings, players, **kwargs):
     if sum(isinstance(p, (Human, Bot)) for p in players) > 1:

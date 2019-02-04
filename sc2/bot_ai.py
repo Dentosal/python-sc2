@@ -83,7 +83,7 @@ class BotAI:
         """ The reason for len(ramp.upper) in {2, 5} is: 
         ParaSite map has 5 upper points, and most other maps have 2 upper points at the main ramp. The map Acolyte has 4 upper points at the wrong ramp (which is closest to the start position) """
         self.cached_main_base_ramp = min(
-            {ramp for ramp in self.game_info.map_ramps if len(ramp.upper2_for_ramp_wall) == 2},
+            {ramp for ramp in self.game_info.map_ramps if len(ramp.upper) in {2, 5}},
             key=(lambda r: self.start_location.distance_to(r.top_center)),
         )
         return self.cached_main_base_ramp
@@ -134,7 +134,7 @@ class BotAI:
             # choose best fitting point
             result = min(possible_points, key=lambda p: sum(p.distance_to(resource) for resource in resources))
             centers[result] = resources
-        """ Returns dict with center of resources as key, resources (mineral field, vespene geyser) as value """
+        """ Returns dict with the correct expansion position Point2 key, resources (mineral field, vespene geyser) as value """
         return centers
 
     async def get_available_abilities(self, units: Union[List[Unit], Units], ignore_resource_requirements=False) -> List[List[AbilityId]]:
@@ -437,22 +437,15 @@ class BotAI:
         (Interceptors) or Oracles (Stasis Ward)) are also included.
         """
 
-        # TODO / FIXME: SCV building a structure might be counted as two units
-
         if isinstance(unit_type, UpgradeId):
             return self.already_pending_upgrade(unit_type)
-
+            
         ability = self._game_data.units[unit_type.value].creation_ability
 
-        amount = len(self.units(unit_type).not_ready)
-
         if all_units:
-            amount += sum(o.ability == ability for u in self.units for o in u.orders)
+            return self._abilities_all_units[ability]
         else:
-            amount += sum(o.ability == ability for w in self.workers for o in w.orders)
-            amount += sum(egg.orders[0].ability == ability for egg in self.units(UnitTypeId.EGG))
-
-        return amount
+            return self._abilities_workers_and_eggs[ability]
 
     async def build(
         self,
