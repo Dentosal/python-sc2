@@ -196,7 +196,8 @@ async def _play_game(player, client, realtime, portconfig, step_time_limit=None,
     else:
         result = await _play_game_ai(client, player_id, player.ai, realtime, step_time_limit, game_time_limit)
 
-    logging.info(f"Result for player {player_id} ({player.ai.__class__.__name__}): {result._name_}")
+    logging.info(f"Result for player {player_id} ({str(player)}: {result._name_}")
+
     return result
 
 async def _setup_host_game(server, map_settings, players, realtime, random_seed=None):
