@@ -193,7 +193,6 @@ class Client(Protocol):
         """ Usage: await self.query_pathings([[unit1, target2], [unit2, target2]])
         -> returns [distance1, distance2]
         Caution: returns 0 when path not found
-        Might merge this function with the function above
         """
         assert zipped_list, "No zipped_list"
         assert isinstance(zipped_list, list), f"{type(zipped_list)}"
@@ -225,7 +224,7 @@ class Client(Protocol):
         return results
 
     async def query_building_placement(
-        self, ability: AbilityId, positions: List[Union[Unit, Point2, Point3]], ignore_resources: bool = True
+        self, ability: AbilityId, positions: List[Union[Point2, Point3]], ignore_resources: bool = True
     ) -> List[ActionResult]:
         assert isinstance(ability, AbilityData)
         result = await self._execute(
@@ -251,8 +250,6 @@ class Client(Protocol):
             assert isinstance(units, Unit)
             units = [units]
             input_was_a_list = False
-        else:
-            input_was_a_list = True
         assert units
         result = await self._execute(
             query=query_pb.RequestQuery(
@@ -313,9 +310,9 @@ class Client(Protocol):
             debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(kill_unit=debug_pb.DebugKillUnit(tag=unit_tags))])
         )
 
-    async def move_camera(self, position: Union[Units, Unit, Point2, Point3]):
+    async def move_camera(self, position: Union[Unit, Units, Point2, Point3]):
         """ Moves camera to the target position """
-        assert isinstance(position, (Units, Unit, Point2, Point3))
+        assert isinstance(position, (Unit, Units, Point2, Point3))
         if isinstance(position, Units):
             position = position.center
         if isinstance(position, Unit):
@@ -477,7 +474,7 @@ class Client(Protocol):
         """ Helper function to create debug texts """
         color = self.to_debug_color(color)
         pt3d = self.to_debug_point(pos) if isinstance(pos, Point3) else None
-        virtual_pos = self.to_debug_point(pos) if not isinstance(pos, Point3) else None
+        virtual_pos = self.to_debug_point(pos) if pos is not None and not isinstance(pos, Point3) else None
 
         return debug_pb.DebugText(color=color, text=text, virtual_pos=virtual_pos, world_pos=pt3d, size=size)
 
