@@ -97,6 +97,8 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
     iteration = 0
     while True:
         state = await client.observation()
+        logger.debug(f"Score: {state.observation.observation.score.score}")
+
         if client._game_result:
             ai.on_end(client._game_result[player_id])
             return client._game_result[player_id]
