@@ -14,6 +14,7 @@ class Ramp:
         # tested by printing actual building locations vs calculated depot positions
         self.x_offset = 0.5  # might be errors with the pixelmap?
         self.y_offset = -0.5
+        self.cache = {}
 
     @property
     def _height_map(self):
