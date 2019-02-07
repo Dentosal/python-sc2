@@ -43,7 +43,7 @@ class Client(Protocol):
     def in_game(self):
         return self._status == Status.in_game
 
-    async def join_game(self, race=None, observed_player_id=None, portconfig=None, rgb_render_config=None):
+    async def join_game(self, name=None, race=None, observed_player_id=None, portconfig=None, rgb_render_config=None):
         ifopts = sc_pb.InterfaceOptions(raw=True, score=True)
 
         if rgb_render_config:
@@ -77,6 +77,10 @@ class Client(Protocol):
                 p = req.client_ports.add()
                 p.game_port = ppc[0]
                 p.base_port = ppc[1]
+
+        if name is not None:
+            assert isinstance(name, str)
+            req.player_name = name
 
         result = await self._execute(join_game=req)
         self._game_result = None
