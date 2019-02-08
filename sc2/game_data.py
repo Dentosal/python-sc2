@@ -8,20 +8,11 @@ from .ids.unit_typeid import UnitTypeId
 from .ids.effect_id import EffectId
 from .unit_command import UnitCommand
 
-from .constants import ZERGLING
+# Set of parts of names of abilities that have no cost
+# E.g every ability that has 'Hold' in its name is free
+# TODO move to constants, add more?
+FREE_ABILITIES = {"Lower", "Raise", "Land", "Lift", "Hold", "Harvest"}
 
-FREE_MORPH_ABILITY_CATEGORIES = [
-    "Lower", "Raise", # SUPPLYDEPOT
-    "Land",  "Lift",  # Flying buildings
-]
-
-def split_camel_case(text) -> list:
-    """Splits words from CamelCase text."""
-    return list(reduce(
-        lambda a, b: (a + [b] if b.isupper() else a[:-1] + [a[-1] + b]),
-        text,
-        []
-    ))
 
 class GameData:
     def __init__(self, data):
@@ -73,9 +64,7 @@ class GameData:
         return Cost(0, 0)
 
 class AbilityData:
-    ability_ids: List[int] = []  # sorted list
-    for ability_id in AbilityId:  # 1000 items Enum is slow
-        ability_ids.append(ability_id.value)
+    ability_ids: List[int] = [ability_id.value for ability_id in AbilityId]  # sorted list
     ability_ids.remove(0)
     ability_ids.sort()
 
@@ -119,10 +108,8 @@ class AbilityData:
 
     @property
     def is_free_morph(self) -> bool:
-        parts = split_camel_case(self._proto.link_name)
-        for p in parts:
-            if p in FREE_MORPH_ABILITY_CATEGORIES:
-                return True
+        if any(free in self._proto.link_name for free in FREE_ABILITIES):
+            return True
         return False
 
     @property

@@ -41,14 +41,14 @@ class Pointlike(tuple):
         """ This returns the target points sorted as list. You should not pass a set or dict since those are not sortable.
         If you want to sort your units towards a point, use 'units.sorted_by_distance_to(point)' instead. """
         if len(ps) == 1:
-            return list(ps)[0]
+            return ps
         # if ps and all(isinstance(p, Point2) for p in ps):
         #     return sorted(ps, key=lambda p: self._distance_squared(p))
         return sorted(ps, key=lambda p: self._distance_squared(p.position))
 
     def closest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union["Unit", "Point2"]:
         """ This function assumes the 2d distance is meant """
-        assert ps
+        assert ps, f"ps is empty"
         if len(ps) == 1:
             return list(ps)[0]
         closest_distance_squared = math.inf
@@ -64,7 +64,7 @@ class Pointlike(tuple):
 
     def distance_to_closest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union[int, float]:
         """ This function assumes the 2d distance is meant """
-        assert ps
+        assert ps, f"ps is empty"
         closest_distance_squared = math.inf
         for p2 in ps:
             if not isinstance(p2, Point2):
@@ -76,7 +76,7 @@ class Pointlike(tuple):
 
     def furthest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union["Unit", "Pointlike"]:
         """ This function assumes the 2d distance is meant """
-        assert ps
+        assert ps, f"ps is empty"
         if len(ps) == 1:
             return list(ps)[0]
         furthest_distance_squared = -math.inf
@@ -92,7 +92,7 @@ class Pointlike(tuple):
 
     def distance_to_furthest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union[int, float]:
         """ This function assumes the 2d distance is meant """
-        assert ps
+        assert ps, f"ps is empty"
         furthest_distance_squared = -math.inf
         for p2 in ps:
             if not isinstance(p2, Point2):
@@ -156,14 +156,14 @@ class Point2(Pointlike):
 
     def distance2_to(self, other: "Point2"):
         """Squared distance to a point."""
-        assert isinstance(other, Point2)
+        assert isinstance(other, Point2), f"other is not of type Point2"
         return (self[0] - other[0]) ** 2 + (self[1] - other[1]) ** 2
 
     def random_on_distance(self, distance):
         if isinstance(distance, (tuple, list)):  # interval
             distance = distance[0] + random.random() * (distance[1] - distance[0])
 
-        assert distance > 0
+        assert distance > 0, f"Distance is not greater than 0"
         angle = random.random() * 2 * math.pi
 
         dx, dy = math.cos(angle), math.sin(angle)
@@ -183,7 +183,7 @@ class Point2(Pointlike):
     def circle_intersection(self, p: "Point2", r: Union[int, float]) -> Set["Point2"]:
         """ self is point1, p is point2, r is the radius for circles originating in both points
         Used in ramp finding """
-        assert self != p
+        assert self != p, f"self is equal to p"
         distanceBetweenPoints = self.distance_to(p)
         assert r >= distanceBetweenPoints / 2
         # remaining distance from center towards the intersection, using pythagoras

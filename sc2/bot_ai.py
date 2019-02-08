@@ -154,7 +154,7 @@ class BotAI:
             start_townhall_type = {Race.Protoss: UnitTypeId.NEXUS, Race.Terran: UnitTypeId.COMMANDCENTER, Race.Zerg: UnitTypeId.HATCHERY}
             building = start_townhall_type[self.race]
 
-        assert isinstance(building, UnitTypeId)
+        assert isinstance(building, UnitTypeId), f"{building} is no UnitTypeId"
 
         if not location:
             location = await self.get_next_expansion()
@@ -290,8 +290,8 @@ class BotAI:
     async def can_cast(self, unit: Unit, ability_id: AbilityId, target: Optional[Union[Unit, Point2, Point3]]=None, only_check_energy_and_cooldown: bool=False, cached_abilities_of_unit: List[AbilityId]=None) -> bool:
         """Tests if a unit has an ability available and enough energy to cast it.
         See data_pb2.py (line 161) for the numbers 1-5 to make sense"""
-        assert isinstance(unit, Unit)
-        assert isinstance(ability_id, AbilityId)
+        assert isinstance(unit, Unit), f"{unit} is no Unit object"
+        assert isinstance(ability_id, AbilityId), f"{ability_id} is no AbilityId"
         assert isinstance(target, (type(None), Unit, Point2, Point3))
         # check if unit has enough energy to cast or if ability is on cooldown
         if cached_abilities_of_unit:
@@ -344,7 +344,7 @@ class BotAI:
         """Finds a placement location for building."""
 
         assert isinstance(building, (AbilityId, UnitTypeId))
-        assert isinstance(near, Point2)
+        assert isinstance(near, Point2), f"{near} is no Point2 object"
 
         if isinstance(building, UnitTypeId):
             building = self._game_data.units[building.value].creation_ability
@@ -382,7 +382,7 @@ class BotAI:
         0 < x < 1: researching
         1: finished
         """
-        assert isinstance(upgrade_type, UpgradeId)
+        assert isinstance(upgrade_type, UpgradeId), f"{upgrade_type} is no UpgradeId"
         if upgrade_type in self.state.upgrades:
             return 1
         level = None
@@ -511,13 +511,13 @@ class BotAI:
 
     async def chat_send(self, message: str):
         """Send a chat message."""
-        assert isinstance(message, str)
+        assert isinstance(message, str), f"{message} is no string"
         await self._client.chat_send(message, False)
 
     # For the functions below, make sure you are inside the boundries of the map size.
     def get_terrain_height(self, pos: Union[Point2, Point3, Unit]) -> int:
         """ Returns terrain height at a position. Caution: terrain height is not anywhere near a unit's z-coordinate. """
-        assert isinstance(pos, (Point2, Point3, Unit))
+        assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
         pos = pos.position.to2.rounded
         return self._game_info.terrain_height[pos]
 
@@ -525,26 +525,26 @@ class BotAI:
         """ Returns True if you can place something at a position. Remember, buildings usually use 2x2, 3x3 or 5x5 of these grid points.
         Caution: some x and y offset might be required, see ramp code:
         https://github.com/Dentosal/python-sc2/blob/master/sc2/game_info.py#L17-L18 """
-        assert isinstance(pos, (Point2, Point3, Unit))
+        assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
         pos = pos.position.to2.rounded
         return self._game_info.placement_grid[pos] != 0
 
     def in_pathing_grid(self, pos: Union[Point2, Point3, Unit]) -> bool:
         """ Returns True if a unit can pass through a grid point. """
-        assert isinstance(pos, (Point2, Point3, Unit))
+        assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
         pos = pos.position.to2.rounded
         return self._game_info.pathing_grid[pos] == 0
 
     def is_visible(self, pos: Union[Point2, Point3, Unit]) -> bool:
         """ Returns True if you have vision on a grid point. """
         # more info: https://github.com/Blizzard/s2client-proto/blob/9906df71d6909511907d8419b33acc1a3bd51ec0/s2clientprotocol/spatial.proto#L19
-        assert isinstance(pos, (Point2, Point3, Unit))
+        assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
         pos = pos.position.to2.rounded
         return self.state.visibility[pos] == 2
 
     def has_creep(self, pos: Union[Point2, Point3, Unit]) -> bool:
         """ Returns True if there is creep on the grid point. """
-        assert isinstance(pos, (Point2, Point3, Unit))
+        assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
         pos = pos.position.to2.rounded
         return self.state.creep[pos] != 0
 
@@ -582,10 +582,10 @@ class BotAI:
 
         self.minerals: Union[float, int] = state.common.minerals
         self.vespene: Union[float, int] = state.common.vespene
-        self.supply_used: Union[float, int] = state.common.food_used
-        self.supply_cap: Union[float, int] = state.common.food_cap
-        self.supply_workers: Union[float, int] = state.common.food_workers  # Doesn't include workers in production
         self.supply_army: Union[float, int] = state.common.food_army
+        self.supply_workers: Union[float, int] = state.common.food_workers  # Doesn't include workers in production
+        self.supply_cap: Union[float, int] = state.common.food_cap
+        self.supply_used: Union[float, int] = state.common.food_used
         self.supply_left: Union[float, int] = self.supply_cap - self.supply_used
         # reset cached values
         self.cached_known_enemy_structures = None

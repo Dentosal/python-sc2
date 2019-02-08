@@ -13,7 +13,7 @@ from .position import Point2, Point3
 
 class PassengerUnit:
     def __init__(self, proto_data, game_data):
-        assert isinstance(game_data, GameData)
+        assert isinstance(game_data, GameData), f"game_data is not of type GameData"
         self._proto = proto_data
         self._game_data = game_data
         self.cache = {}
@@ -568,7 +568,7 @@ class Unit(PassengerUnit):
 
     @property_immutable_cache
     def has_add_on(self) -> bool:
-        return not self.add_on_tag
+        return bool(self.add_on_tag)
 
     @property_immutable_cache
     def assigned_harvesters(self) -> int:
