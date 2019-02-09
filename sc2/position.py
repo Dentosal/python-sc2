@@ -24,7 +24,7 @@ class Pointlike(tuple):
 
     def distance_to(self, p: Union["Unit", "Point2", "Point3"]) -> Union[int, float]:
         p = p.position
-        assert isinstance(p, Pointlike)
+        assert isinstance(p, Pointlike), f"p is not of type Pointlike"
         if self == p:
             return 0
         return (sum(self.__class__((b - a) ** 2 for a, b in itertools.zip_longest(self, p, fillvalue=0)))) ** 0.5

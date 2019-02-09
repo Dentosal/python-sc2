@@ -579,14 +579,17 @@ class BotAI:
         self.workers: Units = self.units(race_worker[self.race])
         self.townhalls: Units = self.units(race_townhalls[self.race])
         self.geysers: Units = self.units(race_gas[self.race])
-
-        self.minerals: Union[float, int] = state.common.minerals
-        self.vespene: Union[float, int] = state.common.vespene
+        self.minerals: int = state.common.minerals
+        self.vespene: int = state.common.vespene
         self.supply_army: Union[float, int] = state.common.food_army
         self.supply_workers: Union[float, int] = state.common.food_workers  # Doesn't include workers in production
         self.supply_cap: Union[float, int] = state.common.food_cap
         self.supply_used: Union[float, int] = state.common.food_used
         self.supply_left: Union[float, int] = self.supply_cap - self.supply_used
+        self.idle_worker_count: int = state.common.idle_worker_count
+        self.army_count: int = state.common.army_count
+        self.warp_gate_count: int = state.common.warp_gate_count
+        self.larva_count: int = state.common.larva_count
         # reset cached values
         self.cached_known_enemy_structures = None
         self.cached_known_enemy_units = None
