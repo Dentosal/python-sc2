@@ -103,6 +103,8 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
 
     iteration = 0
     while True:
+        state = await client.observation()
+        logger.debug(f"Score: {state.observation.observation.score.score}")
         if client._game_result:
             ai.on_end(client._game_result[player_id])
             return client._game_result[player_id]
@@ -117,7 +119,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
 
             ai._prepare_step(gs)
 
-        logger.debug(f"Running AI step, it={iteration} {gs.game_loop * 0.725 * (1 / 16):.2f}s)")
+        logger.debug(f"Running AI step, it={iteration} {gs.game_loop * 0.725 * (1 / 16):.2f}s")
 
         try:
             await ai.issue_events()
@@ -193,8 +195,8 @@ async def _play_game(
 ):
     assert isinstance(realtime, bool), repr(realtime)
 
-    player_id = await client.join_game(player.race, portconfig=portconfig, rgb_render_config=rgb_render_config)
-    logging.info(f"Player id: {player_id}")
+    player_id = await client.join_game(player.name, player.race, portconfig=portconfig, rgb_render_config=rgb_render_config)
+    logging.info(f"Player id: {player_id} ({player.name})")
 
     if isinstance(player, Human):
         result = await _play_game_human(client, player_id, realtime, game_time_limit)
