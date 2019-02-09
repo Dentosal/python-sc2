@@ -82,16 +82,16 @@ class Units(list):
 
     @property
     def first(self) -> Unit:
-        assert self, "Units object is empty"
+        assert self
         return self[0]
 
     def take(self, n: int, require_all: bool = True) -> "Units":
-        assert (not require_all) or len(self) >= n, "Trying to take more than there are in Unit object"
-        return self.subgroup(self[:n])
+        assert (not require_all) or len(self) >= n
+        return self[:n]
 
     @property
     def random(self) -> Unit:
-        assert self, "Units object is empty"
+        assert self.exists
         return random.choice(self)
 
     def random_or(self, other: any) -> Unit:
@@ -102,7 +102,7 @@ class Units(list):
 
     def random_group_of(self, n):
         # TODO allow n > amount with n = min(n,amount)?
-        assert 0 <= n <= self.amount, "Trying to take more than there are in Unit object"
+        assert 0 <= n <= self.amount
         if n == 0:
             return self.subgroup([])
         elif self.amount == n:
@@ -116,7 +116,7 @@ class Units(list):
 
     def closest_distance_to(self, position: Union[Unit, Point2, Point3]) -> Union[int, float]:
         """ Returns the distance between the closest unit from this group to the target unit """
-        assert self, "Units object is empty"
+        assert self.exists
         if isinstance(position, Unit):
             position = position.position
         return position.distance_to_closest(
@@ -125,19 +125,19 @@ class Units(list):
 
     def furthest_distance_to(self, position: Union[Unit, Point2, Point3]) -> Union[int, float]:
         """ Returns the distance between the furthest unit from this group to the target unit """
-        assert self, "Units object is empty"
+        assert self.exists
         if isinstance(position, Unit):
             position = position.position
         return position.distance_to_furthest([u.position for u in self])
 
     def closest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
-        assert self, "Units object is empty"
+        assert self.exists
         if isinstance(position, Unit):
             position = position.position
         return position.closest(self)
 
     def furthest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
-        assert self, "Units object is empty"
+        assert self.exists
         if isinstance(position, Unit):
             position = position.position
         return position.furthest(self)
@@ -234,7 +234,7 @@ class Units(list):
         'self.units.same_tech(UnitTypeId.ORBITALCOMMAND)'
         returns OrbitalCommand and OrbitalCommandFlying
         This also works with a set/list/dict parameter, e.g. 'self.units.same_tech({UnitTypeId.COMMANDCENTER, UnitTypeId.SUPPLYDEPOT})'
-        Untested: This should return the equivalents for WarpPrism, Observer, Overseer, SupplyDepot and other units that have different modes but still act as the same unit
+        Untested: This should return the equivalents for WarpPrism, Observer, Overseer, SupplyDepot and others
         """
         if isinstance(other, UnitTypeId):
             other = {other}
@@ -252,9 +252,12 @@ class Units(list):
     @property
     def center(self) -> Point2:
         """ Returns the central point of all units in this list """
-        assert self, f"Units object is empty"
+        assert self
         pos = Point2(
-            (sum(unit.position.x for unit in self) / self.amount, sum(unit.position.y for unit in self) / self.amount)
+            (
+                sum([unit.position.x for unit in self]) / self.amount,
+                sum([unit.position.y for unit in self]) / self.amount,
+            )
         )
         return pos
 
@@ -343,7 +346,7 @@ class UnitSelection(Units):
     def __init__(self, parent, unit_type_id=None):
         assert unit_type_id is None or isinstance(unit_type_id, (UnitTypeId, set))
         if isinstance(unit_type_id, set):
-            assert all(isinstance(t, UnitTypeId) for t in unit_type_id), f"Not all ids in unit_type_id are of type UnitTypeId"
+            assert all(isinstance(t, UnitTypeId) for t in unit_type_id)
 
         self.unit_type_id = unit_type_id
         super().__init__([u for u in parent if self.matches(u)], parent.game_data)

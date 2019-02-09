@@ -1,20 +1,27 @@
 from bisect import bisect_left
 from functools import lru_cache, reduce
-from typing import Any, Dict, List, Optional, Set, Tuple, Union  # mypy type checking
+from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type checking
 
-from .constants import ZERGLING
 from .data import Attribute, Race
-from .ids.ability_id import AbilityId
-from .ids.effect_id import EffectId
-from .ids.unit_typeid import UnitTypeId
 from .unit_command import UnitCommand
 
+from .ids.unit_typeid import UnitTypeId
+from .ids.ability_id import AbilityId
 
-# Set of parts of names of abilities that have no cost
-# E.g every ability that has 'Hold' in its name is free
-# TODO move to constants, add more?
-FREE_ABILITIES = {"Lower", "Raise", "Land", "Lift", "Hold", "Harvest"}
+from .constants import ZERGLING
 
+FREE_MORPH_ABILITY_CATEGORIES = [
+    "Lower", "Raise", # SUPPLYDEPOT
+    "Land",  "Lift",  # Flying buildings
+]
+
+def split_camel_case(text) -> list:
+    """Splits words from CamelCase text."""
+    return list(reduce(
+        lambda a, b: (a + [b] if b.isupper() else a[:-1] + [a[-1] + b]),
+        text,
+        []
+    ))
 
 class GameData:
     def __init__(self, data):
@@ -23,7 +30,6 @@ class GameData:
         self.units = {u.unit_id: UnitTypeData(self, u) for u in data.units if u.available}
         self.upgrades = {u.upgrade_id: UpgradeData(self, u) for u in data.upgrades}
         self.unit_types: Dict[int, UnitTypeId] = {}
-        self.effects = {e.effect_id: EffectData(e) for e in data.effects}
 
     @lru_cache(maxsize=256)
     def calculate_ability_cost(self, ability) -> "Cost":
@@ -47,10 +53,14 @@ class GameData:
             if unit.creation_ability == ability:
                 if unit.id == ZERGLING:
                     # HARD CODED: zerglings are generated in pairs
-                    return Cost(unit.cost.minerals * 2, unit.cost.vespene * 2, unit.cost.time)
+                    return Cost(
+                        unit.cost.minerals * 2,
+                        unit.cost.vespene * 2,
+                        unit.cost.time
+                    )
                 # Correction for morphing units, e.g. orbital would return 550/0 instead of actual 150/0
                 morph_cost = unit.morph_cost
-                if morph_cost:  # can be None
+                if morph_cost: # can be None
                     return morph_cost
                 # Correction for zerg structures without morph: Extractor would return 75 instead of actual 25
                 return unit.cost_zerg_corrected
@@ -61,9 +71,10 @@ class GameData:
 
         return Cost(0, 0)
 
-
 class AbilityData:
-    ability_ids: List[int] = [ability_id.value for ability_id in AbilityId]  # sorted list
+    ability_ids: List[int] = []  # sorted list
+    for ability_id in AbilityId:  # 1000 items Enum is slow
+        ability_ids.append(ability_id.value)
     ability_ids.remove(0)
     ability_ids.sort()
 
@@ -107,14 +118,15 @@ class AbilityData:
 
     @property
     def is_free_morph(self) -> bool:
-        if any(free in self._proto.link_name for free in FREE_ABILITIES):
-            return True
+        parts = split_camel_case(self._proto.link_name)
+        for p in parts:
+            if p in FREE_MORPH_ABILITY_CATEGORIES:
+                return True
         return False
 
     @property
     def cost(self) -> "Cost":
         return self._game_data.calculate_ability_cost(self.id)
-
 
 class UnitTypeData:
     def __init__(self, game_data, proto):
@@ -200,7 +212,11 @@ class UnitTypeData:
 
     @property
     def cost(self) -> "Cost":
-        return Cost(self._proto.mineral_cost, self._proto.vespene_cost, self._proto.build_time)
+        return Cost(
+            self._proto.mineral_cost,
+            self._proto.vespene_cost,
+            self._proto.build_time
+        )
 
     @property
     def cost_zerg_corrected(self) -> "Cost":
@@ -209,7 +225,11 @@ class UnitTypeData:
             # a = self._game_data.units(UnitTypeId.ZERGLING)
             # print(a)
             # print(vars(a))
-            return Cost(self._proto.mineral_cost - 50, self._proto.vespene_cost, self._proto.build_time)
+            return Cost(
+                self._proto.mineral_cost - 50,
+                self._proto.vespene_cost,
+                self._proto.build_time
+            )
         else:
             return self.cost
 
@@ -220,17 +240,13 @@ class UnitTypeData:
         if self.tech_alias is None or self.tech_alias[0] in {UnitTypeId.TECHLAB, UnitTypeId.REACTOR}:
             return None
         # Morphing a HIVE would have HATCHERY and LAIR in the tech alias - now subtract HIVE cost from LAIR cost instead of from HATCHERY cost
-        tech_alias_cost_minerals = max(
-            [self._game_data.units[tech_alias.value].cost.minerals for tech_alias in self.tech_alias]
-        )
-        tech_alias_cost_vespene = max(
-            [self._game_data.units[tech_alias.value].cost.vespene for tech_alias in self.tech_alias]
-        )
+        tech_alias_cost_minerals = max([self._game_data.units[tech_alias.value].cost.minerals for tech_alias in self.tech_alias])
+        tech_alias_cost_vespene = max([self._game_data.units[tech_alias.value].cost.vespene for tech_alias in self.tech_alias])
         return Cost(
-            self._proto.mineral_cost - tech_alias_cost_minerals,
-            self._proto.vespene_cost - tech_alias_cost_vespene,
-            self._proto.build_time,
-        )
+                self._proto.mineral_cost - tech_alias_cost_minerals,
+                self._proto.vespene_cost - tech_alias_cost_vespene,
+                self._proto.build_time
+            )
 
 
 class UpgradeData:
@@ -255,29 +271,11 @@ class UpgradeData:
 
     @property
     def cost(self) -> "Cost":
-        return Cost(self._proto.mineral_cost, self._proto.vespene_cost, self._proto.research_time)
-
-
-class EffectData:
-    def __init__(self, proto):
-        self._proto = proto
-
-    @property
-    def id(self) -> EffectId:
-        return EffectId(self._proto.effect_id)
-
-    @property
-    def name(self) -> str:
-        return self._proto.name
-
-    @property
-    def friendly_name(self) -> str:
-        return self._proto.friendly_name
-
-    @property
-    def radius(self) -> float:
-        return self._proto.radius
-
+        return Cost(
+            self._proto.mineral_cost,
+            self._proto.vespene_cost,
+            self._proto.research_time
+        )
 
 class Cost:
     def __init__(self, minerals, vespene, time=None):
@@ -293,6 +291,3 @@ class Cost:
 
     def __ne__(self, other) -> bool:
         return self.minerals != other.minerals or self.vespene != other.vespene
-
-    def __bool__(self) -> bool:
-        return self.minerals != 0 or self.vespene != 0

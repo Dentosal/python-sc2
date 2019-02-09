@@ -55,16 +55,11 @@ class Blip:
 class Common:
     ATTRIBUTES = [
         "player_id",
-        "minerals",
-        "vespene",
-        "food_cap",
-        "food_used",
-        "food_army",
-        "food_workers",
-        "idle_worker_count",
-        "army_count",
-        "warp_gate_count",
-        "larva_count",
+        "minerals", "vespene",
+        "food_cap", "food_used",
+        "food_army", "food_workers",
+        "idle_worker_count", "army_count",
+        "warp_gate_count", "larva_count"
     ]
 
     def __init__(self, proto):
@@ -76,9 +71,8 @@ class Common:
 
 
 class EffectData:
-    def __init__(self, proto, game_data):
+    def __init__(self, proto):
         self._proto = proto
-        self.game_data_effects = game_data.effects
 
     @property
     def id(self) -> EffectId:
@@ -88,32 +82,20 @@ class EffectData:
     def positions(self) -> List[Point2]:
         return [Point2.from_proto(p) for p in self._proto.pos]
 
-    @property
-    def radius(self) -> float:
-        return self.game_data_effects[self._proto.effect_id].radius
-
-    @property
-    def name(self) -> float:
-        return self.game_data_effects[self._proto.effect_id].name
-
-    @property
-    def friendly_name(self) -> float:
-        return self.game_data_effects[self._proto.effect_id].friendly_name
-
 
 class GameState:
     def __init__(self, response_observation, game_data):
         self.actions = response_observation.actions  # successful actions since last loop
         self.action_errors = response_observation.action_errors  # error actions since last loop
         # https://github.com/Blizzard/s2client-proto/blob/51662231c0965eba47d5183ed0a6336d5ae6b640/s2clientprotocol/sc2api.proto#L575
+        # TODO: implement alerts https://github.com/Blizzard/s2client-proto/blob/51662231c0965eba47d5183ed0a6336d5ae6b640/s2clientprotocol/sc2api.proto#L640
         self.observation = response_observation.observation
         self.observation_raw = self.observation.raw_data
-        self.alerts = self.observation.alerts
         self.player_result = response_observation.player_result
         self.chat = response_observation.chat
         self.common: Common = Common(self.observation.player_common)
         self.psionic_matrix: PsionicMatrix = PsionicMatrix.from_proto(
-            self.observation_raw.player.power_sources
+            self.observation.raw_data.player.power_sources
         )  # what area pylon covers
         self.game_loop: int = self.observation.game_loop  # game loop, 22.4 per second on faster game speed
 
@@ -125,7 +107,7 @@ class GameState:
         # Fix for enemy units detected by my sensor tower, as blips have less unit information than normal visible units
         visibleUnits, hiddenUnits, minerals, geysers, destructables, enemy, own = ([] for _ in range(7))
 
-        for unit in self.observation_raw.units:
+        for unit in self.observation.raw_data.units:
             if unit.is_blip:
                 hiddenUnits.append(unit)
             else:
@@ -162,7 +144,7 @@ class GameState:
         self.creep: PixelMap = PixelMap(self.observation_raw.map_state.creep)
 
         self.effects: Set[EffectData] = {
-            EffectData(effect, game_data) for effect in self.observation_raw.effects
+            EffectData(effect) for effect in self.observation_raw.effects
         }  # effects like ravager bile shot, lurker attack, everything in effect_id.py
         """ Usage:
         for effect in self.state.effects:

@@ -4,7 +4,6 @@ from typing import Any, Dict, FrozenSet, Generator, List, Optional, Sequence, Se
 from .pixel_map import PixelMap
 from .player import Player
 from .position import Point2, Rect, Size
-from .cache import property_immutable_cache, property_mutable_cache
 
 
 class Ramp:
@@ -14,7 +13,6 @@ class Ramp:
         # tested by printing actual building locations vs calculated depot positions
         self.x_offset = 0.5  # might be errors with the pixelmap?
         self.y_offset = -0.5
-        self.cache = {}
 
     @property
     def _height_map(self):
@@ -24,24 +22,24 @@ class Ramp:
     def _placement_grid(self):
         return self.__game_info.placement_grid
 
-    @property_immutable_cache
+    @property
     def size(self) -> int:
         return len(self._points)
 
     def height_at(self, p: Point2) -> int:
         return self._height_map[p]
 
-    @property_mutable_cache
+    @property
     def points(self) -> Set[Point2]:
         return self._points.copy()
 
     @property
     def upper(self) -> Set[Point2]:
         """ Returns the upper points of a ramp. """
-        max_height = max(self.height_at(p) for p in self._points)
+        max_height = max([self.height_at(p) for p in self._points])
         return {p for p in self._points if self.height_at(p) == max_height}
 
-    @property_mutable_cache
+    @property
     def upper2_for_ramp_wall(self) -> Set[Point2]:
         """ Returns the 2 upper ramp points of the main base ramp required for the supply depot and barracks placement properties used in this file. """
         if len(self.upper) > 5:
@@ -54,22 +52,26 @@ class Ramp:
             upper2.pop()
         return set(upper2)
 
-    @property_immutable_cache
+    @property
     def top_center(self) -> Point2:
-        pos = Point2((sum(p.x for p in self.upper) / len(self.upper), sum(p.y for p in self.upper) / len(self.upper)))
+        pos = Point2(
+            (sum([p.x for p in self.upper]) / len(self.upper), sum([p.y for p in self.upper]) / len(self.upper))
+        )
         return pos
 
-    @property_mutable_cache
+    @property
     def lower(self) -> Set[Point2]:
-        min_height = min(self.height_at(p) for p in self._points)
+        min_height = min([self.height_at(p) for p in self._points])
         return {p for p in self._points if self.height_at(p) == min_height}
 
-    @property_immutable_cache
+    @property
     def bottom_center(self) -> Point2:
-        pos = Point2((sum(p.x for p in self.lower) / len(self.lower), sum(p.y for p in self.lower) / len(self.lower)))
+        pos = Point2(
+            (sum([p.x for p in self.lower]) / len(self.lower), sum([p.y for p in self.lower]) / len(self.lower))
+        )
         return pos
 
-    @property_immutable_cache
+    @property
     def barracks_in_middle(self) -> Point2:
         """ Barracks position in the middle of the 2 depots """
         if len(self.upper2_for_ramp_wall) == 2:
@@ -82,7 +84,7 @@ class Ramp:
             return max(intersects, key=lambda p: p.distance_to(anyLowerPoint))
         raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
 
-    @property_immutable_cache
+    @property
     def depot_in_middle(self) -> Point2:
         """ Depot in the middle of the 3 depots """
         if len(self.upper2_for_ramp_wall) == 2:
@@ -95,7 +97,7 @@ class Ramp:
             return max(intersects, key=lambda p: p.distance_to(anyLowerPoint))
         raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
 
-    @property_mutable_cache
+    @property
     def corner_depots(self) -> Set[Point2]:
         """ Finds the 2 depot positions on the outside """
         if len(self.upper2_for_ramp_wall) == 2:
@@ -109,7 +111,7 @@ class Ramp:
             return intersects
         raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
 
-    @property_immutable_cache
+    @property
     def barracks_can_fit_addon(self) -> bool:
         """ Test if a barracks can fit an addon at natural ramp """
         # https://i.imgur.com/4b2cXHZ.png
@@ -117,7 +119,7 @@ class Ramp:
             return self.barracks_in_middle.x + 1 > max(self.corner_depots, key=lambda depot: depot.x).x
         raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
 
-    @property_immutable_cache
+    @property
     def barracks_correct_placement(self) -> Point2:
         """ Corrected placement so that an addon can fit """
         if len(self.upper2_for_ramp_wall) == 2:
