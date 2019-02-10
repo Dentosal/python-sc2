@@ -3,6 +3,7 @@ import aiohttp
 import asyncio
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 from s2clientprotocol import sc2api_pb2 as sc_pb
@@ -10,11 +11,19 @@ from s2clientprotocol import sc2api_pb2 as sc_pb
 from .data import Status
 from .player import Computer
 
+
 class ProtocolError(Exception):
-    pass
+    @property
+    def is_game_over_error(self) -> bool:
+        return self.args[0] in [
+            "['Game has already ended']",
+            "['Not supported if game has already ended']",
+        ]
+
 
 class ConnectionAlreadyClosed(ProtocolError):
     pass
+
 
 class Protocol:
     def __init__(self, ws):
