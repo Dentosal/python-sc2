@@ -221,10 +221,10 @@ class UnitTypeData:
             return None
         # Morphing a HIVE would have HATCHERY and LAIR in the tech alias - now subtract HIVE cost from LAIR cost instead of from HATCHERY cost
         tech_alias_cost_minerals = max(
-            [self._game_data.units[tech_alias.value].cost.minerals for tech_alias in self.tech_alias]
+            self._game_data.units[tech_alias.value].cost.minerals for tech_alias in self.tech_alias
         )
         tech_alias_cost_vespene = max(
-            [self._game_data.units[tech_alias.value].cost.vespene for tech_alias in self.tech_alias]
+            self._game_data.units[tech_alias.value].cost.vespene for tech_alias in self.tech_alias
         )
         return Cost(
             self._proto.mineral_cost - tech_alias_cost_minerals,

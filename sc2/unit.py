@@ -300,7 +300,7 @@ class Unit(PassengerUnit):
 
     @property_immutable_cache
     def facing(self) -> Union[int, float]:
-        """ Returns float in range [0,2p). 0 means in direction of x axis."""
+        """ Returns float in range [0,2π). 0 means in direction of x axis."""
         return self._proto.facing
 
     @property_immutable_cache

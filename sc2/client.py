@@ -61,7 +61,7 @@ class Client(Protocol):
             ifopts.render.minimap_resolution.y = minimap_height
 
         if race is None:
-            assert isinstance(observed_player_id, int)
+            assert isinstance(observed_player_id, int), f"observed_player_id is of type {type(observed_player_id)}"
             # join as observer
             req = sc_pb.RequestJoinGame(observed_player_id=observed_player_id, options=ifopts)
         else:
@@ -79,7 +79,7 @@ class Client(Protocol):
                 p.base_port = ppc[1]
 
         if name is not None:
-            assert isinstance(name, str)
+            assert isinstance(name, str), f"name is of type {type(name)}"
             req.player_name = name
 
         result = await self._execute(join_game=req)

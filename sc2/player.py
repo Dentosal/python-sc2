@@ -85,7 +85,7 @@ class Player(AbstractPlayer):
             proto.player_name if proto.HasField("player_name") else None,
         )
 
-    def __init__(self, player_id, type, requested_race, difficulty=None, actual_race=None, name=None):
-        super().__init__(type, requested_race, difficulty=difficulty, name=name)
+    def __init__(self, player_id, p_type, requested_race, difficulty=None, actual_race=None, name=None):
+        super().__init__(p_type, requested_race, difficulty=difficulty, name=name)
         self.id: int = player_id
         self.actual_race: Race = actual_race
