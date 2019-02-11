@@ -85,9 +85,11 @@ class Units(list):
         assert self, "Units object is empty"
         return self[0]
 
-    def take(self, n: int, require_all: bool = True) -> "Units":
-        assert (not require_all) or len(self) >= n, "Trying to take more than there are in Unit object"
-        return self.subgroup(self[:n])
+    def take(self, n: int) -> "Units":
+        if self.amount >= n:
+            return self
+        else:
+            return self.subgroup(self[:n])
 
     @property
     def random(self) -> Unit:
@@ -100,14 +102,13 @@ class Units(list):
         else:
             return other
 
-    def random_group_of(self, n):
-        # TODO allow n > amount with n = min(n,amount)?
-        assert 0 <= n <= self.amount, "Trying to take more than there are in Unit object"
-        if n == 0:
+    def random_group_of(self, n: int) -> "Units":
+        """ Returns self if n >= self.amount """
+        if n < 1:
             return self.subgroup([])
-        elif self.amount == n:
+        elif self.amount >= n:
             return self
-        else:
+        else: 
             return self.subgroup(random.sample(self, n))
 
     def in_attack_range_of(self, unit: Unit, bonus_distance: Union[int, float] = 0) -> "Units":

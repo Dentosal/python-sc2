@@ -83,8 +83,8 @@ class BotAI:
         """ The reason for len(ramp.upper) in {2, 5} is: 
         ParaSite map has 5 upper points, and most other maps have 2 upper points at the main ramp. The map Acolyte has 4 upper points at the wrong ramp (which is closest to the start position) """
         self.cached_main_base_ramp = min(
-            {ramp for ramp in self.game_info.map_ramps if len(ramp.upper) in {2, 5}},
-            key=(lambda r: self.start_location.distance_to(r.top_center)),
+            (ramp for ramp in self.game_info.map_ramps if len(ramp.upper) in {2, 5}),
+            key=lambda r: self.start_location._distance_squared(r.top_center),
         )
         return self.cached_main_base_ramp
 
@@ -132,7 +132,7 @@ class BotAI:
                 if all(point.distance_to(resource) >= (7 if resource in geysers else 6) for resource in resources)
             ]
             # choose best fitting point
-            result = min(possible_points, key=lambda p: sum(p.distance_to(resource) for resource in resources))
+            result = min(possible_points, key=lambda p: sum(p._distance_squared(resource.position) for resource in resources))
             centers[result] = resources
         """ Returns dict with the correct expansion position Point2 key, resources (mineral field, vespene geyser) as value """
         return centers
@@ -373,7 +373,7 @@ class BotAI:
             if random_alternative:
                 return random.choice(possible)
             else:
-                return min(possible, key=lambda p: p.distance_to(near))
+                return min(possible, key=lambda p: p._distance_squared(near))
         return None
 
     def already_pending_upgrade(self, upgrade_type: UpgradeId) -> Union[int, float]:
