@@ -35,11 +35,21 @@ class Ramp:
     def points(self) -> Set[Point2]:
         return self._points.copy()
 
-    @property
+    @property_mutable_cache
     def upper(self) -> Set[Point2]:
         """ Returns the upper points of a ramp. """
-        max_height = max(self.height_at(p) for p in self._points)
-        return {p for p in self._points if self.height_at(p) == max_height}
+        current_max = -10000
+        result = set()
+        for p in self._points:
+            height = self.height_at(p)
+            if height < current_max:
+                continue
+            elif height == current_max:
+                result.add(p)
+            else:
+                current_max = height
+                result = {p}
+        return result
 
     @property_mutable_cache
     def upper2_for_ramp_wall(self) -> Set[Point2]:
@@ -61,8 +71,18 @@ class Ramp:
 
     @property_mutable_cache
     def lower(self) -> Set[Point2]:
-        min_height = min(self.height_at(p) for p in self._points)
-        return {p for p in self._points if self.height_at(p) == min_height}
+        current_min = 10000
+        result = set()
+        for p in self._points:
+            height = self.height_at(p)
+            if height > current_min:
+                continue
+            elif height == current_min:
+                result.add(p)
+            else:
+                current_min = height
+                result = {p}
+        return result
 
     @property_immutable_cache
     def bottom_center(self) -> Point2:
