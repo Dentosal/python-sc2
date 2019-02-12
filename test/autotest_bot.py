@@ -21,7 +21,7 @@ class TestBot(sc2.BotAI):
     def __init__(self):
         # Tests related
         self.game_time_timeout_limit = 2*60
-        self.tests_target = 8
+        self.tests_target = 7
         self.tests_done_by_name = set()
 
     async def on_step(self, iteration):
@@ -61,9 +61,9 @@ class TestBot(sc2.BotAI):
             await self.test_botai_actions4()
             await self.test_botai_actions4_successful()
 
-        elif "test_botai_actions5_successful" not in self.tests_done_by_name:
-            await self.test_botai_actions5()
-            await self.test_botai_actions5_successful()
+        # elif "test_botai_actions5_successful" not in self.tests_done_by_name:
+        #    await self.test_botai_actions5()
+        #    await self.test_botai_actions5_successful()
 
 
 
