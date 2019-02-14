@@ -354,10 +354,6 @@ class Unit(PassengerUnit):
         return self._proto.is_flying
 
     @property_immutable_cache
-    def is_psionic(self) -> bool:
-        return Attribute.Psionic.value in self._type_data.attributes
-
-    @property_immutable_cache
     def is_mineral_field(self) -> bool:
         return self._type_data.has_minerals
 

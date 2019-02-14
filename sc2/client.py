@@ -139,7 +139,9 @@ class Client(Protocol):
         return result
 
     async def get_game_data(self) -> GameData:
-        result = await self._execute(data=sc_pb.RequestData(ability_id=True, unit_type_id=True, upgrade_id=True))
+        result = await self._execute(
+            data=sc_pb.RequestData(ability_id=True, unit_type_id=True, upgrade_id=True, buff_id=True, effect_id=True)
+        )
         return GameData(result.data)
 
     async def get_game_info(self) -> GameInfo:

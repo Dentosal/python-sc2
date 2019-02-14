@@ -8,21 +8,28 @@ EPSILON = 10 ** (-FLOAT_DIGITS)
 
 
 def _sign(num):
-    if num == 0:
-        return 0
-    return 1 if num > 0 else -1
+    return math.copysign(1, num)
 
 
 class Pointlike(tuple):
     @property
     def rounded(self) -> "Pointlike":
-        return self.__class__(round(q) for q in self)
+        return Point2((math.floor(self[0]), math.ceil(self[1])))
 
     @property
     def position(self) -> "Pointlike":
         return self
 
-    def distance_to(self, p: Union["Unit", "Point2", "Point3"]) -> Union[int, float]:
+    def distance_to(self, target: Union["Unit", "Point2"]) -> float:
+        """Calculate a single distance from a point or unit to another point or unit"""
+        # TODO 1 distance calculation use pythagoras
+        p = target.position
+        assert isinstance(p, Pointlike), f"p is not of type Pointlike"
+        if self == p:
+            return 0
+        return ((self[0] - p[0]) ** 2 + (self[1] - p[1]) ** 2) ** 0.5
+
+    def old_distance_to(self, p: Union["Unit", "Point2", "Point3"]) -> Union[int, float]:
         p = p.position
         assert isinstance(p, Pointlike), f"p is not of type Pointlike"
         if self == p:

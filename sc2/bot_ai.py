@@ -630,10 +630,8 @@ class BotAI:
             await self.on_building_construction_complete(unit)
 
     async def _issue_unit_dead_events(self):
-        event = self.state.observation.raw_data.event
-        if event is not None:
-            for tag in event.dead_units:
-                await self.on_unit_destroyed(tag)
+        for unit_tag in self.state.dead_units:
+            await self.on_unit_destroyed(unit_tag)
 
     async def on_unit_destroyed(self, unit_tag):
         """ Override this in your bot class. """

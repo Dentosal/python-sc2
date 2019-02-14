@@ -16,11 +16,11 @@ class Ramp:
         self.y_offset = -0.5
         self.cache = {}
 
-    @property
+    @property_immutable_cache
     def _height_map(self):
         return self.__game_info.terrain_height
 
-    @property
+    @property_immutable_cache
     def _placement_grid(self):
         return self.__game_info.placement_grid
 
@@ -59,14 +59,16 @@ class Ramp:
             return set()  # HACK: makes this work for now
             # FIXME: please do
 
-        upper2 = sorted(list(self.upper), key=lambda x: x.distance_to(self.bottom_center), reverse=True)
+        upper2 = sorted(list(self.upper), key=lambda x: x._distance_squared(self.bottom_center), reverse=True)
         while len(upper2) > 2:
             upper2.pop()
         return set(upper2)
 
     @property_immutable_cache
     def top_center(self) -> Point2:
-        pos = Point2((sum(p.x for p in self.upper) / len(self.upper), sum(p.y for p in self.upper) / len(self.upper)))
+        upper = self.upper
+        length = len(upper)
+        pos = Point2((sum(p.x for p in upper) / length, sum(p.y for p in upper) / length))
         return pos
 
     @property_mutable_cache
@@ -86,7 +88,9 @@ class Ramp:
 
     @property_immutable_cache
     def bottom_center(self) -> Point2:
-        pos = Point2((sum(p.x for p in self.lower) / len(self.lower), sum(p.y for p in self.lower) / len(self.lower)))
+        lower = self.lower
+        length = len(lower)
+        pos = Point2((sum(p.x for p in lower) / length, sum(p.y for p in lower) / length))
         return pos
 
     @property_immutable_cache

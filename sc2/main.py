@@ -103,8 +103,6 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
 
     iteration = 0
     while True:
-        state = await client.observation()
-        logger.debug(f"Score: {state.observation.observation.score.score}")
         if client._game_result:
             ai.on_end(client._game_result[player_id])
             return client._game_result[player_id]
@@ -112,6 +110,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
         if iteration != 0:
             state = await client.observation()
             gs = GameState(state.observation, game_data)
+            logger.debug(f"Score: {gs.score.summary}")
 
             if game_time_limit and (gs.game_loop * 0.725 * (1 / 16)) > game_time_limit:
                 ai.on_end(Result.Tie)
