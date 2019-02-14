@@ -169,6 +169,8 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
                             time_window.clear()
         except Exception as e:
             if isinstance(e, ProtocolError) and e.is_game_over_error:
+                if realtime:
+                    return None
                 result = client._game_result[player_id]
                 if result is None:
                     log.error("Game over, but no results gathered")
