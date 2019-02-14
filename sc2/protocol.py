@@ -1,4 +1,6 @@
+import sys
 import aiohttp
+import asyncio
 
 import logging
 logger = logging.getLogger(__name__)
@@ -35,6 +37,15 @@ class Protocol:
         except TypeError:
             logger.exception("Cannot receive: Connection already closed.")
             raise ConnectionAlreadyClosed("Connection already closed.")
+        except asyncio.CancelledError:
+            # If request is sent, the response must be received before reraising cancel
+            try:
+                await self._ws.receive_bytes()
+            except asyncio.CancelledError:
+                log.critical("Requests must not be cancelled multiple times")
+                sys.exit(2)
+            raise
+
         response.ParseFromString(response_bytes)
         logger.debug(f"Response received")
         return response

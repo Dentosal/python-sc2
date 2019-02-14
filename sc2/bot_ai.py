@@ -83,8 +83,8 @@ class BotAI:
         """ The reason for len(ramp.upper) in {2, 5} is: 
         ParaSite map has 5 upper points, and most other maps have 2 upper points at the main ramp. The map Acolyte has 4 upper points at the wrong ramp (which is closest to the start position) """
         self.cached_main_base_ramp = min(
-            {ramp for ramp in self.game_info.map_ramps if len(ramp.upper) in {2, 5}},
-            key=(lambda r: self.start_location.distance_to(r.top_center)),
+            (ramp for ramp in self.game_info.map_ramps if len(ramp.upper) in {2, 5}),
+            key=lambda r: self.start_location._distance_squared(r.top_center),
         )
         return self.cached_main_base_ramp
 
@@ -132,7 +132,7 @@ class BotAI:
                 if all(point.distance_to(resource) >= (7 if resource in geysers else 6) for resource in resources)
             ]
             # choose best fitting point
-            result = min(possible_points, key=lambda p: sum(p.distance_to(resource) for resource in resources))
+            result = min(possible_points, key=lambda p: sum(p._distance_squared(resource.position) for resource in resources))
             centers[result] = resources
         """ Returns dict with the correct expansion position Point2 key, resources (mineral field, vespene geyser) as value """
         return centers
@@ -154,13 +154,14 @@ class BotAI:
             start_townhall_type = {Race.Protoss: UnitTypeId.NEXUS, Race.Terran: UnitTypeId.COMMANDCENTER, Race.Zerg: UnitTypeId.HATCHERY}
             building = start_townhall_type[self.race]
 
-        assert isinstance(building, UnitTypeId)
+        assert isinstance(building, UnitTypeId), f"{building} is no UnitTypeId"
 
         if not location:
             location = await self.get_next_expansion()
-        
-        if location:
-            await self.build(building, near=location, max_distance=max_distance, random_alternative=False, placement_step=1)
+        else:
+            await self.build(
+                building, near=location, max_distance=max_distance, random_alternative=False, placement_step=1
+            )
 
     async def get_next_expansion(self) -> Optional[Point2]:
         """Find next expansion location."""
@@ -290,8 +291,8 @@ class BotAI:
     async def can_cast(self, unit: Unit, ability_id: AbilityId, target: Optional[Union[Unit, Point2, Point3]]=None, only_check_energy_and_cooldown: bool=False, cached_abilities_of_unit: List[AbilityId]=None) -> bool:
         """Tests if a unit has an ability available and enough energy to cast it.
         See data_pb2.py (line 161) for the numbers 1-5 to make sense"""
-        assert isinstance(unit, Unit)
-        assert isinstance(ability_id, AbilityId)
+        assert isinstance(unit, Unit), f"{unit} is no Unit object"
+        assert isinstance(ability_id, AbilityId), f"{ability_id} is no AbilityId"
         assert isinstance(target, (type(None), Unit, Point2, Point3))
         # check if unit has enough energy to cast or if ability is on cooldown
         if cached_abilities_of_unit:
@@ -344,7 +345,7 @@ class BotAI:
         """Finds a placement location for building."""
 
         assert isinstance(building, (AbilityId, UnitTypeId))
-        assert isinstance(near, Point2)
+        assert isinstance(near, Point2), f"{near} is no Point2 object"
 
         if isinstance(building, UnitTypeId):
             building = self._game_data.units[building.value].creation_ability
@@ -372,7 +373,7 @@ class BotAI:
             if random_alternative:
                 return random.choice(possible)
             else:
-                return min(possible, key=lambda p: p.distance_to(near))
+                return min(possible, key=lambda p: p._distance_squared(near))
         return None
 
     def already_pending_upgrade(self, upgrade_type: UpgradeId) -> Union[int, float]:
@@ -382,7 +383,7 @@ class BotAI:
         0 < x < 1: researching
         1: finished
         """
-        assert isinstance(upgrade_type, UpgradeId)
+        assert isinstance(upgrade_type, UpgradeId), f"{upgrade_type} is no UpgradeId"
         if upgrade_type in self.state.upgrades:
             return 1
         level = None
@@ -511,13 +512,13 @@ class BotAI:
 
     async def chat_send(self, message: str):
         """Send a chat message."""
-        assert isinstance(message, str)
+        assert isinstance(message, str), f"{message} is no string"
         await self._client.chat_send(message, False)
 
     # For the functions below, make sure you are inside the boundries of the map size.
     def get_terrain_height(self, pos: Union[Point2, Point3, Unit]) -> int:
         """ Returns terrain height at a position. Caution: terrain height is not anywhere near a unit's z-coordinate. """
-        assert isinstance(pos, (Point2, Point3, Unit))
+        assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
         pos = pos.position.to2.rounded
         return self._game_info.terrain_height[pos]
 
@@ -525,26 +526,26 @@ class BotAI:
         """ Returns True if you can place something at a position. Remember, buildings usually use 2x2, 3x3 or 5x5 of these grid points.
         Caution: some x and y offset might be required, see ramp code:
         https://github.com/Dentosal/python-sc2/blob/master/sc2/game_info.py#L17-L18 """
-        assert isinstance(pos, (Point2, Point3, Unit))
+        assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
         pos = pos.position.to2.rounded
         return self._game_info.placement_grid[pos] != 0
 
     def in_pathing_grid(self, pos: Union[Point2, Point3, Unit]) -> bool:
         """ Returns True if a unit can pass through a grid point. """
-        assert isinstance(pos, (Point2, Point3, Unit))
+        assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
         pos = pos.position.to2.rounded
         return self._game_info.pathing_grid[pos] == 0
 
     def is_visible(self, pos: Union[Point2, Point3, Unit]) -> bool:
         """ Returns True if you have vision on a grid point. """
         # more info: https://github.com/Blizzard/s2client-proto/blob/9906df71d6909511907d8419b33acc1a3bd51ec0/s2clientprotocol/spatial.proto#L19
-        assert isinstance(pos, (Point2, Point3, Unit))
+        assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
         pos = pos.position.to2.rounded
         return self.state.visibility[pos] == 2
 
     def has_creep(self, pos: Union[Point2, Point3, Unit]) -> bool:
         """ Returns True if there is creep on the grid point. """
-        assert isinstance(pos, (Point2, Point3, Unit))
+        assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
         pos = pos.position.to2.rounded
         return self.state.creep[pos] != 0
 
@@ -579,14 +580,17 @@ class BotAI:
         self.workers: Units = self.units(race_worker[self.race])
         self.townhalls: Units = self.units(race_townhalls[self.race])
         self.geysers: Units = self.units(race_gas[self.race])
-
-        self.minerals: Union[float, int] = state.common.minerals
-        self.vespene: Union[float, int] = state.common.vespene
-        self.supply_used: Union[float, int] = state.common.food_used
-        self.supply_cap: Union[float, int] = state.common.food_cap
-        self.supply_workers: Union[float, int] = state.common.food_workers  # Doesn't include workers in production
+        self.minerals: int = state.common.minerals
+        self.vespene: int = state.common.vespene
         self.supply_army: Union[float, int] = state.common.food_army
+        self.supply_workers: Union[float, int] = state.common.food_workers  # Doesn't include workers in production
+        self.supply_cap: Union[float, int] = state.common.food_cap
+        self.supply_used: Union[float, int] = state.common.food_used
         self.supply_left: Union[float, int] = self.supply_cap - self.supply_used
+        self.idle_worker_count: int = state.common.idle_worker_count
+        self.army_count: int = state.common.army_count
+        self.warp_gate_count: int = state.common.warp_gate_count
+        self.larva_count: int = state.common.larva_count
         # reset cached values
         self.cached_known_enemy_structures = None
         self.cached_known_enemy_units = None
@@ -626,10 +630,8 @@ class BotAI:
             await self.on_building_construction_complete(unit)
 
     async def _issue_unit_dead_events(self):
-        event = self.state.observation.raw_data.event
-        if event is not None:
-            for tag in event.dead_units:
-                await self.on_unit_destroyed(tag)
+        for unit_tag in self.state.dead_units:
+            await self.on_unit_destroyed(unit_tag)
 
     async def on_unit_destroyed(self, unit_tag):
         """ Override this in your bot class. """

@@ -13,7 +13,7 @@ from .position import Point2, Point3
 
 class PassengerUnit:
     def __init__(self, proto_data, game_data):
-        assert isinstance(game_data, GameData)
+        assert isinstance(game_data, GameData), f"game_data is not of type GameData"
         self._proto = proto_data
         self._game_data = game_data
         self.cache = {}
@@ -300,7 +300,7 @@ class Unit(PassengerUnit):
 
     @property_immutable_cache
     def facing(self) -> Union[int, float]:
-        """ Returns float in range [0,2p). 0 means in direction of x axis."""
+        """ Returns float in range [0,2π). 0 means in direction of x axis."""
         return self._proto.facing
 
     @property_immutable_cache
@@ -352,10 +352,6 @@ class Unit(PassengerUnit):
     @property_immutable_cache
     def is_flying(self) -> bool:
         return self._proto.is_flying
-
-    @property_immutable_cache
-    def is_psionic(self) -> bool:
-        return Attribute.Psionic.value in self._type_data.attributes
 
     @property_immutable_cache
     def is_mineral_field(self) -> bool:
@@ -568,7 +564,7 @@ class Unit(PassengerUnit):
 
     @property_immutable_cache
     def has_add_on(self) -> bool:
-        return not self.add_on_tag
+        return bool(self.add_on_tag)
 
     @property_immutable_cache
     def assigned_harvesters(self) -> int:

@@ -1,5 +1,5 @@
 from collections import deque
-from typing import Any, Dict, FrozenSet, Generator, List, Optional, Sequence, Set, Tuple, Union
+from typing import Any, Dict, FrozenSet, Generator, List, Optional, Sequence, Set, Tuple, Union, Deque
 
 from .pixel_map import PixelMap
 from .player import Player
@@ -16,11 +16,11 @@ class Ramp:
         self.y_offset = -0.5
         self.cache = {}
 
-    @property
+    @property_immutable_cache
     def _height_map(self):
         return self.__game_info.terrain_height
 
-    @property
+    @property_immutable_cache
     def _placement_grid(self):
         return self.__game_info.placement_grid
 
@@ -35,11 +35,21 @@ class Ramp:
     def points(self) -> Set[Point2]:
         return self._points.copy()
 
-    @property
+    @property_mutable_cache
     def upper(self) -> Set[Point2]:
         """ Returns the upper points of a ramp. """
-        max_height = max(self.height_at(p) for p in self._points)
-        return {p for p in self._points if self.height_at(p) == max_height}
+        current_max = -10000
+        result = set()
+        for p in self._points:
+            height = self.height_at(p)
+            if height < current_max:
+                continue
+            elif height == current_max:
+                result.add(p)
+            else:
+                current_max = height
+                result = {p}
+        return result
 
     @property_mutable_cache
     def upper2_for_ramp_wall(self) -> Set[Point2]:
@@ -49,24 +59,38 @@ class Ramp:
             return set()  # HACK: makes this work for now
             # FIXME: please do
 
-        upper2 = sorted(list(self.upper), key=lambda x: x.distance_to(self.bottom_center), reverse=True)
+        upper2 = sorted(list(self.upper), key=lambda x: x._distance_squared(self.bottom_center), reverse=True)
         while len(upper2) > 2:
             upper2.pop()
         return set(upper2)
 
     @property_immutable_cache
     def top_center(self) -> Point2:
-        pos = Point2((sum(p.x for p in self.upper) / len(self.upper), sum(p.y for p in self.upper) / len(self.upper)))
+        upper = self.upper
+        length = len(upper)
+        pos = Point2((sum(p.x for p in upper) / length, sum(p.y for p in upper) / length))
         return pos
 
     @property_mutable_cache
     def lower(self) -> Set[Point2]:
-        min_height = min(self.height_at(p) for p in self._points)
-        return {p for p in self._points if self.height_at(p) == min_height}
+        current_min = 10000
+        result = set()
+        for p in self._points:
+            height = self.height_at(p)
+            if height > current_min:
+                continue
+            elif height == current_min:
+                result.add(p)
+            else:
+                current_min = height
+                result = {p}
+        return result
 
     @property_immutable_cache
     def bottom_center(self) -> Point2:
-        pos = Point2((sum(p.x for p in self.lower) / len(self.lower), sum(p.y for p in self.lower) / len(self.lower)))
+        lower = self.lower
+        length = len(lower)
+        pos = Point2((sum(p.x for p in lower) / length, sum(p.y for p in lower) / length))
         return pos
 
     @property_immutable_cache
@@ -79,7 +103,7 @@ class Ramp:
             # Offset from top point to barracks center is (2, 1)
             intersects = p1.circle_intersection(p2, 5 ** 0.5)
             anyLowerPoint = next(iter(self.lower))
-            return max(intersects, key=lambda p: p.distance_to(anyLowerPoint))
+            return max(intersects, key=lambda p: p._distance_squared(anyLowerPoint))
         raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
 
     @property_immutable_cache
@@ -92,7 +116,7 @@ class Ramp:
             # Offset from top point to depot center is (1.5, 0.5)
             intersects = p1.circle_intersection(p2, 2.5 ** 0.5)
             anyLowerPoint = next(iter(self.lower))
-            return max(intersects, key=lambda p: p.distance_to(anyLowerPoint))
+            return max(intersects, key=lambda p: p._distance_squared(anyLowerPoint))
         raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
 
     @property_mutable_cache
@@ -142,6 +166,7 @@ class GameInfo:
         self.terrain_height: PixelMap = PixelMap(self._proto.start_raw.terrain_height)
         self.placement_grid: PixelMap = PixelMap(self._proto.start_raw.placement_grid)
         self.playable_area = Rect.from_proto(self._proto.start_raw.playable_area)
+        self.map_center = self.playable_area.center
         self.map_ramps: List[Ramp] = None  # Filled later by BotAI._prepare_first_step
         self.player_races: Dict[int, "Race"] = {
             p.player_id: p.race_actual or p.race_requested for p in self._proto.player_info
@@ -149,42 +174,40 @@ class GameInfo:
         self.start_locations: List[Point2] = [Point2.from_proto(sl) for sl in self._proto.start_raw.start_locations]
         self.player_start_location: Point2 = None  # Filled later by BotAI._prepare_first_step
 
-    @property
-    def map_center(self) -> Point2:
-        return self.playable_area.center
-
     def _find_ramps(self) -> List[Ramp]:
         """Calculate (self.pathing_grid - self.placement_grid) (for sets) and then find ramps by comparing heights."""
-        rampDict = {
-            Point2((x, y)): self.pathing_grid[(x, y)] == 0 and self.placement_grid[(x, y)] == 0
+        rampPoints = {
+            Point2((x, y))
             for x in range(self.pathing_grid.width)
             for y in range(self.pathing_grid.height)
+            if self.placement_grid[(x, y)] == 0 and self.pathing_grid[(x, y)] == 0
         }
-
-        rampPoints = {p for p in rampDict if rampDict[p]}  # filter only points part of ramp
-        rampGroups = self._find_groups(rampPoints)
-        return [Ramp(group, self) for group in rampGroups]
+        return [Ramp(group, self) for group in self._find_groups(rampPoints)]
 
     def _find_groups(
         self, points: Set[Point2], minimum_points_per_group: int = 8, max_distance_between_points: int = 2
     ) -> List[Set[Point2]]:
-        """ From a set/list of points, this function will try to group points together """
-        """ Paint clusters of points in rectangular map using flood fill algorithm. """
+        """
+        From a set of points, this function will try to group points together by
+        painting clusters of points in a rectangular map using flood fill algorithm.
+        Returns groups of points as list, like [{p1, p2, p3}, {p4, p5, p6, p7, p8}]
+        """
         NOT_INTERESTED = -2
         NOT_COLORED_YET = -1
+        map_width = self.pathing_grid.width
+        map_height = self.pathing_grid.height
         currentColor: int = NOT_COLORED_YET
-        picture: List[List[int]] = [
-            [NOT_INTERESTED for j in range(self.pathing_grid.width)] for i in range(self.pathing_grid.height)
-        ]
+        picture: List[List[int]] = [[NOT_INTERESTED for _ in range(map_width)] for _ in range(map_height)]
 
         def paint(pt: Point2) -> None:
             picture[pt.y][pt.x] = currentColor
 
-        nearby: Set[Point2] = set()
-        for dx in range(-max_distance_between_points, max_distance_between_points + 1):
-            for dy in range(-max_distance_between_points, max_distance_between_points + 1):
-                if abs(dx) + abs(dy) <= max_distance_between_points:
-                    nearby.add(Point2((dx, dy)))
+        nearby: Set[Point2] = {
+            Point2((dx, dy))
+            for dx in range(-max_distance_between_points, max_distance_between_points + 1)
+            for dy in range(-max_distance_between_points, max_distance_between_points + 1)
+            if abs(dx) + abs(dy) <= max_distance_between_points
+        }
 
         for point in points:
             paint(point)
@@ -204,7 +227,7 @@ class GameInfo:
                 base: Point2 = queue.popleft()
                 for offset in nearby:
                     px, py = base.x + offset.x, base.y + offset.y
-                    if px < 0 or py < 0 or px >= self.pathing_grid.width or py >= self.pathing_grid.height:
+                    if px < 0 or py < 0 or px >= map_width or py >= map_height:
                         continue
                     if picture[py][px] != NOT_COLORED_YET:
                         continue
@@ -215,8 +238,4 @@ class GameInfo:
                     currentGroup.add(point)
             if len(currentGroup) >= minimum_points_per_group:
                 foundGroups.append(currentGroup)
-
-        """ Returns groups of points as list
-        [{p1, p2, p3}, {p4, p5, p6, p7, p8}]
-        """
         return foundGroups
