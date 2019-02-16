@@ -12,7 +12,7 @@ from .client import Client
 from .player import Human, Bot
 from .data import Race, Difficulty, Result, ActionResult, CreateGameError
 from .game_state import GameState
-from .protocol import ConnectionAlreadyClosed
+from .protocol import ConnectionAlreadyClosed, ProtocolError
 
 
 class SlidingTimeWindow:
@@ -159,17 +159,21 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
 
                     time_window.push(step_time)
 
-                    if out_of_budget and time_penalty != None:
+                    if out_of_budget and time_penalty is not None:
                         if time_penalty == "resign":
                             raise RuntimeError("Out of time")
                         else:
                             time_penalty_cooldown = int(time_penalty)
         except Exception as e:
-            # Handle error that happens when the bot queries something although the game is already over
-            if str(e) in ["['Game has already ended']", "['Not supported if game has already ended']"]:
-                # In realtime=True, client._game_result might be "None"
-                ai.on_end(client._game_result[player_id])
-                return client._game_result[player_id]
+            if isinstance(e, ProtocolError) and e.is_game_over_error:
+                if realtime:
+                    return None
+                result = client._game_result[player_id]
+                if result is None:
+                    log.error("Game over, but no results gathered")
+                    raise
+                ai.on_end(result)
+                return result
             # NOTE: this message is caught by pytest suite
             logger.exception(f"AI step threw an error")  # DO NOT EDIT!
             logger.error(f"Error: {e}")
