@@ -12,7 +12,7 @@ from .client import Client
 from .player import Human, Bot
 from .data import Race, Difficulty, Result, ActionResult, CreateGameError
 from .game_state import GameState
-from .protocol import ConnectionAlreadyClosed
+from .protocol import ConnectionAlreadyClosed, ProtocolError
 
 
 class SlidingTimeWindow:
@@ -98,8 +98,14 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
     gs = GameState(state.observation, game_data)
     ai._prepare_step(gs)
     ai._prepare_first_step()
-    ai.on_start()
-    await ai.on_start_async()
+    try:
+        ai.on_start()
+        await ai.on_start_async()
+    except Exception as e:
+        logger.exception(f"AI on_start threw an error")
+        logger.error(f"resigning due to previous error")
+        ai.on_end(Result.Defeat)
+        return Result.Defeat
 
     iteration = 0
     while True:
@@ -159,11 +165,12 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
 
                     time_window.push(step_time)
 
-                    if out_of_budget and time_penalty != None:
+                    if out_of_budget and time_penalty is not None:
                         if time_penalty == "resign":
                             raise RuntimeError("Out of time")
                         else:
                             time_penalty_cooldown = int(time_penalty)
+                            time_window.clear()
         except Exception as e:
             if isinstance(e, ProtocolError) and e.is_game_over_error:
                 if realtime:
