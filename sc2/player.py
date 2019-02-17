@@ -63,7 +63,7 @@ class Computer(AbstractPlayer):
         super().__init__(PlayerType.Computer, race, difficulty=difficulty, ai_build=ai_build)
 
     def __str__(self):
-        return f"Computer {self.difficulty._name_}({self.race._name_},{self.ai_build.name})"
+        return f"Computer {self.difficulty._name_}({self.race._name_}, {self.ai_build.name})"
 
 
 class Observer(AbstractPlayer):
