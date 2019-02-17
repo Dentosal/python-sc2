@@ -1,17 +1,20 @@
-import sys
-import aiohttp
 import asyncio
 
 import logging
-logger = logging.getLogger(__name__)
+import sys
 
 from s2clientprotocol import sc2api_pb2 as sc_pb
 
 from .data import Status
-from .player import Computer
+
+logger = logging.getLogger(__name__)
+
 
 class ProtocolError(Exception):
-    pass
+    @property
+    def is_game_over_error(self) -> bool:
+        return self.args[0] in ["['Game has already ended']", "['Not supported if game has already ended']"]
+
 
 class ConnectionAlreadyClosed(ProtocolError):
     pass
@@ -42,7 +45,7 @@ class Protocol:
             try:
                 await self._ws.receive_bytes()
             except asyncio.CancelledError:
-                log.critical("Requests must not be cancelled multiple times")
+                logger.critical("Requests must not be cancelled multiple times")
                 sys.exit(2)
             raise
 
@@ -73,4 +76,7 @@ class Protocol:
         return result
 
     async def quit(self):
-        await self._execute(quit=sc_pb.RequestQuit())
+        try:
+            await self._execute(quit=sc_pb.RequestQuit())
+        except ConnectionAlreadyClosed:
+            pass

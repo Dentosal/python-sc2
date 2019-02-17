@@ -467,6 +467,11 @@ class Unit(PassengerUnit):
         """ How much cargo space is available at maximum. """
         return self._proto.cargo_space_max
 
+    @property_immutable_cache
+    def cargo_left(self) -> Union[float, int]:
+        """ Returns how much cargo space is currently left in the unit. """
+        return self._proto.cargo_space_max - self._proto.cargo_space_taken
+
     @property_mutable_cache
     def passengers(self) -> Set["PassengerUnit"]:
         """ Returns the units inside a Bunker, CommandCenter, PlanetaryFortress, Medivac, Nydus, Overlord or WarpPrism. """

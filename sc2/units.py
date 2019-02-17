@@ -86,7 +86,7 @@ class Units(list):
         return self[0]
 
     def take(self, n: int) -> "Units":
-        if self.amount >= n:
+        if self.amount <= n:
             return self
         else:
             return self.subgroup(self[:n])
