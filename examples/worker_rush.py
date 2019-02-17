@@ -1,12 +1,21 @@
-import sc2
-from sc2 import run_game, maps, Race, Difficulty
+from sc2 import run_game, maps, Race, Difficulty, BotAI
 from sc2.player import Bot, Computer
 
-class WorkerRushBot(sc2.BotAI):
+class WorkerRushBot(BotAI):
+    def __init__(self):
+        super().__init__()
+        self.actions = []
+
     async def on_step(self, iteration):
+        self.actions = []
+
         if iteration == 0:
+            target = self.enemy_start_locations[0]
+
             for worker in self.workers:
-                await self.do(worker.attack(self.enemy_start_locations[0]))
+                self.actions.append(worker.attack(target))
+
+        await self.do_actions(self.actions)
 
 def main():
     run_game(maps.get("Abyssal Reef LE"), [
