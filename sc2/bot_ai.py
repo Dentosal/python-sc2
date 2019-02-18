@@ -15,7 +15,6 @@ from .game_state import GameState
 from .ids.ability_id import AbilityId
 from .ids.unit_typeid import UnitTypeId
 from .ids.upgrade_id import UpgradeId
-from .points import Points
 from .position import Point2, Point3
 from .unit import Unit
 from .units import Units
