@@ -306,7 +306,7 @@ class BotAI:
     def select_build_worker(self, pos: Union[Unit, Point2, Point3], force: bool=False) -> Optional[Unit]:
         """Select a worker to build a building with."""
 
-        workers = self.workers.gathering.closer_than(20, pos) or self.workers
+        workers = self.workers.gathering.closer_than(20, pos) | self.workers.idle or self.workers
         for worker in workers.prefer_close_to(pos).prefer_idle:
             if not worker.orders or len(worker.orders) == 1 and worker.orders[0].ability.id in {AbilityId.MOVE,
                                                                                                 AbilityId.HARVEST_GATHER}:
