@@ -1,18 +1,19 @@
 import asyncio
-import async_timeout
+import logging
 import time
 
-import logging
+import async_timeout
+
+from .client import Client
+from .data import CreateGameError, Result
+from .game_state import GameState
+from .player import Bot, Human
+from .portconfig import Portconfig
+from .protocol import ConnectionAlreadyClosed, ProtocolError
+from .sc2process import SC2Process
+from .unit import UnitGameData
 
 logger = logging.getLogger(__name__)
-
-from .sc2process import SC2Process
-from .portconfig import Portconfig
-from .client import Client
-from .player import Human, Bot
-from .data import Race, Difficulty, Result, ActionResult, CreateGameError
-from .game_state import GameState
-from .protocol import ConnectionAlreadyClosed, ProtocolError
 
 
 class SlidingTimeWindow:
@@ -91,11 +92,15 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
         time_limit = float(step_time_limit.get("time_limit", None))
 
     game_data = await client.get_game_data()
+    # Used in PassengerUnit, Unit and Units
+    UnitGameData._game_data = game_data
+    # await client.save_game_data()  # IF YOU WANT TO SAVE THE DATA
     game_info = await client.get_game_info()
 
+    # This game_data will become self._game_data in botAI
     ai._prepare_start(client, player_id, game_info, game_data)
     state = await client.observation()
-    gs = GameState(state.observation, game_data)
+    gs = GameState(state.observation)
     ai._prepare_step(gs)
     ai._prepare_first_step()
     try:
@@ -115,7 +120,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
 
         if iteration != 0:
             state = await client.observation()
-            gs = GameState(state.observation, game_data)
+            gs = GameState(state.observation)
             logger.debug(f"Score: {gs.score.summary}")
 
             if game_time_limit and (gs.game_loop * 0.725 * (1 / 16)) > game_time_limit:

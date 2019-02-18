@@ -1,4 +1,4 @@
-from typing import Callable, Set, FrozenSet, List
+from typing import Callable, FrozenSet, List, Set
 
 from .position import Point2
 
@@ -73,11 +73,7 @@ class PixelMap:
 
             if pred(self[x, y]):
                 nodes.add(Point2((x, y)))
-                for a in [-1, 0, 1]:
-                    for b in [-1, 0, 1]:
-                        if not (a == 0 and b == 0):
-                            queue.append(Point2((x + a, y + b)))
-
+                queue += [Point2((x + a, y + b)) for a in [-1, 0, 1] for b in [-1, 0, 1] if not (a == 0 and b == 0)]
         return nodes
 
     def flood_fill_all(self, pred: Callable[[int], bool]) -> Set[FrozenSet[Point2]]:

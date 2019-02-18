@@ -1,15 +1,14 @@
 from typing import Any, Dict, List, Optional, Set, Tuple, Union  # mypy type checking
 
+from .constants import geyser_ids, mineral_ids
 from .data import Alliance, DisplayType
 from .ids.effect_id import EffectId
 from .ids.upgrade_id import UpgradeId
-from .ids.unit_typeid import UnitTypeId
 from .pixel_map import PixelMap
 from .position import Point2, Point3
 from .power_source import PsionicMatrix
 from .score import ScoreDetails
 from .units import Units
-from .constants import geyser_ids, mineral_ids
 
 
 class Blip:
@@ -76,33 +75,32 @@ class Common:
 
 
 class EffectData:
-    def __init__(self, proto, game_data):
+    def __init__(self, proto):
         self._proto = proto
-        self.game_data_effects = game_data.effects
 
     @property
     def id(self) -> EffectId:
         return EffectId(self._proto.effect_id)
 
     @property
-    def positions(self) -> List[Point2]:
-        return [Point2.from_proto(p) for p in self._proto.pos]
+    def positions(self) -> Set[Point2]:
+        return {Point2.from_proto(p) for p in self._proto.pos}
+
+    @property
+    def alliance(self) -> Alliance:
+        return self._proto.alliance
+
+    @property
+    def owner(self) -> int:
+        return self._proto.owner
 
     @property
     def radius(self) -> float:
-        return self.game_data_effects[self._proto.effect_id].radius
-
-    @property
-    def name(self) -> str:
-        return self.game_data_effects[self._proto.effect_id].name
-
-    @property
-    def friendly_name(self) -> str:
-        return self.game_data_effects[self._proto.effect_id].friendly_name
+        return self._proto.radius
 
 
 class GameState:
-    def __init__(self, response_observation, game_data):
+    def __init__(self, response_observation):
         self.actions = response_observation.actions  # successful actions since last loop
         self.action_errors = response_observation.action_errors  # error actions since last loop
         # https://github.com/Blizzard/s2client-proto/blob/51662231c0965eba47d5183ed0a6336d5ae6b640/s2clientprotocol/sc2api.proto#L575
@@ -124,11 +122,11 @@ class GameState:
         self.abilities = self.observation.abilities  # abilities of selected units
 
         # Fix for enemy units detected by my sensor tower, as blips have less unit information than normal visible units
-        visibleUnits, hiddenUnits, minerals, geysers, destructables, enemy, own = ([] for _ in range(7))
+        visibleUnits, blipUnits, minerals, geysers, destructables, enemy, own = ([] for _ in range(7))
 
         for unit in self.observation_raw.units:
             if unit.is_blip:
-                hiddenUnits.append(unit)
+                blipUnits.append(unit)
             else:
                 visibleUnits.append(unit)
                 # all destructable rocks except the one below the main base ramps
@@ -146,24 +144,24 @@ class GameState:
                 elif unit.alliance == Alliance.Enemy.value:
                     enemy.append(unit)
 
-        self.own_units: Units = Units.from_proto(own, game_data)
-        self.enemy_units: Units = Units.from_proto(enemy, game_data)
-        self.mineral_field: Units = Units.from_proto(minerals, game_data)
-        self.vespene_geyser: Units = Units.from_proto(geysers, game_data)
-        self.resources: Units = Units.from_proto(minerals + geysers, game_data)
-        self.destructables: Units = Units.from_proto(destructables, game_data)
-        self.units: Units = Units.from_proto(visibleUnits, game_data)
+        self.own_units: Units = Units.from_proto(own)
+        self.enemy_units: Units = Units.from_proto(enemy)
+        self.mineral_field: Units = Units.from_proto(minerals)
+        self.vespene_geyser: Units = Units.from_proto(geysers)
+        self.resources: Units = Units.from_proto(minerals + geysers)
+        self.destructables: Units = Units.from_proto(destructables)
+        self.units: Units = Units.from_proto(visibleUnits)
         self.upgrades: Set[UpgradeId] = {UpgradeId(upgrade) for upgrade in self.observation_raw.player.upgrade_ids}
         self.dead_units: Set[int] = {
             dead_unit_tag for dead_unit_tag in self.observation_raw.event.dead_units
         }  # set of unit tags that died this step - sometimes has multiple entries
 
-        self.blips: Set[Blip] = {Blip(unit) for unit in hiddenUnits}
+        self.blips: Set[Blip] = {Blip(unit) for unit in blipUnits}
         self.visibility: PixelMap = PixelMap(self.observation_raw.map_state.visibility)
         self.creep: PixelMap = PixelMap(self.observation_raw.map_state.creep)
 
         self.effects: Set[EffectData] = {
-            EffectData(effect, game_data) for effect in self.observation_raw.effects
+            EffectData(effect) for effect in self.observation_raw.effects
         }  # effects like ravager bile shot, lurker attack, everything in effect_id.py
         """ Usage:
         for effect in self.state.effects:

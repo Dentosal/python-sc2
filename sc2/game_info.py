@@ -1,10 +1,10 @@
 from collections import deque
-from typing import Any, Dict, FrozenSet, Generator, List, Optional, Sequence, Set, Tuple, Union, Deque
+from typing import Any, Deque, Dict, FrozenSet, Generator, List, Optional, Sequence, Set, Tuple, Union
 
+from .cache import property_immutable_cache, property_mutable_cache
 from .pixel_map import PixelMap
 from .player import Player
 from .position import Point2, Rect, Size
-from .cache import property_immutable_cache, property_mutable_cache
 
 
 class Ramp:
@@ -176,12 +176,12 @@ class GameInfo:
 
     def _find_ramps(self) -> List[Ramp]:
         """Calculate (self.pathing_grid - self.placement_grid) (for sets) and then find ramps by comparing heights."""
-        rampPoints = {
+        rampPoints = [
             Point2((x, y))
             for x in range(self.pathing_grid.width)
             for y in range(self.pathing_grid.height)
             if self.placement_grid[(x, y)] == 0 and self.pathing_grid[(x, y)] == 0
-        }
+        ]
         return [Ramp(group, self) for group in self._find_groups(rampPoints)]
 
     def _find_groups(

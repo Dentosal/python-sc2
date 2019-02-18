@@ -3,18 +3,24 @@ from typing import Any, Dict, List, Optional, Set, Tuple, Union  # mypy type che
 from . import unit_command
 from .cache import property_immutable_cache, property_mutable_cache
 from .data import Alliance, Attribute, CloakState, DisplayType, Race, TargetType, warpgate_abilities
-from .game_data import GameData
 from .ids.ability_id import AbilityId
 from .ids.buff_id import BuffId
 from .ids.unit_typeid import UnitTypeId
 from .position import Point2, Point3
 
 
+class UnitGameData:
+    """ Populated by sc2/main.py on game launch.
+    Used in PassengerUnit, Unit, Units and UnitOrder. """
+
+    _game_data = None
+
+
 class UnitOrder:
     @classmethod
-    def from_proto(cls, proto, game_data):
+    def from_proto(cls, proto):
         return cls(
-            game_data.abilities[proto.ability_id],
+            UnitGameData._game_data.abilities[proto.ability_id],
             (proto.target_world_space_pos if proto.HasField("target_world_space_pos") else proto.target_unit_tag),
             proto.progress,
         )
@@ -30,11 +36,8 @@ class UnitOrder:
 
 class PassengerUnit:
     """ Is inherited by the Unit class. Everything in here is also available in Unit. """
-
-    def __init__(self, proto_data, game_data):
-        assert isinstance(game_data, GameData), f"game_data is not of type GameData"
+    def __init__(self, proto_data):
         self._proto = proto_data
-        self._game_data = game_data
         self.cache = {}
 
     def __repr__(self) -> str:
@@ -46,14 +49,14 @@ class PassengerUnit:
         """ UnitTypeId found in sc2/ids/unit_typeid.
         Caches all type_ids of the same unit type. """
         unit_type = self._proto.unit_type
-        if unit_type not in self._game_data.unit_types:
-            self._game_data.unit_types[unit_type] = UnitTypeId(unit_type)
-        return self._game_data.unit_types[unit_type]
+        if unit_type not in UnitGameData._game_data.unit_types:
+            UnitGameData._game_data.unit_types[unit_type] = UnitTypeId(unit_type)
+        return UnitGameData._game_data.unit_types[unit_type]
 
     @property_immutable_cache
     def _type_data(self) -> "UnitTypeData":
         """ Provides the unit type data. """
-        return self._game_data.units[self._proto.unit_type]
+        return UnitGameData._game_data.units[self._proto.unit_type]
 
     @property_immutable_cache
     def name(self) -> str:
@@ -483,7 +486,7 @@ class Unit(PassengerUnit):
     @property_mutable_cache
     def orders(self) -> List[UnitOrder]:
         """ Returns the a list of the current orders. """
-        return [UnitOrder.from_proto(order, self._game_data) for order in self._proto.orders]
+        return [UnitOrder.from_proto(order) for order in self._proto.orders]
 
     @property_immutable_cache
     def order_target(self) -> Optional[Union[int, Point2]]:
@@ -590,7 +593,7 @@ class Unit(PassengerUnit):
     @property_mutable_cache
     def passengers(self) -> Set["PassengerUnit"]:
         """ Returns the units inside a Bunker, CommandCenter, PlanetaryFortress, Medivac, Nydus, Overlord or WarpPrism. """
-        return {PassengerUnit(unit, self._game_data) for unit in self._proto.passengers}
+        return {PassengerUnit(unit) for unit in self._proto.passengers}
 
     @property_mutable_cache
     def passengers_tags(self) -> Set[int]:
@@ -704,21 +707,21 @@ class Unit(PassengerUnit):
     def train(self, unit, queue=False) -> UnitOrder:
         """ Orders unit to train another 'unit'.
         Usage: self.actions.append(COMMANDCENTER.train(SCV)) """
-        return self(self._game_data.units[unit.value].creation_ability.id, queue=queue)
+        return self(UnitGameData._game_data.units[unit.value].creation_ability.id, queue=queue)
 
     def build(self, unit, position=None, queue=False) -> UnitOrder:
         """ Orders unit to build another 'unit' at 'position'.
         Usage: self.actions.append(SCV.build(COMMANDCENTER, position)) """
-        return self(self._game_data.units[unit.value].creation_ability.id, target=position, queue=queue)
+        return self(UnitGameData._game_data.units[unit.value].creation_ability.id, target=position, queue=queue)
 
     def research(self, upgrade, queue=False) -> UnitOrder:
         """ Orders unit to research 'upgrade'.
         Requires UpgradeId to be passed instead of AbilityId. """
-        return self(self._game_data.upgrades[upgrade.value].research_ability.id, queue=queue)
+        return self(UnitGameData._game_data.upgrades[upgrade.value].research_ability.id, queue=queue)
 
     def warp_in(self, unit, position) -> UnitOrder:
         """ Orders Warpgate to warp in 'unit' at 'position'. """
-        normal_creation_ability = self._game_data.units[unit.value].creation_ability.id
+        normal_creation_ability = UnitGameData._game_data.units[unit.value].creation_ability.id
         return self(warpgate_abilities[normal_creation_ability], target=position)
 
     def attack(self, target, queue=False) -> UnitOrder:

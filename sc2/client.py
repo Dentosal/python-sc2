@@ -1,29 +1,26 @@
-from s2clientprotocol import (
-    sc2api_pb2 as sc_pb,
-    common_pb2 as common_pb,
-    query_pb2 as query_pb,
-    debug_pb2 as debug_pb,
-    raw_pb2 as raw_pb,
-)
-
 import logging
+import pickle
+from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union
 
+from s2clientprotocol import common_pb2 as common_pb
+from s2clientprotocol import debug_pb2 as debug_pb
+from s2clientprotocol import query_pb2 as query_pb
+from s2clientprotocol import raw_pb2 as raw_pb
+from s2clientprotocol import sc2api_pb2 as sc_pb
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId
 from sc2.renderer import Renderer
 
-logger = logging.getLogger(__name__)
-
-from .protocol import Protocol, ProtocolError
-from .game_info import GameInfo
-from .game_data import GameData, AbilityData
-from .data import Status, Result
-from .data import Race, ActionResult, ChatChannel
 from .action import combine_actions
+from .data import ActionResult, ChatChannel, Race, Result, Status
+from .game_data import AbilityData, GameData
+from .game_info import GameInfo
 from .position import Point2, Point3
+from .protocol import Protocol, ProtocolError
 from .unit import Unit
 from .units import Units
-from typing import List, Dict, Set, Tuple, Any, Optional, Union, Iterable
+
+logger = logging.getLogger(__name__)
 
 
 class Client(Protocol):
@@ -48,9 +45,9 @@ class Client(Protocol):
 
         if rgb_render_config:
             assert isinstance(rgb_render_config, dict)
-            assert 'window_size' in rgb_render_config and 'minimap_size' in rgb_render_config
-            window_size = rgb_render_config['window_size']
-            minimap_size = rgb_render_config['minimap_size']
+            assert "window_size" in rgb_render_config and "minimap_size" in rgb_render_config
+            window_size = rgb_render_config["window_size"]
+            minimap_size = rgb_render_config["minimap_size"]
             self._renderer = Renderer(self, window_size, minimap_size)
             map_width, map_height = window_size
             minimap_width, minimap_height = minimap_size
@@ -102,9 +99,6 @@ class Client(Protocol):
             if is_resign:
                 raise
 
-    async def debug_leave(self):
-        await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(end_game=debug_pb.DebugEndGame())]))
-
     async def save_replay(self, path):
         logger.debug(f"Requesting replay from server")
         result = await self._execute(save_replay=sc_pb.RequestSaveReplay())
@@ -128,7 +122,7 @@ class Client(Protocol):
             self._game_result = player_id_to_result
 
         # if render_data is available, then RGB rendering was requested
-        if self._renderer and result.observation.observation.HasField('render_data'):
+        if self._renderer and result.observation.observation.HasField("render_data"):
             await self._renderer.render(result.observation)
 
         return result
@@ -148,9 +142,9 @@ class Client(Protocol):
         result = await self._execute(game_info=sc_pb.RequestGameInfo())
         return GameInfo(result.game_info)
 
-    async def actions(self, actions, game_data, return_successes=False):
+    async def actions(self, actions, return_successes=False):
         if not isinstance(actions, list):
-            res = await self.actions([actions], game_data, return_successes)
+            res = await self.actions([actions], return_successes)
             if res:
                 return res[0]
             else:
@@ -211,25 +205,24 @@ class Client(Protocol):
         if isinstance(zipped_list[0][0], Point2):
             results = await self._execute(
                 query=query_pb.RequestQuery(
-                    pathing=[
+                    pathing=(
                         query_pb.RequestQueryPathing(
                             start_pos=common_pb.Point2D(x=p1.x, y=p1.y), end_pos=common_pb.Point2D(x=p2.x, y=p2.y)
                         )
                         for p1, p2 in zipped_list
-                    ]
+                    )
                 )
             )
         else:
             results = await self._execute(
                 query=query_pb.RequestQuery(
-                    pathing=[
+                    pathing=(
                         query_pb.RequestQueryPathing(unit_tag=p1.tag, end_pos=common_pb.Point2D(x=p2.x, y=p2.y))
                         for p1, p2 in zipped_list
-                    ]
+                    )
                 )
             )
-        results = [float(d.distance) for d in results.query.pathing]
-        return results
+        return [float(d.distance) for d in results.query.pathing]
 
     async def query_building_placement(
         self, ability: AbilityId, positions: List[Union[Point2, Point3]], ignore_resources: bool = True
@@ -237,12 +230,12 @@ class Client(Protocol):
         assert isinstance(ability, AbilityData)
         result = await self._execute(
             query=query_pb.RequestQuery(
-                placements=[
+                placements=(
                     query_pb.RequestQueryBuildingPlacement(
                         ability_id=ability.id.value, target_pos=common_pb.Point2D(x=position.x, y=position.y)
                     )
                     for position in positions
-                ],
+                ),
                 ignore_resource_requirements=ignore_resources,
             )
         )
@@ -261,7 +254,7 @@ class Client(Protocol):
         assert units
         result = await self._execute(
             query=query_pb.RequestQuery(
-                abilities=[query_pb.RequestQueryAvailableAbilities(unit_tag=unit.tag) for unit in units],
+                abilities=(query_pb.RequestQueryAvailableAbilities(unit_tag=unit.tag) for unit in units),
                 ignore_resource_requirements=ignore_resource_requirements,
             )
         )
@@ -293,7 +286,7 @@ class Client(Protocol):
 
         await self._execute(
             debug=sc_pb.RequestDebug(
-                debug=[
+                debug=(
                     debug_pb.DebugCommand(
                         create_unit=debug_pb.DebugCreateUnit(
                             unit_type=unit_type.value,
@@ -303,7 +296,7 @@ class Client(Protocol):
                         )
                     )
                     for unit_type, amount_of_units, position, owner_id in unit_spawn_commands
-                ]
+                )
             )
         )
 
@@ -367,7 +360,7 @@ class Client(Protocol):
                     debug=[
                         debug_pb.DebugCommand(
                             draw=debug_pb.DebugDraw(
-                                text=[
+                                text=(
                                     debug_pb.DebugText(
                                         text=t,
                                         color=debug_pb.Color(r=color[0], g=color[1], b=color[2]),
@@ -375,7 +368,7 @@ class Client(Protocol):
                                         size=size_px,
                                     )
                                     for t, p in zip(texts, positions)
-                                ]
+                                )
                             )
                         )
                     ]
@@ -503,15 +496,23 @@ class Client(Protocol):
         assert all(tag > 0 for tag in unit_tags), f"Unit tags have invalid value: {unit_tags}"
         assert isinstance(value, (int, float)), "Value needs to be of type int or float"
         assert value >= 0, "Value can't be negative"
-        await self._execute(debug=sc_pb.RequestDebug(debug=[
-                    debug_pb.DebugCommand(unit_value=debug_pb.DebugSetUnitValue(unit_value=unit_value, value=float(value), unit_tag=unit_tag))
+        await self._execute(
+            debug=sc_pb.RequestDebug(
+                debug=(
+                    debug_pb.DebugCommand(
+                        unit_value=debug_pb.DebugSetUnitValue(
+                            unit_value=unit_value, value=float(value), unit_tag=unit_tag
+                        )
+                    )
                     for unit_tag in unit_tags
-        ]))
+                )
+            )
+        )
 
     async def debug_hang(self, delay_in_seconds: float):
         """ Freezes the SC2 client. Not recommended to be used. """
         delay_in_ms = int(round(delay_in_seconds * 1000))
-        await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(test_process =debug_pb.DebugTestProcess(test=1, delay_ms=delay_in_ms))]))
+        await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(test_process=debug_pb.DebugTestProcess(test=1, delay_ms=delay_in_ms))]))
 
     async def debug_show_map(self):
         """ Reveals the whole map for the bot. Using it a second time disables it again. """

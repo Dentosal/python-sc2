@@ -1,25 +1,26 @@
+import logging
 import math
 import random
+from collections import Counter
+from typing import Any, Dict, List, Optional, Set, Tuple, Union  # mypy type checking
 
-import logging
-from typing import List, Dict, Set, Tuple, Any, Optional, Union # mypy type checking
+import numpy as np
+
+from .cache import property_cache_forever, property_cache_once_per_frame
+from .data import ActionResult, Alert, Race, Result, Target, race_gas, race_townhalls, race_worker
+from .game_data import AbilityData, GameData
 
 # imports for mypy and pycharm autocomplete
 from .game_state import GameState
-from .game_data import GameData
+from .ids.ability_id import AbilityId
+from .ids.unit_typeid import UnitTypeId
+from .ids.upgrade_id import UpgradeId
+from .points import Points
+from .position import Point2, Point3
+from .unit import Unit
+from .units import Units
 
 logger = logging.getLogger(__name__)
-
-from .position import Point2, Point3
-from .data import Race, ActionResult, Alert, Attribute, race_worker, race_townhalls, race_gas, Target, Result
-from .unit import Unit
-from .cache import property_cache_forever, property_cache_once_per_frame
-from .game_data import AbilityData
-from .ids.unit_typeid import UnitTypeId
-from .ids.ability_id import AbilityId
-from .ids.upgrade_id import UpgradeId
-from .units import Units
-from collections import Counter
 
 
 class BotAI:
@@ -31,6 +32,23 @@ class BotAI:
         # Specific opponent bot ID used in sc2ai ladder games http://sc2ai.net/
         # The bot ID will stay the same each game so your bot can "adapt" to the opponent
         self.opponent_id: int = None
+        self.units: Units = None
+        self.workers: Units = None
+        self.townhalls: Units = None
+        self.geysers: Units = None
+        self.minerals: int = None
+        self.vespene: int = None
+        self.supply_army: Union[float, int] = None
+        self.supply_workers: Union[float, int] = None  # Doesn't include workers in production
+        self.supply_cap: Union[float, int] = None
+        self.supply_used: Union[float, int] = None
+        self.supply_left: Union[float, int] = None
+        self.idle_worker_count: int = None
+        self.army_count: int = None
+        self.warp_gate_count: int = None
+        self.larva_count: int = None
+        self.cached_known_enemy_structures = None
+        self.cached_known_enemy_units = None
 
     @property
     def time(self) -> Union[int, float]:
@@ -113,7 +131,7 @@ class BotAI:
             else:  # not found
                 resource_groups.append([mf])
         # Filter out bases with only one mineral field
-        resource_groups = [cluster for cluster in resource_groups if len(cluster) > 1]
+        resource_groups = (cluster for cluster in resource_groups if len(cluster) > 1)
         # distance offsets from a gas geysir
         offsets = [(x, y) for x in range(-9, 10) for y in range(-9, 10) if 75 >= x ** 2 + y ** 2 >= 49]
         centers = {}
@@ -126,13 +144,15 @@ class BotAI:
                 for offset in offsets
             )
             # filter out points that are too near
-            possible_points = [
+            possible_points = (
                 point
                 for point in possible_points
                 if all(point.distance_to(resource) >= (7 if resource in geysers else 6) for resource in resources)
-            ]
+            )
             # choose best fitting point
-            result = min(possible_points, key=lambda p: sum(p._distance_squared(resource.position) for resource in resources))
+            result = min(
+                possible_points, key=lambda p: sum(p._distance_squared(resource.position) for resource in resources)
+            )
             centers[result] = resources
         """ Returns dict with the correct expansion position Point2 key, resources (mineral field, vespene geyser) as value """
         return centers
@@ -486,7 +506,7 @@ class BotAI:
             logger.warning(f"Cannot afford action {action}")
             return ActionResult.Error
 
-        r = await self._client.actions(action, game_data=self._game_data)
+        r = await self._client.actions(action)
 
         if not r:  # success
             cost = self._game_data.calculate_ability_cost(action.ability)
@@ -507,8 +527,7 @@ class BotAI:
             self.minerals -= cost.minerals
             self.vespene -= cost.vespene
 
-        r = await self._client.actions(actions, game_data=self._game_data)
-        return r
+        return await self._client.actions(actions)
 
     async def chat_send(self, message: str):
         """Send a chat message."""
@@ -560,7 +579,7 @@ class BotAI:
         self.enemy_race = Race(self._game_info.player_races[3 - self.player_id])
         self._units_previous_map: dict = dict()
         self._previous_upgrades: Set[UpgradeId] = set()
-        self.units: Units = Units([], game_data)
+        self.units: Units = Units([])
 
     def _prepare_first_step(self):
         """First step extra preparations. Must not be called before _prepare_step."""
