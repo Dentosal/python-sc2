@@ -11,11 +11,14 @@ class ProxyRaxBot(sc2.BotAI):
         self.attack_groups = set()
 
     async def on_step(self, iteration):
+        actions = []
+
         cc = self.units(COMMANDCENTER)
         if not cc.exists:
             target = self.known_enemy_structures.random_or(self.enemy_start_locations[0]).position
             for unit in self.workers | self.units(MARINE):
-                await self.do(unit.attack(target))
+                actions.append(unit.attack(target))
+            await self.do_actions(actions)
             return
         else:
             cc = cc.first
@@ -25,7 +28,7 @@ class ProxyRaxBot(sc2.BotAI):
             self.attack_groups.add(cg)
 
         if self.can_afford(SCV) and self.workers.amount < 16 and cc.noqueue:
-            await self.do(cc.train(SCV))
+            actions.append(cc.train(SCV))
 
         elif self.supply_left < (2 if self.units(BARRACKS).amount < 3 else 4):
             if self.can_afford(SUPPLYDEPOT) and self.already_pending(SUPPLYDEPOT) < 2:
@@ -39,19 +42,21 @@ class ProxyRaxBot(sc2.BotAI):
         for rax in self.units(BARRACKS).ready.noqueue:
             if not self.can_afford(MARINE):
                 break
-            await self.do(rax.train(MARINE))
+            actions.append(rax.train(MARINE))
 
         for scv in self.units(SCV).idle:
-            await self.do(scv.gather(self.state.mineral_field.closest_to(cc)))
+            actions.append(scv.gather(self.state.mineral_field.closest_to(cc)))
 
         for ac in list(self.attack_groups):
             alive_units = ac.select_units(self.units)
             if alive_units.exists and alive_units.idle.exists:
                 target = self.known_enemy_structures.random_or(self.enemy_start_locations[0]).position
                 for marine in ac.select_units(self.units):
-                    await self.do(marine.attack(target))
+                    actions.append(marine.attack(target))
             else:
                 self.attack_groups.remove(ac)
+
+        await self.do_actions(actions)
 
 def main():
     sc2.run_game(sc2.maps.get("(2)CatalystLE"), [
