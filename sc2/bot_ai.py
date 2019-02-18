@@ -80,7 +80,7 @@ class BotAI:
         """ Returns the Ramp instance of the closest main-ramp to start location. Look in game_info.py for more information """
         if hasattr(self, "cached_main_base_ramp"):
             return self.cached_main_base_ramp
-        """ The reason for len(ramp.upper) in {2, 5} is: 
+        """ The reason for len(ramp.upper) in {2, 5} is:
         ParaSite map has 5 upper points, and most other maps have 2 upper points at the main ramp. The map Acolyte has 4 upper points at the wrong ramp (which is closest to the start position) """
         self.cached_main_base_ramp = min(
             (ramp for ramp in self.game_info.map_ramps if len(ramp.upper) in {2, 5}),
@@ -440,7 +440,7 @@ class BotAI:
 
         if isinstance(unit_type, UpgradeId):
             return self.already_pending_upgrade(unit_type)
-            
+
         ability = self._game_data.units[unit_type.value].creation_ability
 
         if all_units:
