@@ -1,12 +1,8 @@
 import random
-import sys
-import traceback
 from itertools import chain
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union
 
-from .data import Alliance
 from .ids.unit_typeid import UnitTypeId
-from .points import Points
 from .position import Point2, Point3
 from .unit import Unit, UnitGameData
 
@@ -21,7 +17,6 @@ class Units(list):
 
     def __init__(self, units):  # , game_data=None):
         super().__init__(units)
-        self.unit_positions: Points = None
 
     def __call__(self, *args, **kwargs):
         return UnitSelection(self, *args, **kwargs)
