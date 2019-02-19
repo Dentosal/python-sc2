@@ -320,7 +320,7 @@ class BotAI:
         """Select a worker to build a bulding with."""
 
         workers = self.workers.closer_than(20, pos) or self.workers
-        for worker in workers.prefer_close_to(pos).prefer_idle:
+        for worker in workers.sorted_by_distance_to(pos).prefer_idle:
             if not worker.orders or len(worker.orders) == 1 and worker.orders[0].ability.id in {AbilityId.MOVE,
                                                                                                 AbilityId.HARVEST_GATHER,
                                                                                                 AbilityId.HARVEST_RETURN}:
