@@ -4,8 +4,6 @@ import random
 from collections import Counter
 from typing import Any, Dict, List, Optional, Set, Tuple, Union  # mypy type checking
 
-import numpy as np
-
 from .cache import property_cache_forever, property_cache_once_per_frame
 from .data import ActionResult, Alert, Race, Result, Target, race_gas, race_townhalls, race_worker
 from .game_data import AbilityData, GameData
@@ -76,6 +74,11 @@ class BotAI:
     @property
     def start_location(self) -> Point2:
         return self._game_info.player_start_location
+    
+    @property
+    def enemy_race(self) -> Race:
+        self.enemy_id = 3 - self.player_id
+        return Race(self._game_info.player_races[self.enemy_id])
 
     @property
     def enemy_start_locations(self) -> List[Point2]:
@@ -108,7 +111,6 @@ class BotAI:
     @property_cache_forever
     def expansion_locations(self) -> Dict[Point2, Units]:
         """List of possible expansion locations."""
-        # RESOURCE_SPREAD_THRESHOLD = 144
         RESOURCE_SPREAD_THRESHOLD = 225
         minerals = self.state.mineral_field
         geysers = self.state.vespene_geyser
@@ -146,11 +148,15 @@ class BotAI:
             possible_points = (
                 point
                 for point in possible_points
-                if all(point.distance_to(resource) >= (7 if resource in geysers else 6) for resource in resources)
+                if all(
+                    point._distance_squared(resource.position) >= (49 if resource in geysers else 36)
+                    for resource in resources
+                )
             )
             # choose best fitting point
+            # TODO can we improve this by calculating the distance only one time?
             result = min(
-                possible_points, key=lambda p: sum(p._distance_squared(resource.position) for resource in resources)
+                possible_points, key=lambda point: sum(point._distance_squared(resource.position) for resource in resources)
             )
             centers[result] = resources
         """ Returns dict with the correct expansion position Point2 key, resources (mineral field, vespene geyser) as value """
@@ -189,7 +195,7 @@ class BotAI:
         distance = math.inf
         for el in self.expansion_locations:
             def is_near_to_expansion(t):
-                return t.position.distance_to(el) < self.EXPANSION_GAP_THRESHOLD
+                return t.position._distance_squared(el) < self.EXPANSION_GAP_THRESHOLD ** 2
 
             if any(map(is_near_to_expansion, self.townhalls)):
                 # already taken
@@ -279,7 +285,7 @@ class BotAI:
         owned = {}
         for el in self.expansion_locations:
             def is_near_to_expansion(t):
-                return t.position.distance_to(el) < self.EXPANSION_GAP_THRESHOLD
+                return t.position._distance_squared(el) < self.EXPANSION_GAP_THRESHOLD ** 2
 
             th = next((x for x in self.townhalls if is_near_to_expansion(x)), None)
             if th:
@@ -325,13 +331,26 @@ class BotAI:
             cast_range = self._game_data.abilities[ability_id.value]._proto.cast_range
             ability_target = self._game_data.abilities[ability_id.value]._proto.target
             # Check if target is in range (or is a self cast like stimpack)
-            if ability_target == 1 or ability_target == Target.PointOrNone.value and isinstance(target, (Point2, Point3)) and unit.distance_to(target) <= cast_range: # cant replace 1 with "Target.None.value" because ".None" doesnt seem to be a valid enum name
+            if (
+                ability_target == 1
+                or ability_target == Target.PointOrNone.value
+                and isinstance(target, (Point2, Point3))
+                and unit._distance_squared(target.position) <= cast_range ** 2
+            ):  # cant replace 1 with "Target.None.value" because ".None" doesnt seem to be a valid enum name
                 return True
             # Check if able to use ability on a unit
-            elif ability_target in {Target.Unit.value, Target.PointOrUnit.value} and isinstance(target, Unit) and unit.distance_to(target) <= cast_range:
+            elif (
+                ability_target in {Target.Unit.value, Target.PointOrUnit.value}
+                and isinstance(target, Unit)
+                and unit._distance_squared(target.position) <= cast_range ** 2
+            ):
                 return True
             # Check if able to use ability on a position
-            elif ability_target in {Target.Point.value, Target.PointOrUnit.value} and isinstance(target, (Point2, Point3)) and unit.distance_to(target) <= cast_range:
+            elif (
+                ability_target in {Target.Point.value, Target.PointOrUnit.value}
+                and isinstance(target, (Point2, Point3))
+                and unit._distance_squared(target) <= cast_range ** 2
+            ):
                 return True
         return False
 
@@ -575,7 +594,7 @@ class BotAI:
 
         self.player_id: int = player_id
         self.race: Race = Race(self._game_info.player_races[self.player_id])
-        self.enemy_race = Race(self._game_info.player_races[3 - self.player_id])
+        # self.enemy_race = Race(self._game_info.player_races[3 - self.player_id])
         self._units_previous_map: dict = dict()
         self._previous_upgrades: Set[UpgradeId] = set()
         self.units: Units = Units([])

@@ -13,7 +13,7 @@ class PowerSource:
         self.unit_tag = unit_tag
 
     def covers(self, position):
-        return self.position.distance_to(position) <= self.radius
+        return self.position._distance_squared(position) <= self.radius ** 2
 
     def __repr__(self):
         return f"PowerSource({self.position}, {self.radius})"

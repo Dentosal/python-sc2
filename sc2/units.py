@@ -1,3 +1,4 @@
+import logging
 import random
 from itertools import chain
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union
@@ -5,6 +6,8 @@ from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union
 from .ids.unit_typeid import UnitTypeId
 from .position import Point2, Point3
 from .unit import Unit, UnitGameData
+
+logger = logging.getLogger(__name__)
 
 
 class Units(list):
@@ -85,7 +88,10 @@ class Units(list):
         assert self, "Units object is empty"
         return self[0]
 
-    def take(self, n: int) -> "Units":
+    # NOTE former argument 'require_all' is not needed any more
+    def take(self, n: int, require_all=None) -> "Units":
+        if require_all:
+            logger.info("Argument 'require_all' in function 'take' is deprecated")
         if n >= self.amount:
             return self
         else:
@@ -99,8 +105,11 @@ class Units(list):
     def random_or(self, other: any) -> Unit:
         return random.choice(self) if self.exists else other
 
-    def random_group_of(self, n: int) -> "Units":
+    # NOTE former argument 'require_all' is not needed any more
+    def random_group_of(self, n: int, require_all=None) -> "Units":
         """ Returns self if n >= self.amount. """
+        if require_all:
+            logger.info("Argument 'require_all' in function 'random_group_of' is deprecated")
         if n < 1:
             return Units([])
         elif n >= self.amount:
@@ -333,7 +342,7 @@ class Units(list):
 class UnitSelection(Units):
     def __init__(self, parent, selection=None):
         if selection is None:
-            return parent
+            super().__init__(unit for unit in parent)
         elif isinstance(selection, set):
             assert all(
                 isinstance(t, UnitTypeId) for t in selection
