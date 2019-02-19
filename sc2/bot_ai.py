@@ -308,7 +308,7 @@ class BotAI:
 
         workers = self.workers.filter(lambda w: (w.is_gathering or w.is_idle) and w.distance_to(pos) < 20) or self.workers
         if workers:
-            for worker in workers.prefer_close_to(pos).prefer_idle:
+            for worker in workers.sorted_by_distance_to(pos).prefer_idle:
                 if not worker.orders or len(worker.orders) == 1 and worker.orders[0].ability.id in {AbilityId.MOVE,
                                                                                                     AbilityId.HARVEST_GATHER}:
                     return worker
