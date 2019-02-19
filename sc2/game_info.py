@@ -176,49 +176,41 @@ class GameInfo:
 
     def _find_ramps(self) -> List[Ramp]:
         """Calculate (self.pathing_grid - self.placement_grid) (for sets) and then find ramps by comparing heights."""
+        map_area = self.playable_area
         rampPoints = [
             Point2((x, y))
-            for x in range(self.pathing_grid.width)
-            for y in range(self.pathing_grid.height)
+            for x in range(map_area.x, map_area.x + map_area.width + 1)
+            for y in range(map_area.y, map_area.y + map_area.height + 1)
             if self.placement_grid[(x, y)] == 0 and self.pathing_grid[(x, y)] == 0
         ]
         return [Ramp(group, self) for group in self._find_groups(rampPoints)]
 
-    def _find_groups(
-        self, points: Set[Point2], minimum_points_per_group: int = 8, max_distance_between_points: int = 2
-    ) -> List[Set[Point2]]:
+    def _find_groups(self, points: Set[Point2], minimum_points_per_group: int = 8):
         """
         From a set of points, this function will try to group points together by
         painting clusters of points in a rectangular map using flood fill algorithm.
         Returns groups of points as list, like [{p1, p2, p3}, {p4, p5, p6, p7, p8}]
         """
-        NOT_INTERESTED = -2
+        # TODO do we actually need colors here? the ramps will never touch amyways.
         NOT_COLORED_YET = -1
         map_width = self.pathing_grid.width
         map_height = self.pathing_grid.height
         currentColor: int = NOT_COLORED_YET
-        picture: List[List[int]] = [[NOT_INTERESTED for _ in range(map_width)] for _ in range(map_height)]
+        picture: List[List[int]] = [[-2 for _ in range(map_width)] for _ in range(map_height)]
 
         def paint(pt: Point2) -> None:
             picture[pt.y][pt.x] = currentColor
 
-        nearby: Set[Point2] = {
-            Point2((dx, dy))
-            for dx in range(-max_distance_between_points, max_distance_between_points + 1)
-            for dy in range(-max_distance_between_points, max_distance_between_points + 1)
-            if abs(dx) + abs(dy) <= max_distance_between_points
-        }
+        nearby = [(a, b) for a in [-1, 0, 1] for b in [-1, 0, 1] if a != 0 or b != 0]
 
         for point in points:
             paint(point)
-
+        currentColor = 1
         remaining: Set[Point2] = set(points)
         queue: Deque[Point2] = deque()
-        foundGroups: List[Set[Point2]] = []
         while remaining:
             currentGroup: Set[Point2] = set()
             if not queue:
-                currentColor += 1
                 start = remaining.pop()
                 paint(start)
                 queue.append(start)
@@ -226,9 +218,7 @@ class GameInfo:
             while queue:
                 base: Point2 = queue.popleft()
                 for offset in nearby:
-                    px, py = base.x + offset.x, base.y + offset.y
-                    if px < 0 or py < 0 or px >= map_width or py >= map_height:
-                        continue
+                    px, py = base.x + offset[0], base.y + offset[1]
                     if picture[py][px] != NOT_COLORED_YET:
                         continue
                     point: Point2 = Point2((px, py))
@@ -237,5 +227,4 @@ class GameInfo:
                     queue.append(point)
                     currentGroup.add(point)
             if len(currentGroup) >= minimum_points_per_group:
-                foundGroups.append(currentGroup)
-        return foundGroups
+                yield currentGroup

@@ -7,16 +7,16 @@ from s2clientprotocol import debug_pb2 as debug_pb
 from s2clientprotocol import query_pb2 as query_pb
 from s2clientprotocol import raw_pb2 as raw_pb
 from s2clientprotocol import sc2api_pb2 as sc_pb
-from sc2.ids.ability_id import AbilityId
-from sc2.ids.unit_typeid import UnitTypeId
-from sc2.renderer import Renderer
 
 from .action import combine_actions
 from .data import ActionResult, ChatChannel, Race, Result, Status
 from .game_data import AbilityData, GameData
 from .game_info import GameInfo
+from .ids.ability_id import AbilityId
+from .ids.unit_typeid import UnitTypeId
 from .position import Point2, Point3
 from .protocol import Protocol, ProtocolError
+from .renderer import Renderer
 from .unit import Unit
 from .units import Units
 

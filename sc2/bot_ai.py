@@ -335,21 +335,21 @@ class BotAI:
                 ability_target == 1
                 or ability_target == Target.PointOrNone.value
                 and isinstance(target, (Point2, Point3))
-                and unit._distance_squared(target.position) <= cast_range ** 2
+                and unit.position._distance_squared(target.position) <= cast_range ** 2
             ):  # cant replace 1 with "Target.None.value" because ".None" doesnt seem to be a valid enum name
                 return True
             # Check if able to use ability on a unit
             elif (
                 ability_target in {Target.Unit.value, Target.PointOrUnit.value}
                 and isinstance(target, Unit)
-                and unit._distance_squared(target.position) <= cast_range ** 2
+                and unit.position._distance_squared(target.position) <= cast_range ** 2
             ):
                 return True
             # Check if able to use ability on a position
             elif (
                 ability_target in {Target.Point.value, Target.PointOrUnit.value}
                 and isinstance(target, (Point2, Point3))
-                and unit._distance_squared(target) <= cast_range ** 2
+                and unit.position._distance_squared(target) <= cast_range ** 2
             ):
                 return True
         return False
