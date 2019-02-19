@@ -5,7 +5,7 @@ from .ids.unit_typeid import UnitTypeId
 from .position import Point2, Point3
 from typing import List, Dict, Set, Tuple, Any, Optional, Union  # mypy type checking
 
-warnings.simplefilter('once', DeprecationWarning)
+warnings.simplefilter('once')
 
 
 class Units(list):
@@ -279,7 +279,7 @@ class Units(list):
 
     @property
     def noqueue(self) -> "Units":
-        warnings.warn("noqueue will be removed soon, please use idle instead", DeprecationWarning)
+        warnings.warn("noqueue will be removed soon, please use idle instead", DeprecationWarning, stacklevel=2)
         return self.idle
 
     @property
@@ -339,7 +339,7 @@ class Units(list):
         return self.sorted(lambda unit: unit.is_idle, reverse=True)
 
     def prefer_close_to(self, p: Union[Unit, Point2, Point3]) -> "Units":
-        warnings.warn("prefer_close_to will be removed soon, please use sorted_by_distance_to instead", DeprecationWarning)
+        warnings.warn("prefer_close_to will be removed soon, please use sorted_by_distance_to instead", DeprecationWarning, stacklevel=2)
         return self.sorted_by_distance_to(p)
 
 

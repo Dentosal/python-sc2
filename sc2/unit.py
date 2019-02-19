@@ -10,7 +10,7 @@ from .ids.buff_id import BuffId
 from .ids.unit_typeid import UnitTypeId
 from .position import Point2, Point3
 
-warnings.simplefilter('once', DeprecationWarning)
+warnings.simplefilter('once')
 
 
 class UnitOrder:
@@ -550,7 +550,7 @@ class Unit(PassengerUnit):
     @property_immutable_cache
     def noqueue(self) -> bool:
         """ Checks if the unit is idle. """
-        warnings.warn("noqueue will be removed soon, please use is_idle instead", DeprecationWarning)
+        warnings.warn("noqueue will be removed soon, please use is_idle instead", DeprecationWarning, stacklevel=2)
         return self.is_idle
 
     @property_immutable_cache
