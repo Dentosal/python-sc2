@@ -82,16 +82,18 @@ class Units(list):
 
     @property
     def first(self) -> Unit:
-        assert self
+        assert self, "Units object is empty"
         return self[0]
 
-    def take(self, n: int, require_all: bool = True) -> "Units":
-        assert (not require_all) or len(self) >= n
-        return self[:n]
+    def take(self, n: int) -> "Units":
+        if self.amount <= n:
+            return self
+        else:
+            return self.subgroup(self[:n])
 
     @property
     def random(self) -> Unit:
-        assert self.exists
+        assert self, "Units object is empty"
         return random.choice(self)
 
     def random_or(self, other: any) -> Unit:
@@ -100,14 +102,13 @@ class Units(list):
         else:
             return other
 
-    def random_group_of(self, n):
-        # TODO allow n > amount with n = min(n,amount)?
-        assert 0 <= n <= self.amount
-        if n == 0:
+    def random_group_of(self, n: int) -> "Units":
+        """ Returns self if n >= self.amount """
+        if n < 1:
             return self.subgroup([])
-        elif self.amount == n:
+        elif self.amount >= n:
             return self
-        else:
+        else: 
             return self.subgroup(random.sample(self, n))
 
     def in_attack_range_of(self, unit: Unit, bonus_distance: Union[int, float] = 0) -> "Units":
@@ -116,7 +117,7 @@ class Units(list):
 
     def closest_distance_to(self, position: Union[Unit, Point2, Point3]) -> Union[int, float]:
         """ Returns the distance between the closest unit from this group to the target unit """
-        assert self
+        assert self, "Units object is empty"
         if isinstance(position, Unit):
             position = position.position
         return position.distance_to_closest(
@@ -125,19 +126,19 @@ class Units(list):
 
     def furthest_distance_to(self, position: Union[Unit, Point2, Point3]) -> Union[int, float]:
         """ Returns the distance between the furthest unit from this group to the target unit """
-        assert self
+        assert self, "Units object is empty"
         if isinstance(position, Unit):
             position = position.position
         return position.distance_to_furthest([u.position for u in self])
 
     def closest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
-        assert self
+        assert self, "Units object is empty"
         if isinstance(position, Unit):
             position = position.position
         return position.closest(self)
 
     def furthest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
-        assert self
+        assert self, "Units object is empty"
         if isinstance(position, Unit):
             position = position.position
         return position.furthest(self)
@@ -252,12 +253,9 @@ class Units(list):
     @property
     def center(self) -> Point2:
         """ Returns the central point of all units in this list """
-        assert self
+        assert self, f"Units object is empty"
         pos = Point2(
-            (
-                sum(unit.position.x for unit in self) / self.amount,
-                sum(unit.position.y for unit in self) / self.amount,
-            )
+            (sum(unit.position.x for unit in self) / self.amount, sum(unit.position.y for unit in self) / self.amount)
         )
         return pos
 
@@ -346,7 +344,7 @@ class UnitSelection(Units):
     def __init__(self, parent, unit_type_id=None):
         assert unit_type_id is None or isinstance(unit_type_id, (UnitTypeId, set))
         if isinstance(unit_type_id, set):
-            assert all(isinstance(t, UnitTypeId) for t in unit_type_id)
+            assert all(isinstance(t, UnitTypeId) for t in unit_type_id), f"Not all ids in unit_type_id are of type UnitTypeId"
 
         self.unit_type_id = unit_type_id
         super().__init__([u for u in parent if self.matches(u)], parent.game_data)

@@ -9,6 +9,7 @@ class ScoreDetails:
     @property
     def summary(self):
         """
+        TODO this is super ugly, how can we improve this summary?
         Print summary to file with:
         In on_step:
         
