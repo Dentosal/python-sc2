@@ -3,7 +3,7 @@ from .data import Difficulty, PlayerType, Race
 
 
 class AbstractPlayer:
-    def __init__(self, p_type, race=None, name=None, difficulty=None):
+    def __init__(self, p_type, race=None, name=None, difficulty=None, fullscreen=False):
         assert isinstance(p_type, PlayerType)
         assert name is None or isinstance(name, str)
 
@@ -25,11 +25,12 @@ class AbstractPlayer:
             self.race = race
         if p_type == PlayerType.Computer:
             self.difficulty = difficulty
+        self.fullscreen=fullscreen
 
 
 class Human(AbstractPlayer):
-    def __init__(self, race, name=None):
-        super().__init__(PlayerType.Participant, race, name=name)
+    def __init__(self, race, name=None, fullscreen=False):
+        super().__init__(PlayerType.Participant, race, name=name, fullscreen=fullscreen)
 
     def __str__(self):
         if self.name is not None:
@@ -39,13 +40,13 @@ class Human(AbstractPlayer):
 
 
 class Bot(AbstractPlayer):
-    def __init__(self, race, ai, name=None):
+    def __init__(self, race, ai, name=None, fullscreen=False):
         """
         AI can be None if this player object is just used to inform the
         server about player types.
         """
         assert isinstance(ai, BotAI) or ai is None
-        super().__init__(PlayerType.Participant, race, name=name)
+        super().__init__(PlayerType.Participant, race, name=name, fullscreen=fullscreen)
         self.ai = ai
 
     def __str__(self):
