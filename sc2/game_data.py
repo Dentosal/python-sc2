@@ -273,3 +273,17 @@ class Cost:
 
     def __bool__(self) -> bool:
         return self.minerals != 0 or self.vespene != 0
+
+    def __add__(self, other) -> "Cost":
+        if not other:
+          return self
+        if not self:
+          return other
+        if self.time is None:
+            time = other.time
+        elif other.time is None:
+            time = self.time
+        else:
+            time = self.time + other.time
+        return self.__class__(self.minerals + other.minerals, self.vespene + other.vespene, time=time)
+
