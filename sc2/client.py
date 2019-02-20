@@ -32,10 +32,10 @@ class Client(Protocol):
         self.game_step = 8
         self._player_id = None
         self._game_result = None
-        self._debug_texts = list()
-        self._debug_lines = list()
-        self._debug_boxes = list()
-        self._debug_spheres = list()
+        self._debug_texts = []
+        self._debug_lines = []
+        self._debug_boxes = []
+        self._debug_spheres = []
 
         self._renderer = None
 
@@ -43,7 +43,7 @@ class Client(Protocol):
     def in_game(self):
         return self._status == Status.in_game
 
-    async def join_game(self, race=None, observed_player_id=None, portconfig=None, rgb_render_config=None, name=None):
+    async def join_game(self, name=None, race=None, observed_player_id=None, portconfig=None, rgb_render_config=None):
         ifopts = sc_pb.InterfaceOptions(raw=True, score=True)
 
         if rgb_render_config:
@@ -61,15 +61,12 @@ class Client(Protocol):
             ifopts.render.minimap_resolution.y = minimap_height
 
         if race is None:
-            assert isinstance(observed_player_id, int)
+            assert isinstance(observed_player_id, int), f"observed_player_id is of type {type(observed_player_id)}"
             # join as observer
             req = sc_pb.RequestJoinGame(observed_player_id=observed_player_id, options=ifopts)
         else:
             assert isinstance(race, Race)
-            if name:
-                req = sc_pb.RequestJoinGame(race=race.value, options=ifopts, player_name=name)
-            else:
-                req = sc_pb.RequestJoinGame(race=race.value, options=ifopts)
+            req = sc_pb.RequestJoinGame(race=race.value, options=ifopts)
 
         if portconfig:
             req.shared_port = portconfig.shared
@@ -80,6 +77,10 @@ class Client(Protocol):
                 p = req.client_ports.add()
                 p.game_port = ppc[0]
                 p.base_port = ppc[1]
+
+        if name is not None:
+            assert isinstance(name, str), f"name is of type {type(name)}"
+            req.player_name = name
 
         result = await self._execute(join_game=req)
         self._game_result = None
@@ -113,6 +114,8 @@ class Client(Protocol):
 
     async def observation(self):
         result = await self._execute(observation=sc_pb.RequestObservation())
+        assert result.HasField("observation")
+
         if not self.in_game or result.observation.player_result:
             # Sometimes game ends one step before results are available
             if not result.observation.player_result:
@@ -136,7 +139,9 @@ class Client(Protocol):
         return result
 
     async def get_game_data(self) -> GameData:
-        result = await self._execute(data=sc_pb.RequestData(ability_id=True, unit_type_id=True, upgrade_id=True))
+        result = await self._execute(
+            data=sc_pb.RequestData(ability_id=True, unit_type_id=True, upgrade_id=True, buff_id=True, effect_id=True)
+        )
         return GameData(result.data)
 
     async def get_game_info(self) -> GameInfo:
@@ -196,7 +201,6 @@ class Client(Protocol):
         """ Usage: await self.query_pathings([[unit1, target2], [unit2, target2]])
         -> returns [distance1, distance2]
         Caution: returns 0 when path not found
-        Might merge this function with the function above
         """
         assert zipped_list, "No zipped_list"
         assert isinstance(zipped_list, list), f"{type(zipped_list)}"
@@ -228,7 +232,7 @@ class Client(Protocol):
         return results
 
     async def query_building_placement(
-        self, ability: AbilityId, positions: List[Union[Unit, Point2, Point3]], ignore_resources: bool = True
+        self, ability: AbilityId, positions: List[Union[Point2, Point3]], ignore_resources: bool = True
     ) -> List[ActionResult]:
         assert isinstance(ability, AbilityData)
         result = await self._execute(
@@ -254,8 +258,6 @@ class Client(Protocol):
             assert isinstance(units, Unit)
             units = [units]
             input_was_a_list = False
-        else:
-            input_was_a_list = True
         assert units
         result = await self._execute(
             query=query_pb.RequestQuery(
@@ -316,9 +318,9 @@ class Client(Protocol):
             debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(kill_unit=debug_pb.DebugKillUnit(tag=unit_tags))])
         )
 
-    async def move_camera(self, position: Union[Units, Unit, Point2, Point3]):
+    async def move_camera(self, position: Union[Unit, Units, Point2, Point3]):
         """ Moves camera to the target position """
-        assert isinstance(position, (Units, Unit, Point2, Point3))
+        assert isinstance(position, (Unit, Units, Point2, Point3))
         if isinstance(position, Units):
             position = position.center
         if isinstance(position, Unit):
@@ -480,7 +482,7 @@ class Client(Protocol):
         """ Helper function to create debug texts """
         color = self.to_debug_color(color)
         pt3d = self.to_debug_point(pos) if isinstance(pos, Point3) else None
-        virtual_pos = self.to_debug_point(pos) if not isinstance(pos, Point3) else None
+        virtual_pos = self.to_debug_point(pos) if pos is not None and not isinstance(pos, Point3) else None
 
         return debug_pb.DebugText(color=color, text=text, virtual_pos=virtual_pos, world_pos=pt3d, size=size)
 
@@ -572,4 +574,3 @@ class Client(Protocol):
             - self.state.game_loop will be set to zero after the quickload, and self.time is dependant on it
         """
         await self._execute(quick_load=sc_pb.RequestQuickLoad())
-

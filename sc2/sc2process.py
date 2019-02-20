@@ -51,8 +51,8 @@ class SC2Process:
 
     async def __aenter__(self):
         kill_switch.add(self)
-
-        def signal_handler(signal, frame):
+        
+        def signal_handler(*args):
             # unused arguments: signal handling library expects all signal
             # callback handlers to accept two positional arguments
             kill_switch.kill_all()
@@ -134,7 +134,7 @@ class SC2Process:
             if self._process.poll() is None:
                 for _ in range(3):
                     self._process.terminate()
-                    time.sleep(1)
+                    time.sleep(0.5)
                     if self._process.poll() is not None:
                         break
                 else:

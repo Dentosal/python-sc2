@@ -52,7 +52,7 @@ class CannonRushBot(sc2.BotAI):
 
 def main():
     sc2.run_game(sc2.maps.get("(2)CatalystLE"), [
-        Bot(Race.Protoss, CannonRushBot()),
+        Bot(Race.Protoss, CannonRushBot(), name="CheeseCannon"),
         Computer(Race.Protoss, Difficulty.Medium)
     ], realtime=False)
 
