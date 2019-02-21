@@ -279,6 +279,28 @@ class Client(Protocol):
             )
         )
 
+    async def toggle_autocast(self, units: Union[List[Unit], Units], ability: AbilityId):
+        """Toggle autocast of all specified units"""
+        assert isinstance(units, list)
+        assert units
+        assert all(isinstance(u, Unit) for u in units)
+        assert isinstance(ability, AbilityId)
+
+        await self._execute(
+            action=sc_pb.RequestAction(
+                actions=[
+                    sc_pb.Action(
+                        action_raw=raw_pb.ActionRaw(
+                            toggle_autocast=raw_pb.ActionRawToggleAutocast(
+                                ability_id=ability.value,
+                                unit_tags=[u.tag for u in units]
+                            )
+                        )
+                    )
+                ]
+            )
+        )
+
     async def debug_create_unit(self, unit_spawn_commands: List[List[Union[UnitTypeId, int, Point2, Point3]]]):
         """ Usage example (will spawn 1 marine in the center of the map for player ID 1):
         await self._client.debug_create_unit([[UnitTypeId.MARINE, 1, self._game_info.map_center, 1]]) """
@@ -399,7 +421,7 @@ class Client(Protocol):
     def debug_text_2d(self, text: str, pos: Union[Point2, Point3, tuple, list], color=None, size: int = 8):
         return self.debug_text_screen(text, pos, color, size)
 
-    def debug_text_world(self, text: str, pos: Union[Unit, Point2, Point3], color=None, size: int = 8):
+    def debug_text_world(self, text: str, pos: Union[Point2, Point3], color=None, size: int = 8):
         """ Draws a text at Point3 position. Don't forget to add 'await self._client.send_debug'.
         To grab a unit's 3d position, use unit.position3d
         Usually the Z value of a Point3 is between 8 and 14 (except for flying units)
