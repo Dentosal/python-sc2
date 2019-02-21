@@ -595,7 +595,10 @@ class BotAI:
 
         self.player_id: int = player_id
         self.race: Race = Race(self._game_info.player_races[self.player_id])
-        # self.enemy_race = Race(self._game_info.player_races[3 - self.player_id])
+
+        if len(self._game_info.player_races) == 2:
+            self.enemy_race = Race(self._game_info.player_races[3 - self.player_id])
+
         self._units_previous_map: dict = dict()
         self._previous_upgrades: Set[UpgradeId] = set()
         self.units: Units = Units([])
