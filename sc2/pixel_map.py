@@ -29,8 +29,8 @@ class PixelMap:
     def __getitem__(self, pos):
         x, y = pos
 
-        assert 0 <= x < self.width, f"x is {x}, self.width is {self.width}"
-        assert 0 <= y < self.height, f"y is {y}, self.height is {self.height}"
+        assert 0 <= x <= self.width, f"x is {x}, self.width is {self.width}"
+        assert 0 <= y <= self.height, f"y is {y}, self.height is {self.height}"
 
         index = -self.width * y + x
         # print(f"INDEX IS {index} FOR {pos}")
@@ -42,8 +42,8 @@ class PixelMap:
         """ Example usage: self._game_info.pathing_grid[Point2((20, 20))] = [255] """
         x, y = pos
 
-        assert 0 <= x < self.width, f"x is {x}, self.width is {self.width}"
-        assert 0 <= y < self.height, f"y is {y}, self.height is {self.height}"
+        assert 0 <= x <= self.width, f"x is {x}, self.width is {self.width}"
+        assert 0 <= y <= self.height, f"y is {y}, self.height is {self.height}"
 
         index = -self.width * y + x
         start = index * self.bytes_per_pixel

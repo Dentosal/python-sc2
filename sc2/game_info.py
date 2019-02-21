@@ -179,8 +179,8 @@ class GameInfo:
         map_area = self.playable_area
         rampPoints = [
             Point2((x, y))
-            for x in range(map_area.x, map_area.x + map_area.width + 1)
-            for y in range(map_area.y, map_area.y + map_area.height + 1)
+            for x in range(map_area.x, map_area.x + map_area.width)
+            for y in range(map_area.y, map_area.y + map_area.height)
             if self.placement_grid[(x, y)] == 0 and self.pathing_grid[(x, y)] == 0
         ]
         return [Ramp(group, self) for group in self._find_groups(rampPoints)]
@@ -191,7 +191,7 @@ class GameInfo:
         painting clusters of points in a rectangular map using flood fill algorithm.
         Returns groups of points as list, like [{p1, p2, p3}, {p4, p5, p6, p7, p8}]
         """
-        # TODO do we actually need colors here? the ramps will never touch amyways.
+        # TODO do we actually need colors here? the ramps will never touch anyways.
         NOT_COLORED_YET = -1
         map_width = self.pathing_grid.width
         map_height = self.pathing_grid.height

@@ -156,7 +156,8 @@ class BotAI:
             # choose best fitting point
             # TODO can we improve this by calculating the distance only one time?
             result = min(
-                possible_points, key=lambda point: sum(point._distance_squared(resource.position) for resource in resources)
+                possible_points,
+                key=lambda point: sum(point._distance_squared(resource.position) for resource in resources),
             )
             centers[result] = resources
         """ Returns dict with the correct expansion position Point2 key, resources (mineral field, vespene geyser) as value """
