@@ -18,7 +18,7 @@ FREE_ABILITIES = {"Lower", "Raise", "Land", "Lift", "Hold", "Harvest"}
 class GameData:
     def __init__(self, data):
         ids = set(a.value for a in AbilityId if a.value != 0)
-        self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities if a.ability_id in ids}
+        self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities if a.ability_id in ids and a.available}
         self.units = {u.unit_id: UnitTypeData(self, u) for u in data.units if u.available}
         self.upgrades = {u.upgrade_id: UpgradeData(self, u) for u in data.upgrades}
         self.unit_types: Dict[int, UnitTypeId] = {}

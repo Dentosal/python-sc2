@@ -1961,8 +1961,8 @@ class UnitTypeId(enum.Enum):
     COLLAPSIBLEROCKTOWERPUSHUNITRAMPRIGHTGREEN = 1954
     COLLAPSIBLEROCKTOWERRAMPLEFTGREEN = 1955
     COLLAPSIBLEROCKTOWERRAMPRIGHTGREEN = 1956
-
-
+    
+    
 for item in UnitTypeId:
     assert not item.name in globals()
     globals()[item.name] = item
