@@ -285,8 +285,7 @@ class Client(Protocol):
                     sc_pb.Action(
                         action_raw=raw_pb.ActionRaw(
                             toggle_autocast=raw_pb.ActionRawToggleAutocast(
-                                ability_id=ability.value,
-                                unit_tags=[u.tag for u in units]
+                                ability_id=ability.value, unit_tags=(u.tag for u in units)
                             )
                         )
                     )
@@ -357,6 +356,7 @@ class Client(Protocol):
     async def move_camera_spatial(self, position: Union[Point2, Point3]):
         """ Moves camera to the target position using the spatial aciton interface """
         from s2clientprotocol import spatial_pb2 as spatial_pb
+
         assert isinstance(position, (Point2, Point3))
         action = sc_pb.Action(
             action_render=spatial_pb.ActionSpatial(
@@ -513,8 +513,12 @@ class Client(Protocol):
             unit_tags = unit_tags.tags
         if isinstance(unit_tags, Unit):
             unit_tags = [unit_tags.tag]
-        assert hasattr(unit_tags, "__iter__"), f"unit_tags argument needs to be an iterable (list, dict, set, Units), given argument is {type(unit_tags).__name__}"
-        assert 1 <= unit_value <= 3, f"unit_value needs to be between 1 and 3 (1 for energy, 2 for life, 3 for shields), given argument is {unit_value}"
+        assert hasattr(
+            unit_tags, "__iter__"
+        ), f"unit_tags argument needs to be an iterable (list, dict, set, Units), given argument is {type(unit_tags).__name__}"
+        assert (
+            1 <= unit_value <= 3
+        ), f"unit_value needs to be between 1 and 3 (1 for energy, 2 for life, 3 for shields), given argument is {unit_value}"
         assert all(tag > 0 for tag in unit_tags), f"Unit tags have invalid value: {unit_tags}"
         assert isinstance(value, (int, float)), "Value needs to be of type int or float"
         assert value >= 0, "Value can't be negative"
@@ -534,7 +538,11 @@ class Client(Protocol):
     async def debug_hang(self, delay_in_seconds: float):
         """ Freezes the SC2 client. Not recommended to be used. """
         delay_in_ms = int(round(delay_in_seconds * 1000))
-        await self._execute(debug=sc_pb.RequestDebug(debug=[debug_pb.DebugCommand(test_process=debug_pb.DebugTestProcess(test=1, delay_ms=delay_in_ms))]))
+        await self._execute(
+            debug=sc_pb.RequestDebug(
+                debug=[debug_pb.DebugCommand(test_process=debug_pb.DebugTestProcess(test=1, delay_ms=delay_in_ms))]
+            )
+        )
 
     async def debug_show_map(self):
         """ Reveals the whole map for the bot. Using it a second time disables it again. """
@@ -597,4 +605,3 @@ class Client(Protocol):
             - self.state.game_loop will be set to zero after the quickload, and self.time is dependant on it
         """
         await self._execute(quick_load=sc_pb.RequestQuickLoad())
-

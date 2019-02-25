@@ -74,11 +74,6 @@ class BotAI:
     @property
     def start_location(self) -> Point2:
         return self._game_info.player_start_location
-    
-    @property
-    def enemy_race(self) -> Race:
-        self.enemy_id = 3 - self.player_id
-        return Race(self._game_info.player_races[self.enemy_id])
 
     @property
     def enemy_start_locations(self) -> List[Point2]:
@@ -163,7 +158,9 @@ class BotAI:
         """ Returns dict with the correct expansion position Point2 key, resources (mineral field, vespene geyser) as value """
         return centers
 
-    async def get_available_abilities(self, units: Union[List[Unit], Units], ignore_resource_requirements=False) -> List[List[AbilityId]]:
+    async def get_available_abilities(
+        self, units: Union[List[Unit], Units], ignore_resource_requirements=False
+    ) -> List[List[AbilityId]]:
         """ Returns available abilities of one or more units. Right know only checks cooldown, energy cost, and whether the ability has been researched.
         Example usage:
         units_abilities = await self.get_available_abilities(self.units)
@@ -171,13 +168,19 @@ class BotAI:
         units_abilities = await self.get_available_abilities([self.units.random]) """
         return await self._client.query_available_abilities(units, ignore_resource_requirements)
 
-    async def expand_now(self, building: UnitTypeId=None, max_distance: Union[int, float]=10, location: Optional[Point2]=None):
+    async def expand_now(
+        self, building: UnitTypeId = None, max_distance: Union[int, float] = 10, location: Optional[Point2] = None
+    ):
         """ Not recommended as this function uses 'self.do' (reduces performance).
         Finds the next possible expansion via 'self.get_next_expansion()'. If the target expansion is blocked (e.g. an enemy unit), it will misplace the expansion. """
 
         if not building:
             # self.race is never Race.Random
-            start_townhall_type = {Race.Protoss: UnitTypeId.NEXUS, Race.Terran: UnitTypeId.COMMANDCENTER, Race.Zerg: UnitTypeId.HATCHERY}
+            start_townhall_type = {
+                Race.Protoss: UnitTypeId.NEXUS,
+                Race.Terran: UnitTypeId.COMMANDCENTER,
+                Race.Zerg: UnitTypeId.HATCHERY,
+            }
             building = start_townhall_type[self.race]
 
         assert isinstance(building, UnitTypeId), f"{building} is no UnitTypeId"
@@ -185,9 +188,7 @@ class BotAI:
         if not location:
             location = await self.get_next_expansion()
 
-        await self.build(
-            building, near=location, max_distance=max_distance, random_alternative=False, placement_step=1
-        )
+        await self.build(building, near=location, max_distance=max_distance, random_alternative=False, placement_step=1)
 
     async def get_next_expansion(self) -> Optional[Point2]:
         """Find next expansion location."""
@@ -195,6 +196,7 @@ class BotAI:
         closest = None
         distance = math.inf
         for el in self.expansion_locations:
+
             def is_near_to_expansion(t):
                 return t.position._distance_squared(el) < self.EXPANSION_GAP_THRESHOLD ** 2
 
@@ -285,6 +287,7 @@ class BotAI:
 
         owned = {}
         for el in self.expansion_locations:
+
             def is_near_to_expansion(t):
                 return t.position._distance_squared(el) < self.EXPANSION_GAP_THRESHOLD ** 2
 
@@ -299,7 +302,9 @@ class BotAI:
         required = self._game_data.units[unit_type.value]._proto.food_required
         return required == 0 or self.supply_left >= required
 
-    def can_afford(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId], check_supply_cost: bool=True) -> "CanAffordWrapper":
+    def can_afford(
+        self, item_id: Union[UnitTypeId, UpgradeId, AbilityId], check_supply_cost: bool = True
+    ) -> "CanAffordWrapper":
         """Tests if the player has enough resources to build a unit or cast an ability."""
         enough_supply = True
         if isinstance(item_id, UnitTypeId):
@@ -314,7 +319,14 @@ class BotAI:
 
         return CanAffordWrapper(cost.minerals <= self.minerals, cost.vespene <= self.vespene, enough_supply)
 
-    async def can_cast(self, unit: Unit, ability_id: AbilityId, target: Optional[Union[Unit, Point2, Point3]]=None, only_check_energy_and_cooldown: bool=False, cached_abilities_of_unit: List[AbilityId]=None) -> bool:
+    async def can_cast(
+        self,
+        unit: Unit,
+        ability_id: AbilityId,
+        target: Optional[Union[Unit, Point2, Point3]] = None,
+        only_check_energy_and_cooldown: bool = False,
+        cached_abilities_of_unit: List[AbilityId] = None,
+    ) -> bool:
         """Tests if a unit has an ability available and enough energy to cast it.
         See data_pb2.py (line 161) for the numbers 1-5 to make sense"""
         assert isinstance(unit, Unit), f"{unit} is no Unit object"
@@ -355,14 +367,16 @@ class BotAI:
                 return True
         return False
 
-    def select_build_worker(self, pos: Union[Unit, Point2, Point3], force: bool=False) -> Optional[Unit]:
+    def select_build_worker(self, pos: Union[Unit, Point2, Point3], force: bool = False) -> Optional[Unit]:
         """Select a worker to build a bulding with."""
 
         workers = self.workers.closer_than(20, pos) or self.workers
         for worker in workers.prefer_close_to(pos).prefer_idle:
-            if not worker.orders or len(worker.orders) == 1 and worker.orders[0].ability.id in {AbilityId.MOVE,
-                                                                                                AbilityId.HARVEST_GATHER,
-                                                                                                AbilityId.HARVEST_RETURN}:
+            if (
+                not worker.orders
+                or len(worker.orders) == 1
+                and worker.orders[0].ability.id in {AbilityId.MOVE, AbilityId.HARVEST_GATHER, AbilityId.HARVEST_RETURN}
+            ):
                 return worker
 
         return workers.random if force else None
@@ -380,7 +394,14 @@ class BotAI:
         r = await self._client.query_building_placement(building, [position])
         return r[0] == ActionResult.Success
 
-    async def find_placement(self, building: UnitTypeId, near: Union[Unit, Point2, Point3], max_distance: int=20, random_alternative: bool=True, placement_step: int=2) -> Optional[Point2]:
+    async def find_placement(
+        self,
+        building: UnitTypeId,
+        near: Union[Unit, Point2, Point3],
+        max_distance: int = 20,
+        random_alternative: bool = True,
+        placement_step: int = 2,
+    ) -> Optional[Point2]:
         """Finds a placement location for building."""
 
         assert isinstance(building, (AbilityId, UnitTypeId))
@@ -398,12 +419,15 @@ class BotAI:
             return None
 
         for distance in range(placement_step, max_distance, placement_step):
-            possible_positions = [Point2(p).offset(near).to2 for p in (
-                    [(dx, -distance) for dx in range(-distance, distance + 1, placement_step)] +
-                    [(dx, distance) for dx in range(-distance, distance + 1, placement_step)] +
-                    [(-distance, dy) for dy in range(-distance, distance + 1, placement_step)] +
-                    [(distance, dy) for dy in range(-distance, distance + 1, placement_step)]
-            )]
+            possible_positions = [
+                Point2(p).offset(near).to2
+                for p in (
+                    [(dx, -distance) for dx in range(-distance, distance + 1, placement_step)]
+                    + [(dx, distance) for dx in range(-distance, distance + 1, placement_step)]
+                    + [(-distance, dy) for dy in range(-distance, distance + 1, placement_step)]
+                    + [(distance, dy) for dy in range(-distance, distance + 1, placement_step)]
+                )
+            ]
             res = await self._client.query_building_placement(building, possible_positions)
             possible = [p for r, p in zip(res, possible_positions) if r == ActionResult.Success]
             if not possible:
@@ -441,7 +465,7 @@ class BotAI:
     def _abilities_all_units(self) -> Counter:
         """ Cache for the already_pending function, includes protoss units warping in, and all units in production, and all structures, and all morphs """
         abilities_amount = Counter()
-        for unit in self.units: # type: Unit
+        for unit in self.units:  # type: Unit
             for order in unit.orders:
                 abilities_amount[order.ability] += 1
             if not unit.is_ready:
@@ -455,19 +479,19 @@ class BotAI:
     def _abilities_workers_and_eggs(self) -> Counter:
         """ Cache for the already_pending function, includes all worker orders (including pending), zerg units in production (except queens and morphing units) and structures in production, counts double for terran """
         abilities_amount = Counter()
-        for worker in self.workers: # type: Unit
+        for worker in self.workers:  # type: Unit
             for order in worker.orders:
                 abilities_amount[order.ability] += 1
-        for egg in self.units(UnitTypeId.EGG): # type: Unit
+        for egg in self.units(UnitTypeId.EGG):  # type: Unit
             for order in egg.orders:
                 abilities_amount[order.ability] += 1
         if self.race != Race.Terran:
             # If an SCV is constructing a building, already_pending would count this structure twice (once from the SCV order, and once from "not structure.is_ready")
-            for unit in self.units.structure.not_ready: # type: Unit
+            for unit in self.units.structure.not_ready:  # type: Unit
                 abilities_amount[self._game_data.units[unit.type_id.value].creation_ability] += 1
         return abilities_amount
 
-    def already_pending(self, unit_type: Union[UpgradeId, UnitTypeId], all_units: bool=True) -> int:
+    def already_pending(self, unit_type: Union[UpgradeId, UnitTypeId], all_units: bool = True) -> int:
         """
         Returns a number of buildings or units already in progress, or if a
         worker is en route to build it. This also includes queued orders for
@@ -651,7 +675,6 @@ class BotAI:
             for upgrade_completed in self.state.upgrades - self._previous_upgrades:
                 await self.on_upgrade_complete(upgrade_completed)
             self._previous_upgrades = self.state.upgrades
-
 
     async def _issue_unit_added_events(self):
         for unit in self.units:

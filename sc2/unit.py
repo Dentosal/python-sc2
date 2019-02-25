@@ -36,6 +36,7 @@ class UnitOrder:
 
 class PassengerUnit:
     """ Is inherited by the Unit class. Everything in here is also available in Unit. """
+
     def __init__(self, proto_data):
         self._proto = proto_data
         self.cache = {}
@@ -44,7 +45,7 @@ class PassengerUnit:
         """ Returns string of this form: PassengerUnit(name='SCV', tag=4396941328). """
         return f"{self.__class__.__name__}(name={self.name !r}, tag={self.tag})"
 
-    @property
+    @property_immutable_cache
     def type_id(self) -> UnitTypeId:
         """ UnitTypeId found in sc2/ids/unit_typeid.
         Caches all type_ids of the same unit type. """
@@ -333,12 +334,9 @@ class Unit(PassengerUnit):
         """ Returns the 3d position of the unit. """
         return Point3.from_proto(self._proto.pos)
 
-    def distance_to(self, p: Union["Unit", Point2, Point3], bot: "BotAI" = None) -> Union[int, float]:
+    def distance_to(self, p: Union["Unit", Point2, Point3]) -> Union[int, float]:
         """ Using the 2d distance between self and p.
         To calculate the 3d distance, use unit.position3d.distance_to(p) """
-        if bot and isinstance(p, Unit):
-            index = bot.distances_tag_dict
-            return (bot.unit_distances_dict[index[self.tag]][index[p.tag]]) ** 0.5
         return self.position.distance_to_point2(p.position)
 
     @property_immutable_cache

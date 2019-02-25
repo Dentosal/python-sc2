@@ -13,12 +13,14 @@ logger = logging.getLogger(__name__)
 class Units(list):
     """A collection of Unit objects. Makes it easy to select units by selectors."""
 
-    # TODO: Uncomment ", game_data=None):" to provide downwards compatibility for bots that use init or from_proto functions
+    # TODO: You dont need to provide game_data any more.
+    # Add keyword argument 'game_data=None' to provide downwards
+    # compatibility for bots that use '__init__' or 'from_proto' functions.
     @classmethod
-    def from_proto(cls, units):  # , game_data=None):
+    def from_proto(cls, units):  # game_data=None
         return cls((Unit(u) for u in units))
 
-    def __init__(self, units):  # , game_data=None):
+    def __init__(self, units):  # game_data=None
         super().__init__(units)
 
     def __call__(self, *args, **kwargs):
@@ -351,6 +353,6 @@ class UnitSelection(Units):
         elif isinstance(selection, (UnitTypeId)):
             super().__init__(unit for unit in parent if unit.type_id == selection)
         else:
-            assert selection is None or isinstance(
+            assert isinstance(
                 selection, (UnitTypeId, set)
             ), f"selection is not None or of type UnitTypeId or Set[UnitTypeId]"

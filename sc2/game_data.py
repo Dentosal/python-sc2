@@ -8,7 +8,6 @@ from .ids.ability_id import AbilityId
 from .ids.unit_typeid import UnitTypeId
 from .unit_command import UnitCommand
 
-
 # Set of parts of names of abilities that have no cost
 # E.g every ability that has 'Hold' in its name is free
 # TODO move to constants, add more?
@@ -17,8 +16,7 @@ FREE_ABILITIES = {"Lower", "Raise", "Land", "Lift", "Hold", "Harvest"}
 
 class GameData:
     def __init__(self, data):
-        ids = set(a.value for a in AbilityId if a.value != 0)
-        self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities if a.ability_id in ids and a.available}
+        self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities if a.value != 0 and a.available}
         self.units = {u.unit_id: UnitTypeData(self, u) for u in data.units if u.available}
         self.upgrades = {u.upgrade_id: UpgradeData(self, u) for u in data.upgrades}
         self.unit_types: Dict[int, UnitTypeId] = {}
@@ -276,9 +274,9 @@ class Cost:
 
     def __add__(self, other) -> "Cost":
         if not other:
-          return self
+            return self
         if not self:
-          return other
+            return other
         if self.time is None:
             time = other.time
         elif other.time is None:
@@ -286,4 +284,3 @@ class Cost:
         else:
             time = self.time + other.time
         return self.__class__(self.minerals + other.minerals, self.vespene + other.vespene, time=time)
-
