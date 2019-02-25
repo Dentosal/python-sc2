@@ -20,13 +20,13 @@ class Units(list):
     def from_proto(cls, units, game_data=None):  # game_data=None
         if game_data:
             logger.info("Keyword argument 'game_data' in Units classmethod 'from_proto' is deprecated.")
-            logger.info("You can safely remove it.")
+            logger.info("You can safely remove it from your Units objects created by the classmethod.")
         return cls((Unit(u) for u in units))
 
     def __init__(self, units, game_data=None):
         if game_data:
             logger.info("Keyword argument 'game_data' in Units function '__init__' is deprecated.")
-            logger.info("You can safely remove it.")
+            logger.info("You can safely remove it from your Units objects initializations.")
         super().__init__(units)
 
     def __call__(self, *args, **kwargs):
