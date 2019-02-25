@@ -158,6 +158,19 @@ class BotAI:
         """ Returns dict with the correct expansion position Point2 key, resources (mineral field, vespene geyser) as value """
         return centers
 
+    def _correct_zerg_supply(self):
+        """ The client incorrectly rounds zerg supply down instead of up (see
+            https://github.com/Blizzard/s2client-proto/issues/123), so self.supply_used
+            and friends return the wrong value when there are an odd number of zerglings
+            and banelings. This function corrects the bad values. """
+        # TODO: remove when Blizzard/sc2client-proto#123 gets fixed.
+        correction = self.units({UnitTypeId.ZERGLING, UnitTypeId.ZERGLINGBURROWED,
+                                 UnitTypeId.BANELING, UnitTypeId.BANELINGBURROWED,
+                                 UnitTypeId.BANELINGCOCOON}).amount % 2
+        self.supply_used += correction
+        self.supply_army += correction
+        self.supply_left -= correction
+        
     async def get_available_abilities(
         self, units: Union[List[Unit], Units], ignore_resource_requirements=False
     ) -> List[List[AbilityId]]:
@@ -652,6 +665,11 @@ class BotAI:
         self.supply_cap: Union[float, int] = state.common.food_cap
         self.supply_used: Union[float, int] = state.common.food_used
         self.supply_left: Union[float, int] = self.supply_cap - self.supply_used
+
+        # Workaround Zerg supply rounding bug
+        if self.race == Race.Zerg:
+            self._correct_zerg_supply()
+
         self.idle_worker_count: int = state.common.idle_worker_count
         self.army_count: int = state.common.army_count
         self.warp_gate_count: int = state.common.warp_gate_count
