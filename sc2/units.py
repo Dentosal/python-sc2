@@ -17,10 +17,16 @@ class Units(list):
     # Add keyword argument 'game_data=None' to provide downwards
     # compatibility for bots that use '__init__' or 'from_proto' functions.
     @classmethod
-    def from_proto(cls, units):  # game_data=None
+    def from_proto(cls, units, game_data=None):  # game_data=None
+        if game_data:
+            logger.info("Keyword argument 'game_data' in Units classmethod 'from_proto' is deprecated.")
+            logger.info("You can safely remove it.")
         return cls((Unit(u) for u in units))
 
-    def __init__(self, units):  # game_data=None
+    def __init__(self, units, game_data=None):
+        if game_data:
+            logger.info("Keyword argument 'game_data' in Units function '__init__' is deprecated.")
+            logger.info("You can safely remove it.")
         super().__init__(units)
 
     def __call__(self, *args, **kwargs):
