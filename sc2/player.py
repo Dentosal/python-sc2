@@ -1,31 +1,35 @@
 from .bot_ai import BotAI
-from .data import Difficulty, PlayerType, Race
+from .data import AIBuild, Difficulty, PlayerType, Race
 
 
 class AbstractPlayer:
-    def __init__(self, p_type, race=None, name=None, difficulty=None, fullscreen=False):
-        assert isinstance(p_type, PlayerType)
-        assert name is None or isinstance(name, str)
+
+    def __init__(self, p_type, race=None, name=None, difficulty=None, ai_build=None, fullscreen=False):
+        assert isinstance(p_type, PlayerType), f"p_type is of type {type(p_type)}"
+        assert name is None or isinstance(name, str), f"name is of type {type(name)}"
 
         self.name = name
-
+        self.type = p_type
+        self.fullscreen = fullscreen
+        if race is not None:
+            self.race = race
         if p_type == PlayerType.Computer:
-            assert isinstance(difficulty, Difficulty)
+            assert isinstance(difficulty, Difficulty), f"difficulty is of type {type(difficulty)}"
+            # Workaround, proto information does not carry ai_build info
+            # We cant set that in the Player classmethod
+            assert ai_build is None or isinstance(ai_build, AIBuild), f"ai_build is of type {type(ai_build)}"
+            self.difficulty = difficulty
+            self.ai_build = ai_build
 
         elif p_type == PlayerType.Observer:
             assert race is None
             assert difficulty is None
+            assert ai_build is None
 
         else:
-            assert isinstance(race, Race)
+            assert isinstance(race, Race), f"race is of type {type(race)}"
             assert difficulty is None
-
-        self.type = p_type
-        if race is not None:
-            self.race = race
-        if p_type == PlayerType.Computer:
-            self.difficulty = difficulty
-        self.fullscreen=fullscreen
+            assert ai_build is None
 
 
 class Human(AbstractPlayer):
@@ -57,11 +61,11 @@ class Bot(AbstractPlayer):
 
 
 class Computer(AbstractPlayer):
-    def __init__(self, race, difficulty=Difficulty.Easy):
-        super().__init__(PlayerType.Computer, race, difficulty=difficulty)
+    def __init__(self, race, difficulty=Difficulty.Easy, ai_build=AIBuild.RandomBuild):
+        super().__init__(PlayerType.Computer, race, difficulty=difficulty, ai_build=ai_build)
 
     def __str__(self):
-        return f"Computer {self.difficulty._name_}({self.race._name_})"
+        return f"Computer {self.difficulty._name_}({self.race._name_}, {self.ai_build.name})"
 
 
 class Observer(AbstractPlayer):
@@ -86,7 +90,7 @@ class Player(AbstractPlayer):
             proto.player_name if proto.HasField("player_name") else None,
         )
 
-    def __init__(self, player_id, p_type, requested_race, difficulty=None, actual_race=None, name=None):
-        super().__init__(p_type, requested_race, difficulty=difficulty, name=name)
+    def __init__(self, player_id, p_type, requested_race, difficulty=None, actual_race=None, name=None, ai_build=None):
+        super().__init__(p_type, requested_race, difficulty=difficulty, name=name, ai_build=ai_build)
         self.id: int = player_id
         self.actual_race: Race = actual_race

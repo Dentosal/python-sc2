@@ -1247,6 +1247,7 @@ class AbilityId(enum.Enum):
     MORPHTOCOLLAPSIBLEROCKTOWERDEBRISRAMPLEFTGREEN_CANCEL = 3794
     MORPHTOCOLLAPSIBLEROCKTOWERDEBRISRAMPRIGHTGREEN_CANCEL = 3796
 
+
 for item in AbilityId:
     assert not item.name in globals()
     globals()[item.name] = item
