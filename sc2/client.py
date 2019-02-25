@@ -273,9 +273,9 @@ class Client(Protocol):
         )
 
     async def toggle_autocast(self, units: Union[List[Unit], Units], ability: AbilityId):
-        """Toggle autocast of all specified units"""
-        assert isinstance(units, list)
+        """ Toggle autocast of all specified units """
         assert units
+        assert isinstance(units, list)
         assert all(isinstance(u, Unit) for u in units)
         assert isinstance(ability, AbilityId)
 
@@ -285,7 +285,8 @@ class Client(Protocol):
                     sc_pb.Action(
                         action_raw=raw_pb.ActionRaw(
                             toggle_autocast=raw_pb.ActionRawToggleAutocast(
-                                ability_id=ability.value, unit_tags=(u.tag for u in units)
+                                ability_id=ability.value,
+                                unit_tags=(u.tag for u in units)
                             )
                         )
                     )

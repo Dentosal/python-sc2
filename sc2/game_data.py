@@ -16,7 +16,8 @@ FREE_ABILITIES = {"Lower", "Raise", "Land", "Lift", "Hold", "Harvest"}
 
 class GameData:
     def __init__(self, data):
-        self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities if a.value != 0 and a.available}
+        ids = set(a.value for a in AbilityId if a.value != 0)
+        self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities if a.ability_id in ids}
         self.units = {u.unit_id: UnitTypeData(self, u) for u in data.units if u.available}
         self.upgrades = {u.upgrade_id: UpgradeData(self, u) for u in data.upgrades}
         self.unit_types: Dict[int, UnitTypeId] = {}
@@ -59,9 +60,8 @@ class GameData:
 
 
 class AbilityData:
-    ability_ids: List[int] = [ability_id.value for ability_id in AbilityId]  # sorted list
-    ability_ids.remove(0)
-    ability_ids.sort()
+
+    ability_ids: List[int] = [ability_id.value for ability_id in AbilityId][1:]  # sorted list
 
     @classmethod
     def id_exists(cls, ability_id):

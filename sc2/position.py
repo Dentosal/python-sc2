@@ -22,7 +22,6 @@ class Pointlike(tuple):
 
     def distance_to(self, target: Union["Unit", "Point2"]) -> float:
         """Calculate a single distance from a point or unit to another point or unit"""
-        # TODO 1 distance calculation use pythagoras
         p = target.position
         assert isinstance(p, Pointlike), f"p is not of type Pointlike"
         if self == p:
