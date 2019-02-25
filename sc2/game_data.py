@@ -1,14 +1,12 @@
 from bisect import bisect_left
-from functools import lru_cache, reduce
+from functools import lru_cache
 from typing import Any, Dict, List, Optional, Set, Tuple, Union  # mypy type checking
 
 from .constants import ZERGLING
 from .data import Attribute, Race
 from .ids.ability_id import AbilityId
-from .ids.effect_id import EffectId
 from .ids.unit_typeid import UnitTypeId
 from .unit_command import UnitCommand
-
 
 # Set of parts of names of abilities that have no cost
 # E.g every ability that has 'Hold' in its name is free
@@ -19,11 +17,10 @@ FREE_ABILITIES = {"Lower", "Raise", "Land", "Lift", "Hold", "Harvest"}
 class GameData:
     def __init__(self, data):
         ids = set(a.value for a in AbilityId if a.value != 0)
-        self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities if a.ability_id in ids and a.available}
+        self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities if a.ability_id in ids}
         self.units = {u.unit_id: UnitTypeData(self, u) for u in data.units if u.available}
         self.upgrades = {u.upgrade_id: UpgradeData(self, u) for u in data.upgrades}
         self.unit_types: Dict[int, UnitTypeId] = {}
-        self.effects = {e.effect_id: EffectData(e) for e in data.effects}
 
     @lru_cache(maxsize=256)
     def calculate_ability_cost(self, ability) -> "Cost":
@@ -63,9 +60,8 @@ class GameData:
 
 
 class AbilityData:
-    ability_ids: List[int] = [ability_id.value for ability_id in AbilityId]  # sorted list
-    ability_ids.remove(0)
-    ability_ids.sort()
+
+    ability_ids: List[int] = [ability_id.value for ability_id in AbilityId][1:]  # sorted list
 
     @classmethod
     def id_exists(cls, ability_id):
@@ -258,27 +254,6 @@ class UpgradeData:
         return Cost(self._proto.mineral_cost, self._proto.vespene_cost, self._proto.research_time)
 
 
-class EffectData:
-    def __init__(self, proto):
-        self._proto = proto
-
-    @property
-    def id(self) -> EffectId:
-        return EffectId(self._proto.effect_id)
-
-    @property
-    def name(self) -> str:
-        return self._proto.name
-
-    @property
-    def friendly_name(self) -> str:
-        return self._proto.friendly_name
-
-    @property
-    def radius(self) -> float:
-        return self._proto.radius
-
-
 class Cost:
     def __init__(self, minerals, vespene, time=None):
         self.minerals = minerals
@@ -299,9 +274,9 @@ class Cost:
 
     def __add__(self, other) -> "Cost":
         if not other:
-          return self
+            return self
         if not self:
-          return other
+            return other
         if self.time is None:
             time = other.time
         elif other.time is None:
@@ -309,4 +284,3 @@ class Cost:
         else:
             time = self.time + other.time
         return self.__class__(self.minerals + other.minerals, self.vespene + other.vespene, time=time)
-
