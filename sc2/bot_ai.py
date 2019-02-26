@@ -164,18 +164,14 @@ class BotAI:
             and friends return the wrong value when there are an odd number of zerglings
             and banelings. This function corrects the bad values. """
         # TODO: remove when Blizzard/sc2client-proto#123 gets fixed.
-        correction = (
-            self.units(
-                {
+        half_supply_units = {
                     UnitTypeId.ZERGLING,
                     UnitTypeId.ZERGLINGBURROWED,
                     UnitTypeId.BANELING,
                     UnitTypeId.BANELINGBURROWED,
                     UnitTypeId.BANELINGCOCOON,
                 }
-            ).amount
-            % 2
-        )
+        correction = self.units(half_supply_units).amount % 2
         self.supply_used += correction
         self.supply_army += correction
         self.supply_left -= correction
