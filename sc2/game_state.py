@@ -103,6 +103,7 @@ class GameState:
     def __init__(self, response_observation):
         self.actions = response_observation.actions  # successful actions since last loop
         self.action_errors = response_observation.action_errors  # error actions since last loop
+
         # https://github.com/Blizzard/s2client-proto/blob/51662231c0965eba47d5183ed0a6336d5ae6b640/s2clientprotocol/sc2api.proto#L575
         self.observation = response_observation.observation
         self.observation_raw = self.observation.raw_data
@@ -111,14 +112,13 @@ class GameState:
         self.player_result = response_observation.player_result
         self.chat = response_observation.chat
         self.common: Common = Common(self.observation.player_common)
-        self.psionic_matrix: PsionicMatrix = PsionicMatrix.from_proto(
-            self.observation_raw.player.power_sources
-        )  # what area pylon covers
-        self.game_loop: int = self.observation.game_loop  # game loop, 22.4 per second on faster game speed
+
+        # Area covered by Pylon and Warpprism
+        self.psionic_matrix: PsionicMatrix = PsionicMatrix.from_proto(self.observation_raw.player.power_sources)
+        self.game_loop: int = self.observation.game_loop  # 22.4 per second on faster game speed
 
         # https://github.com/Blizzard/s2client-proto/blob/33f0ecf615aa06ca845ffe4739ef3133f37265a9/s2clientprotocol/score.proto#L31
         self.score: ScoreDetails = ScoreDetails(self.observation.score)
-
         self.abilities = self.observation.abilities  # abilities of selected units
 
         # Fix for enemy units detected by my sensor tower, as blips have less unit information than normal visible units
@@ -152,21 +152,19 @@ class GameState:
         self.destructables: Units = Units.from_proto(destructables)
         self.units: Units = Units.from_proto(visibleUnits)
         self.upgrades: Set[UpgradeId] = {UpgradeId(upgrade) for upgrade in self.observation_raw.player.upgrade_ids}
-        self.dead_units: Set[int] = {
-            dead_unit_tag for dead_unit_tag in self.observation_raw.event.dead_units
-        }  # set of unit tags that died this step - sometimes has multiple entries
+
+        # set of unit tags that died this step - sometimes has multiple entries
+        self.dead_units: Set[int] = {dead_unit_tag for dead_unit_tag in self.observation_raw.event.dead_units}
 
         self.blips: Set[Blip] = {Blip(unit) for unit in blipUnits}
         self.visibility: PixelMap = PixelMap(self.observation_raw.map_state.visibility)
         self.creep: PixelMap = PixelMap(self.observation_raw.map_state.creep)
 
-        self.effects: Set[EffectData] = {
-            EffectData(effect) for effect in self.observation_raw.effects
-        }  # effects like ravager bile shot, lurker attack, everything in effect_id.py
+        # Effects like ravager bile shot, lurker attack, everything in effect_id.py
+        self.effects: Set[EffectData] = {EffectData(effect) for effect in self.observation_raw.effects}
         """ Usage:
         for effect in self.state.effects:
             if effect.id == EffectId.RAVAGERCORROSIVEBILECP:
                 positions = effect.positions
                 # dodge the ravager biles
         """
-

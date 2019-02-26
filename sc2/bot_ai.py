@@ -662,18 +662,18 @@ class BotAI:
         """Set attributes from new state before on_step."""
         self.state: GameState = state  # See game_state.py
         # Required for events
-        self._units_previous_map = {unit.tag: unit for unit in self.units}
+        self._units_previous_map: Dict = {unit.tag: unit for unit in self.units}
         self.units: Units = state.own_units
         self.workers: Units = self.units(race_worker[self.race])
         self.townhalls: Units = self.units(race_townhalls[self.race])
         self.geysers: Units = self.units(race_gas[self.race])
         self.minerals: int = state.common.minerals
         self.vespene: int = state.common.vespene
-        self.supply_army: Union[float, int] = state.common.food_army
-        self.supply_workers: Union[float, int] = state.common.food_workers  # Doesn't include workers in production
-        self.supply_cap: Union[float, int] = state.common.food_cap
-        self.supply_used: Union[float, int] = state.common.food_used
-        self.supply_left: Union[float, int] = self.supply_cap - self.supply_used
+        self.supply_army: int = state.common.food_army
+        self.supply_workers: int = state.common.food_workers  # Doesn't include workers in production
+        self.supply_cap: int = state.common.food_cap
+        self.supply_used: int = state.common.food_used
+        self.supply_left: int = self.supply_cap - self.supply_used
 
         if self.race == Race.Zerg:
             # Workaround Zerg supply rounding bug
