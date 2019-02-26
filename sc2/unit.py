@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Optional, Set, Tuple, Union  # mypy type checking
+import warnings
 
 from . import unit_command
 from .cache import property_immutable_cache, property_mutable_cache
@@ -7,6 +8,8 @@ from .ids.ability_id import AbilityId
 from .ids.buff_id import BuffId
 from .ids.unit_typeid import UnitTypeId
 from .position import Point2, Point3
+
+warnings.simplefilter('once')
 
 
 class UnitGameData:
@@ -500,8 +503,8 @@ class Unit(PassengerUnit):
     @property_immutable_cache
     def noqueue(self) -> bool:
         """ Checks if the unit is idle. """
-        # TODO deprecate in favor of .is_idle?
-        return not self.orders
+        warnings.warn("noqueue will be removed soon, please use is_idle instead", DeprecationWarning, stacklevel=2)
+        return self.is_idle
 
     @property_immutable_cache
     def is_idle(self) -> bool:
