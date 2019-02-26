@@ -5,6 +5,8 @@ from sc2 import Race, Difficulty
 from sc2.constants import *
 from sc2.player import Bot, Computer
 from sc2.position import Point2, Point3
+from sc2.unit import Unit
+from sc2.units import Units
 
 
 class RampWallBot(sc2.BotAI):
@@ -15,7 +17,7 @@ class RampWallBot(sc2.BotAI):
         else:
             cc = cc.first
 
-        if self.can_afford(SCV) and self.workers.amount < 16 and cc.noqueue:
+        if self.can_afford(SCV) and self.workers.amount < 16 and cc.is_idle:
             await self.do(cc.train(SCV))
 
 
@@ -69,10 +71,27 @@ class RampWallBot(sc2.BotAI):
                 w = ws.random
                 await self.do(w.build(BARRACKS, barracks_placement_position))
 
+    async def on_building_construction_complete(self, unit: Unit):
+        print(f"Construction of building {unit} completed at {unit.position}.")
 
 
 def main():
-    sc2.run_game(sc2.maps.get("OdysseyLE"), [
+    map = random.choice(
+        [
+            # Most maps have 2 upper points at the ramp (len(self.main_base_ramp.upper) == 2)
+            "AutomatonLE",
+            "BlueshiftLE",
+            "CeruleanFallLE",
+            "KairosJunctionLE",
+            "ParaSiteLE",
+            "PortAleksanderLE",
+            "StasisLE",
+            "DarknessSanctuaryLE",
+            "ParaSiteLE", # Has 5 upper points at the main ramp
+            "AcolyteLE", # Has 4 upper points at the ramp to the in-base natural and 2 upper points at the small ramp
+        ]
+    )
+    sc2.run_game(sc2.maps.get(map), [
         Bot(Race.Terran, RampWallBot()),
         Computer(Race.Zerg, Difficulty.Hard)
     ], realtime=False)

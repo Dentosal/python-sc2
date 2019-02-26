@@ -1,35 +1,35 @@
+import logging
 import os
-from pathlib import Path
 import platform
 import re
-import logging
+from pathlib import Path
+
 logger = logging.getLogger(__name__)
 
 BASEDIR = {
     "Windows": "C:/Program Files (x86)/StarCraft II",
     "Darwin": "/Applications/StarCraft II",
-    "Linux": "~/StarCraftII"
+    "Linux": "~/StarCraftII",
+    "WineLinux": "~/.wine/drive_c/Program Files (x86)/StarCraft II",
 }
 
 USERPATH = {
-    "Windows": "\Documents\StarCraft II\ExecuteInfo.txt",
+    "Windows": "\\Documents\\StarCraft II\\ExecuteInfo.txt",
     "Darwin": "/Library/Application Support/Blizzard/StarCraft II/ExecuteInfo.txt",
-    "Linux": None
+    "Linux": None,
+    "WineLinux": None,
 }
 
 BINPATH = {
     "Windows": "SC2_x64.exe",
     "Darwin": "SC2.app/Contents/MacOS/SC2",
-    "Linux": "SC2_x64"
+    "Linux": "SC2_x64",
+    "WineLinux": "SC2_x64.exe",
 }
 
-CWD = {
-    "Windows": "Support64",
-    "Darwin": None,
-    "Linux": None
-}
+CWD = {"Windows": "Support64", "Darwin": None, "Linux": None, "WineLinux": "Support64"}
 
-PF = platform.system()
+PF = os.environ.get("SC2PF", platform.system())
 
 def get_env():
     # TODO: Linux env conf from: https://github.com/deepmind/pysc2/blob/master/pysc2/run_configs/platforms.py

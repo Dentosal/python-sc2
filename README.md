@@ -6,7 +6,7 @@ An easy-to-use library for writing AI Bots for StarCraft II in Python 3. The ult
 
 Documentation is in [the Wiki](https://github.com/Dentosal/python-sc2/wiki).
 
-For automaticly running multiple matches, check out [Dentosal/sc2-bot-match-runner](https://github.com/Dentosal/sc2-bot-match-runner).
+For automatically running multiple matches, check out [Dentosal/sc2-bot-match-runner](https://github.com/Dentosal/sc2-bot-match-runner).
 
 ## Installation
 
@@ -20,7 +20,7 @@ pip3 install --user --upgrade sc2
 
 Please note that not all commits are released to PyPI. Releases are tagged with version number. You can see latest released versions from [tags page](https://github.com/Dentosal/python-sc2/tags).
 
-You'll also need an StarCraft II executable. If you are running Windows or macOS, just install the normal SC2 from blizzard app. [The free starter edition works too.](https://us.battle.net/account/sc2/starter-edition/). Linux users must use the [Linux binary](https://github.com/Blizzard/s2client-proto#downloads).
+You'll also need an StarCraft II executable. If you are running Windows or macOS, just install the normal SC2 from blizzard app. [The free starter edition works too.](https://us.battle.net/account/sc2/starter-edition/). Linux users get the best experience by installing the Windows version of StarCraft II with [Wine](https://www.winehq.org). Linux user can also use the [Linux binary](https://github.com/Blizzard/s2client-proto#downloads), but it's headless so you cannot actually see the game.
 
 You probably want some maps too. Official map downloads are available from [Blizzard/s2client-proto](https://github.com/Blizzard/s2client-proto#downloads). Notice: the map files are to be extracted into *subdirectories* of the `install-dir/Maps` directory.
 
@@ -30,6 +30,12 @@ After installing the library, a StarCraft II executable, and some maps, you're r
 
 ```
 python3 examples/protoss/cannon_rush.py
+```
+
+If you installed StarCraft II on Linux with Wine, set the `SC2PF` environment variable to `WineLinux`:
+
+```
+SC2PF=WineLinux python3 examples/protoss/cannon_rush.py
 ```
 
 ## Example
@@ -59,7 +65,7 @@ You can find more examples in the [`examples/`](/examples) folder.
 
 ## Help and support
 
-You have questions but don't want to create an issue? Join the [Starcraft 2 AI Discord](https://discord.gg/qTZ65sh). Questions about this repository can be asked in channel #python-sc2.
+You have questions but don't want to create an issue? Join the [Starcraft 2 AI Discord](https://discordapp.com/invite/zXHU4wM). Questions about this repository can be asked in channel #python-sc2.
 
 ## Bug reports, feature requests and ideas
 

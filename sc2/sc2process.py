@@ -1,23 +1,24 @@
-from typing import Any, Optional, List
-
-import sys
-import signal
-import time
 import asyncio
+import logging
 import os.path
 import shutil
-import tempfile
+import signal
 import subprocess
-import portpicker
-import aiohttp
+import sys
+import tempfile
+import time
+from typing import Any, List, Optional
 
-import logging
+import aiohttp
+import portpicker
+
+from .controller import Controller
+from .paths import Paths
+
 logger = logging.getLogger(__name__)
 
-from .paths import Paths
-from .controller import Controller
 
-class kill_switch(object):
+class kill_switch:
     _to_kill: List[Any] = []
 
     @classmethod
@@ -32,10 +33,13 @@ class kill_switch(object):
             p._clean()
 
 class SC2Process:
-    def __init__(self, host: str = "127.0.0.1", port: Optional[int] = None, fullscreen: bool = False) -> None:
+    def __init__(
+        self, host: str = "127.0.0.1", port: Optional[int] = None, fullscreen: bool = False, render: bool = False
+    ) -> None:
         assert isinstance(host, str)
         assert isinstance(port, int) or port is None
 
+        self._render = render
         self._fullscreen = fullscreen
         self._host = host
         if port is None:
@@ -50,7 +54,9 @@ class SC2Process:
     async def __aenter__(self):
         kill_switch.add(self)
 
-        def signal_handler(signal, frame):
+        def signal_handler(*args):
+            # unused arguments: signal handling library expects all signal
+            # callback handlers to accept two positional arguments
             kill_switch.kill_all()
 
         signal.signal(signal.SIGINT, signal_handler)
@@ -76,24 +82,32 @@ class SC2Process:
     def _launch(self):
         args = [
             str(Paths.EXECUTABLE),
-            "-listen", self._host,
-            "-port", str(self._port),
-            "-displayMode", "1" if self._fullscreen else "0",
-            "-dataDir", str(Paths.BASE),
-            "-tempDir", self._tmp_dir
+            "-listen",
+            self._host,
+            "-port",
+            str(self._port),
+            "-displayMode",
+            "1" if self._fullscreen else "0",
+            "-dataDir",
+            str(Paths.BASE),
+            "-tempDir",
+            self._tmp_dir,
         ]
+        if self._render:
+            args.extend(["-eglpath", "libEGL.so"])
 
         if logger.getEffectiveLevel() <= logging.DEBUG:
             args.append("-verbose")
 
-        return subprocess.Popen(args,
+        return subprocess.Popen(
+            args,
             cwd=(str(Paths.CWD) if Paths.CWD else None),
-            #, env=run_config.env
+            # , env=run_config.env
         )
 
     async def _connect(self):
         for i in range(60):
-            if self._process == None:
+            if self._process is None:
                 # The ._clean() was called, clearing the process
                 logger.debug("Process cleanup complete, exit")
                 sys.exit()

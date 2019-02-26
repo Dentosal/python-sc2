@@ -1,8 +1,9 @@
-from typing import Callable, Set, FrozenSet, List
+from typing import Callable, FrozenSet, List, Set
 
 from .position import Point2
 
-class PixelMap(object):
+
+class PixelMap:
     def __init__(self, proto):
         self._proto = proto
         assert self.bits_per_pixel % 8 == 0, "Unsupported pixel density"
@@ -28,8 +29,8 @@ class PixelMap(object):
     def __getitem__(self, pos):
         x, y = pos
 
-        assert 0 <= x < self.width
-        assert 0 <= y < self.height
+        assert 0 <= x <= self.width, f"x is {x}, self.width is {self.width}"
+        assert 0 <= y <= self.height, f"y is {y}, self.height is {self.height}"
 
         index = -self.width * y + x
         # print(f"INDEX IS {index} FOR {pos}")
@@ -38,12 +39,13 @@ class PixelMap(object):
         return int.from_bytes(data, byteorder="little", signed=False)
 
     def __setitem__(self, pos, val):
+        """ Example usage: self._game_info.pathing_grid[Point2((20, 20))] = [255] """
         x, y = pos
 
-        assert 0 <= x < self.width
-        assert 0 <= y < self.height
+        assert 0 <= x <= self.width, f"x is {x}, self.width is {self.width}"
+        assert 0 <= y <= self.height, f"y is {y}, self.height is {self.height}"
 
-        index = self.width * y + x
+        index = -self.width * y + x
         start = index * self.bytes_per_pixel
         self.data[start : start + self.bytes_per_pixel] = val
 
@@ -71,12 +73,7 @@ class PixelMap(object):
 
             if pred(self[x, y]):
                 nodes.add(Point2((x, y)))
-
-                queue.append(Point2((x+1, y)))
-                queue.append(Point2((x-1, y)))
-                queue.append(Point2((x, y+1)))
-                queue.append(Point2((x, y-1)))
-
+                queue += [Point2((x + a, y + b)) for a in [-1, 0, 1] for b in [-1, 0, 1] if not (a == 0 and b == 0)]
         return nodes
 
     def flood_fill_all(self, pred: Callable[[int], bool]) -> Set[FrozenSet[Point2]]:
@@ -99,8 +96,9 @@ class PixelMap(object):
             print("")
 
     def save_image(self, filename):
-        data = [(0,0,self[x, y]) for y in range(self.height) for x in range(self.width)]
+        data = [(0, 0, self[x, y]) for y in range(self.height) for x in range(self.width)]
         from PIL import Image
-        im= Image.new('RGB', (self.width, self.height))
+
+        im = Image.new("RGB", (self.width, self.height))
         im.putdata(data)
         im.save(filename)
