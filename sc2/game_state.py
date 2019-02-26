@@ -116,9 +116,9 @@ class GameState:
         )  # what area pylon covers
         self.game_loop: int = self.observation.game_loop  # game loop, 22.4 per second on faster game speed
 
-        self.score: ScoreDetails = ScoreDetails(
-            self.observation.score
-        )  # https://github.com/Blizzard/s2client-proto/blob/33f0ecf615aa06ca845ffe4739ef3133f37265a9/s2clientprotocol/score.proto#L31
+        # https://github.com/Blizzard/s2client-proto/blob/33f0ecf615aa06ca845ffe4739ef3133f37265a9/s2clientprotocol/score.proto#L31
+        self.score: ScoreDetails = ScoreDetails(self.observation.score)
+
         self.abilities = self.observation.abilities  # abilities of selected units
 
         # Fix for enemy units detected by my sensor tower, as blips have less unit information than normal visible units
@@ -129,12 +129,12 @@ class GameState:
                 blipUnits.append(unit)
             else:
                 visibleUnits.append(unit)
-                # all destructable rocks except the one below the main base ramps
-                if unit.alliance == Alliance.Neutral.value and unit.radius > 1.5:
-                    destructables.append(unit)
-                elif unit.alliance == Alliance.Neutral.value:
+                if unit.alliance == Alliance.Neutral.value:
+                    # all destructable rocks except the one below the main base ramps
+                    if unit.radius > 1.5:
+                        destructables.append(unit)
                     # mineral field enums
-                    if unit.unit_type in mineral_ids:
+                    elif unit.unit_type in mineral_ids:
                         minerals.append(unit)
                     # geyser enums
                     elif unit.unit_type in geyser_ids:

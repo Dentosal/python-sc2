@@ -164,13 +164,22 @@ class BotAI:
             and friends return the wrong value when there are an odd number of zerglings
             and banelings. This function corrects the bad values. """
         # TODO: remove when Blizzard/sc2client-proto#123 gets fixed.
-        correction = self.units({UnitTypeId.ZERGLING, UnitTypeId.ZERGLINGBURROWED,
-                                 UnitTypeId.BANELING, UnitTypeId.BANELINGBURROWED,
-                                 UnitTypeId.BANELINGCOCOON}).amount % 2
+        correction = (
+            self.units(
+                {
+                    UnitTypeId.ZERGLING,
+                    UnitTypeId.ZERGLINGBURROWED,
+                    UnitTypeId.BANELING,
+                    UnitTypeId.BANELINGBURROWED,
+                    UnitTypeId.BANELINGCOCOON,
+                }
+            ).amount
+            % 2
+        )
         self.supply_used += correction
         self.supply_army += correction
         self.supply_left -= correction
-        
+
     async def get_available_abilities(
         self, units: Union[List[Unit], Units], ignore_resource_requirements=False
     ) -> List[List[AbilityId]]:
@@ -490,7 +499,9 @@ class BotAI:
 
     @property_cache_once_per_frame
     def _abilities_workers_and_eggs(self) -> Counter:
-        """ Cache for the already_pending function, includes all worker orders (including pending), zerg units in production (except queens and morphing units) and structures in production, counts double for terran """
+        """ Cache for the already_pending function, includes all worker orders (including pending).
+        Zerg units in production (except queens and morphing units) and structures in production,
+        counts double for terran """
         abilities_amount = Counter()
         for worker in self.workers:  # type: Unit
             for order in worker.orders:
@@ -499,7 +510,8 @@ class BotAI:
             for order in egg.orders:
                 abilities_amount[order.ability] += 1
         if self.race != Race.Terran:
-            # If an SCV is constructing a building, already_pending would count this structure twice (once from the SCV order, and once from "not structure.is_ready")
+            # If an SCV is constructing a building, already_pending would count this structure twice 
+            # (once from the SCV order, and once from "not structure.is_ready")
             for unit in self.units.structure.not_ready:  # type: Unit
                 abilities_amount[self._game_data.units[unit.type_id.value].creation_ability] += 1
         return abilities_amount
@@ -634,7 +646,7 @@ class BotAI:
         self.race: Race = Race(self._game_info.player_races[self.player_id])
 
         if len(self._game_info.player_races) == 2:
-            self.enemy_race = Race(self._game_info.player_races[3 - self.player_id])
+            self.enemy_race: Race = Race(self._game_info.player_races[3 - self.player_id])
 
         self._units_previous_map: dict = dict()
         self._previous_upgrades: Set[UpgradeId] = set()
@@ -650,10 +662,7 @@ class BotAI:
         """Set attributes from new state before on_step."""
         self.state: GameState = state  # See game_state.py
         # Required for events
-        self._units_previous_map.clear()
-        for unit in self.units:
-            self._units_previous_map[unit.tag] = unit
-
+        self._units_previous_map = {unit.tag : unit for unit in self.units}
         self.units: Units = state.own_units
         self.workers: Units = self.units(race_worker[self.race])
         self.townhalls: Units = self.units(race_townhalls[self.race])
@@ -666,14 +675,15 @@ class BotAI:
         self.supply_used: Union[float, int] = state.common.food_used
         self.supply_left: Union[float, int] = self.supply_cap - self.supply_used
 
-        # Workaround Zerg supply rounding bug
         if self.race == Race.Zerg:
+            # Workaround Zerg supply rounding bug
             self._correct_zerg_supply()
+            self.larva_count: int = state.common.larva_count
+        elif self.race == Race.Protoss:
+            self.warp_gate_count: int = state.common.warp_gate_count
 
         self.idle_worker_count: int = state.common.idle_worker_count
-        self.army_count: int = state.common.army_count
-        self.warp_gate_count: int = state.common.warp_gate_count
-        self.larva_count: int = state.common.larva_count
+        self.army_count: int = state.common.army_count     
         # reset cached values
         self.cached_known_enemy_structures = None
         self.cached_known_enemy_units = None
