@@ -15,7 +15,7 @@ class RampWallBot(sc2.BotAI):
         else:
             cc = cc.first
 
-        if self.can_afford(SCV) and self.workers.amount < 16 and cc.noqueue:
+        if self.can_afford(SCV) and self.workers.amount < 16 and cc.is_idle:
             await self.do(cc.train(SCV))
 
 
