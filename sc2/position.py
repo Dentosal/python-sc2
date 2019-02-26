@@ -22,7 +22,6 @@ class Pointlike(tuple):
 
     def distance_to(self, target: Union["Unit", "Point2"]) -> float:
         """Calculate a single distance from a point or unit to another point or unit"""
-        # TODO 1 distance calculation use pythagoras
         p = target.position
         assert isinstance(p, Pointlike), f"p is not of type Pointlike"
         if self == p:
@@ -45,17 +44,20 @@ class Pointlike(tuple):
         return (self[0] - p2[0]) ** 2 + (self[1] - p2[1]) ** 2
 
     def is_closer_than(self, d: Union[int, float], p: Union["Unit", "Point2"]) -> bool:
-        """ Check if another point (or unit) is closer than the given distance. More efficient than
-            distance_to(p) < d.
-        """
+        """ Check if another point (or unit) is closer than the given distance.
+        More efficient than distance_to(p) < d."""
         p = p.position
         return self._distance_squared(p) < d ** 2
+
+    def is_further_than(self, d: Union[int, float], p: Union["Unit", "Point2"]) -> bool:
+        """ Check if another point (or unit) is further than the given distance.
+        More efficient than distance_to(p) > d."""
+        p = p.position
+        return self._distance_squared(p) > d ** 2
 
     def sort_by_distance(self, ps: Union["Units", List["Point2"]]) -> List["Point2"]:
         """ This returns the target points sorted as list. You should not pass a set or dict since those are not sortable.
         If you want to sort your units towards a point, use 'units.sorted_by_distance_to(point)' instead. """
-        if len(ps) == 1:
-            return ps
         # if ps and all(isinstance(p, Point2) for p in ps):
         #     return sorted(ps, key=lambda p: self._distance_squared(p))
         return sorted(ps, key=lambda p: self._distance_squared(p.position))
@@ -63,8 +65,6 @@ class Pointlike(tuple):
     def closest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union["Unit", "Point2"]:
         """ This function assumes the 2d distance is meant """
         assert ps, f"ps is empty"
-        if len(ps) == 1:
-            return list(ps)[0]
         closest_distance_squared = math.inf
         for p2 in ps:
             p2pos = p2
