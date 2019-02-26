@@ -44,10 +44,16 @@ class Pointlike(tuple):
         return (self[0] - p2[0]) ** 2 + (self[1] - p2[1]) ** 2
 
     def is_closer_than(self, d: Union[int, float], p: Union["Unit", "Point2"]) -> bool:
-        """ Check if another point (or unit) is closer than the given distance. More efficient than
-            distance_to(p) < d."""
+        """ Check if another point (or unit) is closer than the given distance.
+        More efficient than distance_to(p) < d."""
         p = p.position
         return self._distance_squared(p) < d ** 2
+
+    def is_further_than(self, d: Union[int, float], p: Union["Unit", "Point2"]) -> bool:
+        """ Check if another point (or unit) is further than the given distance.
+        More efficient than distance_to(p) > d."""
+        p = p.position
+        return self._distance_squared(p) > d ** 2
 
     def sort_by_distance(self, ps: Union["Units", List["Point2"]]) -> List["Point2"]:
         """ This returns the target points sorted as list. You should not pass a set or dict since those are not sortable.

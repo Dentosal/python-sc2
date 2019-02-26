@@ -143,22 +143,17 @@ class Client(Protocol):
         return GameInfo(result.game_info)
 
     async def actions(self, actions, return_successes=False):
-        if not isinstance(actions, list):
-            res = await self.actions([actions], return_successes)
-            if res:
-                return res[0]
-            else:
-                return None
+        if not actions:
+            return None
+        elif not isinstance(actions, list):
+            actions = [actions]
+        res = await self._execute(
+            action=sc_pb.RequestAction(actions=(sc_pb.Action(action_raw=a) for a in combine_actions(actions)))
+        )
+        if return_successes:
+            return [ActionResult(r) for r in res.action.result]
         else:
-            actions = combine_actions(actions)
-
-            res = await self._execute(action=sc_pb.RequestAction(actions=[sc_pb.Action(action_raw=a) for a in actions]))
-
-            res = [ActionResult(r) for r in res.action.result]
-            if return_successes:
-                return res
-            else:
-                return [r for r in res if r != ActionResult.Success]
+            return [ActionResult(r) for r in res.action.result if ActionResult(r) != ActionResult.Success]
 
     async def query_pathing(
         self, start: Union[Unit, Point2, Point3], end: Union[Point2, Point3]
