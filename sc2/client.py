@@ -150,11 +150,10 @@ class Client(Protocol):
         res = await self._execute(
             action=sc_pb.RequestAction(actions=(sc_pb.Action(action_raw=a) for a in combine_actions(actions)))
         )
-        result = [ActionResult(r) for r in res.action.result]
         if return_successes:
-            return result
+            return [ActionResult(r) for r in res.action.result]
         else:
-            return [r for r in result if r != ActionResult.Success]
+            return [ActionResult(r) for r in res.action.result if ActionResult(r) != ActionResult.Success]
 
     async def query_pathing(
         self, start: Union[Unit, Point2, Point3], end: Union[Point2, Point3]

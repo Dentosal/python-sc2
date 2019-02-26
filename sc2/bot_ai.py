@@ -662,7 +662,7 @@ class BotAI:
         """Set attributes from new state before on_step."""
         self.state: GameState = state  # See game_state.py
         # Required for events
-        self._units_previous_map = {unit.tag : unit for unit in self.units}
+        self._units_previous_map = {unit.tag: unit for unit in self.units}
         self.units: Units = state.own_units
         self.workers: Units = self.units(race_worker[self.race])
         self.townhalls: Units = self.units(race_townhalls[self.race])
@@ -683,7 +683,7 @@ class BotAI:
             self.warp_gate_count: int = state.common.warp_gate_count
 
         self.idle_worker_count: int = state.common.idle_worker_count
-        self.army_count: int = state.common.army_count     
+        self.army_count: int = state.common.army_count
         # reset cached values
         self.cached_known_enemy_structures = None
         self.cached_known_enemy_units = None
