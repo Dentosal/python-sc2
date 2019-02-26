@@ -113,7 +113,7 @@ class GameState:
         self.chat = response_observation.chat
         self.common: Common = Common(self.observation.player_common)
 
-        # Area covered by Pylon and Warpprism
+        # Area covered by Pylons and Warpprisms
         self.psionic_matrix: PsionicMatrix = PsionicMatrix.from_proto(self.observation_raw.player.power_sources)
         self.game_loop: int = self.observation.game_loop  # 22.4 per second on faster game speed
 
