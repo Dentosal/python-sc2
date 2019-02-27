@@ -65,12 +65,12 @@ class BotAI:
 
     @property
     def nuke_detected(self) -> bool:
-        """ Returns True if an enemy nuke is detected"""
+        """ Returns true if nuke is started"""
         return any(alert == Alert.NuclearLaunchDetected.value for alert in self.state.alerts)
 
     @property
     def nydus_detected(self) -> bool:
-        """ Returns True if an enemy nydus is detected"""
+        """Returns true if nydus is started"""
         return any(alert == Alert.NydusWormDetected.value for alert in self.state.alerts)
 
     @property
@@ -185,7 +185,7 @@ class BotAI:
     async def get_available_abilities(
         self, units: Union[List[Unit], Units], ignore_resource_requirements=False
     ) -> List[List[AbilityId]]:
-        """ Returns available abilities of one or more units. Right know only checks cooldown, energy cost,
+        """ Returns available abilities of one or more units. Right now only checks cooldown, energy cost,
         and whether the ability has been researched.
         Example usage:
         units_abilities = await self.get_available_abilities(self.units)
