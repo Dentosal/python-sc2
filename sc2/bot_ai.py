@@ -75,7 +75,7 @@ class BotAI:
 
     @property
     def start_location(self) -> Point2:
-        """ Returns to Point2 coordinates of your starting base"""
+        """ Returns the Point2 coordinates of your starting base"""
         return self._game_info.player_start_location
 
     @property
@@ -626,7 +626,7 @@ class BotAI:
         return await self._client.actions(actions)
 
     async def chat_send(self, message: str):
-        """Send a chat message. It supports emotes as well"""
+        """Send a chat message. It supports emotes like (glhf)"""
         assert isinstance(message, str), f"{message} is no string"
         await self._client.chat_send(message, False)
 
