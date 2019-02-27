@@ -766,15 +766,15 @@ class BotAI:
 
     async def on_unit_created(self, unit: Unit):
         """ Override this in your bot class. Called once for each unit created in a time step with
-         the the Unit() instance of the created unit"""
+        the Unit() instance of the created unit"""
 
     async def on_building_construction_started(self, unit: Unit):
         """ Override this in your bot class. Called once for each building started in a time step with
-        the the Unit() instance of the started building"""
+        the Unit() instance of the started building"""
 
     async def on_building_construction_complete(self, unit: Unit):
         """ Override this in your bot class. Called once for each building completed in a time step with
-        the the Unit() instance of the completed building"""
+        the Unit() instance of the completed building"""
 
     async def on_upgrade_complete(self, upgrade: UpgradeId):
         """ Override this in your bot class. Called once for each upgrade completed in a time step with
