@@ -222,7 +222,7 @@ class BotAI:
         self.actions = []
         next_expansion_location = await self.get_next_expansion()
         self.actions.append(self.workers.closest_to(next_expansion_location).build(HATCHERY, next_expansion_location))
-        if actions:
+        if self.actions:
             await self.do_actions(self.actions)
         """
 
