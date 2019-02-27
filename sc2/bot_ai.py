@@ -737,7 +737,7 @@ class BotAI:
             self._previous_upgrades = self.state.upgrades
 
     async def _issue_unit_added_events(self):
-        """ Its called when an unit is created on when a building is started, separating both"""
+        """ Calls self.on_unit_created for each new unit and self.on_building_started for each started building. """
         for unit in self.units:
             if unit.tag not in self._units_previous_map:
                 if unit.is_structure:
