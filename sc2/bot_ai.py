@@ -764,16 +764,20 @@ class BotAI:
         """ Override this in your bot class. Returns the tag of all destroyed units on that step"""
 
     async def on_unit_created(self, unit: Unit):
-        """ Override this in your bot class. Returns the Unit() instance of all created units on that step"""
+        """ Override this in your bot class. Called once for each unit created in a time step with
+         the the Unit() instance of the created unit"""
 
     async def on_building_construction_started(self, unit: Unit):
-        """ Override this in your bot class. Returns the Unit() instance of all buildings that started on that step """
+        """ Override this in your bot class. Called once for each building started in a time step with
+        the the Unit() instance of the started building"""
 
     async def on_building_construction_complete(self, unit: Unit):
-        """ Override this in your bot class. Returns the Unit() instance of all buildings that finished on that step """
+        """ Override this in your bot class. Called once for each building completed in a time step with
+        the the Unit() instance of the completed building"""
 
     async def on_upgrade_complete(self, upgrade: UpgradeId):
-        """ Override this in your bot class. Returns the UpgradeId of all upgrades that finished on that step """
+        """ Override this in your bot class. Called once for each upgrade completed in a time step with
+        the the UpgradeId of the completed upgrade"""
 
     def on_start(self):
         """ Allows initializing the bot when the game data is available. """
@@ -783,7 +787,7 @@ class BotAI:
          At this point, game_data, game_info and first iteration of game_state (self.state) is available. """
 
     async def on_step(self, iteration: int):
-        """Override this in your bot class. This one is mandatory. Ran on every game step (looped in realtime mode)."""
+        """Override this in your bot class. This one is mandatory. Run on every game step (looped in realtime mode)."""
         raise NotImplementedError
 
     def on_end(self, game_result: Result):
