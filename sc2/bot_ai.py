@@ -65,12 +65,12 @@ class BotAI:
 
     @property
     def nuke_detected(self) -> bool:
-        """ Returns true if nuke is started"""
+        """ Returns True if nuke is started"""
         return any(alert == Alert.NuclearLaunchDetected.value for alert in self.state.alerts)
 
     @property
     def nydus_detected(self) -> bool:
-        """Returns true if nydus is started"""
+        """Returns True if nydus is started"""
         return any(alert == Alert.NydusWormDetected.value for alert in self.state.alerts)
 
     @property
