@@ -140,7 +140,7 @@ class BotAI:
         # for every resource group:
         for resources in resource_groups:
             # possible expansion points
-            # resources[-1] is a gas geysir which always has (x.5, y.5) coordinates, just like an expansion
+            # resources[-1] is a gas geyser which always has (x.5, y.5) coordinates, just like an expansion
             possible_points = (
                 Point2((offset[0] + resources[-1].position.x, offset[1] + resources[-1].position.y))
                 for offset in offsets
@@ -219,11 +219,11 @@ class BotAI:
     async def get_next_expansion(self) -> Optional[Point2]:
         """Find next expansion location.
         Example usage:
-        actions = []
-        next_expansion = await self.get_next_expansion()
-        self.actions.append(self.workers.closest_to(next_expansion).build(HATCHERY, next_expansion))
+        self.actions = []
+        next_expansion_location = await self.get_next_expansion()
+        self.actions.append(self.workers.closest_to(next_expansion_location).build(HATCHERY, next_expansion_location))
         if actions:
-            await self.do_actions(actions)
+            await self.do_actions(self.actions)
         """
 
         closest = None
@@ -402,7 +402,14 @@ class BotAI:
 
     def select_build_worker(self, pos: Union[Unit, Point2, Point3], force: bool=False) -> Optional[Unit]:
         """Select a worker to build a building with.
-         Prioritizes close workers to given position that are not carrying any resource or are idle"""
+         Prioritizes closest workers to given position that are not carrying any resource or are idle
+        Example usage:
+        self.actions = []
+        selected_worker = self.select_build_worker(given_position)
+        if selected_worker:
+            self.action.append(selected_worker.build(building, given_position))
+        if actions:
+            await self.do_actions(self.actions)"""
         workers = self.workers.filter(lambda w: (w.is_gathering or w.is_idle) and w.distance_to(pos) < 20) or self.workers
         if workers:
             for worker in workers.sorted_by_distance_to(pos).prefer_idle:
@@ -413,7 +420,7 @@ class BotAI:
             return workers.random if force else None
 
     async def can_place(self, building: Union[AbilityData, AbilityId, UnitTypeId], position: Point2) -> bool:
-        """Tests if a building can be placed in the given location."""
+        """Returns True if a building can be placed in the given location."""
 
         assert isinstance(building, (AbilityData, AbilityId, UnitTypeId))
 
@@ -561,8 +568,9 @@ class BotAI:
     ):
         """ Not recommended as this function uses 'self.do' (reduces performance).
         Also if the position is not available, this function tries to find a nearby position to place the structure.
-        Then uses 'self.do' to give the worker the order to start the construction. """
-
+        Then uses 'self.do' to give the worker the order to start the construction.
+        Its preferred to select a worker with select_build_worker then use worker.build instead
+        """
         if isinstance(near, Unit):
             near = near.position.to2
         elif near is not None:
@@ -614,7 +622,7 @@ class BotAI:
         return await self._client.actions(actions)
 
     async def chat_send(self, message: str):
-        """Send a chat message."""
+        """Send a chat message. It supports emotes as well"""
         assert isinstance(message, str), f"{message} is no string"
         await self._client.chat_send(message, False)
 
