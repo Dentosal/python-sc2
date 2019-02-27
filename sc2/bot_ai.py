@@ -737,7 +737,7 @@ class BotAI:
             self._previous_upgrades = self.state.upgrades
 
     async def _issue_unit_added_events(self):
-        """ Its called when an unit is created on when a building is started, separating both"""
+        """ Calls self.on_unit_created for each new unit and self.on_building_started for each started building. """
         for unit in self.units:
             if unit.tag not in self._units_previous_map:
                 if unit.is_structure:
@@ -761,7 +761,8 @@ class BotAI:
             await self.on_unit_destroyed(unit_tag)
 
     async def on_unit_destroyed(self, unit_tag):
-        """ Override this in your bot class. Returns the tag of all destroyed units on that step"""
+        """ Override this in your bot class. Called once for each unit destroyed in a time step with the tag of
+         the destroyed unit. """
 
     async def on_unit_created(self, unit: Unit):
         """ Override this in your bot class. Called once for each unit created in a time step with
