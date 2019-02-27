@@ -220,8 +220,10 @@ class BotAI:
         """Find next expansion location.
         Example usage:
         self.actions = []
-        next_expansion_location = await self.get_next_expansion()
-        self.actions.append(self.workers.closest_to(next_expansion_location).build(HATCHERY, next_expansion_location))
+        next_exp_loc = await self.get_next_expansion()
+        if next_exp_loc:
+            self.actions.append(self.workers.closest_to(next_exp_loc).build(HATCHERY, next_exp_loc))
+        # more actions ...
         if self.actions:
             await self.do_actions(self.actions)
         """
@@ -407,8 +409,9 @@ class BotAI:
         self.actions = []
         selected_worker = self.select_build_worker(given_position)
         if selected_worker:
-            self.action.append(selected_worker.build(building, given_position))
-        if actions:
+            self.actions.append(selected_worker.build(building, given_position))
+        # more actions ...
+        if self.actions:
             await self.do_actions(self.actions)"""
         workers = (
             self.workers.filter(lambda w: (w.is_gathering or w.is_idle) and w.distance_to(pos) < 20) or self.workers
