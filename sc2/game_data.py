@@ -114,6 +114,12 @@ class AbilityData:
 
 class UnitTypeData:
     def __init__(self, game_data, proto):
+        # The ability_id for lurkers is
+        # LURKERASPECTMPFROMHYDRALISKBURROWED_LURKERMPFROMHYDRALISKBURROWED
+        # instead of the correct MORPH_LURKER.
+        if proto.unit_id == UnitTypeId.LURKERMP.value:
+            proto.ability_id = AbilityId.MORPH_LURKER.value
+
         self._game_data = game_data
         self._proto = proto
 

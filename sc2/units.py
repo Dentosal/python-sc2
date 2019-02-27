@@ -1,5 +1,7 @@
 import logging
 import random
+import warnings
+from .unit import Unit
 from itertools import chain
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union
 
@@ -8,6 +10,8 @@ from .position import Point2, Point3
 from .unit import Unit, UnitGameData
 
 logger = logging.getLogger(__name__)
+
+warnings.simplefilter('once')
 
 
 class Units(list):
@@ -284,7 +288,8 @@ class Units(list):
 
     @property
     def noqueue(self) -> "Units":
-        return self.filter(lambda unit: unit.noqueue)
+        warnings.warn("noqueue will be removed soon, please use idle instead", DeprecationWarning, stacklevel=2)
+        return self.idle
 
     @property
     def idle(self) -> "Units":
@@ -343,7 +348,7 @@ class Units(list):
         return self.sorted(lambda unit: unit.is_idle, reverse=True)
 
     def prefer_close_to(self, p: Union[Unit, Point2, Point3]) -> "Units":
-        # TODO redundant?
+        warnings.warn("prefer_close_to will be removed soon, please use sorted_by_distance_to instead", DeprecationWarning, stacklevel=2)
         return self.sorted_by_distance_to(p)
 
 
