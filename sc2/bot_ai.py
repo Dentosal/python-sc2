@@ -777,7 +777,7 @@ class BotAI:
 
     async def on_upgrade_complete(self, upgrade: UpgradeId):
         """ Override this in your bot class. Called once for each upgrade completed in a time step with
-        the the UpgradeId of the completed upgrade"""
+        the UpgradeId of the completed upgrade"""
 
     def on_start(self):
         """ Allows initializing the bot when the game data is available. """
