@@ -791,7 +791,7 @@ class BotAI:
         raise NotImplementedError
 
     def on_end(self, game_result: Result):
-        """Override this in your bot class. Ran at the end of a game."""
+        """Override this in your bot class. Run at the end of a game."""
 
 
 class CanAffordWrapper:
