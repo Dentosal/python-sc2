@@ -761,7 +761,8 @@ class BotAI:
             await self.on_unit_destroyed(unit_tag)
 
     async def on_unit_destroyed(self, unit_tag):
-        """ Override this in your bot class. Returns the tag of all destroyed units on that step"""
+        """ Override this in your bot class. Called once for each unit destroyed in a time step with the tag of
+         the destroyed unit. """
 
     async def on_unit_created(self, unit: Unit):
         """ Override this in your bot class. Called once for each unit created in a time step with
