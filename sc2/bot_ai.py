@@ -65,14 +65,17 @@ class BotAI:
 
     @property
     def nuke_detected(self) -> bool:
+        """ Returns True if an enemy nuke is detected"""
         return any(alert == Alert.NuclearLaunchDetected.value for alert in self.state.alerts)
 
     @property
     def nydus_detected(self) -> bool:
+        """ Returns True if an enemy nydus is detected"""
         return any(alert == Alert.NydusWormDetected.value for alert in self.state.alerts)
 
     @property
     def start_location(self) -> Point2:
+        """ Returns to Point2 coordinates of your starting base"""
         return self._game_info.player_start_location
 
     @property
@@ -92,11 +95,14 @@ class BotAI:
 
     @property
     def main_base_ramp(self) -> "Ramp":
-        """ Returns the Ramp instance of the closest main-ramp to start location. Look in game_info.py for more information """
+        """ Returns the Ramp instance of the closest main-ramp to start location.
+        Look in game_info.py for more information.
+
+        The reason for len(ramp.upper) in {2, 5} is:
+        ParaSite map has 5 upper points, and most other maps have 2 upper points at the main ramp. The map Acolyte has
+        4 upper points at the wrong ramp (which is closest to the start position)"""
         if hasattr(self, "cached_main_base_ramp"):
             return self.cached_main_base_ramp
-        """ The reason for len(ramp.upper) in {2, 5} is:
-        ParaSite map has 5 upper points, and most other maps have 2 upper points at the main ramp. The map Acolyte has 4 upper points at the wrong ramp (which is closest to the start position) """
         self.cached_main_base_ramp = min(
             (ramp for ramp in self.game_info.map_ramps if len(ramp.upper) in {2, 5}),
             key=lambda r: self.start_location._distance_squared(r.top_center),
@@ -116,7 +122,7 @@ class BotAI:
         for mf in all_resources:
             mf_height = self.get_terrain_height(mf.position)
             for cluster in resource_groups:
-                # bases on standard maps dont have more than 10 resources
+                # bases on standard maps don't have more than 10 resources
                 if len(cluster) == 10:
                     continue
                 if mf.position._distance_squared(
@@ -155,7 +161,7 @@ class BotAI:
                 key=lambda point: sum(point._distance_squared(resource.position) for resource in resources),
             )
             centers[result] = resources
-        """ Returns dict with the correct expansion position Point2 key, resources (mineral field, vespene geyser) as value """
+        # Returns dict with the correct expansion coordinates as key and resources fields as value """
         return centers
 
     def _correct_zerg_supply(self):
@@ -179,7 +185,8 @@ class BotAI:
     async def get_available_abilities(
         self, units: Union[List[Unit], Units], ignore_resource_requirements=False
     ) -> List[List[AbilityId]]:
-        """ Returns available abilities of one or more units. Right know only checks cooldown, energy cost, and whether the ability has been researched.
+        """ Returns available abilities of one or more units. Right know only checks cooldown, energy cost,
+        and whether the ability has been researched.
         Example usage:
         units_abilities = await self.get_available_abilities(self.units)
         or
@@ -190,7 +197,8 @@ class BotAI:
         self, building: UnitTypeId = None, max_distance: Union[int, float] = 10, location: Optional[Point2] = None
     ):
         """ Not recommended as this function uses 'self.do' (reduces performance).
-        Finds the next possible expansion via 'self.get_next_expansion()'. If the target expansion is blocked (e.g. an enemy unit), it will misplace the expansion. """
+        Finds the next possible expansion via 'self.get_next_expansion()'.
+        If the target expansion is blocked (e.g. an enemy unit), it will misplace the expansion. """
 
         if not building:
             # self.race is never Race.Random
@@ -209,7 +217,14 @@ class BotAI:
         await self.build(building, near=location, max_distance=max_distance, random_alternative=False, placement_step=1)
 
     async def get_next_expansion(self) -> Optional[Point2]:
-        """Find next expansion location."""
+        """Find next expansion location.
+        Example usage:
+        actions = []
+        next_expansion = await self.get_next_expansion()
+        self.actions.append(self.workers.closest_to(next_expansion).build(HATCHERY, next_expansion))
+        if actions:
+            await self.do_actions(actions)
+        """
 
         closest = None
         distance = math.inf
@@ -241,7 +256,7 @@ class BotAI:
 
         # TODO:
         # OPTIMIZE: Assign idle workers smarter
-        # OPTIMIZE: Never use same worker mutltiple times
+        # OPTIMIZE: Never use same worker multiple times
         owned_expansions = self.owned_expansions
         worker_pool = []
         actions = []
@@ -386,7 +401,8 @@ class BotAI:
         return False
 
     def select_build_worker(self, pos: Union[Unit, Point2, Point3], force: bool=False) -> Optional[Unit]:
-        """Select a worker to build a building with."""
+        """Select a worker to build a building with.
+         Prioritizes close workers to given position that are not carrying any resource or are idle"""
         workers = self.workers.filter(lambda w: (w.is_gathering or w.is_idle) and w.distance_to(pos) < 20) or self.workers
         if workers:
             for worker in workers.sorted_by_distance_to(pos).prefer_idle:
@@ -478,14 +494,16 @@ class BotAI:
 
     @property_cache_once_per_frame
     def _abilities_all_units(self) -> Counter:
-        """ Cache for the already_pending function, includes protoss units warping in, and all units in production, and all structures, and all morphs """
+        """ Cache for the already_pending function, includes protoss units warping in, and all units in production,
+         and all structures, and all morphs """
         abilities_amount = Counter()
         for unit in self.units:  # type: Unit
             for order in unit.orders:
                 abilities_amount[order.ability] += 1
             if not unit.is_ready:
                 if self.race != Race.Terran or not unit.is_structure:
-                    # If an SCV is constructing a building, already_pending would count this structure twice (once from the SCV order, and once from "not structure.is_ready")
+                    # If an SCV is constructing a building, already_pending would count this structure twice
+                    # (once from the SCV order, and once from "not structure.is_ready)"
                     abilities_amount[self._game_data.units[unit.type_id.value].creation_ability] += 1
 
         return abilities_amount
@@ -515,8 +533,11 @@ class BotAI:
         worker is en route to build it. This also includes queued orders for
         workers and build queues of buildings.
 
-        If all_units==True, then build queues of other units (such as Carriers
-        (Interceptors) or Oracles (Stasis Ward)) are also included.
+        If all_units=False, then build queues of other units (such as Carriers
+        (Interceptors), Oracles (Stasis Ward), also if it's morphing (such as hatchery -> lair, lair -> hive))
+        will not be included.
+
+        Use all_units=False if you don't need to check build queues of other units since it would be faster
         """
 
         if isinstance(unit_type, UpgradeId):
@@ -539,7 +560,8 @@ class BotAI:
         placement_step: int = 2,
     ):
         """ Not recommended as this function uses 'self.do' (reduces performance).
-        Also if the position is not placeable, this function tries to find a nearby position to place the structure. Then uses 'self.do' to give the worker the order to start the construction. """
+        Also if the position is not available, this function tries to find a nearby position to place the structure.
+        Then uses 'self.do' to give the worker the order to start the construction. """
 
         if isinstance(near, Unit):
             near = near.position.to2
@@ -563,6 +585,7 @@ class BotAI:
         cc = self.units(COMMANDCENTER).random
         self.actions.append(cc.train(SCV))
         await self.do_action(self.actions) """
+        # TODO: should we deprecate it? The most famous tutorial uses it but its VERY harmful to the performance
         if not self.can_afford(action):
             logger.warning(f"Cannot afford action {action}")
             return ActionResult.Error
@@ -595,15 +618,16 @@ class BotAI:
         assert isinstance(message, str), f"{message} is no string"
         await self._client.chat_send(message, False)
 
-    # For the functions below, make sure you are inside the boundries of the map size.
+    # For the functions below, make sure you are inside the boundaries of the map size.
     def get_terrain_height(self, pos: Union[Point2, Point3, Unit]) -> int:
-        """ Returns terrain height at a position. Caution: terrain height is not anywhere near a unit's z-coordinate. """
+        """ Returns terrain height at a position. Caution: terrain height is not anywhere near a unit's z-coordinate."""
         assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
         pos = pos.position.to2.rounded
         return self._game_info.terrain_height[pos]
 
     def in_placement_grid(self, pos: Union[Point2, Point3, Unit]) -> bool:
-        """ Returns True if you can place something at a position. Remember, buildings usually use 2x2, 3x3 or 5x5 of these grid points.
+        """ Returns True if you can place something at a position. Remember, buildings usually use 2x2, 3x3 or 5x5 of
+         these grid points.
         Caution: some x and y offset might be required, see ramp code:
         https://github.com/Dentosal/python-sc2/blob/master/sc2/game_info.py#L17-L18 """
         assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
@@ -698,6 +722,7 @@ class BotAI:
             self._previous_upgrades = self.state.upgrades
 
     async def _issue_unit_added_events(self):
+        """ Its called when an unit is created on when a building is started, separating both"""
         for unit in self.units:
             if unit.tag not in self._units_previous_map:
                 if unit.is_structure:
@@ -706,6 +731,7 @@ class BotAI:
                     await self.on_unit_created(unit)
 
     async def _issue_building_complete_event(self, unit):
+        """ Its called when a building is completed"""
         if unit.build_progress < 1:
             return
         if unit.tag not in self._units_previous_map:
@@ -715,27 +741,28 @@ class BotAI:
             await self.on_building_construction_complete(unit)
 
     async def _issue_unit_dead_events(self):
+        """ Its called when a building or unit is killed"""
         for unit_tag in self.state.dead_units:
             await self.on_unit_destroyed(unit_tag)
 
     async def on_unit_destroyed(self, unit_tag):
-        """ Override this in your bot class. """
+        """ Override this in your bot class. Returns the tag of all destroyed units on that step"""
         pass
 
     async def on_unit_created(self, unit: Unit):
-        """ Override this in your bot class. """
+        """ Override this in your bot class. Returns the Unit() instance of all created units on that step"""
         pass
 
     async def on_building_construction_started(self, unit: Unit):
-        """ Override this in your bot class. """
+        """ Override this in your bot class. Returns the Unit() instance of all buildings that started on that step """
         pass
 
     async def on_building_construction_complete(self, unit: Unit):
-        """ Override this in your bot class. """
+        """ Override this in your bot class. Returns the Unit() instance of all buildings that finished on that step """
         pass
 
     async def on_upgrade_complete(self, upgrade: UpgradeId):
-        """ Override this in your bot class. """
+        """ Override this in your bot class. Returns the UpgradeId of all upgrades that finished on that step """
         pass
 
     def on_start(self):
@@ -743,15 +770,16 @@ class BotAI:
         pass
 
     async def on_start_async(self):
-        """ This function is run after "on_start". At this point, game_data, game_info and first iteration of game_state (self.state) is available. """
+        """ This function is run after "on_start".
+         At this point, game_data, game_info and first iteration of game_state (self.state) is available. """
         pass
 
     async def on_step(self, iteration: int):
-        """Ran on every game step (looped in realtime mode)."""
+        """Override this in your bot class. This one is mandatory. Ran on every game step (looped in realtime mode)."""
         raise NotImplementedError
 
     def on_end(self, game_result: Result):
-        """Ran at the end of a game."""
+        """Override this in your bot class. Ran at the end of a game."""
         pass
 
 
@@ -766,6 +794,7 @@ class CanAffordWrapper:
 
     @property
     def action_result(self):
+        """ Check if the action is affordable"""
         if not self.can_afford_vespene:
             return ActionResult.NotEnoughVespene
         elif not self.can_afford_minerals:
