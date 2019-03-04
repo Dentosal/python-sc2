@@ -503,7 +503,7 @@ class BotAI:
             for order in egg.orders:
                 abilities_amount[order.ability] += 1
         if self.race != Race.Terran:
-            # If an SCV is constructing a building, already_pending would count this structure twice 
+            # If an SCV is constructing a building, already_pending would count this structure twice
             # (once from the SCV order, and once from "not structure.is_ready")
             for unit in self.units.structure.not_ready:  # type: Unit
                 abilities_amount[self._game_data.units[unit.type_id.value].creation_ability] += 1

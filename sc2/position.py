@@ -144,7 +144,7 @@ class Pointlike(tuple):
         return all(abs(a - b) < EPSILON for a, b in itertools.zip_longest(self, other, fillvalue=0))
 
     def __hash__(self):
-        return hash(tuple(int(c * FLOAT_DIGITS) for c in self))
+        return hash(tuple(self))
 
 
 class Point2(Pointlike):
@@ -235,6 +235,9 @@ class Point2(Pointlike):
             Point2((self.x + 1, self.y - 1)),
             Point2((self.x + 1, self.y + 1)),
         }
+
+    def offset(self, other) -> "Point2":
+        return self.__class__((self.x + other[0], self.y + other[1]))
 
     def negative_offset(self, other: "Point2") -> "Point2":
         return self.__class__((self.x - other.x, self.y - other.y))
