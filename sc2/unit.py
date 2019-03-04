@@ -9,7 +9,7 @@ from .ids.buff_id import BuffId
 from .ids.unit_typeid import UnitTypeId
 from .position import Point2, Point3
 
-warnings.simplefilter('once')
+warnings.simplefilter("once")
 
 
 class UnitGameData:
@@ -517,7 +517,7 @@ class Unit(PassengerUnit):
     @property_immutable_cache
     def is_moving(self) -> bool:
         """ Checks if the unit is moving. """
-        return self.orders and self.orders[0].ability.id is AbilityId.MOVE
+        return self.orders and self.orders[0].ability.id is AbilityId.MOVE_MOVE
 
     @property_immutable_cache
     def is_attacking(self) -> bool:
@@ -533,7 +533,7 @@ class Unit(PassengerUnit):
     @property_immutable_cache
     def is_patrolling(self) -> bool:
         """ Checks if a unit is patrolling. """
-        return self.orders and self.orders[0].ability.id is AbilityId.PATROL
+        return self.orders and self.orders[0].ability.id is AbilityId.PATROL_PATROL
 
     @property_immutable_cache
     def is_gathering(self) -> bool:
@@ -745,7 +745,7 @@ class Unit(PassengerUnit):
     def move(self, position, queue=False) -> UnitOrder:
         """ Orders the unit to move to 'position'.
         Target can be a Unit (to follow that unit) or Point2. """
-        return self(AbilityId.MOVE, target=position, queue=queue)
+        return self(AbilityId.MOVE_MOVE, target=position, queue=queue)
 
     def scan_move(self, *args, **kwargs) -> UnitOrder:
         """ TODO: What does this do? """
@@ -753,7 +753,7 @@ class Unit(PassengerUnit):
 
     def hold_position(self, queue=False) -> UnitOrder:
         """ Orders a unit to stop moving. It will not move until it gets new orders. """
-        return self(AbilityId.HOLDPOSITION, queue=queue)
+        return self(AbilityId.HOLDPOSITION_HOLD, queue=queue)
 
     def stop(self, queue=False) -> UnitOrder:
         """ Orders a unit to stop, but can start to move on its own
@@ -765,7 +765,7 @@ class Unit(PassengerUnit):
         """ Orders a unit to patrol between position it has when the command starts and the target position.
         Can be queued up to seven patrol points. If the last point is the same as the starting
         point, the unit will patrol in a circle. """
-        return self(AbilityId.PATROL, target=position, queue=queue)
+        return self(AbilityId.PATROL_PATROL, target=position, queue=queue)
 
     def repair(self, repair_target, queue=False) -> UnitOrder:
         """ Order an SCV or MULE to repair. """

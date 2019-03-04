@@ -11,7 +11,7 @@ from .unit import Unit, UnitGameData
 
 logger = logging.getLogger(__name__)
 
-warnings.simplefilter('once')
+warnings.simplefilter("once")
 
 
 class Units(list):
@@ -103,7 +103,7 @@ class Units(list):
     # NOTE former argument 'require_all' is not needed any more
     def take(self, n: int, require_all=None) -> "Units":
         if require_all:
-            logger.info("Argument 'require_all' in function 'take' is deprecated")
+            warnings.warn("Argument 'require_all' in function 'take' is deprecated", DeprecationWarning, stacklevel=2)
         if n >= self.amount:
             return self
         else:
@@ -121,7 +121,9 @@ class Units(list):
     def random_group_of(self, n: int, require_all=None) -> "Units":
         """ Returns self if n >= self.amount. """
         if require_all:
-            logger.info("Argument 'require_all' in function 'random_group_of' is deprecated")
+            warnings.warn(
+                "Argument 'require_all' in function 'random_group_of' is deprecated", DeprecationWarning, stacklevel=2
+            )
         if n < 1:
             return Units([])
         elif n >= self.amount:
@@ -229,8 +231,9 @@ class Units(list):
         if isinstance(other, UnitTypeId):
             other = {other}
         tech_alias_types = set(other)
+        unit_data = UnitGameData._game_data.units
         for unitType in other:
-            tech_alias = UnitGameData._game_data.units[unitType.value].tech_alias
+            tech_alias = unit_data[unitType.value].tech_alias
             if tech_alias:
                 for same in tech_alias:
                     tech_alias_types.add(same)
@@ -252,8 +255,9 @@ class Units(list):
         if isinstance(other, UnitTypeId):
             other = {other}
         unit_alias_types = set(other)
+        unit_data = UnitGameData._game_data.units
         for unitType in other:
-            unit_alias = UnitGameData._game_data.units[unitType.value].unit_alias
+            unit_alias = unit_data[unitType.value].unit_alias
             if unit_alias:
                 unit_alias_types.add(unit_alias)
         return self.filter(
@@ -348,7 +352,11 @@ class Units(list):
         return self.sorted(lambda unit: unit.is_idle, reverse=True)
 
     def prefer_close_to(self, p: Union[Unit, Point2, Point3]) -> "Units":
-        warnings.warn("prefer_close_to will be removed soon, please use sorted_by_distance_to instead", DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "prefer_close_to will be removed soon, please use sorted_by_distance_to instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return self.sorted_by_distance_to(p)
 
 

@@ -165,12 +165,12 @@ class BotAI:
             and banelings. This function corrects the bad values. """
         # TODO: remove when Blizzard/sc2client-proto#123 gets fixed.
         half_supply_units = {
-                    UnitTypeId.ZERGLING,
-                    UnitTypeId.ZERGLINGBURROWED,
-                    UnitTypeId.BANELING,
-                    UnitTypeId.BANELINGBURROWED,
-                    UnitTypeId.BANELINGCOCOON,
-                }
+            UnitTypeId.ZERGLING,
+            UnitTypeId.ZERGLINGBURROWED,
+            UnitTypeId.BANELING,
+            UnitTypeId.BANELINGBURROWED,
+            UnitTypeId.BANELINGCOCOON,
+        }
         correction = self.units(half_supply_units).amount % 2
         self.supply_used += correction
         self.supply_army += correction
@@ -385,13 +385,16 @@ class BotAI:
                 return True
         return False
 
-    def select_build_worker(self, pos: Union[Unit, Point2, Point3], force: bool=False) -> Optional[Unit]:
+    def select_build_worker(self, pos: Union[Unit, Point2, Point3], force: bool = False) -> Optional[Unit]:
         """Select a worker to build a building with."""
         workers = self.workers.filter(lambda w: (w.is_gathering or w.is_idle) and w.distance_to(pos) < 20) or self.workers
         if workers:
             for worker in workers.sorted_by_distance_to(pos).prefer_idle:
-                if not worker.orders or len(worker.orders) == 1 and worker.orders[0].ability.id in {AbilityId.MOVE,
-                                                                                                    AbilityId.HARVEST_GATHER}:
+                if (
+                    not worker.orders
+                    or len(worker.orders) == 1
+                    and worker.orders[0].ability.id in {AbilityId.MOVE_MOVE, AbilityId.HARVEST_GATHER}
+                ):
                     return worker
 
             return workers.random if force else None

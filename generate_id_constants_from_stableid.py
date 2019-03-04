@@ -116,7 +116,8 @@ def generate_python_code(enums):
     idsdir.mkdir(exist_ok=True)
 
     with (idsdir / "__init__.py").open("w") as f:
-        f.write("\n".join([HEADER, f"__all__ = {[n.lower() for n in FILE_TRANSLATE.values()] !r}\n"]))
+        initstring = f"__all__ = {[n.lower() for n in FILE_TRANSLATE.values()] !r}\n".replace("'", '"')
+        f.write("\n".join([HEADER, initstring]))
 
     for name, body in enums.items():
         class_name = ENUM_TRANSLATE[name]
