@@ -17,19 +17,26 @@ def property_cache_forever(f):
 def property_cache_once_per_frame(f):
     """ This decorator caches the return value for one game loop, then clears it if it is accessed in a different game loop
     Only works on properties of the bot object because it requires access to self.state.game_loop """
-    f.frame = -1
-    f.cache = None
-
     @wraps(f)
     def inner(self):
-        if f.cache is None or f.frame != self.state.game_loop:
-            f.cache = f(self)
-            f.frame = self.state.game_loop
-        if type(f.cache).__name__ == "Units":
-            return f.cache.copy()
-        if isinstance(f.cache, (list, set, dict, Counter)):
-            return f.cache.copy()
-        return f.cache
+        property_cache = "_cache_" + f.__name__
+        state_cache = "_frame_" + f.__name__
+        cache_updated = (
+            hasattr(self, property_cache) and
+            getattr(self, state_cache, None) == self.state.game_loop
+        )
+        if not cache_updated:
+            setattr(self, property_cache, f(self))
+            setattr(self, state_cache, self.state.game_loop)
+
+        cache = getattr(self, property_cache)
+        should_copy = (
+            type(cache).__name__ == "Units" or
+            isinstance(cache, (list, set, dict, Counter))
+        )
+        if should_copy:
+            return cache.copy()
+        return cache
 
     return property(inner)
 
