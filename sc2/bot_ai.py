@@ -393,7 +393,7 @@ class BotAI:
                 if (
                     not worker.orders
                     or len(worker.orders) == 1
-                    and worker.orders[0].ability.id in {AbilityId.MOVE_MOVE, AbilityId.HARVEST_GATHER}
+                    and worker.orders[0].ability.id in {AbilityId.MOVE, AbilityId.HARVEST_GATHER}
                 ):
                     return worker
 

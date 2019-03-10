@@ -8,6 +8,7 @@ mineral_ids = {
     RICHMINERALFIELD.value,
     RICHMINERALFIELD750.value,
     MINERALFIELD.value,
+    MINERALFIELD450.value,
     MINERALFIELD750.value,
     LABMINERALFIELD.value,
     LABMINERALFIELD750.value,
