@@ -42,13 +42,11 @@ class Ramp:
         result = set()
         for p in self._points:
             height = self.height_at(p)
-            if height < current_max:
-                continue
-            elif height == current_max:
-                result.add(p)
-            else:
+            if height > current_max:
                 current_max = height
                 result = {p}
+            elif height == current_max:
+                result.add(p)
         return result
 
     @property_mutable_cache
@@ -77,13 +75,11 @@ class Ramp:
         result = set()
         for p in self._points:
             height = self.height_at(p)
-            if height > current_min:
-                continue
-            elif height == current_min:
-                result.add(p)
-            else:
+            if height < current_min:
                 current_min = height
                 result = {p}
+            elif height == current_min:
+                result.add(p)
         return result
 
     @property_immutable_cache

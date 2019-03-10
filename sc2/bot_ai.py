@@ -734,7 +734,8 @@ class BotAI:
         pass
 
     async def on_building_construction_complete(self, unit: Unit):
-        """ Override this in your bot class. """
+        """ Override this in your bot class. Note that this function is also
+        triggered at the start of the game for the starting base building."""
         pass
 
     async def on_upgrade_complete(self, upgrade: UpgradeId):
