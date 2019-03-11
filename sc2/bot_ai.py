@@ -4,6 +4,8 @@ import random
 from collections import Counter
 from typing import Any, Dict, List, Optional, Set, Tuple, Union  # mypy type checking
 
+from s2clientprotocol import common_pb2 as common_pb
+
 from .cache import property_cache_forever, property_cache_once_per_frame
 from .data import ActionResult, Alert, Race, Result, Target, race_gas, race_townhalls, race_worker
 from .game_data import AbilityData, GameData
@@ -387,7 +389,9 @@ class BotAI:
 
     def select_build_worker(self, pos: Union[Unit, Point2, Point3], force: bool = False) -> Optional[Unit]:
         """Select a worker to build a building with."""
-        workers = self.workers.filter(lambda w: (w.is_gathering or w.is_idle) and w.distance_to(pos) < 20) or self.workers
+        workers = (
+            self.workers.filter(lambda w: (w.is_gathering or w.is_idle) and w.distance_to(pos) < 20) or self.workers
+        )
         if workers:
             for worker in workers.sorted_by_distance_to(pos).prefer_idle:
                 if (
@@ -582,16 +586,48 @@ class BotAI:
 
         return r
 
-    async def do_actions(self, actions: List["UnitCommand"]):
+    async def do_actions(self, actions: List["UnitCommand"], prevent_double=True):
         """ Unlike 'self.do()', this function does not instantly subtract minerals and vespene. """
         if not actions:
             return None
+        if prevent_double:
+            actions = list(filter(self.prevent_double_actions, actions))
         for action in actions:
             cost = self._game_data.calculate_ability_cost(action.ability)
             self.minerals -= cost.minerals
             self.vespene -= cost.vespene
 
         return await self._client.actions(actions)
+
+    def prevent_double_actions(self, action):
+        if action.unit.orders:
+            # action: UnitCommand
+            # current_action: UnitOrder
+            current_action = action.unit.orders[0]
+            # always add actions if queued
+            if action.queue:
+                return True
+            # different action
+            if current_action.ability.id != action.ability:
+                return True
+            if (
+                isinstance(current_action.target, int)
+                and isinstance(action.target, Unit)
+                and current_action.target == action.target.tag
+            ):
+                # remove action if same target unit
+                return False
+            elif (
+                isinstance(action.target, Point2)
+                and isinstance(current_action.target, common_pb.Point)
+                and (action.target.x, action.target.y) == (current_action.target.x, current_action.target.y)
+            ):
+                # remove action if same target position
+                return False
+            else:
+                return True
+        else:
+            return True
 
     async def chat_send(self, message: str):
         """Send a chat message."""
