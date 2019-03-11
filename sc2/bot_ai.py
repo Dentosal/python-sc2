@@ -600,13 +600,13 @@ class BotAI:
         return await self._client.actions(actions)
 
     def prevent_double_actions(self, action):
+        # always add actions if queued
+        if action.queue:
+            return True
         if action.unit.orders:
             # action: UnitCommand
             # current_action: UnitOrder
-            current_action = action.unit.orders[0]
-            # always add actions if queued
-            if action.queue:
-                return True
+            current_action = action.unit.orders[0]            
             # different action
             if current_action.ability.id != action.ability:
                 return True
@@ -624,10 +624,7 @@ class BotAI:
             ):
                 # remove action if same target position
                 return False
-            else:
-                return True
-        else:
-            return True
+        return True
 
     async def chat_send(self, message: str):
         """Send a chat message."""
