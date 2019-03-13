@@ -236,9 +236,6 @@ class Point2(Pointlike):
             Point2((self.x + 1, self.y + 1)),
         }
 
-    def offset(self, other) -> "Point2":
-        return self.__class__((self.x + other[0], self.y + other[1]))
-
     def negative_offset(self, other: "Point2") -> "Point2":
         return self.__class__((self.x - other.x, self.y - other.y))
 
