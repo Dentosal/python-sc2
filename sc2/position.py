@@ -141,7 +141,7 @@ class Pointlike(tuple):
     def __eq__(self, other):
         if not isinstance(other, tuple):
             return False
-        return all(a == b for a, b in zip(self, other))
+        return all(abs(a - b) < EPSILON for a, b in itertools.zip_longest(self, other, fillvalue=0))
 
     def __hash__(self):
         return hash(tuple(self))
