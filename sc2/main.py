@@ -95,7 +95,6 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
     # Used in PassengerUnit, Unit and Units
     UnitGameData._game_data = game_data
     UnitGameData._bot_object = ai
-    # await client.save_game_data()  # IF YOU WANT TO SAVE THE DATA
     game_info = await client.get_game_info()
 
     # This game_data will become self._game_data in botAI

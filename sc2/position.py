@@ -141,7 +141,7 @@ class Pointlike(tuple):
     def __eq__(self, other):
         if not isinstance(other, tuple):
             return False
-        return all(abs(a - b) < EPSILON for a, b in itertools.zip_longest(self, other, fillvalue=0))
+        return all(a == b for a, b in zip(self, other))
 
     def __hash__(self):
         return hash(tuple(self))
@@ -151,6 +151,9 @@ class Point2(Pointlike):
     @classmethod
     def from_proto(cls, data):
         return cls((data.x, data.y))
+
+    def __hash__(self):
+        return int(10 ** 8 * (self[0] + self[1] * 256))
 
     @property
     def x(self) -> Union[int, float]:

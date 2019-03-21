@@ -3,7 +3,6 @@ from .data import AIBuild, Difficulty, PlayerType, Race
 
 
 class AbstractPlayer:
-
     def __init__(self, p_type, race=None, name=None, difficulty=None, ai_build=None, fullscreen=False):
         assert isinstance(p_type, PlayerType), f"p_type is of type {type(p_type)}"
         assert name is None or isinstance(name, str), f"name is of type {type(name)}"
@@ -49,7 +48,7 @@ class Bot(AbstractPlayer):
         AI can be None if this player object is just used to inform the
         server about player types.
         """
-        assert isinstance(ai, BotAI) or ai is None
+        assert isinstance(ai, BotAI) or ai is None, f"ai is of type {type(ai)}, inherit BotAI from bot_ai.py"
         super().__init__(PlayerType.Participant, race, name=name, fullscreen=fullscreen)
         self.ai = ai
 

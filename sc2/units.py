@@ -1,15 +1,11 @@
-import logging
 import random
 import warnings
-from .unit import Unit
 from itertools import chain
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union
 
 from .ids.unit_typeid import UnitTypeId
 from .position import Point2, Point3
 from .unit import Unit, UnitGameData
-
-logger = logging.getLogger(__name__)
 
 warnings.simplefilter("once")
 
@@ -23,14 +19,28 @@ class Units(list):
     @classmethod
     def from_proto(cls, units, game_data=None):  # game_data=None
         if game_data:
-            warnings.warn("Keyword argument 'game_data' in Units classmethod 'from_proto' is deprecated.", DeprecationWarning, stacklevel=2)
-            warnings.warn("You can safely remove it from your Units objects created by the classmethod.", DeprecationWarning, stacklevel=2)
+            warnings.warn(
+                "Keyword argument 'game_data' in Units classmethod 'from_proto' is deprecated.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            warnings.warn(
+                "You can safely remove it from your Units objects created by the classmethod.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
         return cls((Unit(u) for u in units))
 
     def __init__(self, units, game_data=None):
         if game_data:
-            warnings.warn("Keyword argument 'game_data' in Units function '__init__' is deprecated.", DeprecationWarning, stacklevel=2)
-            warnings.warn("You can safely remove it from your Units objects initializations.", DeprecationWarning, stacklevel=2)
+            warnings.warn(
+                "Keyword argument 'game_data' in Units function '__init__' is deprecated.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            warnings.warn(
+                "You can safely remove it from your Units objects initializations.", DeprecationWarning, stacklevel=2
+            )
         super().__init__(units)
 
     def __call__(self, *args, **kwargs):
@@ -362,15 +372,13 @@ class Units(list):
 
 class UnitSelection(Units):
     def __init__(self, parent, selection=None):
-        if selection is None:
-            super().__init__(unit for unit in parent)
-        elif isinstance(selection, set):
-            assert all(
-                isinstance(t, UnitTypeId) for t in selection
-            ), f"Not all ids in unit_type_id are of type UnitTypeId"
-            super().__init__(unit for unit in parent if unit.type_id in selection)
-        elif isinstance(selection, (UnitTypeId)):
+        if isinstance(selection, (UnitTypeId)):
             super().__init__(unit for unit in parent if unit.type_id == selection)
+        elif isinstance(selection, set):
+            assert all(isinstance(t, UnitTypeId) for t in selection), f"Not all ids in selection are of type UnitTypeId"
+            super().__init__(unit for unit in parent if unit.type_id in selection)
+        elif selection is None:
+            super().__init__(unit for unit in parent)
         else:
             assert isinstance(
                 selection, (UnitTypeId, set)

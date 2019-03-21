@@ -1,5 +1,5 @@
-from typing import Any, Dict, List, Optional, Set, Tuple, Union  # mypy type checking
 import warnings
+from typing import Any, Dict, List, Optional, Set, Tuple, Union  # mypy type checking
 
 from . import unit_command
 from .cache import property_immutable_cache, property_mutable_cache
@@ -16,8 +16,10 @@ class UnitGameData:
     """ Populated by sc2/main.py on game launch.
     Used in PassengerUnit, Unit, Units and UnitOrder. """
 
-    # TODO: When doing bot vs bot, the same _game_data is currently accessed if the laddermanager is not being used and the bots access the same sc2 library
-    # Could use inspect for that: Loop over i for "calframe[i].frame.f_locals["self"]" until an instance of BotAi is found
+    # TODO: When doing bot vs bot, the same _game_data is currently accessed if the laddermanager
+    # is not being used and the bots access the same sc2 library
+    # Could use inspect for that: Loop over i for "calframe[i].frame.f_locals["self"]"
+    # until an instance of BotAi is found
     _game_data = None
     _bot_object = None
 
@@ -772,7 +774,12 @@ class Unit(PassengerUnit):
         return self(AbilityId.EFFECT_REPAIR, target=repair_target, queue=queue)
 
     def __hash__(self):
-        return hash(self.tag)
+        return self.tag
+
+    def __eq__(self, other):
+        if not isinstance(other, Unit):
+            return False
+        return self.tag == other.tag
 
     def __call__(self, ability, target=None, queue=False):
         return unit_command.UnitCommand(ability, self, target=target, queue=queue)
