@@ -755,8 +755,8 @@ class BotAI:
             await self.on_unit_destroyed(unit_tag)
 
     async def on_unit_destroyed(self, unit_tag):
-        """ Override this in your bot class. 
-        Not that this function uses unit tags, because the unit does not exist any more. """
+        """ Override this in your bot class.
+        Note that this function uses unit tags because the unit does not exist any more. """
 
     async def on_unit_created(self, unit: Unit):
         """ Override this in your bot class. """
