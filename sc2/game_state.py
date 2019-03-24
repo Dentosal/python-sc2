@@ -98,6 +98,9 @@ class EffectData:
     def radius(self) -> float:
         return self._proto.radius
 
+    def __repr__(self) -> str:
+        return f"{self.id} with radius {self.radius} at {self.positions}"
+
 
 class GameState:
     def __init__(self, response_observation):
@@ -153,7 +156,7 @@ class GameState:
         self.units: Units = Units.from_proto(visibleUnits)
         self.upgrades: Set[UpgradeId] = {UpgradeId(upgrade) for upgrade in self.observation_raw.player.upgrade_ids}
 
-        # set of unit tags that died this step - sometimes has multiple entries
+        # Set of unit tags that died this step
         self.dead_units: Set[int] = {dead_unit_tag for dead_unit_tag in self.observation_raw.event.dead_units}
 
         self.blips: Set[Blip] = {Blip(unit) for unit in blipUnits}

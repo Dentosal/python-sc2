@@ -42,13 +42,11 @@ class Ramp:
         result = set()
         for p in self._points:
             height = self.height_at(p)
-            if height < current_max:
-                continue
-            elif height == current_max:
-                result.add(p)
-            else:
+            if height > current_max:
                 current_max = height
                 result = {p}
+            elif height == current_max:
+                result.add(p)
         return result
 
     @property_mutable_cache
@@ -77,13 +75,11 @@ class Ramp:
         result = set()
         for p in self._points:
             height = self.height_at(p)
-            if height > current_min:
-                continue
-            elif height == current_min:
-                result.add(p)
-            else:
+            if height < current_min:
                 current_min = height
                 result = {p}
+            elif height == current_min:
+                result.add(p)
         return result
 
     @property_immutable_cache
@@ -177,12 +173,12 @@ class GameInfo:
     def _find_ramps(self) -> List[Ramp]:
         """Calculate (self.pathing_grid - self.placement_grid) (for sets) and then find ramps by comparing heights."""
         map_area = self.playable_area
-        rampPoints = [
+        rampPoints = (
             Point2((x, y))
             for x in range(map_area.x, map_area.x + map_area.width)
             for y in range(map_area.y, map_area.y + map_area.height)
             if self.placement_grid[(x, y)] == 0 and self.pathing_grid[(x, y)] == 0
-        ]
+        )
         return [Ramp(group, self) for group in self._find_groups(rampPoints)]
 
     def _find_groups(self, points: Set[Point2], minimum_points_per_group: int = 8):
@@ -203,10 +199,10 @@ class GameInfo:
 
         nearby = [(a, b) for a in [-1, 0, 1] for b in [-1, 0, 1] if a != 0 or b != 0]
 
-        for point in points:
+        remaining: Set[Point2] = set(points)
+        for point in remaining:
             paint(point)
         currentColor = 1
-        remaining: Set[Point2] = set(points)
         queue: Deque[Point2] = deque()
         while remaining:
             currentGroup: Set[Point2] = set()

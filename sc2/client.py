@@ -129,8 +129,7 @@ class Client(Protocol):
 
     async def step(self):
         """ EXPERIMENTAL: Change self._client.game_step during the step function to increase or decrease steps per second """
-        result = await self._execute(step=sc_pb.RequestStep(count=self.game_step))
-        return result
+        return await self._execute(step=sc_pb.RequestStep(count=self.game_step))
 
     async def get_game_data(self) -> GameData:
         result = await self._execute(
@@ -280,8 +279,7 @@ class Client(Protocol):
                     sc_pb.Action(
                         action_raw=raw_pb.ActionRaw(
                             toggle_autocast=raw_pb.ActionRawToggleAutocast(
-                                ability_id=ability.value,
-                                unit_tags=(u.tag for u in units)
+                                ability_id=ability.value, unit_tags=(u.tag for u in units)
                             )
                         )
                     )
@@ -410,7 +408,7 @@ class Client(Protocol):
     def debug_text_2d(self, text: str, pos: Union[Point2, Point3, tuple, list], color=None, size: int = 8):
         return self.debug_text_screen(text, pos, color, size)
 
-    def debug_text_world(self, text: str, pos: Union[Point2, Point3], color=None, size: int = 8):
+    def debug_text_world(self, text: str, pos: Union[Unit, Point2, Point3], color=None, size: int = 8):
         """ Draws a text at Point3 position. Don't forget to add 'await self._client.send_debug'.
         To grab a unit's 3d position, use unit.position3d
         Usually the Z value of a Point3 is between 8 and 14 (except for flying units)

@@ -3,6 +3,7 @@
 
 import enum
 
+
 class AbilityId(enum.Enum):
     NULL_NULL = 0
     SMART = 1

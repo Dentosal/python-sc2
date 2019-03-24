@@ -1,7 +1,5 @@
-import logging
 import random
 import warnings
-from .unit import Unit
 from itertools import chain
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union
 
@@ -9,9 +7,7 @@ from .ids.unit_typeid import UnitTypeId
 from .position import Point2, Point3
 from .unit import Unit, UnitGameData
 
-logger = logging.getLogger(__name__)
-
-warnings.simplefilter('once')
+warnings.simplefilter("once")
 
 
 class Units(list):
@@ -23,14 +19,28 @@ class Units(list):
     @classmethod
     def from_proto(cls, units, game_data=None):  # game_data=None
         if game_data:
-            logger.info("Keyword argument 'game_data' in Units classmethod 'from_proto' is deprecated.")
-            logger.info("You can safely remove it from your Units objects created by the classmethod.")
+            warnings.warn(
+                "Keyword argument 'game_data' in Units classmethod 'from_proto' is deprecated.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            warnings.warn(
+                "You can safely remove it from your Units objects created by the classmethod.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
         return cls((Unit(u) for u in units))
 
     def __init__(self, units, game_data=None):
         if game_data:
-            logger.info("Keyword argument 'game_data' in Units function '__init__' is deprecated.")
-            logger.info("You can safely remove it from your Units objects initializations.")
+            warnings.warn(
+                "Keyword argument 'game_data' in Units function '__init__' is deprecated.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            warnings.warn(
+                "You can safely remove it from your Units objects initializations.", DeprecationWarning, stacklevel=2
+            )
         super().__init__(units)
 
     def __call__(self, *args, **kwargs):
@@ -103,7 +113,7 @@ class Units(list):
     # NOTE former argument 'require_all' is not needed any more
     def take(self, n: int, require_all=None) -> "Units":
         if require_all:
-            logger.info("Argument 'require_all' in function 'take' is deprecated")
+            warnings.warn("Argument 'require_all' in function 'take' is deprecated", DeprecationWarning, stacklevel=2)
         if n >= self.amount:
             return self
         else:
@@ -121,7 +131,9 @@ class Units(list):
     def random_group_of(self, n: int, require_all=None) -> "Units":
         """ Returns self if n >= self.amount. """
         if require_all:
-            logger.info("Argument 'require_all' in function 'random_group_of' is deprecated")
+            warnings.warn(
+                "Argument 'require_all' in function 'random_group_of' is deprecated", DeprecationWarning, stacklevel=2
+            )
         if n < 1:
             return Units([])
         elif n >= self.amount:
@@ -229,8 +241,9 @@ class Units(list):
         if isinstance(other, UnitTypeId):
             other = {other}
         tech_alias_types = set(other)
+        unit_data = UnitGameData._game_data.units
         for unitType in other:
-            tech_alias = UnitGameData._game_data.units[unitType.value].tech_alias
+            tech_alias = unit_data[unitType.value].tech_alias
             if tech_alias:
                 for same in tech_alias:
                     tech_alias_types.add(same)
@@ -252,8 +265,9 @@ class Units(list):
         if isinstance(other, UnitTypeId):
             other = {other}
         unit_alias_types = set(other)
+        unit_data = UnitGameData._game_data.units
         for unitType in other:
-            unit_alias = UnitGameData._game_data.units[unitType.value].unit_alias
+            unit_alias = unit_data[unitType.value].unit_alias
             if unit_alias:
                 unit_alias_types.add(unit_alias)
         return self.filter(
@@ -348,21 +362,23 @@ class Units(list):
         return self.sorted(lambda unit: unit.is_idle, reverse=True)
 
     def prefer_close_to(self, p: Union[Unit, Point2, Point3]) -> "Units":
-        warnings.warn("prefer_close_to will be removed soon, please use sorted_by_distance_to instead", DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "prefer_close_to will be removed soon, please use sorted_by_distance_to instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return self.sorted_by_distance_to(p)
 
 
 class UnitSelection(Units):
     def __init__(self, parent, selection=None):
-        if selection is None:
-            super().__init__(unit for unit in parent)
-        elif isinstance(selection, set):
-            assert all(
-                isinstance(t, UnitTypeId) for t in selection
-            ), f"Not all ids in unit_type_id are of type UnitTypeId"
-            super().__init__(unit for unit in parent if unit.type_id in selection)
-        elif isinstance(selection, (UnitTypeId)):
+        if isinstance(selection, (UnitTypeId)):
             super().__init__(unit for unit in parent if unit.type_id == selection)
+        elif isinstance(selection, set):
+            assert all(isinstance(t, UnitTypeId) for t in selection), f"Not all ids in selection are of type UnitTypeId"
+            super().__init__(unit for unit in parent if unit.type_id in selection)
+        elif selection is None:
+            super().__init__(unit for unit in parent)
         else:
             assert isinstance(
                 selection, (UnitTypeId, set)

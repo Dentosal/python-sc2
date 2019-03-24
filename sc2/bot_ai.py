@@ -4,6 +4,8 @@ import random
 from collections import Counter
 from typing import Any, Dict, List, Optional, Set, Tuple, Union  # mypy type checking
 
+from s2clientprotocol import common_pb2 as common_pb
+
 from .cache import property_cache_forever, property_cache_once_per_frame
 from .data import ActionResult, Alert, Race, Result, Target, race_gas, race_townhalls, race_worker
 from .game_data import AbilityData, GameData
@@ -165,12 +167,12 @@ class BotAI:
             and banelings. This function corrects the bad values. """
         # TODO: remove when Blizzard/sc2client-proto#123 gets fixed.
         half_supply_units = {
-                    UnitTypeId.ZERGLING,
-                    UnitTypeId.ZERGLINGBURROWED,
-                    UnitTypeId.BANELING,
-                    UnitTypeId.BANELINGBURROWED,
-                    UnitTypeId.BANELINGCOCOON,
-                }
+            UnitTypeId.ZERGLING,
+            UnitTypeId.ZERGLINGBURROWED,
+            UnitTypeId.BANELING,
+            UnitTypeId.BANELINGBURROWED,
+            UnitTypeId.BANELINGCOCOON,
+        }
         correction = self.units(half_supply_units).amount % 2
         self.supply_used += correction
         self.supply_army += correction
@@ -385,25 +387,29 @@ class BotAI:
                 return True
         return False
 
-    def select_build_worker(self, pos: Union[Unit, Point2, Point3], force: bool=False) -> Optional[Unit]:
+    def select_build_worker(self, pos: Union[Unit, Point2, Point3], force: bool = False) -> Optional[Unit]:
         """Select a worker to build a building with."""
-        workers = self.workers.filter(lambda w: (w.is_gathering or w.is_idle) and w.distance_to(pos) < 20) or self.workers
+        workers = (
+            self.workers.filter(lambda w: (w.is_gathering or w.is_idle) and w.distance_to(pos) < 20) or self.workers
+        )
         if workers:
             for worker in workers.sorted_by_distance_to(pos).prefer_idle:
-                if not worker.orders or len(worker.orders) == 1 and worker.orders[0].ability.id in {AbilityId.MOVE,
-                                                                                                    AbilityId.HARVEST_GATHER}:
+                if (
+                    not worker.orders
+                    or len(worker.orders) == 1
+                    and worker.orders[0].ability.id in {AbilityId.MOVE, AbilityId.HARVEST_GATHER}
+                ):
                     return worker
 
             return workers.random if force else None
 
     async def can_place(self, building: Union[AbilityData, AbilityId, UnitTypeId], position: Point2) -> bool:
         """Tests if a building can be placed in the given location."""
-
-        assert isinstance(building, (AbilityData, AbilityId, UnitTypeId))
-
-        if isinstance(building, UnitTypeId):
+        building_type = type(building)
+        assert building_type in {AbilityData, AbilityId, UnitTypeId}
+        if building_type == UnitTypeId:
             building = self._game_data.units[building.value].creation_ability
-        elif isinstance(building, AbilityId):
+        elif building_type == AbilityId:
             building = self._game_data.abilities[building.value]
 
         r = await self._client.query_building_placement(building, [position])
@@ -468,7 +474,7 @@ class BotAI:
         if "LEVEL" in upgrade_type.name:
             level = upgrade_type.name[-1]
         creationAbilityID = self._game_data.upgrades[upgrade_type.value].research_ability.id
-        for structure in self.units.structure.ready:
+        for structure in self.units.filter(lambda unit: unit.is_structure and unit.is_ready):
             for order in structure.orders:
                 if order.ability.id is creationAbilityID:
                     if level and order.ability.button_name[-1] != level:
@@ -499,11 +505,12 @@ class BotAI:
         for worker in self.workers:  # type: Unit
             for order in worker.orders:
                 abilities_amount[order.ability] += 1
-        for egg in self.units(UnitTypeId.EGG):  # type: Unit
-            for order in egg.orders:
-                abilities_amount[order.ability] += 1
+        if self.race == Race.Zerg:
+            for egg in self.units(UnitTypeId.EGG):  # type: Unit
+                for order in egg.orders:
+                    abilities_amount[order.ability] += 1
         if self.race != Race.Terran:
-            # If an SCV is constructing a building, already_pending would count this structure twice 
+            # If an SCV is constructing a building, already_pending would count this structure twice
             # (once from the SCV order, and once from "not structure.is_ready")
             for unit in self.units.structure.not_ready:  # type: Unit
                 abilities_amount[self._game_data.units[unit.type_id.value].creation_ability] += 1
@@ -579,16 +586,45 @@ class BotAI:
 
         return r
 
-    async def do_actions(self, actions: List["UnitCommand"]):
+    async def do_actions(self, actions: List["UnitCommand"], prevent_double=True):
         """ Unlike 'self.do()', this function does not instantly subtract minerals and vespene. """
         if not actions:
             return None
+        if prevent_double:
+            actions = list(filter(self.prevent_double_actions, actions))
         for action in actions:
             cost = self._game_data.calculate_ability_cost(action.ability)
             self.minerals -= cost.minerals
             self.vespene -= cost.vespene
 
         return await self._client.actions(actions)
+
+    def prevent_double_actions(self, action):
+        # always add actions if queued
+        if action.queue:
+            return True
+        if action.unit.orders:
+            # action: UnitCommand
+            # current_action: UnitOrder
+            current_action = action.unit.orders[0]
+            # different action
+            if current_action.ability.id != action.ability:
+                return True
+            if (
+                isinstance(current_action.target, int)
+                and isinstance(action.target, Unit)
+                and current_action.target == action.target.tag
+            ):
+                # remove action if same target unit
+                return False
+            elif (
+                isinstance(action.target, Point2)
+                and isinstance(current_action.target, common_pb.Point)
+                and (action.target.x, action.target.y) == (current_action.target.x, current_action.target.y)
+            ):
+                # remove action if same target position
+                return False
+        return True
 
     async def chat_send(self, message: str):
         """Send a chat message."""
@@ -669,9 +705,9 @@ class BotAI:
         self.supply_left: int = self.supply_cap - self.supply_used
 
         if self.race == Race.Zerg:
+            self.larva_count: int = state.common.larva_count
             # Workaround Zerg supply rounding bug
             self._correct_zerg_supply()
-            self.larva_count: int = state.common.larva_count
         elif self.race == Race.Protoss:
             self.warp_gate_count: int = state.common.warp_gate_count
 
@@ -719,40 +755,35 @@ class BotAI:
             await self.on_unit_destroyed(unit_tag)
 
     async def on_unit_destroyed(self, unit_tag):
-        """ Override this in your bot class. """
-        pass
+        """ Override this in your bot class.
+        Note that this function uses unit tags because the unit does not exist any more. """
 
     async def on_unit_created(self, unit: Unit):
         """ Override this in your bot class. """
-        pass
 
     async def on_building_construction_started(self, unit: Unit):
         """ Override this in your bot class. """
-        pass
 
     async def on_building_construction_complete(self, unit: Unit):
-        """ Override this in your bot class. """
-        pass
+        """ Override this in your bot class. Note that this function is also
+        triggered at the start of the game for the starting base building."""
 
     async def on_upgrade_complete(self, upgrade: UpgradeId):
         """ Override this in your bot class. """
-        pass
 
     def on_start(self):
         """ Allows initializing the bot when the game data is available. """
-        pass
 
     async def on_start_async(self):
-        """ This function is run after "on_start". At this point, game_data, game_info and first iteration of game_state (self.state) is available. """
-        pass
+        """ This function is run after "on_start". At this point, game_data, game_info and
+        the first iteration of game_state (self.state) are available. """
 
     async def on_step(self, iteration: int):
         """Ran on every game step (looped in realtime mode)."""
         raise NotImplementedError
 
     def on_end(self, game_result: Result):
-        """Ran at the end of a game."""
-        pass
+        """ Triggered at the end of a game. """
 
 
 class CanAffordWrapper:
