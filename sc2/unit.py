@@ -511,9 +511,11 @@ class Unit(PassengerUnit):
         """ Checks if unit is idle. """
         return not self.orders
 
-    def is_using_ability(self, ability: AbilityId) -> bool:
-        """ Check if the unit is using the given ability. """
-        return bool(self.orders) and self.orders[0].ability.id is ability
+    def is_using_ability(self, abilities: Union[AbilityId, Set[AbilityId]]) -> bool:
+        """ Check if the unit is using one of the given abilities. """
+        if isinstance(abilities, AbilityId):
+            abilities = {abilities}
+        return bool(self.orders) and self.orders[0].ability.id in abilities
 
     @property_immutable_cache
     def is_moving(self) -> bool:
