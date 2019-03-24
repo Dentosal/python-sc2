@@ -525,13 +525,13 @@ class Unit(PassengerUnit):
     @property_immutable_cache
     def is_attacking(self) -> bool:
         """ Checks if the unit is attacking. """
-        return self.orders and self.orders[0].ability.id in {
+        return self.is_using_ability({
             AbilityId.ATTACK,
             AbilityId.ATTACK_ATTACK,
             AbilityId.ATTACK_ATTACKTOWARDS,
             AbilityId.ATTACK_ATTACKBARRAGE,
             AbilityId.SCAN_MOVE,
-        }
+        })
 
     @property_immutable_cache
     def is_patrolling(self) -> bool:
@@ -551,12 +551,12 @@ class Unit(PassengerUnit):
     @property_immutable_cache
     def is_collecting(self) -> bool:
         """ Checks if a unit is gathering or returning. """
-        return self.orders and self.orders[0].ability.id in {AbilityId.HARVEST_GATHER, AbilityId.HARVEST_RETURN}
+        return self.is_using_ability({AbilityId.HARVEST_GATHER, AbilityId.HARVEST_RETURN})
 
     @property_immutable_cache
     def is_constructing_scv(self) -> bool:
         """ Checks if the unit is an SCV that is currently building. """
-        return self.orders and self.orders[0].ability.id in {
+        return self.is_using_ability({
             AbilityId.TERRANBUILD_ARMORY,
             AbilityId.TERRANBUILD_BARRACKS,
             AbilityId.TERRANBUILD_BUNKER,
@@ -570,16 +570,16 @@ class Unit(PassengerUnit):
             AbilityId.TERRANBUILD_SENSORTOWER,
             AbilityId.TERRANBUILD_STARPORT,
             AbilityId.TERRANBUILD_SUPPLYDEPOT,
-        }
+        })
 
     @property_immutable_cache
     def is_repairing(self) -> bool:
         """ Checks if the unit is an SCV or MULE that is currently repairing. """
-        return self.orders and self.orders[0].ability.id in {
+        return self.is_using_ability({
             AbilityId.EFFECT_REPAIR,
             AbilityId.EFFECT_REPAIR_MULE,
             AbilityId.EFFECT_REPAIR_SCV,
-        }
+        })
 
     @property_immutable_cache
     def add_on_tag(self) -> int:
