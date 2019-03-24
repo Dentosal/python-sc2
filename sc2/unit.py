@@ -513,9 +513,11 @@ class Unit(PassengerUnit):
 
     def is_using_ability(self, abilities: Union[AbilityId, Set[AbilityId]]) -> bool:
         """ Check if the unit is using one of the given abilities. """
+        if not self.orders:
+            return False
         if isinstance(abilities, AbilityId):
             abilities = {abilities}
-        return bool(self.orders) and self.orders[0].ability.id in abilities
+        return self.orders[0].ability.id in abilities
 
     @property_immutable_cache
     def is_moving(self) -> bool:
