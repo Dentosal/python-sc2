@@ -516,46 +516,54 @@ class Unit(PassengerUnit):
         """ Checks if unit is idle. """
         return not self.orders
 
+    def is_using_ability(self, abilities: Union[AbilityId, Set[AbilityId]]) -> bool:
+        """ Check if the unit is using one of the given abilities. """
+        if not self.orders:
+            return False
+        if isinstance(abilities, AbilityId):
+            abilities = {abilities}
+        return self.orders[0].ability.id in abilities
+
     @property_immutable_cache
     def is_moving(self) -> bool:
         """ Checks if the unit is moving. """
-        return self.orders and self.orders[0].ability.id is AbilityId.MOVE
+        return self.is_using_ability(AbilityId.MOVE)
 
     @property_immutable_cache
     def is_attacking(self) -> bool:
         """ Checks if the unit is attacking. """
-        return self.orders and self.orders[0].ability.id in {
+        return self.is_using_ability({
             AbilityId.ATTACK,
             AbilityId.ATTACK_ATTACK,
             AbilityId.ATTACK_ATTACKTOWARDS,
             AbilityId.ATTACK_ATTACKBARRAGE,
             AbilityId.SCAN_MOVE,
-        }
+        })
 
     @property_immutable_cache
     def is_patrolling(self) -> bool:
         """ Checks if a unit is patrolling. """
-        return self.orders and self.orders[0].ability.id is AbilityId.PATROL
+        return self.is_using_ability(AbilityId.PATROL)
 
     @property_immutable_cache
     def is_gathering(self) -> bool:
         """ Checks if a unit is on its way to a mineral field or vespene geyser to mine. """
-        return self.orders and self.orders[0].ability.id is AbilityId.HARVEST_GATHER
+        return self.is_using_ability(AbilityId.HARVEST_GATHER)
 
     @property_immutable_cache
     def is_returning(self) -> bool:
         """ Checks if a unit is returning from mineral field or vespene geyser to deliver resources to townhall. """
-        return self.orders and self.orders[0].ability.id is AbilityId.HARVEST_RETURN
+        return self.is_using_ability(AbilityId.HARVEST_RETURN)
 
     @property_immutable_cache
     def is_collecting(self) -> bool:
         """ Checks if a unit is gathering or returning. """
-        return self.orders and self.orders[0].ability.id in {AbilityId.HARVEST_GATHER, AbilityId.HARVEST_RETURN}
+        return self.is_using_ability({AbilityId.HARVEST_GATHER, AbilityId.HARVEST_RETURN})
 
     @property_immutable_cache
     def is_constructing_scv(self) -> bool:
         """ Checks if the unit is an SCV that is currently building. """
-        return self.orders and self.orders[0].ability.id in {
+        return self.is_using_ability({
             AbilityId.TERRANBUILD_ARMORY,
             AbilityId.TERRANBUILD_BARRACKS,
             AbilityId.TERRANBUILD_BUNKER,
@@ -569,16 +577,16 @@ class Unit(PassengerUnit):
             AbilityId.TERRANBUILD_SENSORTOWER,
             AbilityId.TERRANBUILD_STARPORT,
             AbilityId.TERRANBUILD_SUPPLYDEPOT,
-        }
+        })
 
     @property_immutable_cache
     def is_repairing(self) -> bool:
         """ Checks if the unit is an SCV or MULE that is currently repairing. """
-        return self.orders and self.orders[0].ability.id in {
+        return self.is_using_ability({
             AbilityId.EFFECT_REPAIR,
             AbilityId.EFFECT_REPAIR_MULE,
             AbilityId.EFFECT_REPAIR_SCV,
-        }
+        })
 
     @property_immutable_cache
     def add_on_tag(self) -> int:
