@@ -107,7 +107,8 @@ class BotAI:
 
     @property_cache_forever
     def expansion_locations(self) -> Dict[Point2, Units]:
-        """List of possible expansion locations."""
+        """ Returns dict with the correct expansion position Point2 object as key,
+        resources (mineral field and vespene geyser) as value. """
         RESOURCE_SPREAD_THRESHOLD = 225
         minerals = self.state.mineral_field
         geysers = self.state.vespene_geyser
@@ -116,14 +117,11 @@ class BotAI:
         # Group nearby minerals together to form expansion locations
         resource_groups = []
         for mf in all_resources:
-            mf_height = self.get_terrain_height(mf.position)
             for cluster in resource_groups:
                 # bases on standard maps dont have more than 10 resources
                 if len(cluster) == 10:
                     continue
-                if mf.position._distance_squared(
-                    cluster[0].position
-                ) < RESOURCE_SPREAD_THRESHOLD and mf_height == self.get_terrain_height(cluster[0].position):
+                if mf.position._distance_squared(cluster[0].position) < RESOURCE_SPREAD_THRESHOLD:
                     cluster.append(mf)
                     break
             else:  # not found
@@ -157,7 +155,6 @@ class BotAI:
                 key=lambda point: sum(point._distance_squared(resource.position) for resource in resources),
             )
             centers[result] = resources
-        """ Returns dict with the correct expansion position Point2 key, resources (mineral field, vespene geyser) as value """
         return centers
 
     def _correct_zerg_supply(self):
