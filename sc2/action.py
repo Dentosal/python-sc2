@@ -29,6 +29,6 @@ def combine_actions(action_iter):
                 target_unit_tag=target.tag,
             )
         else:
-            raise RuntimeError(f"Must target an unit or a point or None, found '{target !r}'")
+            raise RuntimeError(f"Must target a unit, point or None, found '{target !r}'")
 
         yield raw_pb.ActionRaw(unit_command=cmd)
