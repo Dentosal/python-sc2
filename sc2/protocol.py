@@ -19,6 +19,7 @@ class ProtocolError(Exception):
 class ConnectionAlreadyClosed(ProtocolError):
     pass
 
+
 class Protocol:
     def __init__(self, ws):
         assert ws
@@ -38,8 +39,10 @@ class Protocol:
         try:
             response_bytes = await self._ws.receive_bytes()
         except TypeError:
-            logger.exception("Cannot receive: Connection already closed.")
-            raise ConnectionAlreadyClosed("Connection already closed.")
+            # logger.exception("Cannot receive: Connection already closed.")
+            # raise ConnectionAlreadyClosed("Connection already closed.")
+            logger.log("Cannot receive: Connection already closed.")
+            sys.exit(2)
         except asyncio.CancelledError:
             # If request is sent, the response must be received before reraising cancel
             try:

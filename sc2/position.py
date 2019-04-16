@@ -3,9 +3,6 @@ import math
 import random
 from typing import Any, Dict, List, Optional, Set, Tuple, Union  # for mypy type checking
 
-FLOAT_DIGITS = 8
-EPSILON = 10 ** (-FLOAT_DIGITS)
-
 
 def _sign(num):
     return math.copysign(1, num)
@@ -24,8 +21,6 @@ class Pointlike(tuple):
         """Calculate a single distance from a point or unit to another point or unit"""
         p = target.position
         assert isinstance(p, Pointlike), f"p is not of type Pointlike"
-        if self == p:
-            return 0
         return ((self[0] - p[0]) ** 2 + (self[1] - p[1]) ** 2) ** 0.5
 
     def old_distance_to(self, p: Union["Unit", "Point2", "Point3"]) -> Union[int, float]:
@@ -36,11 +31,13 @@ class Pointlike(tuple):
         return (sum(self.__class__((b - a) ** 2 for a, b in itertools.zip_longest(self, p, fillvalue=0)))) ** 0.5
 
     def distance_to_point2(self, p2: "Point2") -> Union[int, float]:
-        """ Same as the function above, but should be 3-4 times faster because of the dropped asserts and conversions and because it doesnt use a loop (itertools or zip). """
+        """ Same as the function above, but should be 3-4 times faster because of the dropped asserts and
+        conversions and because it doesnt use a loop (itertools or zip). """
         return ((self[0] - p2[0]) ** 2 + (self[1] - p2[1]) ** 2) ** 0.5
 
     def _distance_squared(self, p2: "Point2") -> Union[int, float]:
-        """ Function used to not take the square root as the distances will stay proportionally the same. This is to speed up the sorting process. """
+        """ Function used to not take the square root as the distances will stay proportionally the same.
+        This is to speed up the sorting process. """
         return (self[0] - p2[0]) ** 2 + (self[1] - p2[1]) ** 2
 
     def is_closer_than(self, d: Union[int, float], p: Union["Unit", "Point2"]) -> bool:
@@ -51,12 +48,13 @@ class Pointlike(tuple):
 
     def is_further_than(self, d: Union[int, float], p: Union["Unit", "Point2"]) -> bool:
         """ Check if another point (or unit) is further than the given distance.
-        More efficient than distance_to(p) > d."""
+        More efficient than distance_to(p) > d. """
         p = p.position
         return self._distance_squared(p) > d ** 2
 
     def sort_by_distance(self, ps: Union["Units", List["Point2"]]) -> List["Point2"]:
-        """ This returns the target points sorted as list. You should not pass a set or dict since those are not sortable.
+        """ This returns the target points sorted as list.
+        You should not pass a set or dict since those are not sortable.
         If you want to sort your units towards a point, use 'units.sorted_by_distance_to(point)' instead. """
         # if ps and all(isinstance(p, Point2) for p in ps):
         #     return sorted(ps, key=lambda p: self._distance_squared(p))
@@ -91,8 +89,6 @@ class Pointlike(tuple):
     def furthest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union["Unit", "Pointlike"]:
         """ This function assumes the 2d distance is meant """
         assert ps, f"ps is empty"
-        if len(ps) == 1:
-            return list(ps)[0]
         furthest_distance_squared = -math.inf
         for p2 in ps:
             p2pos = p2
@@ -139,9 +135,10 @@ class Pointlike(tuple):
         )
 
     def __eq__(self, other):
-        if not isinstance(other, tuple):
+        try:
+            return all(a == b for a, b in itertools.zip_longest(self, other, fillvalue=0))
+        except:
             return False
-        return all(abs(a - b) < EPSILON for a, b in itertools.zip_longest(self, other, fillvalue=0))
 
     def __hash__(self):
         return hash(tuple(self))
@@ -151,9 +148,6 @@ class Point2(Pointlike):
     @classmethod
     def from_proto(cls, data):
         return cls((data.x, data.y))
-
-    def __hash__(self):
-        return int(10 ** 8 * (self[0] + self[1] * 256))
 
     @property
     def x(self) -> Union[int, float]:
@@ -170,6 +164,9 @@ class Point2(Pointlike):
     @property
     def to3(self) -> "Point3":
         return Point3((*self, 0))
+
+    def offset(self, off):
+        return Point2((self[0] + off[0], self[1] + off[1]))
 
     def distance2_to(self, other: "Point2"):
         """Squared distance to a point."""
@@ -258,9 +255,10 @@ class Point2(Pointlike):
         return self.x != 0 or self.y != 0
 
     def __mul__(self, other: Union[int, float, "Point2"]) -> "Point2":
-        if isinstance(other, self.__class__):
+        try:
             return self.__class__((self.x * other.x, self.y * other.y))
-        return self.__class__((self.x * other, self.y * other))
+        except:
+            return self.__class__((self.x * other, self.y * other))
 
     def __rmul__(self, other: Union[int, float, "Point2"]) -> "Point2":
         return self.__mul__(other)
