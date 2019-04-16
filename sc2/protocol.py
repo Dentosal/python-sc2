@@ -41,7 +41,7 @@ class Protocol:
         except TypeError:
             # logger.exception("Cannot receive: Connection already closed.")
             # raise ConnectionAlreadyClosed("Connection already closed.")
-            logger.log("Cannot receive: Connection already closed.")
+            logger.info("Cannot receive: Connection already closed.")
             sys.exit(2)
         except asyncio.CancelledError:
             # If request is sent, the response must be received before reraising cancel
