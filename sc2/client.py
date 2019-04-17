@@ -106,6 +106,16 @@ class Client(Protocol):
             f.write(result.save_replay.data)
         logger.info(f"Saved replay to {path}")
 
+    async def quick_save(self):
+        logger.debug(f"Quick Save...")
+        await self._execute(quick_save=sc_pb.RequestQuickSave())
+        logger.info(f"Game Saved.")
+
+    async def quick_load(self):
+        logger.debug(f"Quick Load...")
+        await self._execute(quick_load=sc_pb.RequestQuickLoad())
+        logger.info(f"Game Loaded.")
+
     async def observation(self):
         result = await self._execute(observation=sc_pb.RequestObservation())
         assert result.HasField("observation")
