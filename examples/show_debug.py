@@ -8,6 +8,7 @@ class MyBot(sc2.BotAI):
             self._client.debug_text_world(
                 "\n".join([
                     f"{unit.type_id.name}:{unit.type_id.value}",
+                    f"({unit.position.x:.2f},{unit.position.y:.2f})",
                     f"{unit.build_progress:.2f}",
                 ] + [repr(x) for x in unit.orders]),
                 unit.position3d,

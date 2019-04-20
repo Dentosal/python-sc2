@@ -144,13 +144,16 @@ class Pointlike(tuple):
         return all(abs(a - b) < EPSILON for a, b in itertools.zip_longest(self, other, fillvalue=0))
 
     def __hash__(self):
-        return hash(tuple(int(c * FLOAT_DIGITS) for c in self))
+        return hash(tuple(self))
 
 
 class Point2(Pointlike):
     @classmethod
     def from_proto(cls, data):
         return cls((data.x, data.y))
+
+    def __hash__(self):
+        return int(10 ** 8 * (self[0] + self[1] * 256))
 
     @property
     def x(self) -> Union[int, float]:
