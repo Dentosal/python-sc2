@@ -32,7 +32,7 @@ jobs:
         # Command origins from here: https://stackoverflow.com/a/28037991/10882657
         - docker exec -i app bash -c "cd /root/template && pipenv install --dev"
         # Run tests
-        - docker exec -i app bash -c "cd /root/template && pipenv run pytest tests/"
+        - docker exec -i app bash -c "cd /root/template && pipenv run pytest test/"
         # Shut down and remove container
         - docker rm -f app
 
@@ -44,7 +44,7 @@ jobs:
         - docker cp . app:/root/template
         - docker exec app pip install --upgrade pipenv
         - docker exec -i app bash -c "cd /root/template && pipenv --python python install --dev"
-        - docker exec -i app bash -c "cd /root/template && pipenv run pytest tests/"
+        - docker exec -i app bash -c "cd /root/template && pipenv run pytest test/"
         - docker rm -f app
 
     - stage: run autotest bot
