@@ -1,3 +1,7 @@
+import sys, os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 import sc2
 from sc2 import Race
 from sc2.player import Bot
@@ -86,7 +90,6 @@ def main():
         "KairosJunctionLE",
         "ParaSiteLE",
         "PortAleksanderLE",
-        "StasisLE",
         "Bandwidth",
         "Ephemeron",
         "PrimusQ9",

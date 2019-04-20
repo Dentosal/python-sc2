@@ -48,8 +48,8 @@ def get_map_specific_bots() -> Iterable[BotAI]:
         game_info = GameInfo(raw_game_info.game_info)
         game_state = GameState(raw_observation)
         UnitGameData._game_data = game_data
-        bot._prepare_start(None, 1, game_info, game_data)
-        bot._prepare_step(game_state)
+        bot._prepare_start(client=None, player_id=1, game_info=game_info, game_data=game_data)
+        bot._prepare_step(state=game_state)
 
         yield bot
 
@@ -112,24 +112,32 @@ class TestClass:
         # TODO: Cache all expansion positions for a map and check if it is the same
         assert len(bot.expansion_locations) >= 12
         # On N player maps, it is expected that there are N*X bases because of symmetry, at least for 1vs1 maps
-        assert len(bot.expansion_locations) % (len(bot.enemy_start_locations) + 1) == 0
-        # for location in [bot._game_info.player_start_location] + bot.enemy_start_locations:
-        #     assert location in set(bot.expansion_locations.keys()), f"{location}, {set(bot.expansion_locations.keys())}"
+        assert len(bot.expansion_locations) % (len(bot.enemy_start_locations) + 1) == 0, f"{set(bot.expansion_locations.keys())}"
+        # TODO: The following does not work because of some error with scenarios of pytest - the error is expansion locations from the first map is loaded instead
+        # Test if bot start location is in expansion locations
+        assert bot.townhalls.random.position in set(
+            bot.expansion_locations.keys()
+        ), f'This error might occur if you are running the tests locally using command "pytest test/", possibly because you are using an outdated cache.py version, but it should not occur when using docker and pipenv.\n{bot.townhalls.random.position}, {set(bot.expansion_locations.keys())}'
+        # Test if enemy start locations are in expansion locations
+        for location in bot.enemy_start_locations:
+            assert location in set(bot.expansion_locations.keys()), f"{location}, {bot.expansion_locations.keys()}"
 
         # The following functions need to be tested by autotest_bot.py because they use API query which isn't available here as this file only uses the pickle files
         # get_available_abilities
         # expand_now
         # get_next_expansion
         # distribute_workers
-        # assert bot.owned_expansions == {bot.townhalls.first.position: bot.townhalls.first}
+        assert bot.owned_expansions == {bot.townhalls.first.position: bot.townhalls.first}
         assert bot.can_feed(UnitTypeId.MARINE)
         assert bot.can_feed(UnitTypeId.SIEGETANK)
         assert not bot.can_feed(UnitTypeId.THOR)
         assert not bot.can_feed(UnitTypeId.BATTLECRUISER)
+        assert not bot.can_feed(UnitTypeId.IMMORTAL)
         assert bot.can_afford(UnitTypeId.SCV)
         assert bot.can_afford(UnitTypeId.MARINE)
         assert not bot.can_afford(UnitTypeId.SIEGETANK)
         assert not bot.can_afford(UnitTypeId.BATTLECRUISER)
+        assert not bot.can_afford(UnitTypeId.MARAUDER)
         # can_cast
         worker = bot.workers.random
         assert bot.select_build_worker(worker.position) == worker
@@ -227,10 +235,294 @@ class TestClass:
         pass
 
     def test_unit(self, bot: BotAI):
-        pass
+        scv: Unit = random_bot_object.workers.random
+        townhall: Unit = random_bot_object.townhalls.first
+
+        assert scv.name
+        assert scv.race
+        assert scv.tag
+        assert not scv.is_structure
+        assert townhall.is_structure
+        assert scv.is_light
+        assert not townhall.is_light
+        assert not scv.is_armored
+        assert townhall.is_armored
+        assert scv.is_biological
+        assert not townhall.is_biological
+        assert scv.is_mechanical
+        assert townhall.is_mechanical
+        assert not scv.is_massive
+        assert not townhall.is_massive
+        assert not scv.is_psionic
+        assert not townhall.is_psionic
+        assert scv.tech_alias is None
+        assert townhall.tech_alias is None
+        assert scv.unit_alias is None
+        assert townhall.unit_alias is None
+        assert scv.can_attack
+        assert not townhall.can_attack
+        assert scv.can_attack_ground
+        assert not townhall.can_attack_ground
+        assert scv.ground_dps
+        assert not townhall.ground_dps
+        assert scv.ground_range
+        assert not townhall.ground_range
+        assert not scv.can_attack_air
+        assert not townhall.can_attack_air
+        assert not scv.air_dps
+        assert not townhall.air_dps
+        assert not scv.air_range
+        assert not townhall.air_range
+        assert not scv.bonus_damage
+        assert not townhall.bonus_damage
+        assert not scv.armor
+        assert townhall.armor
+        assert scv.sight_range
+        assert townhall.sight_range
+        assert scv.movement_speed
+        assert not townhall.movement_speed
+        assert not scv.is_mineral_field
+        assert not townhall.is_mineral_field
+        assert not scv.is_vespene_geyser
+        assert not townhall.is_vespene_geyser
+        assert scv.health
+        assert townhall.health
+        assert scv.health_max
+        assert townhall.health_max
+        assert scv.health_percentage
+        assert townhall.health_percentage
+        assert not scv.shield
+        assert not townhall.shield
+        assert not scv.shield_max
+        assert not townhall.shield_max
+        assert not scv.shield_percentage
+        assert not townhall.shield_percentage
+        assert not scv.energy
+        assert not townhall.energy
+        assert not scv.energy_max
+        assert not townhall.energy_max
+        assert not scv.energy_percentage
+        assert not townhall.energy_percentage
+        assert not scv.is_snapshot
+        assert not townhall.is_snapshot
+        assert scv.is_visible
+        assert townhall.is_visible
+        assert scv.alliance
+        assert townhall.alliance
+        assert scv.is_mine
+        assert townhall.is_mine
+        assert not scv.is_enemy
+        assert not townhall.is_enemy
+        assert scv.owner_id
+        assert townhall.owner_id
+        assert scv.position
+        assert townhall.position
+        assert scv.position3d
+        assert townhall.position3d
+        assert scv.distance_to(townhall)
+        assert townhall.distance_to(scv)
+        # assert scv.facing
+        assert townhall.facing
+        assert scv.radius
+        assert townhall.radius
+        assert scv.build_progress
+        assert townhall.build_progress
+        assert scv.is_ready
+        assert townhall.is_ready
+        # assert not scv.cloak
+        # assert not townhall.cloak
+        assert not scv.is_cloaked
+        assert not townhall.is_cloaked
+        assert not scv.buffs
+        assert not townhall.buffs
+        assert not scv.is_carrying_minerals
+        assert not townhall.is_carrying_minerals
+        assert not scv.is_carrying_vespene
+        assert not townhall.is_carrying_vespene
+        assert not scv.is_carrying_resource
+        assert not townhall.is_carrying_resource
+        assert not scv.detect_range
+        assert not townhall.detect_range
+        assert not scv.radar_range
+        assert not townhall.radar_range
+        assert not scv.is_selected
+        assert not townhall.is_selected
+        assert scv.is_on_screen
+        assert townhall.is_on_screen
+        assert not scv.is_blip
+        assert not townhall.is_blip
+        assert not scv.is_powered
+        assert not townhall.is_powered
+        assert not scv.is_active
+        assert not townhall.is_active
+        assert not scv.mineral_contents
+        assert not townhall.mineral_contents
+        assert not scv.vespene_contents
+        assert not townhall.vespene_contents
+        assert not scv.has_vespene
+        assert not townhall.has_vespene
+        assert not scv.is_flying
+        assert not townhall.is_flying
+        assert not scv.is_burrowed
+        assert not townhall.is_burrowed
+        assert not scv.is_hallucination
+        assert not townhall.is_hallucination
+        assert scv.orders
+        assert not townhall.orders
+        assert scv.order_target
+        assert not townhall.order_target
+        assert not scv.is_idle
+        assert townhall.is_idle
+        # assert not scv.is_using_ability(AbilityId.TERRANBUILD_SUPPLYDEPOT)
+        # assert not townhall.is_using_ability(AbilityId.COMMANDCENTERTRAIN_SCV)
+        assert not scv.is_moving
+        assert not townhall.is_moving
+        assert not scv.is_attacking
+        assert not townhall.is_attacking
+        assert not scv.is_patrolling
+        assert not townhall.is_patrolling
+        assert scv.is_gathering
+        assert not townhall.is_gathering
+        assert not scv.is_returning
+        assert not townhall.is_returning
+        assert scv.is_collecting
+        assert not townhall.is_collecting
+        assert not scv.is_constructing_scv
+        assert not townhall.is_constructing_scv
+        assert not scv.is_repairing
+        assert not townhall.is_repairing
+        assert not scv.add_on_tag
+        assert not townhall.add_on_tag
+        assert not scv.has_add_on
+        assert not townhall.has_add_on
+        assert scv.add_on_land_position
+        assert townhall.add_on_land_position
+        assert not scv.passengers
+        assert not townhall.passengers
+        assert not scv.passengers_tags
+        assert not townhall.passengers_tags
+        assert not scv.cargo_used
+        assert not townhall.cargo_used
+        assert not scv.has_cargo
+        assert not townhall.has_cargo
+        assert scv.cargo_size
+        assert not townhall.cargo_size
+        assert not scv.cargo_max
+        assert not townhall.cargo_max
+        assert not scv.cargo_left
+        assert not townhall.cargo_left
+        assert not scv.assigned_harvesters
+        assert townhall.assigned_harvesters == 12
+        assert not scv.ideal_harvesters
+        assert townhall.ideal_harvesters == 16
+        assert not scv.surplus_harvesters
+        assert townhall.surplus_harvesters == -4
+        assert not scv.weapon_cooldown
+        assert townhall.weapon_cooldown == -1
+        assert not scv.engaged_target_tag
+        assert not townhall.engaged_target_tag
+        assert not scv.is_detector
+        assert not townhall.is_detector
+        # assert not scv.target_in_range(townhall)
+        assert not townhall.target_in_range(scv)
+        # assert not scv.has_buff()
+        # assert not townhall.has_buff()
 
     def test_units(self, bot: BotAI):
-        pass
+        scvs = bot.workers
+        townhalls = bot.townhalls
+
+        assert scvs.amount
+        assert townhalls.amount
+        assert not scvs.empty
+        assert not townhalls.empty
+        assert scvs.exists
+        assert townhalls.exists
+        assert scvs.find_by_tag(scvs.random.tag)
+        assert not townhalls.find_by_tag(0)
+        assert scvs.first
+        assert townhalls.first
+        assert scvs.take(11)
+        assert townhalls.take(1)
+        assert scvs.random
+        assert townhalls.random
+        assert scvs.random_or(1)
+        assert townhalls.random_or(0)
+        assert scvs.random_group_of(11)
+        assert not scvs.random_group_of(0)
+        assert not townhalls.random_group_of(0)
+        # assert not scvs.in_attack_range_of(townhalls.first)
+        # assert not townhalls.in_attack_range_of(scvs.first)
+        assert scvs.closest_distance_to(townhalls.first)
+        assert townhalls.closest_distance_to(scvs.first)
+        assert scvs.furthest_distance_to(townhalls.first)
+        assert townhalls.furthest_distance_to(scvs.first)
+        assert scvs.closest_to(townhalls.first)
+        assert townhalls.closest_to(scvs.first)
+        assert scvs.furthest_to(townhalls.first)
+        assert townhalls.furthest_to(scvs.first)
+        assert scvs.closer_than(10, townhalls.first)
+        assert townhalls.closer_than(10, scvs.first)
+        assert scvs.further_than(0, townhalls.first)
+        assert townhalls.further_than(0, scvs.first)
+        assert scvs.subgroup(scvs)
+        assert townhalls.subgroup(townhalls)
+        assert scvs.filter(pred=lambda x: x.type_id == UnitTypeId.SCV)
+        assert not townhalls.filter(pred=lambda x: x.type_id == UnitTypeId.NEXUS)
+        assert scvs.sorted
+        assert townhalls.sorted
+        assert scvs.sorted_by_distance_to(townhalls.first)
+        assert townhalls.sorted_by_distance_to(scvs.first)
+        assert scvs.tags_in(scvs.tags)
+        assert not townhalls.tags_in({0, 1, 2})
+        assert not scvs.tags_not_in(scvs.tags)
+        assert townhalls.tags_not_in({0, 1, 2})
+        assert scvs.of_type(UnitTypeId.SCV)
+        assert townhalls.of_type({UnitTypeId.COMMANDCENTER, UnitTypeId.COMMANDCENTERFLYING})
+        assert not scvs.exclude_type(UnitTypeId.SCV)
+        assert townhalls.exclude_type({UnitTypeId.COMMANDCENTERFLYING})
+        assert not scvs.same_tech(UnitTypeId.PROBE)
+        assert townhalls.same_tech({UnitTypeId.ORBITALCOMMAND})
+        assert scvs.same_unit(UnitTypeId.SCV)
+        assert townhalls.same_unit({UnitTypeId.COMMANDCENTERFLYING})
+        assert scvs.center
+        assert townhalls.center == townhalls.first.position
+        assert not scvs.selected
+        assert not townhalls.selected
+        assert scvs.tags
+        assert townhalls.tags
+        assert scvs.ready
+        assert townhalls.ready
+        assert not scvs.not_ready
+        assert not townhalls.not_ready
+        assert not scvs.idle
+        assert townhalls.idle
+        assert scvs.owned
+        assert townhalls.owned
+        assert not scvs.enemy
+        assert not townhalls.enemy
+        assert not scvs.flying
+        assert not townhalls.flying
+        assert scvs.not_flying
+        assert townhalls.not_flying
+        assert not scvs.structure
+        assert townhalls.structure
+        assert scvs.not_structure
+        assert not townhalls.not_structure
+        assert scvs.gathering
+        assert not townhalls.gathering
+        assert not scvs.returning
+        assert not townhalls.returning
+        assert scvs.collecting
+        assert not townhalls.collecting
+        assert scvs.visible
+        assert townhalls.visible
+        assert not scvs.mineral_field
+        assert not townhalls.mineral_field
+        assert not scvs.vespene_geyser
+        assert not townhalls.vespene_geyser
+        assert scvs.prefer_idle
+        assert townhalls.prefer_idle
 
     @given(
         st.integers(min_value=-1e10, max_value=1e10),
@@ -242,17 +534,11 @@ class TestClass:
     )
     @settings(max_examples=500)
     def test_position_pointlike(self, bot: BotAI, x1, y1, x2, y2, x3, y3):
-        # event(f"{x1}, {y1}, {x2}, {y2}")
-        # asd = {hash(Point2((2, 2))), hash(Point2((-1, -1))), hash(Point2((0, 1))), hash(Point2((-2, -1)))}
-        # event(f"{x1} yolo {asd}, {len(asd)}")
-        unit1: Unit = random_bot_object.units.random
-        unit2: Unit = next(u for u in random_bot_object.units if u.tag != unit1.tag)
         pos1 = Point2((x1, y1))
         pos2 = Point2((x2, y2))
         pos3 = Point2((x3, y3))
         assert pos1.position == pos1
         dist = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
-        # event(f"Values were {pos1} and {pos2}, dist is {dist}")
         assert pos1.distance_to(pos2) == dist
         assert pos1.old_distance_to(pos2) == dist
         assert pos1.distance_to_point2(pos2) == dist
