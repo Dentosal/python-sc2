@@ -299,7 +299,7 @@ class BotAI:
         await self.do_actions(actions)
 
     @property
-    def owned_expansions(self):
+    def owned_expansions(self) -> Dict[Point2, Unit]:
         """List of expansions owned by the player."""
 
         owned = {}
