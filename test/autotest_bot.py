@@ -125,12 +125,13 @@ class TestBot(sc2.BotAI):
     # Test BotAI functions
     async def test_botai_functions(self):
         for location in self.expansion_locations.keys():
-            # Can't build on spawn locations
+            # Can't build on spawn locations, skip these
             if location in self.enemy_start_locations or location == self.start_location:
                 continue
             assert await self.can_place(UnitTypeId.COMMANDCENTER, location)
             await self.find_placement(UnitTypeId.COMMANDCENTER, location)
         assert len(await self.get_available_abilities(self.workers)) == self.workers.amount
+        # TODO: can_cast
         self.tests_done_by_name.add("test_botai_functions")
 
     # Test BotAI action: train SCV
