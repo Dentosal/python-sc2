@@ -59,6 +59,5 @@ jobs:
         # Run the docker image
         - docker run -it -d --name app test_image
         - docker exec -i app bash -c "python test/travis_test_script.py test/autotest_bot.py"
-        - docker exec -i app bash -c "cd /root/template && python test/travis_test_script.py test/autotest_bot.py"
         # Shut down and remove container after finishing
         - docker rm -f app
