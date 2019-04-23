@@ -335,7 +335,7 @@ class Rect(tuple):
 
     @property
     def size(self) -> Size:
-        return Size(self[2], self[3])
+        return Size((self[2], self[3]))
 
     @property
     def center(self) -> Point2:

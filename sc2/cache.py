@@ -3,13 +3,14 @@ from functools import wraps
 
 
 def property_cache_forever(f):
-    f.cached = None
-
     @wraps(f)
     def inner(self):
-        if f.cached is None:
-            f.cached = f(self)
-        return f.cached
+        property_cache = "_cache_" + f.__name__
+        cache_updated = hasattr(self, property_cache)
+        if not cache_updated:
+            setattr(self, property_cache, f(self))
+        cache = getattr(self, property_cache)
+        return cache
 
     return property(inner)
 
@@ -19,7 +20,7 @@ def property_cache_once_per_frame(f):
     then clears it if it is accessed in a different game loop.
     Only works on properties of the bot object, because it requires
     access to self.state.game_loop """
-
+    
     @wraps(f)
     def inner(self):
         property_cache = "_cache_" + f.__name__
