@@ -219,7 +219,7 @@ class TestBot(sc2.BotAI):
             Pointlike((2, 2)),
             Pointlike((-2, -2))
         ]) == Pointlike((-2, -2))
-        assert p1.offset(Pointlike((-1, -1))) == Pointlike((1.3, 1.7))
+        assert p1.offset(Pointlike((-1, -1))) == Pointlike((1.3, 1.7)), f"{p1.offset(Pointlike((-1, -1)))} is not equal to {Pointlike((1.3, 1.7))}"
         assert p1.offset(Pointlike((-1, 1))) == Pointlike((1.3, 3.7))
         assert p1.towards(Pointlike((2.3, 50)), 5) == Pointlike((2.3, 7.7))
         # testing backwards aswell
