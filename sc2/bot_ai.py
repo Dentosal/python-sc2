@@ -1,3 +1,4 @@
+import itertools
 import logging
 import math
 import random
@@ -107,48 +108,72 @@ class BotAI:
 
     @property_cache_forever
     def expansion_locations(self) -> Dict[Point2, Units]:
-        """ Returns dict with the correct expansion position Point2 object as key,
-        resources (mineral field and vespene geyser) as value. """
-        RESOURCE_SPREAD_THRESHOLD = 225
+        """
+        Returns dict with the correct expansion position Point2 object as key,
+        resources (mineral field and vespene geyser) as value.
+        """
+
+        # Idea: create a group for every resource, then merge these groups if
+        # any resource in a group is closer than 6 to any resource of another group
+
+        # Distance we group resources by
+        RESOURCE_SPREAD_THRESHOLD = 36
         minerals = self.state.mineral_field
         geysers = self.state.vespene_geyser
         all_resources = minerals | geysers
-
-        # Group nearby minerals together to form expansion locations
-        resource_groups = []
-        for mf in all_resources:
-            for cluster in resource_groups:
-                # bases on standard maps dont have more than 10 resources
-                if len(cluster) == 10:
-                    continue
-                if mf.position._distance_squared(cluster[0].position) < RESOURCE_SPREAD_THRESHOLD:
-                    cluster.append(mf)
+        # Presort resources to get faster clustering
+        all_resources.sort(key=lambda resource: (resource.position.x, resource.position.y))
+        # Create a group for every resource
+        resource_groups = [[resource] for resource in all_resources]
+        # Loop the merging process as long as we change something
+        found_something = True
+        while found_something:
+            found_something = False
+            # Check every combination of two groups
+            for group_a, group_b in itertools.combinations(resource_groups, 2):
+                # Check if any pair of resource of these groups is closer than threshold together
+                if any(
+                    resource_a.position._distance_squared(resource_b.position) <= RESOURCE_SPREAD_THRESHOLD
+                    for resource_a, resource_b in itertools.product(group_a, group_b)
+                ):
+                    # Remove the single groups and add the merged group
+                    resource_groups.remove(group_a)
+                    resource_groups.remove(group_b)
+                    resource_groups.append(group_a + group_b)
+                    found_something = True
                     break
-            else:  # not found
-                resource_groups.append([mf])
-        # Filter out bases with only one mineral field
-        resource_groups = (cluster for cluster in resource_groups if len(cluster) > 1)
-        # distance offsets from a gas geysir
-        offsets = [(x, y) for x in range(-9, 10) for y in range(-9, 10) if 75 >= x ** 2 + y ** 2 >= 49]
+        # Distance offsets we apply to center of each resource group to find expansion position
+        offset_range = 7
+        offsets = [
+            (x, y)
+            for x in range(-offset_range, offset_range + 1)
+            for y in range(-offset_range, offset_range + 1)
+            if 49 >= x ** 2 + y ** 2 >= 16
+        ]
+        # Dict we want to return
         centers = {}
-        # for every resource group:
+        # For every resource group:
         for resources in resource_groups:
-            # possible expansion points
-            # resources[-1] is a gas geysir which always has (x.5, y.5) coordinates, just like an expansion
-            possible_points = (
-                Point2((offset[0] + resources[-1].position.x, offset[1] + resources[-1].position.y))
-                for offset in offsets
-            )
-            # filter out points that are too near
+            # Possible expansion points
+            amount = len(resources)
+            # Calculate center, round and add 0.5 because expansion location will have (x.5, y.5)
+            # coordinates because bases have size 5.
+            center_x = round(sum(resource.position.x for resource in resources) / amount) + 0.5
+            center_y = round(sum(resource.position.y for resource in resources) / amount) + 0.5
+            possible_points = (Point2((offset[0] + center_x, offset[1] + center_y)) for offset in offsets)
+            # Filter out points that are too near
             possible_points = (
                 point
                 for point in possible_points
-                if all(
+                # Check if point can be built on
+                if self._game_info.placement_grid[point.rounded] != 0
+                # Check if all resources have enough space to point
+                and all(
                     point._distance_squared(resource.position) >= (49 if resource in geysers else 36)
                     for resource in resources
                 )
             )
-            # choose best fitting point
+            # Choose best fitting point
             # TODO can we improve this by calculating the distance only one time?
             result = min(
                 possible_points,
@@ -522,6 +547,8 @@ class BotAI:
         If all_units==True, then build queues of other units (such as Carriers
         (Interceptors) or Oracles (Stasis Ward)) are also included.
         """
+
+        # TODO / FIXME: SCV building a structure might be counted as two units
 
         if isinstance(unit_type, UpgradeId):
             return self.already_pending_upgrade(unit_type)
