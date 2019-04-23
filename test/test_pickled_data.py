@@ -1,7 +1,6 @@
 import sys, os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-# sys.path.append("/root/template")
 
 from sc2.game_data import GameData
 from sc2.game_info import GameInfo
@@ -373,8 +372,8 @@ class TestClass:
         assert not townhall.order_target
         assert not scv.is_idle
         assert townhall.is_idle
-        # assert not scv.is_using_ability(AbilityId.TERRANBUILD_SUPPLYDEPOT)
-        # assert not townhall.is_using_ability(AbilityId.COMMANDCENTERTRAIN_SCV)
+        assert not scv.is_using_ability(AbilityId.TERRANBUILD_SUPPLYDEPOT)
+        assert not townhall.is_using_ability(AbilityId.COMMANDCENTERTRAIN_SCV)
         assert not scv.is_moving
         assert not townhall.is_moving
         assert not scv.is_attacking

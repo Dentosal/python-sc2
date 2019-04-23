@@ -41,7 +41,6 @@ class TestBot(sc2.BotAI):
             await self.test_botai_functions()
             await self.test_gamestate_static_variables()
             await self.test_game_info_static_variables()
-            await self.test_positions()
             await self.test_unit()
             await self.test_units()
 
@@ -219,39 +218,6 @@ class TestBot(sc2.BotAI):
         assert len(self._game_info.player_races) == 2, self._game_info.player_races
         self.tests_done_by_name.add("test_game_info_static_variables")
 
-    # Test positions.py
-    async def test_positions(self):
-        p1 = Pointlike((2.3, 2.7))
-        p2 = Point2((-5.3, -7.9))
-        p3 = Point3((-2.7, 5.4, 133.2))
-
-        # Testing Pointlike
-        assert p1 == Pointlike((2.3, 2.7))
-        assert p1.rounded == Pointlike((2, 3))
-        assert p1.position == p1
-        assert p1.distance_to(Pointlike((-0.7, 6.7))) == 5
-        assert p1.closest([Pointlike((2, 2)), Pointlike((-2, -2))]) == Pointlike((2, 2))
-        assert p1.furthest([Pointlike((2, 2)), Pointlike((-2, -2))]) == Pointlike((-2, -2))
-        assert p1.offset(Pointlike((-1, -1))) == Pointlike((1.3, 1.7))
-        assert p1.offset(Pointlike((-1, 1))) == Pointlike((1.3, 3.7))
-        assert p1.towards(Pointlike((2.3, 50)), 5) == Pointlike((2.3, 7.7))
-        # testing backwards aswell
-        assert p1.towards(Pointlike((2.3, 50)), -5) == Pointlike((2.3, -2.3))
-
-        # Testing Point2
-        assert p2.x == -5.3
-        assert p2.y == -7.9
-        assert p2.to2 == p2
-        assert p2.to3 == Point3((-5.3, -7.9, 0))
-        assert p2.neighbors4 == {Point2((-5.3, -6.9)), Point2((-5.3, -8.9)), Point2((-4.3, -7.9)), Point2((-6.3, -7.9))}
-        assert p2.neighbors8 == (
-            p2.neighbors4 | {Point2((-4.3, -6.9)), Point2((-4.3, -8.9)), Point2((-6.3, -6.9)), Point2((-6.3, -8.9))}
-        )
-
-        # Testing Point3
-        assert p3.z == 133.2
-        assert p3.to3 == p3
-
     # Test unit.py
     async def test_unit(self):
         scv1, scv2, scv3 = self.workers[:3]
@@ -259,7 +225,7 @@ class TestBot(sc2.BotAI):
         assert scv1.type_id == UnitTypeId.SCV
         assert scv1._type_data == self._game_data.units[UnitTypeId.SCV.value]
         assert scv1.alliance == Alliance.Self.value
-        assert scv1.is_mine == True
+        assert scv1.is_mine is True
         assert isinstance(scv1.position, Point2)
         assert isinstance(scv1.position3d, Point3)
         assert scv1.health == 45
