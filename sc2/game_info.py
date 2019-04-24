@@ -12,8 +12,8 @@ class Ramp:
         self._points: Set[Point2] = points
         self.__game_info = game_info
         # tested by printing actual building locations vs calculated depot positions
-        self.x_offset = 0.5  # might be errors with the pixelmap?
-        self.y_offset = -0.5
+        self.x_offset = 0.5
+        self.y_offset = 0.5
         self.cache = {}
 
     @property_immutable_cache
@@ -158,9 +158,13 @@ class GameInfo:
         self.map_name: str = self._proto.map_name
         self.local_map_path: str = self._proto.local_map_path
         self.map_size: Size = Size.from_proto(self._proto.start_raw.map_size)
-        self.pathing_grid: PixelMap = PixelMap(self._proto.start_raw.pathing_grid)
-        self.terrain_height: PixelMap = PixelMap(self._proto.start_raw.terrain_height)
-        self.placement_grid: PixelMap = PixelMap(self._proto.start_raw.placement_grid)
+
+        # self.pathing_grid[point]: if 0, point is not pathable, if 1, point is pathable
+        self.pathing_grid: PixelMap = PixelMap(self._proto.start_raw.pathing_grid, in_bits=True, mirrored=False)
+        # self.terrain_height[point]: returns the height in range of 0 to 255 at that point
+        self.terrain_height: PixelMap = PixelMap(self._proto.start_raw.terrain_height, mirrored=False)
+        # self.placement_grid[point]: if 0, point is not pathable, if 1, point is pathable
+        self.placement_grid: PixelMap = PixelMap(self._proto.start_raw.placement_grid, in_bits=True, mirrored=False)
         self.playable_area = Rect.from_proto(self._proto.start_raw.playable_area)
         self.map_center = self.playable_area.center
         self.map_ramps: List[Ramp] = None  # Filled later by BotAI._prepare_first_step
@@ -177,7 +181,7 @@ class GameInfo:
             Point2((x, y))
             for x in range(map_area.x, map_area.x + map_area.width)
             for y in range(map_area.y, map_area.y + map_area.height)
-            if self.placement_grid[(x, y)] == 0 and self.pathing_grid[(x, y)] == 0
+            if self.placement_grid[(x, y)] == 0 and self.pathing_grid[(x, y)] == 1
         )
         return [Ramp(group, self) for group in self._find_groups(rampPoints)]
 
@@ -215,6 +219,8 @@ class GameInfo:
                 base: Point2 = queue.popleft()
                 for offset in nearby:
                     px, py = base.x + offset[0], base.y + offset[1]
+                    if not (0 <= px < map_width and 0 <= py < map_height):
+                        continue
                     if picture[py][px] != NOT_COLORED_YET:
                         continue
                     point: Point2 = Point2((px, py))

@@ -41,7 +41,7 @@ class Client(Protocol):
         return self._status == Status.in_game
 
     async def join_game(self, name=None, race=None, observed_player_id=None, portconfig=None, rgb_render_config=None):
-        ifopts = sc_pb.InterfaceOptions(raw=True, score=True)
+        ifopts = sc_pb.InterfaceOptions(raw=True, score=True, show_cloaked=True, raw_affects_selection=False, raw_crop_to_playable_area=False)
 
         if rgb_render_config:
             assert isinstance(rgb_render_config, dict)

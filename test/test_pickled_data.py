@@ -358,7 +358,7 @@ class TestClass:
         assert not townhall.is_blip
         assert not scv.is_powered
         assert not townhall.is_powered
-        assert not scv.is_active
+        assert scv.is_active
         assert not townhall.is_active
         assert not scv.mineral_contents
         assert not townhall.mineral_contents

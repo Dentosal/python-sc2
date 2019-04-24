@@ -532,13 +532,15 @@ class Unit(PassengerUnit):
     @property_immutable_cache
     def is_attacking(self) -> bool:
         """ Checks if the unit is attacking. """
-        return self.is_using_ability({
-            AbilityId.ATTACK,
-            AbilityId.ATTACK_ATTACK,
-            AbilityId.ATTACK_ATTACKTOWARDS,
-            AbilityId.ATTACK_ATTACKBARRAGE,
-            AbilityId.SCAN_MOVE,
-        })
+        return self.is_using_ability(
+            {
+                AbilityId.ATTACK,
+                AbilityId.ATTACK_ATTACK,
+                AbilityId.ATTACK_ATTACKTOWARDS,
+                AbilityId.ATTACK_ATTACKBARRAGE,
+                AbilityId.SCAN_MOVE,
+            }
+        )
 
     @property_immutable_cache
     def is_patrolling(self) -> bool:
@@ -563,30 +565,30 @@ class Unit(PassengerUnit):
     @property_immutable_cache
     def is_constructing_scv(self) -> bool:
         """ Checks if the unit is an SCV that is currently building. """
-        return self.is_using_ability({
-            AbilityId.TERRANBUILD_ARMORY,
-            AbilityId.TERRANBUILD_BARRACKS,
-            AbilityId.TERRANBUILD_BUNKER,
-            AbilityId.TERRANBUILD_COMMANDCENTER,
-            AbilityId.TERRANBUILD_ENGINEERINGBAY,
-            AbilityId.TERRANBUILD_FACTORY,
-            AbilityId.TERRANBUILD_FUSIONCORE,
-            AbilityId.TERRANBUILD_GHOSTACADEMY,
-            AbilityId.TERRANBUILD_MISSILETURRET,
-            AbilityId.TERRANBUILD_REFINERY,
-            AbilityId.TERRANBUILD_SENSORTOWER,
-            AbilityId.TERRANBUILD_STARPORT,
-            AbilityId.TERRANBUILD_SUPPLYDEPOT,
-        })
+        return self.is_using_ability(
+            {
+                AbilityId.TERRANBUILD_ARMORY,
+                AbilityId.TERRANBUILD_BARRACKS,
+                AbilityId.TERRANBUILD_BUNKER,
+                AbilityId.TERRANBUILD_COMMANDCENTER,
+                AbilityId.TERRANBUILD_ENGINEERINGBAY,
+                AbilityId.TERRANBUILD_FACTORY,
+                AbilityId.TERRANBUILD_FUSIONCORE,
+                AbilityId.TERRANBUILD_GHOSTACADEMY,
+                AbilityId.TERRANBUILD_MISSILETURRET,
+                AbilityId.TERRANBUILD_REFINERY,
+                AbilityId.TERRANBUILD_SENSORTOWER,
+                AbilityId.TERRANBUILD_STARPORT,
+                AbilityId.TERRANBUILD_SUPPLYDEPOT,
+            }
+        )
 
     @property_immutable_cache
     def is_repairing(self) -> bool:
         """ Checks if the unit is an SCV or MULE that is currently repairing. """
-        return self.is_using_ability({
-            AbilityId.EFFECT_REPAIR,
-            AbilityId.EFFECT_REPAIR_MULE,
-            AbilityId.EFFECT_REPAIR_SCV,
-        })
+        return self.is_using_ability(
+            {AbilityId.EFFECT_REPAIR, AbilityId.EFFECT_REPAIR_MULE, AbilityId.EFFECT_REPAIR_SCV}
+        )
 
     @property_immutable_cache
     def add_on_tag(self) -> int:
@@ -785,9 +787,10 @@ class Unit(PassengerUnit):
         return self.tag
 
     def __eq__(self, other):
-        if not isinstance(other, Unit):
+        try:
+            return self.tag == other.tag
+        except:
             return False
-        return self.tag == other.tag
 
     def __call__(self, ability, target=None, queue=False):
         return unit_command.UnitCommand(ability, self, target=target, queue=queue)

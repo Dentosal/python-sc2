@@ -1,7 +1,7 @@
+import itertools
 import logging
 import math
 import random
-import itertools
 from collections import Counter
 from typing import Any, Dict, List, Optional, Set, Tuple, Union  # mypy type checking
 
@@ -114,39 +114,56 @@ class BotAI:
         resources (mineral field and vespene geyser) as value.
         """
 
+        # Idea: create a group for every resource, then merge these groups if
+        # any resource in a group is closer than 6 to any resource of another group
+
+        # Distance we group resources by
         RESOURCE_SPREAD_THRESHOLD = 36
         minerals = self.state.mineral_field
         geysers = self.state.vespene_geyser
         all_resources = minerals | geysers
+        # Presort resources to get faster clustering
         all_resources.sort(key=lambda resource: (resource.position.x, resource.position.y))
+        # Create a group for every resource
         resource_groups = [[resource] for resource in all_resources]
+        # Loop the merging process as long as we change something
         found_something = True
         while found_something:
             found_something = False
+            # Check every combination of two groups
             for group_a, group_b in itertools.combinations(resource_groups, 2):
+                # Check if any pair of resource of these groups is closer than threshold together
                 if any(
                     resource_a.position._distance_squared(resource_b.position) <= RESOURCE_SPREAD_THRESHOLD
                     for resource_a, resource_b in itertools.product(group_a, group_b)
                 ):
+                    # Remove the single groups and add the merged group
                     resource_groups.remove(group_a)
                     resource_groups.remove(group_b)
                     resource_groups.append(group_a + group_b)
                     found_something = True
                     break
-        # Distance offsets from a gas geysir
-        # offsets = [(x, y) for x in range(-9, 10) for y in range(-9, 10) if 75 >= x ** 2 + y ** 2 >= 49]
-        offR = 7
-        offsets = [(x, y) for x in range(-offR, offR+1) for y in range(-offR, offR+1) if 49 >= x ** 2 + y ** 2 >= 16]
+        # Distance offsets we apply to center of each resource group to find expansion position
+        offset_range = 7
+        offsets = [
+            (x, y)
+            for x in range(-offset_range, offset_range + 1)
+            for y in range(-offset_range, offset_range + 1)
+            if 49 >= x ** 2 + y ** 2 >= 16
+        ]
+        # Dict we want to return
         centers = {}
         # For every resource group:
         for resources in resource_groups:
             # Possible expansion points
             amount = len(resources)
+            # Calculate center, round and add 0.5 because expansion location will have (x.5, y.5)
+            # coordinates because bases have size 5.
             center_x = round(sum(resource.position.x for resource in resources) / amount) + 0.5
             center_y = round(sum(resource.position.y for resource in resources) / amount) + 0.5
-            possible_points = [Point2((offset[0] + center_x, offset[1] + center_y)) for offset in offsets]
+            possible_points = (Point2((offset[0] + center_x, offset[1] + center_y)) for offset in offsets)
             # Filter out points that are too near
-            possible_points = [
+            possible_points = (
                 point
                 for point in possible_points
                 # Check if point can be built on
@@ -156,7 +173,7 @@ class BotAI:
                     point._distance_squared(resource.position) >= (49 if resource in geysers else 36)
                     for resource in resources
                 )
-            ]
+            )
             # Choose best fitting point
             # TODO can we improve this by calculating the distance only one time?
             result = min(
@@ -533,6 +550,8 @@ class BotAI:
         (Interceptors) or Oracles (Stasis Ward)) are also included.
         """
 
+        # TODO / FIXME: SCV building a structure might be counted as two units
+
         if isinstance(unit_type, UpgradeId):
             return self.already_pending_upgrade(unit_type)
 
@@ -651,13 +670,13 @@ class BotAI:
         https://github.com/Dentosal/python-sc2/blob/master/sc2/game_info.py#L17-L18 """
         assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
         pos = pos.position.to2.rounded
-        return self._game_info.placement_grid[pos] != 0
+        return self._game_info.placement_grid[pos] == 1
 
     def in_pathing_grid(self, pos: Union[Point2, Point3, Unit]) -> bool:
         """ Returns True if a unit can pass through a grid point. """
         assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
         pos = pos.position.to2.rounded
-        return self._game_info.pathing_grid[pos] == 0
+        return self._game_info.pathing_grid[pos] == 1
 
     def is_visible(self, pos: Union[Point2, Point3, Unit]) -> bool:
         """ Returns True if you have vision on a grid point. """
@@ -670,7 +689,7 @@ class BotAI:
         """ Returns True if there is creep on the grid point. """
         assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
         pos = pos.position.to2.rounded
-        return self.state.creep[pos] != 0
+        return self.state.creep[pos] == 1
 
     def _prepare_start(self, client, player_id, game_info, game_data):
         """Ran until game start to set game and player data."""

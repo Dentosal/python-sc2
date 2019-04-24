@@ -111,6 +111,7 @@ class GameState:
         # https://github.com/Blizzard/s2client-proto/blob/51662231c0965eba47d5183ed0a6336d5ae6b640/s2clientprotocol/sc2api.proto#L575
         self.observation = response_observation.observation
         self.observation_raw = self.observation.raw_data
+        self.dead_units: Set[int] = self.observation_raw.event.dead_units  # returns set of tags of units that died
         self.alerts = self.observation.alerts
         self.player_result = response_observation.player_result
         self.chat = response_observation.chat
@@ -160,8 +161,10 @@ class GameState:
         self.dead_units: Set[int] = {dead_unit_tag for dead_unit_tag in self.observation_raw.event.dead_units}
 
         self.blips: Set[Blip] = {Blip(unit) for unit in blipUnits}
-        self.visibility: PixelMap = PixelMap(self.observation_raw.map_state.visibility)
-        self.creep: PixelMap = PixelMap(self.observation_raw.map_state.creep)
+        # self.visibility[point]: 0=Hidden, 1=Fogged, 2=Visible
+        self.visibility: PixelMap = PixelMap(self.observation_raw.map_state.visibility, mirrored=True)
+        # self.creep[point]: 0=No creep, 1=creep
+        self.creep: PixelMap = PixelMap(self.observation_raw.map_state.creep, mirrored=True)
 
         # Effects like ravager bile shot, lurker attack, everything in effect_id.py
         self.effects: Set[EffectData] = {EffectData(effect) for effect in self.observation_raw.effects}
