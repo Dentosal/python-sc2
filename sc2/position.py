@@ -12,12 +12,6 @@ def _sign(num):
 
 class Pointlike(tuple):
     @property
-    def rounded(self) -> "Pointlike":
-        # return Point2((math.floor(self[0]), math.ceil(self[1])))
-        # map was flipped
-        return Point2((math.floor(self[0]), math.floor(self[1])))
-
-    @property
     def position(self) -> "Pointlike":
         return self
 
@@ -152,6 +146,10 @@ class Point2(Pointlike):
     @classmethod
     def from_proto(cls, data):
         return cls((data.x, data.y))
+
+    @property
+    def rounded(self) -> "Point2":
+        return Point2((math.floor(self[0]), math.floor(self[1])))
 
     @property
     def x(self) -> Union[int, float]:
@@ -295,6 +293,10 @@ class Point3(Point2):
     @classmethod
     def from_proto(cls, data):
         return cls((data.x, data.y, data.z))
+
+    @property
+    def rounded(self) -> "Point3":
+        return Point3((math.floor(self[0]), math.floor(self[1]), math.floor(self[2])))
 
     @property
     def z(self) -> Union[int, float]:
