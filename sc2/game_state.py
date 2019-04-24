@@ -165,8 +165,6 @@ class GameState:
         self.visibility: PixelMap = PixelMap(self.observation_raw.map_state.visibility, mirrored=True)
         # self.creep[point]: 0=No creep, 1=creep
         self.creep: PixelMap = PixelMap(self.observation_raw.map_state.creep, mirrored=True)
-        # self.visibility.plot()
-        # self.creep.plot()
 
         # Effects like ravager bile shot, lurker attack, everything in effect_id.py
         self.effects: Set[EffectData] = {EffectData(effect) for effect in self.observation_raw.effects}
