@@ -16,9 +16,11 @@ def property_cache_forever(f):
 
 
 def property_cache_once_per_frame(f):
-    """ This decorator caches the return value for one game loop, then clears it if it is accessed in a different game loop
-    Only works on properties of the bot object because it requires access to self.state.game_loop """
-
+    """ This decorator caches the return value for one game loop,
+    then clears it if it is accessed in a different game loop.
+    Only works on properties of the bot object, because it requires
+    access to self.state.game_loop """
+    
     @wraps(f)
     def inner(self):
         property_cache = "_cache_" + f.__name__

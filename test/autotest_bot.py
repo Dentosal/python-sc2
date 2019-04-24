@@ -218,7 +218,7 @@ class TestBot(sc2.BotAI):
         assert len(self._game_info.map_ramps) >= 2, self._game_info.map_ramps
         assert len(self._game_info.player_races) == 2, self._game_info.player_races
         self.tests_done_by_name.add("test_game_info_static_variables")
-
+ 
     # Test unit.py
     async def test_unit(self):
         scv1, scv2, scv3 = self.workers[:3]
