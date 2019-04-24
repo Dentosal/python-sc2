@@ -13,7 +13,9 @@ def _sign(num):
 class Pointlike(tuple):
     @property
     def rounded(self) -> "Pointlike":
-        return Point2((math.floor(self[0]), math.ceil(self[1])))
+        # return Point2((math.floor(self[0]), math.ceil(self[1])))
+        # map was flipped
+        return Point2((math.floor(self[0]), math.floor(self[1])))
 
     @property
     def position(self) -> "Pointlike":

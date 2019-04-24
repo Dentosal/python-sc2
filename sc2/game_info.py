@@ -158,9 +158,13 @@ class GameInfo:
         self.map_name: str = self._proto.map_name
         self.local_map_path: str = self._proto.local_map_path
         self.map_size: Size = Size.from_proto(self._proto.start_raw.map_size)
-        self.pathing_grid: PixelMap = PixelMap(self._proto.start_raw.pathing_grid)
+
+        # self.pathing_grid[point]: if 0, point is not pathable, if 1, point is pathable
+        self.pathing_grid: PixelMap = PixelMap(self._proto.start_raw.pathing_grid, in_bits=True)
+        # self.terrain_height[point]: returns the height in range of 0 to 255 at that point    
         self.terrain_height: PixelMap = PixelMap(self._proto.start_raw.terrain_height)
-        self.placement_grid: PixelMap = PixelMap(self._proto.start_raw.placement_grid)
+        # self.pathing_grid[point]: if 0, point is not pathable, if 1, point is pathable
+        self.placement_grid: PixelMap = PixelMap(self._proto.start_raw.placement_grid, in_bits=True)
         self.playable_area = Rect.from_proto(self._proto.start_raw.playable_area)
         self.map_center = self.playable_area.center
         self.map_ramps: List[Ramp] = None  # Filled later by BotAI._prepare_first_step
@@ -215,6 +219,8 @@ class GameInfo:
                 base: Point2 = queue.popleft()
                 for offset in nearby:
                     px, py = base.x + offset[0], base.y + offset[1]
+                    if not (0 <= px < map_width and 0 <= py < map_height):
+                        continue
                     if picture[py][px] != NOT_COLORED_YET:
                         continue
                     point: Point2 = Point2((px, py))
