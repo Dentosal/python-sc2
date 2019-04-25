@@ -104,6 +104,7 @@ class EffectData:
 
 class GameState:
     def __init__(self, response_observation):
+        self.response_observation = response_observation
         self.actions = response_observation.actions  # successful actions since last loop
         self.action_errors = response_observation.action_errors  # error actions since last loop
 
