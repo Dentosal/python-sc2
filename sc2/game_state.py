@@ -124,10 +124,6 @@ class GameState:
         # https://github.com/Blizzard/s2client-proto/blob/33f0ecf615aa06ca845ffe4739ef3133f37265a9/s2clientprotocol/score.proto#L31
         self.score: ScoreDetails = ScoreDetails(self.observation.score)
         self.abilities = self.observation.abilities  # abilities of selected units
-
-        neutral = Alliance.Neutral.value
-        friend = Alliance.Self.value
-        enemy = Alliance.Enemy.value
         # Fix for enemy units detected by my sensor tower, as blips have less unit information than normal visible units
         visibleUnits, blipUnits, minerals, geysers, destructables, enemy, own, watchtowers = ([] for _ in range(8))
 
@@ -137,11 +133,13 @@ class GameState:
             else:
                 visibleUnits.append(unit)
                 alliance = unit.alliance
-                if alliance == neutral:
+                # Alliance.Neutral.value = 3
+                if alliance == 3:
                     unit_type = unit.unit_type
-                    # all destructable rocks except the one below the main base ramps
+                    # XELNAGATOWER = 149
                     if unit_type == 149:
                         watchtowers.append(unit)
+                    # all destructable rocks except the one below the main base ramps
                     elif unit.radius > 1.5:
                         destructables.append(unit)
                     # mineral field enums
@@ -150,9 +148,11 @@ class GameState:
                     # geyser enums
                     elif unit_type in geyser_ids:
                         geysers.append(unit)
-                elif alliance == friend:
+                # Alliance.Self.value = 1
+                elif alliance == 1:
                     own.append(unit)
-                elif alliance == enemy:
+                # Alliance.Enemy.value = 4
+                elif alliance == 4:
                     enemy.append(unit)
 
         self.own_units: Units = Units.from_proto(own)
