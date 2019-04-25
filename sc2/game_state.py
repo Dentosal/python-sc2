@@ -104,7 +104,6 @@ class EffectData:
 
 class GameState:
     def __init__(self, response_observation):
-        self.response_observation = response_observation
         self.actions = response_observation.actions  # successful actions since last loop
         self.action_errors = response_observation.action_errors  # error actions since last loop
 
@@ -125,36 +124,44 @@ class GameState:
         self.score: ScoreDetails = ScoreDetails(self.observation.score)
         self.abilities = self.observation.abilities  # abilities of selected units
 
+        neutral = Alliance.Neutral.value
+        friend = Alliance.Self.value
+        enemy = Alliance.Enemy.value
         # Fix for enemy units detected by my sensor tower, as blips have less unit information than normal visible units
-        visibleUnits, blipUnits, minerals, geysers, destructables, enemy, own = ([] for _ in range(7))
+        visibleUnits, blipUnits, minerals, geysers, destructables, enemy, own, watchtowers = ([] for _ in range(8))
 
         for unit in self.observation_raw.units:
             if unit.is_blip:
                 blipUnits.append(unit)
             else:
                 visibleUnits.append(unit)
-                if unit.alliance == Alliance.Neutral.value:
+                alliance = unit.alliance
+                if alliance == neutral:
+                    unit_type = unit.unit_type
                     # all destructable rocks except the one below the main base ramps
-                    if unit.radius > 1.5:
+                    if unit_type == 149:
+                        watchtowers.append(unit)
+                    elif unit.radius > 1.5:
                         destructables.append(unit)
                     # mineral field enums
-                    elif unit.unit_type in mineral_ids:
+                    elif unit_type in mineral_ids:
                         minerals.append(unit)
                     # geyser enums
-                    elif unit.unit_type in geyser_ids:
+                    elif unit_type in geyser_ids:
                         geysers.append(unit)
-                elif unit.alliance == Alliance.Self.value:
+                elif alliance == friend:
                     own.append(unit)
-                elif unit.alliance == Alliance.Enemy.value:
+                elif alliance == enemy:
                     enemy.append(unit)
 
         self.own_units: Units = Units.from_proto(own)
         self.enemy_units: Units = Units.from_proto(enemy)
         self.mineral_field: Units = Units.from_proto(minerals)
         self.vespene_geyser: Units = Units.from_proto(geysers)
-        self.resources: Units = Units.from_proto(minerals + geysers)
+        self.resources: Units = self.mineral_field + self.vespene_geyser
         self.destructables: Units = Units.from_proto(destructables)
-        self.units: Units = Units.from_proto(visibleUnits)
+        self.watchtowers: Units = Units.from_proto(watchtowers)
+        self.units: Units = self.own_units + self.enemy_units + self.resources + self.destructables + self.watchtowers
         self.upgrades: Set[UpgradeId] = {UpgradeId(upgrade) for upgrade in self.observation_raw.player.upgrade_ids}
 
         # Set of unit tags that died this step
