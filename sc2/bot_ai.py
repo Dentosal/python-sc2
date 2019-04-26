@@ -16,6 +16,7 @@ from .game_state import GameState
 from .ids.ability_id import AbilityId
 from .ids.unit_typeid import UnitTypeId
 from .ids.upgrade_id import UpgradeId
+from .pixel_map import PixelMap
 from .position import Point2, Point3
 from .unit import Unit
 from .units import Units
@@ -106,7 +107,6 @@ class BotAI:
         )
         return self.cached_main_base_ramp
 
-
     @property_cache_forever
     def expansion_locations(self) -> Dict[Point2, Units]:
         """
@@ -182,7 +182,6 @@ class BotAI:
             )
             centers[result] = resources
         return centers
-
 
     def _correct_zerg_supply(self):
         """ The client incorrectly rounds zerg supply down instead of up (see
@@ -713,9 +712,13 @@ class BotAI:
             self._game_info.player_start_location = self.townhalls.first.position
         self._game_info.map_ramps = self._game_info._find_ramps()
 
-    def _prepare_step(self, state):
-        """Set attributes from new state before on_step."""
+    def _prepare_step(self, state, proto_game_info):
+        # Set attributes from new state before on_step."""
         self.state: GameState = state  # See game_state.py
+        # update pathing grid
+        self._game_info.pathing_grid: PixelMap = PixelMap(
+            proto_game_info.game_info.start_raw.pathing_grid, in_bits=True, mirrored=False
+        )
         # Required for events
         self._units_previous_map: Dict = {unit.tag: unit for unit in self.units}
         self.units: Units = state.own_units

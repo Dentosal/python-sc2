@@ -125,13 +125,12 @@ class GameState:
         self.score: ScoreDetails = ScoreDetails(self.observation.score)
         self.abilities = self.observation.abilities  # abilities of selected units
         # Fix for enemy units detected by my sensor tower, as blips have less unit information than normal visible units
-        visibleUnits, blipUnits, minerals, geysers, destructables, enemy, own, watchtowers = ([] for _ in range(8))
+        blipUnits, minerals, geysers, destructables, enemy, own, watchtowers = ([] for _ in range(7))
 
         for unit in self.observation_raw.units:
             if unit.is_blip:
                 blipUnits.append(unit)
             else:
-                visibleUnits.append(unit)
                 alliance = unit.alliance
                 # Alliance.Neutral.value = 3
                 if alliance == 3:
@@ -155,14 +154,17 @@ class GameState:
                 elif alliance == 4:
                     enemy.append(unit)
 
+        resources = minerals + geysers
+        visible_units = resources + destructables + enemy + own + watchtowers
+
         self.own_units: Units = Units.from_proto(own)
         self.enemy_units: Units = Units.from_proto(enemy)
         self.mineral_field: Units = Units.from_proto(minerals)
         self.vespene_geyser: Units = Units.from_proto(geysers)
-        self.resources: Units = self.mineral_field + self.vespene_geyser
+        self.resources: Units = Units.from_proto(resources)
         self.destructables: Units = Units.from_proto(destructables)
         self.watchtowers: Units = Units.from_proto(watchtowers)
-        self.units: Units = self.own_units + self.enemy_units + self.resources + self.destructables + self.watchtowers
+        self.units: Units = Units.from_proto(visible_units)
         self.upgrades: Set[UpgradeId] = {UpgradeId(upgrade) for upgrade in self.observation_raw.player.upgrade_ids}
 
         # Set of unit tags that died this step

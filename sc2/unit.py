@@ -131,14 +131,15 @@ class PassengerUnit:
         For SCV, this returns None """
         return self._type_data.unit_alias
 
-    @property
+    @property_immutable_cache
     def _weapons(self):
         """ Returns the weapons of the unit. """
-        if hasattr(self._type_data._proto, "weapons"):
+        try:
             return self._type_data._proto.weapons
-        return None
+        except:
+            return None
 
-    @property
+    @property_immutable_cache
     def can_attack(self) -> bool:
         """ Checks if the unit can attack at all. """
         # TODO BATTLECRUISER doesnt have weapons in proto?!
