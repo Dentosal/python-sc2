@@ -124,37 +124,47 @@ class GameState:
         # https://github.com/Blizzard/s2client-proto/blob/33f0ecf615aa06ca845ffe4739ef3133f37265a9/s2clientprotocol/score.proto#L31
         self.score: ScoreDetails = ScoreDetails(self.observation.score)
         self.abilities = self.observation.abilities  # abilities of selected units
-
         # Fix for enemy units detected by my sensor tower, as blips have less unit information than normal visible units
-        visibleUnits, blipUnits, minerals, geysers, destructables, enemy, own = ([] for _ in range(7))
+        blipUnits, minerals, geysers, destructables, enemy, own, watchtowers = ([] for _ in range(7))
 
         for unit in self.observation_raw.units:
             if unit.is_blip:
                 blipUnits.append(unit)
             else:
-                visibleUnits.append(unit)
-                if unit.alliance == Alliance.Neutral.value:
+                alliance = unit.alliance
+                # Alliance.Neutral.value = 3
+                if alliance == 3:
+                    unit_type = unit.unit_type
+                    # XELNAGATOWER = 149
+                    if unit_type == 149:
+                        watchtowers.append(unit)
                     # all destructable rocks except the one below the main base ramps
-                    if unit.radius > 1.5:
+                    elif unit.radius > 1.5:
                         destructables.append(unit)
                     # mineral field enums
-                    elif unit.unit_type in mineral_ids:
+                    elif unit_type in mineral_ids:
                         minerals.append(unit)
                     # geyser enums
-                    elif unit.unit_type in geyser_ids:
+                    elif unit_type in geyser_ids:
                         geysers.append(unit)
-                elif unit.alliance == Alliance.Self.value:
+                # Alliance.Self.value = 1
+                elif alliance == 1:
                     own.append(unit)
-                elif unit.alliance == Alliance.Enemy.value:
+                # Alliance.Enemy.value = 4
+                elif alliance == 4:
                     enemy.append(unit)
+
+        resources = minerals + geysers
+        visible_units = resources + destructables + enemy + own + watchtowers
 
         self.own_units: Units = Units.from_proto(own)
         self.enemy_units: Units = Units.from_proto(enemy)
         self.mineral_field: Units = Units.from_proto(minerals)
         self.vespene_geyser: Units = Units.from_proto(geysers)
-        self.resources: Units = Units.from_proto(minerals + geysers)
+        self.resources: Units = Units.from_proto(resources)
         self.destructables: Units = Units.from_proto(destructables)
-        self.units: Units = Units.from_proto(visibleUnits)
+        self.watchtowers: Units = Units.from_proto(watchtowers)
+        self.units: Units = Units.from_proto(visible_units)
         self.upgrades: Set[UpgradeId] = {UpgradeId(upgrade) for upgrade in self.observation_raw.player.upgrade_ids}
 
         # Set of unit tags that died this step
