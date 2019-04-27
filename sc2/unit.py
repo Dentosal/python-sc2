@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple, Union  # mypy type che
 
 from . import unit_command
 from .cache import property_immutable_cache, property_mutable_cache
+from .constants import transforming
 from .data import Alliance, Attribute, CloakState, DisplayType, Race, TargetType, warpgate_abilities
 from .ids.ability_id import AbilityId
 from .ids.buff_id import BuffId
@@ -144,6 +145,11 @@ class PassengerUnit:
         """ Checks if the unit can attack at all. """
         # TODO BATTLECRUISER doesnt have weapons in proto?!
         return bool(self._weapons) or self.type_id == UnitTypeId.BATTLECRUISER
+
+    @property_immutable_cache
+    def can_attack_both(self) -> bool:
+        """ Checks if the unit can attack both ground and air units. """
+        return self.can_attack_ground and self.can_attack_air
 
     @property_immutable_cache
     def can_attack_ground(self) -> bool:
@@ -583,6 +589,11 @@ class Unit(PassengerUnit):
                 AbilityId.TERRANBUILD_SUPPLYDEPOT,
             }
         )
+
+    @property_immutable_cache
+    def is_transforming(self) -> bool:
+        """ Checks if the unit transforming. """
+        return self.type_id in transforming and self.is_using_ability(transforming[self.type_id])
 
     @property_immutable_cache
     def is_repairing(self) -> bool:
