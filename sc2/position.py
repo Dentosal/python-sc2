@@ -54,8 +54,6 @@ class Pointlike(tuple):
         """ This returns the target points sorted as list.
         You should not pass a set or dict since those are not sortable.
         If you want to sort your units towards a point, use 'units.sorted_by_distance_to(point)' instead. """
-        # if ps and all(isinstance(p, Point2) for p in ps):
-        #     return sorted(ps, key=lambda p: self._distance_squared(p))
         return sorted(ps, key=lambda p: self._distance_squared(p.position))
 
     def closest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union["Unit", "Point2"]:

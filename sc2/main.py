@@ -3,6 +3,7 @@ import logging
 import time
 
 import async_timeout
+from s2clientprotocol import sc2api_pb2 as sc_pb
 
 from .client import Client
 from .data import CreateGameError, Result
@@ -101,7 +102,8 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
     ai._prepare_start(client, player_id, game_info, game_data)
     state = await client.observation()
     gs = GameState(state.observation)
-    ai._prepare_step(gs)
+    proto_game_info = await client._execute(game_info=sc_pb.RequestGameInfo())
+    ai._prepare_step(gs, proto_game_info)
     ai._prepare_first_step()
     try:
         ai.on_start()
@@ -126,8 +128,8 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
             if game_time_limit and (gs.game_loop * 0.725 * (1 / 16)) > game_time_limit:
                 ai.on_end(Result.Tie)
                 return Result.Tie
-
-            ai._prepare_step(gs)
+            proto_game_info = await client._execute(game_info=sc_pb.RequestGameInfo())
+            ai._prepare_step(gs, proto_game_info)
 
         logger.debug(f"Running AI step, it={iteration} {gs.game_loop * 0.725 * (1 / 16):.2f}s")
 
