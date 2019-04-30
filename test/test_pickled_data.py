@@ -104,8 +104,6 @@ class TestClass:
         # Test bot_ai functions
         assert bot.time == 0
         assert bot.time_formatted in {"0:00", "00:00"}
-        assert bot.nuke_detected is False
-        assert bot.nydus_detected is False
         assert bot.start_location is None  # Is populated by main.py
         bot._game_info.player_start_location = bot.townhalls.random.position
         assert bot.townhalls.random.position not in bot.enemy_start_locations
