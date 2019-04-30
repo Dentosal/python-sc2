@@ -67,13 +67,43 @@ class BotAI:
         """ See game_info.py """
         return self._game_info
 
-    @property
-    def nuke_detected(self) -> bool:
-        return any(alert == Alert.NuclearLaunchDetected.value for alert in self.state.alerts)
+    def alert(self, alert_code: Alert) -> bool:
+        """
+        Check if alert is triggered in the current step.
 
-    @property
-    def nydus_detected(self) -> bool:
-        return any(alert == Alert.NydusWormDetected.value for alert in self.state.alerts)
+        Example use:
+        from sc2.data import Alert
+        if self.alert(Alert.AddOnComplete):
+            print("Addon Complete")
+
+        Alert codes:
+
+        AlertError
+        AddOnComplete
+        BuildingComplete
+        BuildingUnderAttack
+        LarvaHatched
+        MergeComplete
+        MineralsExhausted
+        MorphComplete
+        MothershipComplete
+        MULEExpired
+        NuclearLaunchDetected
+        NukeComplete
+        NydusWormDetected
+        ResearchComplete
+        TrainError
+        TrainUnitComplete
+        TrainWorkerComplete
+        TransformationComplete
+        UnitUnderAttack
+        UpgradeComplete
+        VespeneExhausted
+        WarpInComplete
+        
+        """
+        assert isinstance(alert_code, Alert), f"alert_code {alert_code} is no Alert"
+        return alert_code.value in self.state.alerts
 
     @property
     def start_location(self) -> Point2:
@@ -632,39 +662,47 @@ class BotAI:
             # action: UnitCommand
             # current_action: UnitOrder
             current_action = action.unit.orders[0]
-            # different action
             if current_action.ability.id != action.ability:
+                # different action, return true
                 return True
-            if (
-                isinstance(current_action.target, int)
-                and isinstance(action.target, Unit)
-                and current_action.target == action.target.tag
-            ):
-                # remove action if same target unit
-                return False
-            elif (
-                isinstance(action.target, Point2)
-                and isinstance(current_action.target, common_pb.Point)
-                and (action.target.x, action.target.y) == (current_action.target.x, current_action.target.y)
-            ):
-                # remove action if same target position
-                return False
+            try:
+                if current_action.target == action.target.tag:
+                    # same action, remove action if same target unit
+                    return False
+            except AttributeError:
+                pass
+            try:
+                if action.target.x == current_action.target.x and action.target.y == current_action.target.y:
+                    # same action, remove action if same target position
+                    return False
+            except AttributeError:
+                pass
+            return True
         return True
 
     async def chat_send(self, message: str):
-        """Send a chat message."""
+        """ Send a chat message. """
         assert isinstance(message, str), f"{message} is no string"
         await self._client.chat_send(message, False)
 
     # For the functions below, make sure you are inside the boundries of the map size.
     def get_terrain_height(self, pos: Union[Point2, Point3, Unit]) -> int:
-        """ Returns terrain height at a position. Caution: terrain height is not anywhere near a unit's z-coordinate. """
+        """ Returns terrain height at a position.
+        Caution: terrain height is different from a unit's z-coordinate.
+        """
         assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
         pos = pos.position.to2.rounded
         return self._game_info.terrain_height[pos]
+    
+    def get_terrain_z_height(self, pos: Union[Point2, Point3, Unit]) -> int:        
+        """ Returns terrain z-height at a position. """
+        assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
+        pos = pos.position.to2.rounded
+        return -16 + 32 * self._game_info.terrain_height[pos] / 255
 
     def in_placement_grid(self, pos: Union[Point2, Point3, Unit]) -> bool:
-        """ Returns True if you can place something at a position. Remember, buildings usually use 2x2, 3x3 or 5x5 of these grid points.
+        """ Returns True if you can place something at a position.
+        Remember, buildings usually use 2x2, 3x3 or 5x5 of these grid points.
         Caution: some x and y offset might be required, see ramp code:
         https://github.com/Dentosal/python-sc2/blob/master/sc2/game_info.py#L17-L18 """
         assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
