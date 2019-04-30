@@ -53,7 +53,7 @@ def get_map_specific_bots() -> Iterable[BotAI]:
         game_state = GameState(raw_observation)
         UnitGameData._game_data = game_data
         bot._prepare_start(client=None, player_id=1, game_info=game_info, game_data=game_data)
-        bot._prepare_step(state=game_state)
+        bot._prepare_step(state=game_state, proto_game_info=raw_game_info)
 
         yield bot
 

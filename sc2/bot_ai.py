@@ -688,10 +688,17 @@ class BotAI:
     # For the functions below, make sure you are inside the boundries of the map size.
     def get_terrain_height(self, pos: Union[Point2, Point3, Unit]) -> int:
         """ Returns terrain height at a position.
-        Caution: terrain height is different from a unit's z-coordinate. """
+        Caution: terrain height is different from a unit's z-coordinate.
+        """
         assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
         pos = pos.position.to2.rounded
         return self._game_info.terrain_height[pos]
+    
+    def get_terrain_z_height(self, pos: Union[Point2, Point3, Unit]) -> int:        
+        """ Returns terrain z-height at a position. """
+        assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
+        pos = pos.position.to2.rounded
+        return -16 + 32 * self._game_info.terrain_height[pos] / 255
 
     def in_placement_grid(self, pos: Union[Point2, Point3, Unit]) -> bool:
         """ Returns True if you can place something at a position.

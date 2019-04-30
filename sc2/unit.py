@@ -517,7 +517,7 @@ class Unit(PassengerUnit):
     @property_immutable_cache
     def shield_upgrade_level(self) -> int:
         """ Returns the upgrade level of the units shield. """
-        # TODO: what does this return for units without a weapon?
+        # TODO: what does this return for units without a shield?
         return self._proto.shield_upgrade_level
 
     @property_immutable_cache
