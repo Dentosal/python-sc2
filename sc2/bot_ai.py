@@ -293,64 +293,68 @@ class BotAI:
         Distributes workers across all the bases taken.
         WARNING: This is quite slow when there are lots of workers or multiple bases.
         """
-
-        # TODO:
-        # OPTIMIZE: Assign idle workers smarter
-        # OPTIMIZE: Never use same worker mutltiple times
-        owned_expansions = self.owned_expansions
-        worker_pool = []
+        if not self.state.mineral_field or not self.workers or not self.owned_expansions.ready:
+            return
         actions = []
+        worker_pool = [worker for worker in self.workers.idle]
+        bases = self.owned_expansions.ready
+        geysers = self.geysers.ready
 
-        for idle_worker in self.workers.idle:
-            mf = self.state.mineral_field.closest_to(idle_worker)
-            actions.append(idle_worker.gather(mf))
+        # list of places that need more workers
+        deficit_mining_places = []
 
-        for location, townhall in owned_expansions.items():
-            workers = self.workers.closer_than(20, location)
-            actual = townhall.assigned_harvesters
-            ideal = townhall.ideal_harvesters
-            excess = actual - ideal
-            if actual > ideal:
-                worker_pool.extend(workers.random_group_of(min(excess, len(workers))))
+        for mining_place in bases | geysers:
+            difference = mining_place.surplus_harvesters
+            # perfect amount of workers, skip mining place
+            if not difference:
                 continue
-        for g in self.geysers:
-            workers = self.workers.closer_than(5, g)
-            actual = g.assigned_harvesters
-            ideal = g.ideal_harvesters
-            excess = actual - ideal
-            if actual > ideal:
-                worker_pool.extend(workers.random_group_of(min(excess, len(workers))))
-                continue
+            if mining_place.has_vespene:
+                # get all workers that target the gas extraction site
+                # or are on their way back from it
+                local_workers = self.workers.filter(
+                    lambda unit: unit.order_target == mining_place.tag
+                    or (unit.is_carrying_vespene and unit.order_target == bases.closest_to(mining_place).tag)
+                )
+            else:
+                # get minerals around expansion
+                local_minerals = self.expansion_locations[mining_place.position].filter(
+                    lambda resource: resource.has_minerals
+                )
+                # get all target tags a worker can have
+                # tags of the minerals he could mine at that base
+                # get workers that work at that gather site
+                local_workers = self.workers.filter(
+                    lambda unit: unit.order_target in local_minerals.tags
+                    or (unit.is_carrying_minerals and unit.order_target == mining_place.tag)
+                )
+            # too many workers
+            if difference > 0:
+                worker_pool.append(local_workers[:difference])
+            # too few workers
+            # add mining place to deficit bases for every missing worker
+            else:
+                deficit_mining_places += [mining_place for _ in range(-difference)]
 
-        for g in self.geysers:
-            actual = g.assigned_harvesters
-            ideal = g.ideal_harvesters
-            deficit = ideal - actual
-
-            for _ in range(deficit):
-                if worker_pool:
-                    w = worker_pool.pop()
-                    if len(w.orders) == 1 and w.orders[0].ability.id is AbilityId.HARVEST_RETURN:
-                        actions.append(w.move(g))
-                        actions.append(w.return_resource(queue=True))
-                    else:
-                        actions.append(w.gather(g))
-
-        for location, townhall in owned_expansions.items():
-            actual = townhall.assigned_harvesters
-            ideal = townhall.ideal_harvesters
-
-            deficit = ideal - actual
-            for _ in range(deficit):
-                if worker_pool:
-                    w = worker_pool.pop()
-                    mf = self.state.mineral_field.closest_to(townhall)
-                    if len(w.orders) == 1 and w.orders[0].ability.id is AbilityId.HARVEST_RETURN:
-                        actions.append(w.move(townhall))
-                        actions.append(w.return_resource(queue=True))
-                        actions.append(w.gather(mf, queue=True))
-                    else:
-                        actions.append(w.gather(mf))
+        # distribute every worker in the pool
+        for worker in worker_pool:
+            # as long as have workers and mining places
+            if deficit_mining_places:
+                # remove current place from the list for next loop
+                current_place = deficit_mining_places.pop(0)
+                # if current place is a gas extraction site, go there
+                if current_place.has_vespene:
+                    actions.append(worker.gather(current_place))
+                # if current place is a gas extraction site,
+                # go to the mineral field that is near and has the most minerals left
+                else:
+                    local_minerals = self.expansion_locations[current_place.position].filter(
+                        lambda resource: resource.has_minerals
+                    )
+                    target_mineral = max(local_minerals, key=lambda mineral: mineral.mineral_contents)
+                    actions.append(worker.gather(target_mineral))
+            # more workers to distribute than free mining spots
+            # else:
+            #     pass
 
         await self.do_actions(actions)
 
@@ -693,8 +697,8 @@ class BotAI:
         assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
         pos = pos.position.to2.rounded
         return self._game_info.terrain_height[pos]
-    
-    def get_terrain_z_height(self, pos: Union[Point2, Point3, Unit]) -> int:        
+
+    def get_terrain_z_height(self, pos: Union[Point2, Point3, Unit]) -> int:
         """ Returns terrain z-height at a position. """
         assert isinstance(pos, (Point2, Point3, Unit)), f"pos is not of type Point2, Point3 or Unit"
         pos = pos.position.to2.rounded
