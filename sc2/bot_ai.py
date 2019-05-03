@@ -293,11 +293,11 @@ class BotAI:
         Distributes workers across all the bases taken.
         WARNING: This is quite slow when there are lots of workers or multiple bases.
         """
-        if not self.state.mineral_field or not self.workers or not self.owned_expansions.ready:
+        if not self.state.mineral_field or not self.workers or not self.townhalls.ready:
             return
         actions = []
         worker_pool = [worker for worker in self.workers.idle]
-        bases = self.owned_expansions.ready
+        bases = self.townhalls.ready
         geysers = self.geysers.ready
 
         # list of places that need more workers
@@ -308,7 +308,7 @@ class BotAI:
             # perfect amount of workers, skip mining place
             if not difference:
                 continue
-            if mining_place.has_vespene:
+            if mining_place.is_vespene_geyser:
                 # get all workers that target the gas extraction site
                 # or are on their way back from it
                 local_workers = self.workers.filter(
@@ -316,45 +316,70 @@ class BotAI:
                     or (unit.is_carrying_vespene and unit.order_target == bases.closest_to(mining_place).tag)
                 )
             else:
-                # get minerals around expansion
-                local_minerals = self.expansion_locations[mining_place.position].filter(
-                    lambda resource: resource.has_minerals
-                )
+                # get tags of minerals around expansion
+                local_minerals_tags = {
+                    mineral.tag
+                    for mineral in self.mineral_fields
+                    if mineral.position._distance_squared(mining_place.position) <= 64
+                }
                 # get all target tags a worker can have
                 # tags of the minerals he could mine at that base
                 # get workers that work at that gather site
                 local_workers = self.workers.filter(
-                    lambda unit: unit.order_target in local_minerals.tags
+                    lambda unit: unit.order_target in local_minerals_tags
                     or (unit.is_carrying_minerals and unit.order_target == mining_place.tag)
                 )
             # too many workers
             if difference > 0:
-                worker_pool.append(local_workers[:difference])
+                for worker in local_workers[:difference]:
+                    worker_pool.append(worker)
             # too few workers
             # add mining place to deficit bases for every missing worker
             else:
                 deficit_mining_places += [mining_place for _ in range(-difference)]
 
+        # prepare all minerals near a base if we have too many workers
+        # and need to send them to the closest patch
+        if len(worker_pool) > len(deficit_mining_places):
+            all_minerals_near_base = [
+                mineral
+                for mineral in self.mineral_fields
+                if any(mineral.position._distance_squared(base.position) <= 64 for base in self.townhalls.ready)
+            ]
         # distribute every worker in the pool
         for worker in worker_pool:
             # as long as have workers and mining places
             if deficit_mining_places:
-                # remove current place from the list for next loop
-                current_place = deficit_mining_places.pop(0)
+                # find closest mining place
+                current_place = min(
+                    deficit_mining_places, key=lambda place: place.position._distance_squared(worker.position)
+                )
+                # remove it from the list
+                deficit_mining_places.remove(current_place)
                 # if current place is a gas extraction site, go there
-                if current_place.has_vespene:
+                if current_place.vespene_contents:
                     actions.append(worker.gather(current_place))
                 # if current place is a gas extraction site,
                 # go to the mineral field that is near and has the most minerals left
                 else:
-                    local_minerals = self.expansion_locations[current_place.position].filter(
-                        lambda resource: resource.has_minerals
-                    )
+                    local_minerals = [
+                        mineral
+                        for mineral in self.mineral_fields
+                        if mineral.position._distance_squared(current_place.position) <= 64
+                    ]
                     target_mineral = max(local_minerals, key=lambda mineral: mineral.mineral_contents)
-                    actions.append(worker.gather(target_mineral))
+                    self.actions.append(worker.gather(target_mineral))
             # more workers to distribute than free mining spots
-            # else:
-            #     pass
+            # send to closest if worker is doing nothing
+            elif worker.is_idle:
+                target_mineral = min(
+                    all_minerals_near_base, key=lambda mineral: mineral.position._distance_squared(worker.position)
+                )
+                actions.append(worker.gather(target_mineral))
+            else:
+                # there are no deficit mining places and worker is not idle
+                # so dont move him
+                pass
 
         await self.do_actions(actions)
 
