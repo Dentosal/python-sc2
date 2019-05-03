@@ -288,9 +288,20 @@ class BotAI:
 
         return closest
 
-    async def distribute_workers(self):
+    async def distribute_workers(self, resource_ratio: float = 2):
         """
         Distributes workers across all the bases taken.
+        Keyword `resource_ratio` takes a float. If the current minerals to gas
+        ratio is bigger than `resource_ratio`, this function prefer filling geysers
+        first, if it is lower, it will prefer sending workers to minerals first.
+        This is only for workers that need to be moved anyways, it will NOT will
+        geysers on its own.
+
+        NOTE: This function is far from optimal, if you really want to have
+        refined worker control, you should write your own distribution function.
+        For example long distance mining control and moving workers if a base was killed
+        are not being handled.
+
         WARNING: This is quite slow when there are lots of workers or multiple bases.
         """
         if not self.state.mineral_field or not self.workers or not self.townhalls.ready:
@@ -350,6 +361,15 @@ class BotAI:
         for worker in worker_pool:
             # as long as have workers and mining places
             if deficit_mining_places:
+                # choose only mineral fields first if current mineral to gas ratio is less than target ratio
+                if self.vespene and self.minerals / self.vespene > resource_ratio:
+                    possible_mining_places = [place for place in deficit_mining_places if not place.vespene_contents]
+                # else prefer gas
+                else:
+                    possible_mining_places = [place for place in deficit_mining_places if place.vespene_contents]
+                # if preferred type is not available any more, get all other places
+                if not possible_mining_places:
+                    possible_mining_places = deficit_mining_places
                 # find closest mining place
                 current_place = min(
                     deficit_mining_places, key=lambda place: place.position._distance_squared(worker.position)
@@ -371,7 +391,7 @@ class BotAI:
                     self.actions.append(worker.gather(target_mineral))
             # more workers to distribute than free mining spots
             # send to closest if worker is doing nothing
-            elif worker.is_idle:
+            elif worker.is_idle and all_minerals_near_base:
                 target_mineral = min(
                     all_minerals_near_base, key=lambda mineral: mineral.position._distance_squared(worker.position)
                 )
