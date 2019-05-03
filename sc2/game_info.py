@@ -224,7 +224,7 @@ class GameInfo:
                     if picture[py][px] != NOT_COLORED_YET:
                         continue
                     point: Point2 = Point2((px, py))
-                    remaining.remove(point)
+                    remaining.discard(point)
                     paint(point)
                     queue.append(point)
                     currentGroup.add(point)

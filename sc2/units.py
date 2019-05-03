@@ -336,6 +336,14 @@ class Units(list):
     def prefer_idle(self) -> "Units":
         return self.sorted(lambda unit: unit.is_idle, reverse=True)
 
+    def prefer_close_to(self, p: Union[Unit, Point2, Point3]) -> "Units":
+        warnings.warn(
+            "prefer_close_to will be removed soon, please use sorted_by_distance_to instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.sorted_by_distance_to(p)
+
 
 class UnitSelection(Units):
     def __init__(self, parent, selection=None):
