@@ -57,7 +57,7 @@ class Ramp:
             return set()  # HACK: makes this work for now
             # FIXME: please do
 
-        upper2 = sorted(list(self.upper), key=lambda x: x._distance_squared(self.bottom_center), reverse=True)
+        upper2 = sorted(list(self.upper), key=lambda x: x.distance_to_point2(self.bottom_center), reverse=True)
         while len(upper2) > 2:
             upper2.pop()
         return set(upper2)
@@ -99,7 +99,7 @@ class Ramp:
             # Offset from top point to barracks center is (2, 1)
             intersects = p1.circle_intersection(p2, 5 ** 0.5)
             anyLowerPoint = next(iter(self.lower))
-            return max(intersects, key=lambda p: p._distance_squared(anyLowerPoint))
+            return max(intersects, key=lambda p: p.distance_to_point2(anyLowerPoint))
         raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
 
     @property_immutable_cache
@@ -112,7 +112,7 @@ class Ramp:
             # Offset from top point to depot center is (1.5, 0.5)
             intersects = p1.circle_intersection(p2, 2.5 ** 0.5)
             anyLowerPoint = next(iter(self.lower))
-            return max(intersects, key=lambda p: p._distance_squared(anyLowerPoint))
+            return max(intersects, key=lambda p: p.distance_to_point2(anyLowerPoint))
         raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
 
     @property_mutable_cache
@@ -122,7 +122,7 @@ class Ramp:
             points = self.upper2_for_ramp_wall
             p1 = points.pop().offset((self.x_offset, self.y_offset))  # still an error with pixelmap?
             p2 = points.pop().offset((self.x_offset, self.y_offset))
-            center = p1.towards(p2, p1.distance_to(p2) / 2)
+            center = p1.towards(p2, p1.distance_to_point2(p2) / 2)
             depotPosition = self.depot_in_middle
             # Offset from middle depot to corner depots is (2, 1)
             intersects = center.circle_intersection(depotPosition, 5 ** 0.5)

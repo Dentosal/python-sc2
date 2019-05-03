@@ -764,10 +764,7 @@ class Unit(PassengerUnit):
             unit_attack_range = self.air_range
         else:
             return False
-        return (
-            self.position._distance_squared(target.position)
-            <= (self.radius + target.radius + unit_attack_range + bonus_distance) ** 2
-        )
+        return self.distance_to(target) <= self.radius + target.radius + unit_attack_range + bonus_distance
 
     def has_buff(self, buff) -> bool:
         """ Checks if unit has buff 'buff'. """
