@@ -50,7 +50,7 @@ class Pointlike(tuple):
     def closest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union["Unit", "Point2"]:
         """ This function assumes the 2d distance is meant """
         assert ps, f"ps is empty"
-        return min(ps, key=lambda p: self.distance_to(ps))
+        return min(ps, key=lambda p: self.distance_to(p))
 
     def distance_to_closest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union[int, float]:
         """ This function assumes the 2d distance is meant """
@@ -66,7 +66,7 @@ class Pointlike(tuple):
     def furthest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union["Unit", "Pointlike"]:
         """ This function assumes the 2d distance is meant """
         assert ps, f"ps is empty"
-        return max(ps, key=lambda p: self.distance_to(ps))
+        return max(ps, key=lambda p: self.distance_to(p))
 
     def distance_to_furthest(self, ps: Union["Units", List["Point2"], Set["Point2"]]) -> Union[int, float]:
         """ This function assumes the 2d distance is meant """

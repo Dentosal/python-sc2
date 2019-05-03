@@ -206,4 +206,4 @@ class GameState:
 
     @property_cache_once_per_frame_state
     def units(self) -> Units:
-        return Units.from_proto(self._resources + self._destructables + self._enemy + self._own + self._watchtowers)
+        return Units.from_proto(self._minerals + self._geysers + self._destructables + self._enemy + self._own + self._watchtowers)
