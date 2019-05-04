@@ -323,7 +323,7 @@ class BotAI:
             else:
                 # get tags of minerals around expansion
                 local_minerals_tags = {
-                    mineral.tag for mineral in self.mineral_fields if mineral.distance_to(mining_place) <= 8
+                    mineral.tag for mineral in self.state.mineral_field if mineral.distance_to(mining_place) <= 8
                 }
                 # get all target tags a worker can have
                 # tags of the minerals he could mine at that base
@@ -354,7 +354,7 @@ class BotAI:
             # as long as have workers and mining places
             if deficit_mining_places:
                 # choose only mineral fields first if current mineral to gas ratio is less than target ratio
-                if self.vespene and self.minerals / self.vespene > resource_ratio:
+                if self.vespene and self.minerals / self.vespene < resource_ratio:
                     possible_mining_places = [place for place in deficit_mining_places if not place.vespene_contents]
                 # else prefer gas
                 else:
@@ -373,7 +373,7 @@ class BotAI:
                 # go to the mineral field that is near and has the most minerals left
                 else:
                     local_minerals = [
-                        mineral for mineral in self.mineral_fields if mineral.distance_to(current_place) <= 8
+                        mineral for mineral in self.state.mineral_field if mineral.distance_to(current_place) <= 8
                     ]
                     target_mineral = max(local_minerals, key=lambda mineral: mineral.mineral_contents)
                     self.actions.append(worker.gather(target_mineral))
