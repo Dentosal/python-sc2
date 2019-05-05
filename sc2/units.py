@@ -136,21 +136,18 @@ class Units(list):
     def closest_distance_to(self, position: Union[Unit, Point2, Point3]) -> Union[int, float]:
         """ Returns the distance between the closest unit from this group to the target unit """
         assert self, "Units object is empty"
-        if isinstance(position, Unit):
-            position = position.position
+        position = position.position
         return position.distance_to_closest(u.position for u in self)
 
     def furthest_distance_to(self, position: Union[Unit, Point2, Point3]) -> Union[int, float]:
         """ Returns the distance between the furthest unit from this group to the target unit """
         assert self, "Units object is empty"
-        if isinstance(position, Unit):
-            position = position.position
+        position = position.position
         return position.distance_to_furthest(u.position for u in self)
 
     def closest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
         assert self, "Units object is empty"
-        if isinstance(position, Unit):
-            position = position.position
+        position = position.position
         return position.closest(self)
 
     def furthest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
@@ -160,16 +157,12 @@ class Units(list):
         return position.furthest(self)
 
     def closer_than(self, distance: Union[int, float], position: Union[Unit, Point2, Point3]) -> "Units":
-        if isinstance(position, Unit):
-            position = position.position
-        distance_squared = distance ** 2
-        return self.filter(lambda unit: unit.position._distance_squared(position.to2) < distance_squared)
+        position = position.position
+        return self.filter(lambda unit: unit.distance_to(position.to2) < distance)
 
     def further_than(self, distance: Union[int, float], position: Union[Unit, Point2, Point3]) -> "Units":
-        if isinstance(position, Unit):
-            position = position.position
-        distance_squared = distance ** 2
-        return self.filter(lambda unit: unit.position._distance_squared(position.to2) > distance_squared)
+        position = position.position
+        return self.filter(lambda unit: unit.distance_to(position.to2) > distance)
 
     def subgroup(self, units):
         return Units(units)
@@ -183,7 +176,7 @@ class Units(list):
     def sorted_by_distance_to(self, position: Union[Unit, Point2], reverse: bool = False) -> "Units":
         """ This function should be a bit faster than using units.sorted(keyfn=lambda u: u.distance_to(position)) """
         position = position.position
-        return self.sorted(keyfn=lambda unit: unit.position._distance_squared(position), reverse=reverse)
+        return self.sorted(keyfn=lambda unit: unit.distance_to(position), reverse=reverse)
 
     def tags_in(self, other: Union[Set[int], List[int], Dict[int, Any]]) -> "Units":
         """ Filters all units that have their tags in the 'other' set/list/dict """
