@@ -109,7 +109,7 @@ class TestClass:
         assert bot.townhalls.random.position not in bot.enemy_start_locations
         assert bot.known_enemy_units == Units([])
         assert bot.known_enemy_structures == Units([])
-        bot._game_info.map_ramps = bot._game_info._find_ramps()
+        bot._game_info.map_ramps, bot._game_info.vision_blockers = bot._game_info._find_ramps_and_vision_blockers()
         assert bot.main_base_ramp  # Test if any ramp was found
         # TODO: Cache all expansion positions for a map and check if it is the same
         assert len(bot.expansion_locations) >= 12
