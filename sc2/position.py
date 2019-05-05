@@ -18,7 +18,6 @@ class Pointlike(tuple):
     def distance_to(self, target: Union["Unit", "Point2"]) -> float:
         """Calculate a single distance from a point or unit to another point or unit"""
         p = target.position
-        assert isinstance(p, Pointlike), f"p is not of type Pointlike"
         return math.hypot(self[0] - p[0], self[1] - p[1])
 
     def distance_to_point2(self, p: "Point2") -> Union[int, float]:
