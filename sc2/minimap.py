@@ -19,9 +19,11 @@ class Minimap:
         show_psi=True,
         show_minerals=True,
         show_geysers=True,
+        show_xelnaga=True,
         show_destructables=True,
         show_allies=True,
         show_enemies=True,
+        show_blips=True,
         show_visibility=False,
     ):
         self.game = game
@@ -32,21 +34,25 @@ class Minimap:
         self.show_psi = show_psi
         self.show_minerals = show_minerals
         self.show_geysers = show_geysers
+        self.show_xelnaga = show_xelnaga
         self.show_destructables = show_destructables
         self.show_allies = show_allies
         self.show_enemies = show_enemies
+        self.show_blips = show_blips
         self.show_visibility = show_visibility
 
         self.colors = {
             "ally_units": (0, 255, 0),
             "enemy_units": (0, 0, 255),
             "psi": (240, 240, 140),
-            "geysers": (130, 220, 170),
+            "creep": (73, 33, 63),
+            "geysers": (60, 160, 100),
             "minerals": (220, 180, 140),
             "destructables": (80, 100, 120),
             "ramp": (120, 100, 100),
             "upperramp": (160, 140, 140),
             "lowerramp": (100, 80, 80),
+            "xelnaga": (170, 200, 100),
         }
 
     @property_cache_forever
@@ -131,6 +137,26 @@ class Minimap:
                     -1,
                 )
 
+    def add_creep(self, map_data):
+        creep = map_data.copy()
+
+        for (y, x), v in np.ndenumerate(self.game.state.creep.data_numpy):
+            if v:
+                cv2.rectangle(
+                    map_data,
+                    (x * self.map_scale, y * self.map_scale),
+                    (
+                        x * self.map_scale + self.map_scale,
+                        y * self.map_scale + self.map_scale,
+                    ),
+                    self.colors["creep"],
+                    -1,
+                )
+
+        alpha = 0.8  # Transparency factor.
+
+        return cv2.addWeighted(map_data, alpha, creep, 1 - alpha, 0)
+
     def add_psi(self, map_data):
         psi = map_data.copy()
 
@@ -184,6 +210,29 @@ class Minimap:
                 ),
                 self.colors["geysers"],
                 -1,
+            )
+
+    def add_xelnaga(self, map_data):
+        for unit in self.game.state.watchtowers:
+            cv2.circle(
+                map_data,
+                (
+                    int(unit.position[0] * self.map_scale),
+                    int(unit.position[1] * self.map_scale),
+                ),
+                int(unit.radius * self.map_scale),
+                self.colors["xelnaga"],
+                -1,
+            )
+            cv2.circle(
+                map_data,
+                (
+                    int(unit.position[0] * self.map_scale),
+                    int(unit.position[1] * self.map_scale),
+                ),
+                int(22 * self.map_scale),
+                self.colors["xelnaga"],
+                1,
             )
 
     def add_destructables(self, map_data):
@@ -256,6 +305,59 @@ class Minimap:
                     -1,
                 )
 
+    def add_blips(self, map_data):
+        for unit in self.game.state.blips:
+            cv2.circle(
+                map_data,
+                (
+                    int(unit.position[0] * self.map_scale),
+                    int(unit.position[1] * self.map_scale),
+                ),
+                1,
+                self.colors["enemy_units"],
+                -1,
+            )
+            cv2.circle(
+                map_data,
+                (
+                    int(unit.position[0] * self.map_scale) - 1,
+                    int(unit.position[1] * self.map_scale) - 1,
+                ),
+                1,
+                self.colors["enemy_units"],
+                -1,
+            )
+            cv2.circle(
+                map_data,
+                (
+                    int(unit.position[0] * self.map_scale) + 1,
+                    int(unit.position[1] * self.map_scale) + 1,
+                ),
+                1,
+                self.colors["enemy_units"],
+                -1,
+            )
+            cv2.circle(
+                map_data,
+                (
+                    int(unit.position[0] * self.map_scale) + 1,
+                    int(unit.position[1] * self.map_scale) - 1,
+                ),
+                1,
+                self.colors["enemy_units"],
+                -1,
+            )
+            cv2.circle(
+                map_data,
+                (
+                    int(unit.position[0] * self.map_scale) - 1,
+                    int(unit.position[1] * self.map_scale) + 1,
+                ),
+                1,
+                self.colors["enemy_units"],
+                -1,
+            )
+
     def add_visibility(self, map_data):
         visibility = map_data.copy()
         # gets the min and max heigh of the map for a better contrast
@@ -265,8 +367,6 @@ class Minimap:
 
         for (y, x), v in np.ndenumerate(self.game.state.visibility.data_numpy):
             color = (v - v_min) * multiplier
-            if v != v_min and v != v_max:
-                print(v_max)
             cv2.rectangle(
                 map_data,
                 (x * self.map_scale, y * self.map_scale),
@@ -290,23 +390,25 @@ class Minimap:
         if self.show_ramps:
             self.add_ramps(map_data)
         if self.show_psi:
+            map_data = self.add_creep(map_data)
+        if self.show_psi:
             map_data = self.add_psi(map_data)
         if self.show_minerals:
             self.add_minerals(map_data)
         if self.show_geysers:
             self.add_geysers(map_data)
+        if self.show_xelnaga:
+            self.add_xelnaga(map_data)
         if self.show_destructables:
             self.add_destructables(map_data)
         if self.show_allies:
             self.add_allies(map_data)
         if self.show_enemies:
             self.add_enemies(map_data)
+        if self.show_blips:
+            self.add_blips(map_data)
         if self.show_visibility:
             map_data = self.add_visibility(map_data)
-
-        # neutral units self.observation.raw_data.units
-        # for unit in self.game.state.towers:
-        #   cv2.circle(map_data, (int(unit.position[0]*self.map_scale), int(unit.position[1]*self.map_scale)), int(unit.radius*self.map_scale), (0, 250, 250), -1)
 
         flipped = cv2.flip(map_data, 0)
         resized = flipped  # cv2.resize(flipped, dsize=None, fx=2, fy=2)
