@@ -148,7 +148,7 @@ class BotAI:
         # any resource in a group is closer than 6 to any resource of another group
 
         # Distance we group resources by
-        RESOURCE_SPREAD_THRESHOLD = 6
+        RESOURCE_SPREAD_THRESHOLD = 8.5
         minerals = self.state.mineral_field
         geysers = self.state.vespene_geyser
         all_resources = minerals | geysers
