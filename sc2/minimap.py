@@ -14,7 +14,7 @@ class Minimap:
         game,
         map_scale=3,
         show_heightmap=True,
-        show_ramps=True,  # note: this need show_heightmap
+        show_ramps=True,
         show_creep=True,
         show_psi=True,
         show_minerals=True,
@@ -22,7 +22,7 @@ class Minimap:
         show_destructables=True,
         show_allies=True,
         show_enemies=True,
-        show_visibility=True,
+        show_visibility=False,
     ):
         self.game = game
         self.map_scale = map_scale
@@ -36,6 +36,18 @@ class Minimap:
         self.show_allies = show_allies
         self.show_enemies = show_enemies
         self.show_visibility = show_visibility
+
+        self.colors = {
+            "ally_units": (0, 255, 0),
+            "enemy_units": (0, 0, 255),
+            "psi": (240, 240, 140),
+            "geysers": (130, 220, 170),
+            "minerals": (220, 180, 140),
+            "destructables": (80, 100, 120),
+            "ramp": (120, 100, 100),
+            "upperramp": (160, 140, 140),
+            "lowerramp": (100, 80, 80),
+        }
 
     @property_cache_forever
     def empty_map(self):
@@ -71,33 +83,53 @@ class Minimap:
                 (color, color, color),
                 -1,
             )
-        if self.show_ramps:
-            for r in self.game.game_info.map_ramps:
-                for p in r.points:
-                    cv2.circle(
-                        map_data,
-                        (int(p[0] * self.map_scale), int(p[1] * self.map_scale)),
-                        2,
-                        (120, 100, 100),
-                        -1,
-                    )
-                for p in r.upper:
-                    cv2.circle(
-                        map_data,
-                        (int(p[0] * self.map_scale), int(p[1] * self.map_scale)),
-                        1,
-                        (160, 140, 140),
-                        -1,
-                    )
-                for p in r.lower:
-                    cv2.circle(
-                        map_data,
-                        (int(p[0] * self.map_scale), int(p[1] * self.map_scale)),
-                        1,
-                        (100, 80, 80),
-                        -1,
-                    )
         return map_data
+
+    def add_ramps(self, map_data):
+        for r in self.game.game_info.map_ramps:
+            ramp_point_radius = 0.5
+            for p in r.points:
+                cv2.rectangle(
+                    map_data,
+                    (
+                        (int(p[0] - ramp_point_radius) * self.map_scale),
+                        int((p[1] - ramp_point_radius) * self.map_scale),
+                    ),
+                    (
+                        (int(p[0] + ramp_point_radius) * self.map_scale),
+                        int((p[1] + ramp_point_radius) * self.map_scale),
+                    ),
+                    self.colors["ramp"],
+                    -1,
+                )
+            for p in r.upper:
+                cv2.rectangle(
+                    map_data,
+                    (
+                        (int(p[0] - ramp_point_radius) * self.map_scale),
+                        int((p[1] - ramp_point_radius) * self.map_scale),
+                    ),
+                    (
+                        (int(p[0] + ramp_point_radius) * self.map_scale),
+                        int((p[1] + ramp_point_radius) * self.map_scale),
+                    ),
+                    self.colors["upperramp"],
+                    -1,
+                )
+            for p in r.lower:
+                cv2.rectangle(
+                    map_data,
+                    (
+                        (int(p[0] - ramp_point_radius) * self.map_scale),
+                        int((p[1] - ramp_point_radius) * self.map_scale),
+                    ),
+                    (
+                        (int(p[0] + ramp_point_radius) * self.map_scale),
+                        int((p[1] + ramp_point_radius) * self.map_scale),
+                    ),
+                    self.colors["lowerramp"],
+                    -1,
+                )
 
     def add_psi(self, map_data):
         psi = map_data.copy()
@@ -112,7 +144,7 @@ class Minimap:
                     int(psi_center[1] * self.map_scale),
                 ),
                 int(psi_radius * self.map_scale),
-                (240, 240, 140),
+                self.colors["psi"],
                 -1,
             )
 
@@ -133,7 +165,7 @@ class Minimap:
                     int((mine_pos[0] + 0.75) * self.map_scale),
                     int((mine_pos[1] + 0.25) * self.map_scale),
                 ),
-                (220, 180, 140),
+                self.colors["minerals"],
                 -1,
             )
 
@@ -143,14 +175,14 @@ class Minimap:
             cv2.rectangle(
                 map_data,
                 (
-                    int((g_pos[0] - g.radius / 2) * self.map_scale),
-                    int((g_pos[1] - g.radius / 2) * self.map_scale),
+                    int((g_pos[0] - g.radius) * self.map_scale),
+                    int((g_pos[1] - g.radius) * self.map_scale),
                 ),
                 (
-                    int((g_pos[0] + g.radius / 2) * self.map_scale),
-                    int((g_pos[1] + g.radius / 2) * self.map_scale),
+                    int((g_pos[0] + g.radius) * self.map_scale),
+                    int((g_pos[1] + g.radius) * self.map_scale),
                 ),
-                (130, 220, 170),
+                self.colors["geysers"],
                 -1,
             )
 
@@ -164,7 +196,7 @@ class Minimap:
                     int(unit.position[1] * self.map_scale),
                 ),
                 int(unit.radius * self.map_scale),
-                (80, 100, 120),
+                self.colors["destructables"],
                 -1,
             )
 
@@ -174,14 +206,14 @@ class Minimap:
                 cv2.rectangle(
                     map_data,
                     (
-                        int((unit.position[0] - unit.radius / 2) * self.map_scale),
-                        int((unit.position[1] - unit.radius / 2) * self.map_scale),
+                        int((unit.position[0] - unit.radius) * self.map_scale),
+                        int((unit.position[1] - unit.radius) * self.map_scale),
                     ),
                     (
-                        int((unit.position[0] + unit.radius / 2) * self.map_scale),
-                        int((unit.position[1] + unit.radius / 2) * self.map_scale),
+                        int((unit.position[0] + unit.radius) * self.map_scale),
+                        int((unit.position[1] + unit.radius) * self.map_scale),
                     ),
-                    (0, 255, 0),
+                    self.colors["ally_units"],
                     -1,
                 )
             else:
@@ -192,7 +224,7 @@ class Minimap:
                         int(unit.position[1] * self.map_scale),
                     ),
                     int(unit.radius * self.map_scale),
-                    (0, 255, 0),
+                    self.colors["ally_units"],
                     -1,
                 )
 
@@ -202,14 +234,14 @@ class Minimap:
                 cv2.rectangle(
                     map_data,
                     (
-                        int((unit.position[0] - unit.radius / 2) * self.map_scale),
-                        int((unit.position[1] - unit.radius / 2) * self.map_scale),
+                        int((unit.position[0] - unit.radius) * self.map_scale),
+                        int((unit.position[1] - unit.radius) * self.map_scale),
                     ),
                     (
-                        int((unit.position[0] + unit.radius / 2) * self.map_scale),
-                        int((unit.position[1] + unit.radius / 2) * self.map_scale),
+                        int((unit.position[0] + unit.radius) * self.map_scale),
+                        int((unit.position[1] + unit.radius) * self.map_scale),
                     ),
-                    (0, 0, 255),
+                    self.colors["enemy_units"],
                     -1,
                 )
             else:
@@ -255,6 +287,8 @@ class Minimap:
             map_data = np.copy(self.heightmap)
         else:
             map_data = np.copy(self.empty_map)
+        if self.show_ramps:
+            self.add_ramps(map_data)
         if self.show_psi:
             map_data = self.add_psi(map_data)
         if self.show_minerals:
@@ -274,38 +308,6 @@ class Minimap:
         # for unit in self.game.state.towers:
         #   cv2.circle(map_data, (int(unit.position[0]*self.map_scale), int(unit.position[1]*self.map_scale)), int(unit.radius*self.map_scale), (0, 250, 250), -1)
 
-        for unit in self.game.known_enemy_units:
-            if unit.is_structure:
-                cv2.rectangle(
-                    map_data,
-                    (
-                        int(unit.position[0] * self.map_scale) - self.map_scale,
-                        int(unit.position[1] * self.map_scale) - self.map_scale,
-                    ),
-                    (
-                        int(
-                            unit.position[0] * self.map_scale
-                            + unit.radius * self.map_scale
-                        ),
-                        int(
-                            unit.position[1] * self.map_scale
-                            + unit.radius * self.map_scale
-                        ),
-                    ),
-                    (0, 0, 255),
-                    -1,
-                )
-            else:
-                cv2.circle(
-                    map_data,
-                    (
-                        int(unit.position[0] * self.map_scale),
-                        int(unit.position[1] * self.map_scale),
-                    ),
-                    int(unit.radius * self.map_scale),
-                    (0, 0, 255),
-                    -1,
-                )
         flipped = cv2.flip(map_data, 0)
         resized = flipped  # cv2.resize(flipped, dsize=None, fx=2, fy=2)
         cv2.imshow("Intel", resized)
