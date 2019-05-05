@@ -8,8 +8,8 @@ from .pixel_map import PixelMap
 from .position import Point2, Point3
 from .power_source import PsionicMatrix
 from .score import ScoreDetails
+from .unit import Unit
 from .units import Units
-from .cache import property_cache_once_per_frame_state
 
 
 class Blip:
@@ -125,42 +125,52 @@ class GameState:
         # https://github.com/Blizzard/s2client-proto/blob/33f0ecf615aa06ca845ffe4739ef3133f37265a9/s2clientprotocol/score.proto#L31
         self.score: ScoreDetails = ScoreDetails(self.observation.score)
         self.abilities = self.observation.abilities  # abilities of selected units
-        # Fix for enemy units detected by my sensor tower, as blips have less unit information than normal visible units
-        self._minerals, self._geysers, self._destructables = ([] for _ in range(3))
-        self._blipUnits, self._enemy, self._own, self._watchtowers = ([] for _ in range(4))
+
+        self._blipUnits = []
+        self.own_units: Units = Units([])
+        self.enemy_units: Units = Units([])
+        self.mineral_field: Units = Units([])
+        self.vespene_geyser: Units = Units([])
+        self.resources: Units = Units([])
+        self.destructables: Units = Units([])
+        self.watchtowers: Units = Units([])
+        self.units: Units = Units([])
 
         for unit in self.observation_raw.units:
+            unit_obj = Unit(unit)
             if unit.is_blip:
-                self._blipUnits.append(unit)
+                self._blipUnits.append(unit_obj)
             else:
+                self.units.append(unit_obj)
                 alliance = unit.alliance
                 # Alliance.Neutral.value = 3
                 if alliance == 3:
                     unit_type = unit.unit_type
                     # XELNAGATOWER = 149
                     if unit_type == 149:
-                        self._watchtowers.append(unit)
+                        self.watchtowers.append(unit_obj)
                     # mineral field enums
                     elif unit_type in mineral_ids:
-                        self._minerals.append(unit)
+                        self.mineral_field.append(unit_obj)
+                        self.resources.append(unit_obj)
                     # geyser enums
                     elif unit_type in geyser_ids:
-                        self._geysers.append(unit)
+                        self.vespene_geyser.append(unit_obj)
+                        self.resources.append(unit_obj)
                     # all destructable rocks
                     else:
-                        self._destructables.append(unit)
+                        self.destructables.append(unit_obj)
                 # Alliance.Self.value = 1
                 elif alliance == 1:
-                    self._own.append(unit)
+                    self.own_units.append(unit_obj)
                 # Alliance.Enemy.value = 4
                 elif alliance == 4:
-                    self._enemy.append(unit)
-
+                    self.enemy_units.append(unit_obj)
         self.upgrades: Set[UpgradeId] = {UpgradeId(upgrade) for upgrade in self.observation_raw.player.upgrade_ids}
 
         # Set of unit tags that died this step
         self.dead_units: Set[int] = {dead_unit_tag for dead_unit_tag in self.observation_raw.event.dead_units}
-
+        # Set of enemy units detected by own sensor tower, as blips have less unit information than normal visible units
         self.blips: Set[Blip] = {Blip(unit) for unit in self._blipUnits}
         # self.visibility[point]: 0=Hidden, 1=Fogged, 2=Visible
         self.visibility: PixelMap = PixelMap(self.observation_raw.map_state.visibility, mirrored=True)
@@ -175,35 +185,3 @@ class GameState:
                 positions = effect.positions
                 # dodge the ravager biles
         """
-
-    @property_cache_once_per_frame_state
-    def own_units(self) -> Units:
-        return Units.from_proto(self._own)
-
-    @property_cache_once_per_frame_state
-    def enemy_units(self) -> Units:
-        return Units.from_proto(self._enemy)
-
-    @property_cache_once_per_frame_state
-    def mineral_field(self) -> Units:
-        return Units.from_proto(self._minerals)
-
-    @property_cache_once_per_frame_state
-    def vespene_geyser(self) -> Units:
-        return Units.from_proto(self._geysers)
-
-    @property_cache_once_per_frame_state
-    def resources(self) -> Units:
-        return Units.from_proto(self._minerals + self._geysers)
-
-    @property_cache_once_per_frame_state
-    def destructables(self) -> Units:
-        return Units.from_proto(self._destructables)
-
-    @property_cache_once_per_frame_state
-    def watchtowers(self) -> Units:
-        return Units.from_proto(self._watchtowers)
-
-    @property_cache_once_per_frame_state
-    def units(self) -> Units:
-        return Units.from_proto(self._minerals + self._geysers + self._destructables + self._enemy + self._own + self._watchtowers)

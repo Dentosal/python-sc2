@@ -405,33 +405,35 @@ class Unit(PassengerUnit):
     def is_carrying_minerals(self) -> bool:
         """ Checks if a worker or MULE is carrying (gold-)minerals. """
         return any(
-            buff in self.buffs for buff in {BuffId.CARRYMINERALFIELDMINERALS, BuffId.CARRYHIGHYIELDMINERALFIELDMINERALS}
+            buff in {BuffId.CARRYMINERALFIELDMINERALS, BuffId.CARRYHIGHYIELDMINERALFIELDMINERALS} for buff in self.buffs
         )
 
     @property_immutable_cache
     def is_carrying_vespene(self) -> bool:
         """ Checks if a worker is carrying vespene gas. """
         return any(
-            buff in self.buffs
-            for buff in {
+            buff
+            in {
                 BuffId.CARRYHARVESTABLEVESPENEGEYSERGAS,
                 BuffId.CARRYHARVESTABLEVESPENEGEYSERGASPROTOSS,
                 BuffId.CARRYHARVESTABLEVESPENEGEYSERGASZERG,
             }
+            for buff in self.buffs
         )
 
     @property_immutable_cache
     def is_carrying_resource(self) -> bool:
         """ Checks if a worker is carrying a resource. """
         return any(
-            buff in self.buffs
-            for buff in {
+            buff
+            in {
                 BuffId.CARRYMINERALFIELDMINERALS,
                 BuffId.CARRYHIGHYIELDMINERALFIELDMINERALS,
                 BuffId.CARRYHARVESTABLEVESPENEGEYSERGAS,
                 BuffId.CARRYHARVESTABLEVESPENEGEYSERGASPROTOSS,
                 BuffId.CARRYHARVESTABLEVESPENEGEYSERGASZERG,
             }
+            for buff in self.buffs
         )
 
     @property_immutable_cache
