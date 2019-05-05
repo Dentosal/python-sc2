@@ -543,7 +543,6 @@ class TestClass:
         assert pos1.position == pos1
         dist = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
         assert pos1.distance_to(pos2) == dist
-        assert pos1.old_distance_to(pos2) == dist
         assert pos1.distance_to_point2(pos2) == dist
         assert pos1._distance_squared(pos2) ** 0.5 == dist
 

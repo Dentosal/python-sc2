@@ -137,10 +137,10 @@ class GameState:
         self.units: Units = Units([])
 
         for unit in self.observation_raw.units:
-            unit_obj = Unit(unit)
             if unit.is_blip:
-                self._blipUnits.append(unit_obj)
+                self._blipUnits.append(unit)
             else:
+                unit_obj = Unit(unit)
                 self.units.append(unit_obj)
                 alliance = unit.alliance
                 # Alliance.Neutral.value = 3
