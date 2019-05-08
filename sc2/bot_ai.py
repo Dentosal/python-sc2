@@ -133,10 +133,17 @@ class BotAI:
         # The reason for len(ramp.upper) in {2, 5} is:        
         # ParaSite map has 5 upper points, and most other maps have 2 upper points at the main ramp.
         # The map Acolyte has 4 upper points at the wrong ramp (which is closest to the start position).
-        self.cached_main_base_ramp = min(
-            (ramp for ramp in self.game_info.map_ramps if len(ramp.upper) in {2, 5}),
-            key=lambda r: self.start_location.distance_to(r.top_center),
-        )
+        try:
+            self.cached_main_base_ramp = min(
+                (ramp for ramp in self.game_info.map_ramps if len(ramp.upper) in {2, 5}),
+                key=lambda r: self.start_location.distance_to(r.top_center),
+            )
+        except ValueError:
+            # Hardcoded hotfix for Honorgrounds LE map, as that map has a large main base ramp with inbase natural
+            self.cached_main_base_ramp = min(
+                (ramp for ramp in self.game_info.map_ramps if len(ramp.upper) in {4, 9}),
+                key=lambda r: self.start_location.distance_to(r.top_center),
+            )
         return self.cached_main_base_ramp
 
     @property_cache_forever

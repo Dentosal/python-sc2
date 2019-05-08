@@ -43,7 +43,6 @@ class RampWallBot(sc2.BotAI):
         # Uncomment the following if you want to build 3 supplydepots in the wall instead of a barracks in the middle + 2 depots in the corner
         # depot_placement_positions = self.main_base_ramp.corner_depots | {self.main_base_ramp.depot_in_middle}
 
-        barracks_placement_position = None
         barracks_placement_position = self.main_base_ramp.barracks_correct_placement
         # If you prefer to have the barracks in the middle without room for addons, use the following instead
         # barracks_placement_position = self.main_base_ramp.barracks_in_middle
@@ -51,22 +50,29 @@ class RampWallBot(sc2.BotAI):
         depots = self.units(SUPPLYDEPOT) | self.units(SUPPLYDEPOTLOWERED)
 
         # Draw ramp points
-        # def terrain_to_z_height(h):
-        #     return round(16 * h / 255, 2)
+        def terrain_to_z_height(h):
+            return round(16 * h / 255, 2)
 
-        # for ramp in self.game_info.map_ramps:
-        #     for p in ramp.points:
-        #         h = self.get_terrain_height(p)
-        #         h2 = terrain_to_z_height(h)
-        #         pos = Point3((p.x, p.y, h2))
-        #         p0 = Point3((pos.x - 0.25, pos.y - 0.25, pos.z))
-        #         p1 = Point3((pos.x + 0.25, pos.y + 0.25, pos.z - 0.5))
-        #         print(f"drawing {p0} to {p1}")
-        #         self._client.debug_box_out(p0, p1, color=Point3((255, 0, 0)))
-        #
-        # await self._client.send_debug()
+        for ramp in self.game_info.map_ramps:
+            for p in ramp.points:
+                h = self.get_terrain_height(p)
+                h2 = terrain_to_z_height(h)
+                pos = Point3((p.x, p.y, h2))
+                p0 = Point3((pos.x - 0.25, pos.y - 0.25, pos.z))
+                p1 = Point3((pos.x + 0.25, pos.y + 0.25, pos.z - 0.5))
+                # print(f"Drawing {p0} to {p1}")
+                color=Point3((255, 0, 0))
+                if p in ramp.upper:
+                    color = Point3((0, 255, 0))
+                if p in ramp.upper2_for_ramp_wall:
+                    color = Point3((0, 255, 255))
+                if p in ramp.lower:
+                    color = Point3((0, 0, 255))
+                self._client.debug_box_out(p0, p1, color=color)
 
-        # Filter locations close to finished supply depots
+        await self._client.send_debug()
+
+        # # Filter locations close to finished supply depots
         if depots:
             depot_placement_positions = {d for d in depot_placement_positions if depots.closest_distance_to(d) > 1}
 
@@ -82,7 +88,7 @@ class RampWallBot(sc2.BotAI):
                 await self.do(w.build(SUPPLYDEPOT, target_depot_location))
 
         # Build barracks
-        if depots.ready.exists and self.can_afford(BARRACKS) and not self.already_pending(BARRACKS):
+        if depots.ready and self.can_afford(BARRACKS) and not self.already_pending(BARRACKS):
             if self.units(BARRACKS).amount + self.already_pending(BARRACKS) > 0:
                 return
             ws = self.workers.gathering
@@ -108,6 +114,7 @@ def main():
             "DarknessSanctuaryLE",
             "ParaSiteLE",  # Has 5 upper points at the main ramp
             "AcolyteLE",  # Has 4 upper points at the ramp to the in-base natural and 2 upper points at the small ramp
+            "HonorgroundsLE", # Has 4 or 9 upper points at the large main base ramp
         ]
     )
     sc2.run_game(

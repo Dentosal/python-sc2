@@ -92,8 +92,10 @@ class Ramp:
         return pos
 
     @property_immutable_cache
-    def barracks_in_middle(self) -> Point2:
+    def barracks_in_middle(self) -> Optional[Point2]:
         """ Barracks position in the middle of the 2 depots """
+        if len(self.upper) not in {2, 5}:
+            return None
         if len(self.upper2_for_ramp_wall) == 2:
             points = self.upper2_for_ramp_wall
             p1 = points.pop().offset((self.x_offset, self.y_offset))
@@ -105,14 +107,18 @@ class Ramp:
         raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
 
     @property_immutable_cache
-    def depot_in_middle(self) -> Point2:
+    def depot_in_middle(self) -> Optional[Point2]:
         """ Depot in the middle of the 3 depots """
         if len(self.upper2_for_ramp_wall) == 2:
             points = self.upper2_for_ramp_wall
-            p1 = points.pop().offset((self.x_offset, self.y_offset))  # still an error with pixelmap?
+            p1 = points.pop().offset((self.x_offset, self.y_offset))
             p2 = points.pop().offset((self.x_offset, self.y_offset))
             # Offset from top point to depot center is (1.5, 0.5)
-            intersects = p1.circle_intersection(p2, 2.5 ** 0.5)
+            try:
+                intersects = p1.circle_intersection(p2, 2.5 ** 0.5)
+            except AssertionError:
+                # Returns None when no placement was found, this is the case on the map Honorgrounds LE with an exceptionally large main base ramp
+                return None
             anyLowerPoint = next(iter(self.lower))
             return max(intersects, key=lambda p: p.distance_to_point2(anyLowerPoint))
         raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
@@ -120,12 +126,16 @@ class Ramp:
     @property_mutable_cache
     def corner_depots(self) -> Set[Point2]:
         """ Finds the 2 depot positions on the outside """
+        if not self.upper2_for_ramp_wall:
+            return set()
         if len(self.upper2_for_ramp_wall) == 2:
             points = self.upper2_for_ramp_wall
-            p1 = points.pop().offset((self.x_offset, self.y_offset))  # still an error with pixelmap?
+            p1 = points.pop().offset((self.x_offset, self.y_offset))
             p2 = points.pop().offset((self.x_offset, self.y_offset))
             center = p1.towards(p2, p1.distance_to_point2(p2) / 2)
             depotPosition = self.depot_in_middle
+            if depotPosition is None:
+                return set()
             # Offset from middle depot to corner depots is (2, 1)
             intersects = center.circle_intersection(depotPosition, 5 ** 0.5)
             return intersects
@@ -140,8 +150,10 @@ class Ramp:
         raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
 
     @property_immutable_cache
-    def barracks_correct_placement(self) -> Point2:
+    def barracks_correct_placement(self) -> Optional[Point2]:
         """ Corrected placement so that an addon can fit """
+        if self.barracks_in_middle is None:
+            return None
         if len(self.upper2_for_ramp_wall) == 2:
             if self.barracks_can_fit_addon:
                 return self.barracks_in_middle
