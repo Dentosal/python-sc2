@@ -1,5 +1,6 @@
 from .position import Point2
 
+
 class PowerSource:
     @classmethod
     def from_proto(cls, proto):
@@ -13,10 +14,11 @@ class PowerSource:
         self.unit_tag = unit_tag
 
     def covers(self, position):
-        return self.position._distance_squared(position) <= self.radius ** 2
+        return self.position.distance_to(position) <= self.radius
 
     def __repr__(self):
         return f"PowerSource({self.position}, {self.radius})"
+
 
 class PsionicMatrix:
     @classmethod

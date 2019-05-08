@@ -1,6 +1,8 @@
 from collections import deque
 from typing import Any, Deque, Dict, FrozenSet, Generator, List, Optional, Sequence, Set, Tuple, Union
 
+import numpy as np
+
 from .cache import property_immutable_cache, property_mutable_cache
 from .pixel_map import PixelMap
 from .player import Player
@@ -57,7 +59,7 @@ class Ramp:
             return set()  # HACK: makes this work for now
             # FIXME: please do
 
-        upper2 = sorted(list(self.upper), key=lambda x: x._distance_squared(self.bottom_center), reverse=True)
+        upper2 = sorted(list(self.upper), key=lambda x: x.distance_to_point2(self.bottom_center), reverse=True)
         while len(upper2) > 2:
             upper2.pop()
         return set(upper2)
@@ -99,7 +101,7 @@ class Ramp:
             # Offset from top point to barracks center is (2, 1)
             intersects = p1.circle_intersection(p2, 5 ** 0.5)
             anyLowerPoint = next(iter(self.lower))
-            return max(intersects, key=lambda p: p._distance_squared(anyLowerPoint))
+            return max(intersects, key=lambda p: p.distance_to_point2(anyLowerPoint))
         raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
 
     @property_immutable_cache
@@ -112,7 +114,7 @@ class Ramp:
             # Offset from top point to depot center is (1.5, 0.5)
             intersects = p1.circle_intersection(p2, 2.5 ** 0.5)
             anyLowerPoint = next(iter(self.lower))
-            return max(intersects, key=lambda p: p._distance_squared(anyLowerPoint))
+            return max(intersects, key=lambda p: p.distance_to_point2(anyLowerPoint))
         raise Exception("Not implemented. Trying to access a ramp that has a wrong amount of upper points.")
 
     @property_mutable_cache
@@ -122,7 +124,7 @@ class Ramp:
             points = self.upper2_for_ramp_wall
             p1 = points.pop().offset((self.x_offset, self.y_offset))  # still an error with pixelmap?
             p2 = points.pop().offset((self.x_offset, self.y_offset))
-            center = p1.towards(p2, p1.distance_to(p2) / 2)
+            center = p1.towards(p2, p1.distance_to_point2(p2) / 2)
             depotPosition = self.depot_in_middle
             # Offset from middle depot to corner depots is (2, 1)
             intersects = center.circle_intersection(depotPosition, 5 ** 0.5)
@@ -168,22 +170,38 @@ class GameInfo:
         self.playable_area = Rect.from_proto(self._proto.start_raw.playable_area)
         self.map_center = self.playable_area.center
         self.map_ramps: List[Ramp] = None  # Filled later by BotAI._prepare_first_step
+        self.vision_blockers: Set[Point2] = None  # Filled later by BotAI._prepare_first_step
         self.player_races: Dict[int, "Race"] = {
             p.player_id: p.race_actual or p.race_requested for p in self._proto.player_info
         }
         self.start_locations: List[Point2] = [Point2.from_proto(sl) for sl in self._proto.start_raw.start_locations]
         self.player_start_location: Point2 = None  # Filled later by BotAI._prepare_first_step
 
-    def _find_ramps(self) -> List[Ramp]:
-        """Calculate (self.pathing_grid - self.placement_grid) (for sets) and then find ramps by comparing heights."""
+    def _find_ramps_and_vision_blockers(self) -> Tuple[List[Ramp], Set[Point2]]:
+        """ Calculate points that are pathable but not placeable.
+        Then devide them into ramp points if not all points around the points are equal height
+        and into vision blockers if they are. """
+
+        def equal_height_around(tile):
+            # mask to slice array 1 around tile
+            sliced = self.terrain_height.data_numpy[tile[1] - 1 : tile[1] + 2, tile[0] - 1 : tile[0] + 2]
+            return len(np.unique(sliced)) == 1
+
         map_area = self.playable_area
-        rampPoints = (
-            Point2((x, y))
-            for x in range(map_area.x, map_area.x + map_area.width)
-            for y in range(map_area.y, map_area.y + map_area.height)
-            if self.placement_grid[(x, y)] == 0 and self.pathing_grid[(x, y)] == 1
-        )
-        return [Ramp(group, self) for group in self._find_groups(rampPoints)]
+        # all points in the playable area that are pathable but not placable
+        points = [
+            Point2((b, a))
+            for (a, b), value in np.ndenumerate(self.pathing_grid.data_numpy)
+            if value == 1
+            and map_area.x <= a < map_area.x + map_area.width
+            and map_area.y <= b < map_area.y + map_area.height
+            and self.placement_grid[(b, a)] == 0
+        ]
+        # devide points into ramp points and vision blockers
+        rampPoints = [point for point in points if not equal_height_around(point)]
+        visionBlockers = set(point for point in points if equal_height_around(point))
+        ramps = [Ramp(group, self) for group in self._find_groups(rampPoints)]
+        return ramps, visionBlockers
 
     def _find_groups(self, points: Set[Point2], minimum_points_per_group: int = 8):
         """
@@ -224,7 +242,7 @@ class GameInfo:
                     if picture[py][px] != NOT_COLORED_YET:
                         continue
                     point: Point2 = Point2((px, py))
-                    remaining.remove(point)
+                    remaining.discard(point)
                     paint(point)
                     queue.append(point)
                     currentGroup.add(point)

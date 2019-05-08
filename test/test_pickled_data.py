@@ -53,7 +53,7 @@ def get_map_specific_bots() -> Iterable[BotAI]:
         game_state = GameState(raw_observation)
         UnitGameData._game_data = game_data
         bot._prepare_start(client=None, player_id=1, game_info=game_info, game_data=game_data)
-        bot._prepare_step(state=game_state)
+        bot._prepare_step(state=game_state, proto_game_info=raw_game_info)
 
         yield bot
 
@@ -104,19 +104,19 @@ class TestClass:
         # Test bot_ai functions
         assert bot.time == 0
         assert bot.time_formatted in {"0:00", "00:00"}
-        assert bot.nuke_detected is False
-        assert bot.nydus_detected is False
         assert bot.start_location is None  # Is populated by main.py
         bot._game_info.player_start_location = bot.townhalls.random.position
         assert bot.townhalls.random.position not in bot.enemy_start_locations
         assert bot.known_enemy_units == Units([])
         assert bot.known_enemy_structures == Units([])
-        bot._game_info.map_ramps = bot._game_info._find_ramps()
+        bot._game_info.map_ramps, bot._game_info.vision_blockers = bot._game_info._find_ramps_and_vision_blockers()
         assert bot.main_base_ramp  # Test if any ramp was found
         # TODO: Cache all expansion positions for a map and check if it is the same
         assert len(bot.expansion_locations) >= 12
         # On N player maps, it is expected that there are N*X bases because of symmetry, at least for 1vs1 maps
-        assert len(bot.expansion_locations) % (len(bot.enemy_start_locations) + 1) == 0, f"{set(bot.expansion_locations.keys())}"
+        assert (
+            len(bot.expansion_locations) % (len(bot.enemy_start_locations) + 1) == 0
+        ), f"{set(bot.expansion_locations.keys())}"
         # Test if bot start location is in expansion locations
         assert bot.townhalls.random.position in set(
             bot.expansion_locations.keys()
@@ -530,27 +530,26 @@ class TestClass:
         assert townhalls.prefer_idle
 
     @given(
-        st.integers(min_value=-1e10, max_value=1e10),
-        st.integers(min_value=-1e10, max_value=1e10),
-        st.integers(min_value=-1e10, max_value=1e10),
-        st.integers(min_value=-1e10, max_value=1e10),
-        st.integers(min_value=-1e10, max_value=1e10),
-        st.integers(min_value=-1e10, max_value=1e10),
+        st.integers(min_value=-1e5, max_value=1e5),
+        st.integers(min_value=-1e5, max_value=1e5),
+        st.integers(min_value=-1e5, max_value=1e5),
+        st.integers(min_value=-1e5, max_value=1e5),
+        st.integers(min_value=-1e5, max_value=1e5),
+        st.integers(min_value=-1e5, max_value=1e5),
     )
     @settings(max_examples=500)
     def test_position_pointlike(self, bot: BotAI, x1, y1, x2, y2, x3, y3):
         pos1 = Point2((x1, y1))
         pos2 = Point2((x2, y2))
         pos3 = Point2((x3, y3))
+        epsilon = 1e-3
         assert pos1.position == pos1
         dist = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
-        assert pos1.distance_to(pos2) == dist
-        assert pos1.old_distance_to(pos2) == dist
-        assert pos1.distance_to_point2(pos2) == dist
-        assert pos1._distance_squared(pos2) ** 0.5 == dist
+        assert abs(pos1.distance_to(pos2) - dist) <= epsilon
+        assert abs(pos1.distance_to_point2(pos2) - dist) <= epsilon
+        assert abs(pos1._distance_squared(pos2) ** 0.5 - dist) <= epsilon
 
-        epsilon = 1e-1
-        if epsilon < dist < 1e10:
+        if epsilon < dist < 1e5:
             assert pos1.is_closer_than(dist + epsilon, pos2)
             assert pos1.is_further_than(dist - epsilon, pos2)
 
@@ -601,10 +600,10 @@ class TestClass:
         assert isinstance(hash(pos3), int)
 
     @given(
-        st.integers(min_value=-1e10, max_value=1e10),
-        st.integers(min_value=-1e10, max_value=1e10),
-        st.integers(min_value=-1e10, max_value=1e10),
-        st.integers(min_value=-1e10, max_value=1e10),
+        st.integers(min_value=-1e5, max_value=1e5),
+        st.integers(min_value=-1e5, max_value=1e5),
+        st.integers(min_value=-1e5, max_value=1e5),
+        st.integers(min_value=-1e5, max_value=1e5),
     )
     @settings(max_examples=500)
     def test_position_point2(self, bot: BotAI, x1, y1, x2, y2):
@@ -643,9 +642,9 @@ class TestClass:
         assert pos1.unit_axes_towards(pos2) == pos1.direction_vector(pos2)
 
     @given(
-        st.integers(min_value=-1e10, max_value=1e10),
-        st.integers(min_value=-1e10, max_value=1e10),
-        st.integers(min_value=-1e10, max_value=1e10),
+        st.integers(min_value=-1e5, max_value=1e5),
+        st.integers(min_value=-1e5, max_value=1e5),
+        st.integers(min_value=-1e5, max_value=1e5),
     )
     @settings(max_examples=10)
     def test_position_point2(self, bot: BotAI, x1, y1, z1):
@@ -653,7 +652,7 @@ class TestClass:
         assert pos1.z == z1
         assert pos1.to3 == pos1
 
-    @given(st.integers(min_value=-1e10, max_value=1e10), st.integers(min_value=-1e10, max_value=1e10))
+    @given(st.integers(min_value=-1e5, max_value=1e5), st.integers(min_value=-1e5, max_value=1e5))
     @settings(max_examples=20)
     def test_position_size(self, bot: BotAI, w, h):
         size = Size((w, h))
@@ -661,10 +660,10 @@ class TestClass:
         assert size.height == h
 
     @given(
-        st.integers(min_value=-1e10, max_value=1e10),
-        st.integers(min_value=-1e10, max_value=1e10),
-        st.integers(min_value=-1e10, max_value=1e10),
-        st.integers(min_value=-1e10, max_value=1e10),
+        st.integers(min_value=-1e5, max_value=1e5),
+        st.integers(min_value=-1e5, max_value=1e5),
+        st.integers(min_value=-1e5, max_value=1e5),
+        st.integers(min_value=-1e5, max_value=1e5),
     )
     @settings(max_examples=20)
     def test_position_rect(self, bot: BotAI, x, y, w, h):

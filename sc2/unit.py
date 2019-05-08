@@ -316,7 +316,9 @@ class Unit(PassengerUnit):
 
     @property_immutable_cache
     def is_visible(self) -> bool:
-        """ Checks if the unit is visible for the bot. """
+        """ Checks if the unit is visible for the bot.
+        NOTE: This means the bot has vision of the position of the unit!
+        It does not give any information about the cloak status of the unit."""
         return self._proto.display_type == DisplayType.Visible.value
 
     @property_immutable_cache
@@ -390,6 +392,11 @@ class Unit(PassengerUnit):
         }
 
     @property_immutable_cache
+    def is_revealed(self) -> bool:
+        """ Checks if the unit is revealed. """
+        return self._proto.cloak is CloakState.CloakedDetected.value
+
+    @property_immutable_cache
     def buffs(self) -> Set:
         """ Returns the set of current buffs the unit has. """
         return {BuffId(buff_id) for buff_id in self._proto.buff_ids}
@@ -397,35 +404,27 @@ class Unit(PassengerUnit):
     @property_immutable_cache
     def is_carrying_minerals(self) -> bool:
         """ Checks if a worker or MULE is carrying (gold-)minerals. """
-        return any(
-            buff in self.buffs for buff in {BuffId.CARRYMINERALFIELDMINERALS, BuffId.CARRYHIGHYIELDMINERALFIELDMINERALS}
-        )
+        return not {BuffId.CARRYMINERALFIELDMINERALS, BuffId.CARRYHIGHYIELDMINERALFIELDMINERALS}.isdisjoint(self.buffs)
 
     @property_immutable_cache
     def is_carrying_vespene(self) -> bool:
         """ Checks if a worker is carrying vespene gas. """
-        return any(
-            buff in self.buffs
-            for buff in {
-                BuffId.CARRYHARVESTABLEVESPENEGEYSERGAS,
-                BuffId.CARRYHARVESTABLEVESPENEGEYSERGASPROTOSS,
-                BuffId.CARRYHARVESTABLEVESPENEGEYSERGASZERG,
-            }
-        )
+        return not {
+            BuffId.CARRYHARVESTABLEVESPENEGEYSERGAS,
+            BuffId.CARRYHARVESTABLEVESPENEGEYSERGASPROTOSS,
+            BuffId.CARRYHARVESTABLEVESPENEGEYSERGASZERG,
+        }.isdisjoint(self.buffs)
 
     @property_immutable_cache
     def is_carrying_resource(self) -> bool:
         """ Checks if a worker is carrying a resource. """
-        return any(
-            buff in self.buffs
-            for buff in {
-                BuffId.CARRYMINERALFIELDMINERALS,
-                BuffId.CARRYHIGHYIELDMINERALFIELDMINERALS,
-                BuffId.CARRYHARVESTABLEVESPENEGEYSERGAS,
-                BuffId.CARRYHARVESTABLEVESPENEGEYSERGASPROTOSS,
-                BuffId.CARRYHARVESTABLEVESPENEGEYSERGASZERG,
-            }
-        )
+        return not {
+            BuffId.CARRYMINERALFIELDMINERALS,
+            BuffId.CARRYHIGHYIELDMINERALFIELDMINERALS,
+            BuffId.CARRYHARVESTABLEVESPENEGEYSERGAS,
+            BuffId.CARRYHARVESTABLEVESPENEGEYSERGASPROTOSS,
+            BuffId.CARRYHARVESTABLEVESPENEGEYSERGASZERG,
+        }.isdisjoint(self.buffs)
 
     @property_immutable_cache
     def detect_range(self) -> Union[int, float]:
@@ -493,6 +492,41 @@ class Unit(PassengerUnit):
     def is_hallucination(self) -> bool:
         """ Returns True if the unit is your own hallucination or detected. """
         return self._proto.is_hallucination
+
+    @property_immutable_cache
+    def attack_upgrade_level(self) -> int:
+        """ Returns the upgrade level of the units attack. """
+        # TODO: what does this return for units without a weapon?
+        # TODO: somehow store all weapon/armor/shield upgrades of the enemy to
+        # always have it available and update if you see a higher value
+        return self._proto.attack_upgrade_level
+
+    @property_immutable_cache
+    def armor_upgrade_level(self) -> int:
+        """ Returns the upgrade level of the units armor. """
+        return self._proto.armor_upgrade_level
+
+    @property_immutable_cache
+    def shield_upgrade_level(self) -> int:
+        """ Returns the upgrade level of the units shield. """
+        # TODO: what does this return for units without a shield?
+        return self._proto.shield_upgrade_level
+
+    @property_immutable_cache
+    def buff_duration_remain(self) -> int:
+        """ ??? """
+        # TODO what does this actually show?
+        # is it for all buffs or just the remaning life time indicator
+        # TODO what does this and the max value show for units without an indicator?
+        return self._proto.buff_duration_remain
+
+    @property_immutable_cache
+    def buff_duration_max(self) -> int:
+        """ ??? """
+        # TODO what does this actually show?
+        # is it for all buffs or just the remaning life time indicator
+        # TODO what does this show for units without an indicator?
+        return self._proto.buff_duration_max
 
     # PROPERTIES BELOW THIS COMMENT ARE NOT POPULATED FOR ENEMIES
 
@@ -722,10 +756,7 @@ class Unit(PassengerUnit):
             unit_attack_range = self.air_range
         else:
             return False
-        return (
-            self.position._distance_squared(target.position)
-            <= (self.radius + target.radius + unit_attack_range + bonus_distance) ** 2
-        )
+        return self.distance_to(target) <= self.radius + target.radius + unit_attack_range + bonus_distance
 
     def has_buff(self, buff) -> bool:
         """ Checks if unit has buff 'buff'. """

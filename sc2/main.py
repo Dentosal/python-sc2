@@ -101,6 +101,10 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
     # This game_data will become self._game_data in botAI
     ai._prepare_start(client, player_id, game_info, game_data)
     state = await client.observation()
+    # check game result every time we get the observation
+    if client._game_result:
+        ai.on_end(client._game_result[player_id])
+        return client._game_result[player_id]
     gs = GameState(state.observation)
     proto_game_info = await client._execute(game_info=sc_pb.RequestGameInfo())
     ai._prepare_step(gs, proto_game_info)
@@ -116,12 +120,12 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
 
     iteration = 0
     while True:
-        if client._game_result:
-            ai.on_end(client._game_result[player_id])
-            return client._game_result[player_id]
-
         if iteration != 0:
             state = await client.observation()
+            # check game result every time we get the observation
+            if client._game_result:
+                ai.on_end(client._game_result[player_id])
+                return client._game_result[player_id]
             gs = GameState(state.observation)
             logger.debug(f"Score: {gs.score.summary}")
 
