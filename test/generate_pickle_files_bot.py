@@ -37,9 +37,6 @@ These will then be used to run tests from the test script "test_pickled_data.py"
 
 class ExporterBot(sc2.BotAI):
     async def on_step(self, iteration):
-        if iteration == 0:
-            await self.on_first_iteration()
-
         actions = []
         await self.do_actions(actions)
 
@@ -76,7 +73,7 @@ class ExporterBot(sc2.BotAI):
 def main():
 
     maps = [
-        "16-BitLE.SC2Map",
+        "16-BitLE",
         "AbiogenesisLE",
         "AbyssalReefLE",
         "AcidPlantLE",
@@ -108,7 +105,6 @@ def main():
         "HonorgroundsLE",
         "InterloperLE",
         "KairosJunctionLE",
-        "KairosJunctionLE",
         "KingsCoveLE",
         "LostandFoundLE",
         "MechDepotLE",
@@ -118,7 +114,6 @@ def main():
         "OdysseyLE",
         "OldSunshine",
         "PaladinoTerminalLE",
-        "ParaSiteLE",
         "ParaSiteLE",
         "PortAleksanderLE",
         "PrimusQ9",
