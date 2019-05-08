@@ -565,10 +565,10 @@ class TestClass:
             dist_furthest_point = pos1._distance_squared(furthest_point) ** 0.5
 
             # Distances between pos1-pos2 and pos1-pos3 might be the same, so the sorting might still be different, that's why I use a set here
-            assert pos1.closest(points) in {p for p in points2 if pos1.distance_to(p) == dist_closest_point}
-            assert pos1.distance_to_closest(points) == pos1._distance_squared(closest_point) ** 0.5
-            assert pos1.furthest(points) in {p for p in points2 if pos1.distance_to(p) == dist_furthest_point}
-            assert pos1.distance_to_furthest(points) == pos1._distance_squared(furthest_point) ** 0.5
+            assert pos1.closest(points) in {p for p in points2 if abs(pos1.distance_to(p) - dist_closest_point) < epsilon}
+            assert abs(pos1.distance_to_closest(points) - pos1._distance_squared(closest_point) ** 0.5) < epsilon
+            assert pos1.furthest(points) in {p for p in points2 if abs(pos1.distance_to(p) - dist_furthest_point) < epsilon}
+            assert abs(pos1.distance_to_furthest(points) - pos1._distance_squared(furthest_point) ** 0.5) < epsilon
             assert pos1.offset(pos2) == Point2((pos1.x + pos2.x, pos1.y + pos2.y))
             if pos1 != pos2:
                 assert pos1.unit_axes_towards(pos2) != Point2((0, 0))
