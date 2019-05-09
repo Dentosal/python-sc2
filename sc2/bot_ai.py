@@ -5,8 +5,6 @@ import random
 from collections import Counter
 from typing import Any, Dict, List, Optional, Set, Tuple, Union  # mypy type checking
 
-from s2clientprotocol import common_pb2 as common_pb
-
 from .cache import property_cache_forever, property_cache_once_per_frame
 from .data import ActionResult, Alert, Race, Result, Target, race_gas, race_townhalls, race_worker
 from .game_data import AbilityData, GameData
@@ -130,7 +128,7 @@ class BotAI:
         Look in game_info.py for more information """
         if hasattr(self, "cached_main_base_ramp"):
             return self.cached_main_base_ramp
-        # The reason for len(ramp.upper) in {2, 5} is:        
+        # The reason for len(ramp.upper) in {2, 5} is:
         # ParaSite map has 5 upper points, and most other maps have 2 upper points at the main ramp.
         # The map Acolyte has 4 upper points at the wrong ramp (which is closest to the start position).
         try:
