@@ -5,8 +5,6 @@ import random
 from collections import Counter
 from typing import Any, Dict, List, Optional, Set, Tuple, Union  # mypy type checking
 
-from s2clientprotocol import common_pb2 as common_pb
-
 from .cache import property_cache_forever, property_cache_once_per_frame
 from .data import ActionResult, Alert, Race, Result, Target, race_gas, race_townhalls, race_worker
 from .game_data import AbilityData, GameData
@@ -130,7 +128,7 @@ class BotAI:
         Look in game_info.py for more information """
         if hasattr(self, "cached_main_base_ramp"):
             return self.cached_main_base_ramp
-        # The reason for len(ramp.upper) in {2, 5} is:        
+        # The reason for len(ramp.upper) in {2, 5} is:
         # ParaSite map has 5 upper points, and most other maps have 2 upper points at the main ramp.
         # The map Acolyte has 4 upper points at the wrong ramp (which is closest to the start position).
         try:
@@ -157,65 +155,58 @@ class BotAI:
         # any resource in a group is closer than 6 to any resource of another group
 
         # Distance we group resources by
-        from .helpers.devtools import time_this
-
-        with time_this("expo locations"):
-            RESOURCE_SPREAD_THRESHOLD = 8.5
-            minerals = self.state.mineral_field
-            geysers = self.state.vespene_geyser
-            all_resources = minerals | geysers
-            # Presort resources to get faster clustering
-            # all_resources.sort(key=lambda resource: resource.position.x ** 2 + resource.position.y ** 2)
-            all_resources.sort(key=lambda resource: resource.position.x ** 2 + resource.position.y ** 2)
-            # Create a group for every resource
-            resource_groups = [[resource] for resource in all_resources]
-            # Loop the merging process as long as we change something
-            found_something = True
-            while found_something:
-                found_something = False
-                # Check every combination of two groups
-                for group_a, group_b in itertools.combinations(resource_groups, 2):
-                    # Check if any pair of resource of these groups is closer than threshold together
-                    if any(
-                        resource_a.distance_to(resource_b) <= RESOURCE_SPREAD_THRESHOLD
-                        for resource_a, resource_b in itertools.product(group_a, group_b)
-                    ):
-                        # Remove the single groups and add the merged group
-                        resource_groups.remove(group_a)
-                        resource_groups.remove(group_b)
-                        resource_groups.append(group_a + group_b)
-                        found_something = True
-                        break
-            # Distance offsets we apply to center of each resource group to find expansion position
-            offset_range = 7
-            offsets = [(x, y) for x, y in itertools.product(range(-offset_range, offset_range + 1), repeat=2)]
-            # Dict we want to return
-            centers = {}
-            # For every resource group:
-            for resources in resource_groups:
-                # Possible expansion points
-                amount = len(resources)
-                # Calculate center, round and add 0.5 because expansion location will have (x.5, y.5)
-                # coordinates because bases have size 5.
-                center_x = round(sum(resource.position.x for resource in resources) / amount) + 0.5
-                center_y = round(sum(resource.position.y for resource in resources) / amount) + 0.5
-                possible_points = (Point2((offset[0] + center_x, offset[1] + center_y)) for offset in offsets)
-                # Filter out points that are too near
-                possible_points = (
-                    point
-                    for point in possible_points
-                    # Check if point can be built on
-                    if self._game_info.placement_grid[point.rounded] == 1
-                    # Check if all resources have enough space to point
-                    and all(point.distance_to(resource) > (7 if resource in geysers else 6) for resource in resources)
-                )
-                # Choose best fitting point
-                # TODO can we improve this by calculating the distance only one time?
-                result = min(
-                    possible_points, key=lambda point: sum(point.distance_to(resource) for resource in resources)
-                )
-                centers[result] = resources
-            return centers
+        RESOURCE_SPREAD_THRESHOLD = 8.5
+        geysers = self.state.vespene_geyser
+        # Create a group for every resource
+        resource_groups = [[resource] for resource in self.state.resources]
+        # Loop the merging process as long as we change something
+        found_something = True
+        while found_something:
+            found_something = False
+            # Check every combination of two groups
+            for group_a, group_b in itertools.combinations(resource_groups, 2):
+                # Check if any pair of resource of these groups is closer than threshold together
+                if any(
+                    resource_a.distance_to(resource_b) <= RESOURCE_SPREAD_THRESHOLD
+                    for resource_a, resource_b in itertools.product(group_a, group_b)
+                ):
+                    # Remove the single groups and add the merged group
+                    resource_groups.remove(group_a)
+                    resource_groups.remove(group_b)
+                    resource_groups.append(group_a + group_b)
+                    found_something = True
+                    break
+        # Distance offsets we apply to center of each resource group to find expansion position
+        offset_range = 7
+        offsets = [
+            (x, y)
+            for x, y in itertools.product(range(-offset_range, offset_range + 1), repeat=2)
+            if math.hypot(x, y) <= 8
+        ]
+        # Dict we want to return
+        centers = {}
+        # For every resource group:
+        for resources in resource_groups:
+            # Possible expansion points
+            amount = len(resources)
+            # Calculate center, round and add 0.5 because expansion location will have (x.5, y.5)
+            # coordinates because bases have size 5.
+            center_x = int(sum(resource.position.x for resource in resources) / amount) + 0.5
+            center_y = int(sum(resource.position.y for resource in resources) / amount) + 0.5
+            possible_points = (Point2((offset[0] + center_x, offset[1] + center_y)) for offset in offsets)
+            # Filter out points that are too near
+            possible_points = (
+                point
+                for point in possible_points
+                # Check if point can be built on
+                if self._game_info.placement_grid[point.rounded] == 1
+                # Check if all resources have enough space to point
+                and all(point.distance_to(resource) > (7 if resource in geysers else 6) for resource in resources)
+            )
+            # Choose best fitting point
+            result = min(possible_points, key=lambda point: sum(point.distance_to(resource) for resource in resources))
+            centers[result] = resources
+        return centers
 
     def _correct_zerg_supply(self):
         """ The client incorrectly rounds zerg supply down instead of up (see
