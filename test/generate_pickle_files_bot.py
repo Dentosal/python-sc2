@@ -37,9 +37,6 @@ These will then be used to run tests from the test script "test_pickled_data.py"
 
 class ExporterBot(sc2.BotAI):
     async def on_step(self, iteration):
-        if iteration == 0:
-            await self.on_first_iteration()
-
         actions = []
         await self.do_actions(actions)
 
@@ -76,27 +73,61 @@ class ExporterBot(sc2.BotAI):
 def main():
 
     maps = [
+        "16-BitLE",
+        "AbiogenesisLE",
+        "AbyssalReefLE",
+        "AcidPlantLE",
+        "AcolyteLE",
         "Acropolis",
         "Artana",
-        "CrystalCavern",
-        "DigitalFrontier",
-        "OldSunshine",
-        "Treachery",
-        "Triton",
+        "AscensiontoAiurLE",
         "AutomatonLE",
+        "BackwaterLE",
+        "Bandwidth",
+        "BattleontheBoardwalkLE",
+        "BelShirVestigeLE",
+        "BlackpinkLE",
+        "BloodBoilLE",
         "BlueshiftLE",
+        "CactusValleyLE",
+        "CatalystLE",
         "CeruleanFallLE",
+        "CrystalCavern",
+        "CyberForestLE",
         "DarknessSanctuaryLE",
+        "DefendersLandingLE",
+        "DigitalFrontier",
+        "DreamcatcherLE",
+        "EastwatchLE",
+        "Ephemeron",
+        "FractureLE",
+        "FrostLE",
+        "HonorgroundsLE",
+        "InterloperLE",
         "KairosJunctionLE",
+        "KingsCoveLE",
+        "LostandFoundLE",
+        "MechDepotLE",
+        "NeonVioletSquareLE",
+        "NewkirkPrecinctTE",
+        "NewRepugnancyLE",
+        "OdysseyLE",
+        "OldSunshine",
+        "PaladinoTerminalLE",
         "ParaSiteLE",
         "PortAleksanderLE",
-        "Bandwidth",
-        "Ephemeron",
         "PrimusQ9",
+        "ProximaStationLE",
+        "RedshiftLE",
         "Reminiscence",
         "Sanglune",
+        "SequencerLE",
+        # "StasisLE", Commented out because it has uneven number of expansions
         "TheTimelessVoid",
+        "Treachery",
+        "Triton",
         "Urzagol",
+        "YearZeroLE",
     ]
 
     for map in maps:
@@ -106,7 +137,6 @@ def main():
                 sc2.maps.get(map),
                 [Bot(Race.Terran, ExporterBot()), Computer(Race.Zerg, Difficulty.Easy)],
                 realtime=False,
-                save_replay_as="Example.SC2Replay",
             )
         except ProtocolError:
             # ProtocolError appears after a leave game request

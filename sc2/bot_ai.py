@@ -5,8 +5,6 @@ import random
 from collections import Counter
 from typing import Any, Dict, List, Optional, Set, Tuple, Union  # mypy type checking
 
-from s2clientprotocol import common_pb2 as common_pb
-
 from .cache import property_cache_forever, property_cache_once_per_frame
 from .data import ActionResult, Alert, Race, Result, Target, race_gas, race_townhalls, race_worker
 from .game_data import AbilityData, GameData
@@ -126,15 +124,24 @@ class BotAI:
 
     @property
     def main_base_ramp(self) -> "Ramp":
-        """ Returns the Ramp instance of the closest main-ramp to start location. Look in game_info.py for more information """
+        """ Returns the Ramp instance of the closest main-ramp to start location.
+        Look in game_info.py for more information """
         if hasattr(self, "cached_main_base_ramp"):
             return self.cached_main_base_ramp
-        """ The reason for len(ramp.upper) in {2, 5} is:
-        ParaSite map has 5 upper points, and most other maps have 2 upper points at the main ramp. The map Acolyte has 4 upper points at the wrong ramp (which is closest to the start position) """
-        self.cached_main_base_ramp = min(
-            (ramp for ramp in self.game_info.map_ramps if len(ramp.upper) in {2, 5}),
-            key=lambda r: self.start_location.distance_to(r.top_center),
-        )
+        # The reason for len(ramp.upper) in {2, 5} is:
+        # ParaSite map has 5 upper points, and most other maps have 2 upper points at the main ramp.
+        # The map Acolyte has 4 upper points at the wrong ramp (which is closest to the start position).
+        try:
+            self.cached_main_base_ramp = min(
+                (ramp for ramp in self.game_info.map_ramps if len(ramp.upper) in {2, 5}),
+                key=lambda r: self.start_location.distance_to(r.top_center),
+            )
+        except ValueError:
+            # Hardcoded hotfix for Honorgrounds LE map, as that map has a large main base ramp with inbase natural
+            self.cached_main_base_ramp = min(
+                (ramp for ramp in self.game_info.map_ramps if len(ramp.upper) in {4, 9}),
+                key=lambda r: self.start_location.distance_to(r.top_center),
+            )
         return self.cached_main_base_ramp
 
     @property_cache_forever
@@ -149,13 +156,9 @@ class BotAI:
 
         # Distance we group resources by
         RESOURCE_SPREAD_THRESHOLD = 8.5
-        minerals = self.state.mineral_field
         geysers = self.state.vespene_geyser
-        all_resources = minerals | geysers
-        # Presort resources to get faster clustering
-        all_resources.sort(key=lambda resource: (resource.position.x, resource.position.y))
         # Create a group for every resource
-        resource_groups = [[resource] for resource in all_resources]
+        resource_groups = [[resource] for resource in self.state.resources]
         # Loop the merging process as long as we change something
         found_something = True
         while found_something:
@@ -177,9 +180,8 @@ class BotAI:
         offset_range = 7
         offsets = [
             (x, y)
-            for x in range(-offset_range, offset_range + 1)
-            for y in range(-offset_range, offset_range + 1)
-            if 4 <= math.hypot(x, y) <= 7
+            for x, y in itertools.product(range(-offset_range, offset_range + 1), repeat=2)
+            if math.hypot(x, y) <= 8
         ]
         # Dict we want to return
         centers = {}
@@ -189,20 +191,19 @@ class BotAI:
             amount = len(resources)
             # Calculate center, round and add 0.5 because expansion location will have (x.5, y.5)
             # coordinates because bases have size 5.
-            center_x = round(sum(resource.position.x for resource in resources) / amount) + 0.5
-            center_y = round(sum(resource.position.y for resource in resources) / amount) + 0.5
+            center_x = int(sum(resource.position.x for resource in resources) / amount) + 0.5
+            center_y = int(sum(resource.position.y for resource in resources) / amount) + 0.5
             possible_points = (Point2((offset[0] + center_x, offset[1] + center_y)) for offset in offsets)
             # Filter out points that are too near
             possible_points = (
                 point
                 for point in possible_points
                 # Check if point can be built on
-                if self._game_info.placement_grid[point.rounded] != 0
+                if self._game_info.placement_grid[point.rounded] == 1
                 # Check if all resources have enough space to point
-                and all(point.distance_to(resource) >= (7 if resource in geysers else 6) for resource in resources)
+                and all(point.distance_to(resource) > (7 if resource in geysers else 6) for resource in resources)
             )
             # Choose best fitting point
-            # TODO can we improve this by calculating the distance only one time?
             result = min(possible_points, key=lambda point: sum(point.distance_to(resource) for resource in resources))
             centers[result] = resources
         return centers

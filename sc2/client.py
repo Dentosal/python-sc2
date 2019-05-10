@@ -138,6 +138,26 @@ class Client(Protocol):
         )
         return GameData(result.data)
 
+    async def dump_data(self, ability_id=True, unit_type_id=True, upgrade_id=True, buff_id=True, effect_id=True):
+        """
+        Dump the game data files
+        choose what data to dump in the keywords
+        this function writes to a text file
+        call it one time in on_step with:
+        await self._client.dump_data()
+        """
+        result = await self._execute(
+            data=sc_pb.RequestData(
+                ability_id=ability_id,
+                unit_type_id=unit_type_id,
+                upgrade_id=upgrade_id,
+                buff_id=buff_id,
+                effect_id=effect_id,
+            )
+        )
+        with open("data_dump.txt", "a") as file:
+            file.write(str(result.data))
+
     async def get_game_info(self) -> GameInfo:
         result = await self._execute(game_info=sc_pb.RequestGameInfo())
         return GameInfo(result.game_info)
