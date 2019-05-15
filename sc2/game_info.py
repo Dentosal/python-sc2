@@ -109,6 +109,8 @@ class Ramp:
     @property_immutable_cache
     def depot_in_middle(self) -> Optional[Point2]:
         """ Depot in the middle of the 3 depots """
+        if len(self.upper) not in {2, 5}:
+            return None
         if len(self.upper2_for_ramp_wall) == 2:
             points = self.upper2_for_ramp_wall
             p1 = points.pop().offset((self.x_offset, self.y_offset))
@@ -202,14 +204,14 @@ class GameInfo:
         map_area = self.playable_area
         # all points in the playable area that are pathable but not placable
         points = [
-            Point2((b, a))
-            for (a, b), value in np.ndenumerate(self.pathing_grid.data_numpy)
+            Point2((a, b))
+            for (b, a), value in np.ndenumerate(self.pathing_grid.data_numpy)
             if value == 1
             and map_area.x <= a < map_area.x + map_area.width
             and map_area.y <= b < map_area.y + map_area.height
-            and self.placement_grid[(b, a)] == 0
+            and self.placement_grid[(a, b)] == 0
         ]
-        # devide points into ramp points and vision blockers
+        # divide points into ramp points and vision blockers
         rampPoints = [point for point in points if not equal_height_around(point)]
         visionBlockers = set(point for point in points if equal_height_around(point))
         ramps = [Ramp(group, self) for group in self._find_groups(rampPoints)]

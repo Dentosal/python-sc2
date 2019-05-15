@@ -20,7 +20,7 @@ from sc2.ids.effect_id import EffectId
 
 from sc2.data import Race
 
-import pickle, pytest, random, math
+import pickle, pytest, random, math, lzma
 from hypothesis import given, event, settings, strategies as st
 
 from typing import Iterable
@@ -42,8 +42,8 @@ def get_map_specific_bots() -> Iterable[BotAI]:
     subfolder_name = "pickle_data"
     pickle_folder_path = os.path.join(folder, subfolder_name)
     files = os.listdir(pickle_folder_path)
-    for file in (f for f in files if f.endswith(".pkl")):
-        with open(os.path.join(folder, subfolder_name, file), "rb") as f:
+    for file in (f for f in files if f.endswith(".xz")):
+        with lzma.open(os.path.join(folder, subfolder_name, file), "rb") as f:
             raw_game_data, raw_game_info, raw_observation = pickle.load(f)
 
         # Build fresh bot object, and load the pickle'd data into the bot object
@@ -165,29 +165,10 @@ class TestClass:
         assert not bot.has_creep(worker)
 
     def test_game_info(self, bot: BotAI):
+        # Test if main base ramp works
         game_info: GameInfo = bot._game_info
 
-        # Test if main base ramp works
-        ramp: Ramp = bot.main_base_ramp
-        # On the map HonorgroundsLE, the main base is large and it would take a bit of effort to fix, so it returns None or empty set
-        if len(ramp.upper) in {2, 5}:
-            assert ramp.barracks_correct_placement
-            assert ramp.barracks_in_middle
-            assert ramp.depot_in_middle
-            assert len(ramp.corner_depots) == 2
-            assert ramp.upper2_for_ramp_wall
-        else:
-            # On maps it is unable to find valid wall positions (Honorgrounds LE) it should return None
-            assert ramp.barracks_correct_placement is None
-            assert ramp.barracks_in_middle is None
-            assert ramp.depot_in_middle is None
-            assert ramp.corner_depots == set()
-        assert ramp.top_center
-        assert ramp.bottom_center
-        assert ramp.size
-        assert ramp.points
-        assert ramp.upper
-        assert ramp.lower
+        bot._game_info.player_start_location = bot.townhalls.random.position
 
         # Test game info object
         assert len(game_info.players) == 2
@@ -203,6 +184,42 @@ class TestClass:
         assert game_info.player_races
         assert game_info.start_locations
         assert game_info.player_start_location
+
+    def test_main_base_ramp(self, bot: BotAI):
+        # Test if main ramp works for one of the opponent
+        game_info: GameInfo = bot._game_info
+
+        for spawn in bot._game_info.start_locations + [bot.townhalls.random.position]:
+            # Remove cached ramp
+            if hasattr(bot, "cached_main_base_ramp"):
+                del bot.cached_main_base_ramp
+            # Set start location as one of the opponent spawns
+            bot._game_info.player_start_location = spawn
+            # Find main base ramp for opponent
+            ramp: Ramp = bot.main_base_ramp
+            # On the map HonorgroundsLE, the main base is large and it would take a bit of effort to fix, so it returns None or empty set
+            if len(ramp.upper) in {2, 5}:
+                assert ramp.barracks_correct_placement
+                assert ramp.barracks_in_middle
+                assert ramp.depot_in_middle
+                assert len(ramp.corner_depots) == 2
+                assert ramp.upper2_for_ramp_wall
+            else:
+                # On maps it is unable to find valid wall positions (Honorgrounds LE) it should return None
+                assert ramp.barracks_correct_placement is None
+                assert ramp.barracks_in_middle is None
+                assert ramp.depot_in_middle is None
+                assert ramp.corner_depots == set()
+            assert ramp.top_center
+            assert ramp.bottom_center
+            assert ramp.size
+            assert ramp.points
+            assert ramp.upper
+            assert ramp.lower
+            # Test if ramp was detected far away
+            distance = ramp.top_center.distance_to(bot._game_info.player_start_location)
+            assert distance < 30, f"Distance from spawn to main ramp was detected as {distance:.2f}, which is too far. Spawn: {spawn}, Ramp: {ramp.top_center}"
+
 
     def test_game_data(self, bot: BotAI):
         game_data = bot._game_data
