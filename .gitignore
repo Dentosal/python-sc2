@@ -7,14 +7,13 @@ __pycache__/
 
 .mypy_cache/
 .pytest_cache/
+test/pickle_data/
 
 build/
 dist/
 *.egg-info/
 
 .cache/
-
-test/pickle_data/
 
 # SC2 things
 maps/
@@ -25,3 +24,6 @@ mini_games/
 # Editors
 .idea/
 .vscode/
+
+# Temp image files
+*.png
