@@ -2,7 +2,7 @@ import sys, os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
-import random
+import random, numpy as np
 
 import sc2
 from sc2 import Race, Difficulty
@@ -48,28 +48,13 @@ class RampWallBot(sc2.BotAI):
         depots = self.units(SUPPLYDEPOT) | self.units(SUPPLYDEPOTLOWERED)
 
         # Draw ramp points
-        def terrain_to_z_height(h):
-            return round(16 * h / 255, 2)
+        self.draw_ramp_points()
 
-        for ramp in self.game_info.map_ramps:
-            for p in ramp.points:
-                h = self.get_terrain_height(p)
-                h2 = terrain_to_z_height(h)
-                pos = Point3((p.x, p.y, h2))
-                p0 = Point3((pos.x - 0.25, pos.y - 0.25, pos.z))
-                p1 = Point3((pos.x + 0.25, pos.y + 0.25, pos.z - 0.5))
-                color = (255, 0, 0)
-                if p in ramp.upper:
-                    color = (0, 255, 0)
-                if p in ramp.upper2_for_ramp_wall:
-                    color = (0, 255, 255)
-                if p in ramp.lower:
-                    color = (0, 0, 255)
-                self._client.debug_box_out(p0, p1, color=color)
+        # Draw pathing grid
+        # self.draw_pathing_grid()
 
-            p = ramp.top_center
-            h = terrain_to_z_height(self.get_terrain_height(p))
-            self._client.debug_text_world("TC", Point3((p.x, p.y, h)), size=12)
+        # Draw vision blockers
+        # self.draw_vision_blockers()
 
         await self._client.send_debug()
 
@@ -98,6 +83,56 @@ class RampWallBot(sc2.BotAI):
                 await self.do(w.build(BARRACKS, barracks_placement_position))
 
 
+    def terrain_to_z_height(self, h):
+        # Required for drawing ramp points
+        return round(16 * h / 255, 2)
+
+    def draw_ramp_points(self):
+        for ramp in self.game_info.map_ramps:
+            for p in ramp.points:
+                h = self.get_terrain_height(p)
+                h2 = self.terrain_to_z_height(h)
+                pos = Point3((p.x, p.y, h2))
+                p0 = Point3((pos.x - 0.25, pos.y - 0.25, pos.z))
+                p1 = Point3((pos.x + 0.25, pos.y + 0.25, pos.z - 0.5))
+                # print(f"Drawing {p0} to {p1}")
+                color = (255, 0, 0)
+                if p in ramp.upper:
+                    color = (0, 255, 0)
+                if p in ramp.upper2_for_ramp_wall:
+                    color = (0, 255, 255)
+                if p in ramp.lower:
+                    color = (0, 0, 255)
+                self._client.debug_box_out(p0, p1, color=color)
+
+
+    def draw_pathing_grid(self):
+        map_area = self._game_info.playable_area
+        for (b, a), value in np.ndenumerate(self._game_info.pathing_grid.data_numpy):
+            if value == 0:
+                continue
+            if not (map_area.x <= a < map_area.x + map_area.width):
+                continue
+            if not (map_area.y <= b < map_area.y + map_area.height):
+                continue
+            p = Point2((a, b))
+            h = self.get_terrain_height(p)
+            h2 = self.terrain_to_z_height(h)
+            pos = Point3((p.x, p.y, h2))
+            p0 = Point3((pos.x - 0.25, pos.y - 0.25, pos.z))
+            p1 = Point3((pos.x + 0.25, pos.y + 0.25, pos.z - 0.5))
+            # print(f"Drawing {p0} to {p1}")
+            self._client.debug_box_out(p0, p1, color=(255, 0, 0))
+
+    def draw_vision_blockers(self):
+        for p in self.game_info.vision_blockers:
+            h = self.get_terrain_height(p)
+            h2 = self.terrain_to_z_height(h)
+            pos = Point3((p.x, p.y, h2))
+            p0 = Point3((pos.x - 0.25, pos.y - 0.25, pos.z))
+            p1 = Point3((pos.x + 0.25, pos.y + 0.25, pos.z - 0.5))
+            # print(f"Drawing {p0} to {p1}")
+            self._client.debug_box_out(p0, p1, color=(255, 0, 0))
 
 def main():
     map = random.choice(
@@ -111,12 +146,12 @@ def main():
             "PortAleksanderLE",
             "StasisLE",
             "DarknessSanctuaryLE",
+            "SequencerLE", # Upper right has a different ramp top
             "ParaSiteLE",  # Has 5 upper points at the main ramp
             "AcolyteLE",  # Has 4 upper points at the ramp to the in-base natural and 2 upper points at the small ramp
-            "HonorgroundsLE", # Has 4 or 9 upper points at the large main base ramp
+            "HonorgroundsLE",  # Has 4 or 9 upper points at the large main base ramp
         ]
     )
-    map = "SequencerLE"
     sc2.run_game(
         sc2.maps.get(map), [Bot(Race.Terran, RampWallBot()), Computer(Race.Zerg, Difficulty.Hard)], realtime=False
     )

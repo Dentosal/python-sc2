@@ -27,7 +27,7 @@ from sc2.protocol import ProtocolError
 from typing import List, Dict, Set, Tuple, Any, Optional, Union
 
 from s2clientprotocol import sc2api_pb2 as sc_pb
-import pickle, os, sys, logging, traceback
+import pickle, os, sys, logging, traceback, lzma
 
 
 """
@@ -36,9 +36,21 @@ These will then be used to run tests from the test script "test_pickled_data.py"
 """
 
 class ExporterBot(sc2.BotAI):
+    def __init__(self):
+        sc2.BotAI.__init__(self)
+        self.map_name: str = None
+
     async def on_step(self, iteration):
         actions = []
         await self.do_actions(actions)
+
+    def get_pickle_file_path(self) -> str:
+        folder_path = os.path.dirname(__file__)
+        subfolder_name = "pickle_data"
+        file_name = f"{self.map_name}.xz"
+        file_path = os.path.join(folder_path, subfolder_name, file_name)
+        return file_path
+
 
     async def on_start_async(self):
         raw_game_data = await self._client._execute(
@@ -54,17 +66,10 @@ class ExporterBot(sc2.BotAI):
         game_info = GameInfo(raw_game_info.game_info)
         game_state = GameState(raw_observation)
 
-        map_name = self.game_info.map_name
-        print(f"Saving file to {map_name}.pkl")
-        folder_path = os.path.dirname(__file__)
-        subfolder_name = "pickle_data"
-        file_name = f"{map_name}.pkl"
-        file_path = os.path.join(folder_path, subfolder_name, file_name)
-        try:
-            os.makedirs(os.path.dirname(file_path))
-        except:
-            pass
-        with open(file_path, "wb") as f:
+        print(f"Saving file to {self.map_name}.xz")
+        file_path = self.get_pickle_file_path()
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        with lzma.open(file_path, "wb") as f:
             pickle.dump([raw_game_data, raw_game_info, raw_observation], f)
 
         await self._client.leave()
@@ -130,19 +135,25 @@ def main():
         "YearZeroLE",
     ]
 
-    for map in maps:
+    for map_ in maps:
         logger = logging.getLogger()
         try:
+            bot = ExporterBot()
+            bot.map_name = map_
+            file_path = bot.get_pickle_file_path()
+            if os.path.isfile(file_path):
+                logger.warning(f"Pickle file for map {map_} was already generated. Skipping. If you wish to re-generate files, please remove them first.")
+                continue
             sc2.run_game(
-                sc2.maps.get(map),
-                [Bot(Race.Terran, ExporterBot()), Computer(Race.Zerg, Difficulty.Easy)],
+                sc2.maps.get(map_),
+                [Bot(Race.Terran, bot), Computer(Race.Zerg, Difficulty.Easy)],
                 realtime=False,
             )
         except ProtocolError:
             # ProtocolError appears after a leave game request
             pass
         except Exception as e:
-            logger.warning(f"Map {map} could not be found, so pickle files for that map could not be generated. Error: {e}")
+            logger.warning(f"Map {map_} could not be found, so pickle files for that map could not be generated. Error: {e}")
             # traceback.print_exc()
 
 
