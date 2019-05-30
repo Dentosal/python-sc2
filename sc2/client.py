@@ -487,7 +487,7 @@ class Client(Protocol):
         if color is None:
             return debug_pb.Color(r=255, g=255, b=255)
         elif isinstance(color, tuple) and len(color) == 3:
-            return debug_pb.Color(r=color[0], g=color[1], b=color[1])
+            return debug_pb.Color(r=color[0], g=color[1], b=color[2])
         else:
             r = getattr(color, "r", getattr(color, "x", 255))
             g = getattr(color, "g", getattr(color, "y", 255))
