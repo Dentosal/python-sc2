@@ -65,7 +65,7 @@ You can find more examples in the [`examples/`](/examples) folder.
 
 ## Help and support
 
-You have questions but don't want to create an issue? Join the [Starcraft 2 AI Discord](https://discordapp.com/invite/zXHU4wM). Questions about this repository can be asked in channel #python-sc2.
+You have questions but don't want to create an issue? Join the [Starcraft 2 AI Discord](https://discordapp.com/invite/zXHU4wM). Questions about this repository can be asked in channel #python.
 
 ## Bug reports, feature requests and ideas
 
