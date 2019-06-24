@@ -23,6 +23,8 @@ class Renderer(object):
         self._text_minerals = None
         self._text_score = None
         self._text_time = None
+        self._text_workers = None
+        self._text_army = None
 
     async def render(self, observation):
         render_data = observation.observation.render_data
@@ -67,7 +69,15 @@ class Renderer(object):
             )
             self._text_time = Label(
                 '', font_name='Arial', font_size=16, anchor_x='right', anchor_y='bottom',
-                x=self._minimap_size[0] - 10, y=self._minimap_size[1] + 10, color=(255, 255, 255, 255)
+                x=self._minimap_size[0] - 10, y=self._minimap_size[1] + 10, color=(180, 180, 180, 255)
+            )
+            self._text_workers = Label(
+                '', font_name='Arial', font_size=16, anchor_x='left', anchor_y='bottom',
+                x=10, y=self._minimap_size[1] + 35, color=(180, 180, 180, 255)
+            )
+            self._text_army = Label(
+                '', font_name='Arial', font_size=16, anchor_x='left', anchor_y='bottom',
+                x=10, y=self._minimap_size[1] + 10, color=(180, 180, 180, 255)
             )
         else:
             self._map_image.set_data('RGB', map_pitch, map_data)
@@ -78,6 +88,10 @@ class Renderer(object):
                                                           observation.observation.player_common.food_cap)
                 self._text_vespene.text = str(observation.observation.player_common.vespene)
                 self._text_minerals.text = str(observation.observation.player_common.minerals)
+                self._text_workers.text = "Workers: {} ({} idle)".format(
+                    observation.observation.player_common.food_workers,
+                    observation.observation.player_common.idle_worker_count)
+                self._text_army.text = "Army: {}".format(observation.observation.player_common.army_count)
             if observation.observation.HasField('score'):
                 self._text_score.text = "{} score: {}".format(
                     score_pb._SCORE_SCORETYPE.values_by_number[observation.observation.score.score_type].name,
@@ -103,6 +117,8 @@ class Renderer(object):
         self._text_minerals.draw()
         self._text_vespene.draw()
         self._text_supply.draw()
+        self._text_workers.draw()
+        self._text_army.draw()
 
         self._window.flip()
 
