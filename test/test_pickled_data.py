@@ -160,7 +160,7 @@ class TestClass:
         assert 0 < bot.get_terrain_height(worker)
         assert bot.in_placement_grid(worker)
         assert bot.in_pathing_grid(worker)
-        assert bot.is_visible(worker)
+        assert not bot.is_visible(worker)
         # The pickle data was created by a terran bot, so there is no creep under any worker
         assert not bot.has_creep(worker)
 
