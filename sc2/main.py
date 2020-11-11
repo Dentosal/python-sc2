@@ -243,19 +243,20 @@ async def _host_game(map_settings, players, realtime, portconfig=None, save_repl
 
         return result
 
-async def _host_game_aiter(map_settings, players, realtime, portconfig=None, save_replay_as=None, step_time_limit=None, game_time_limit=None):
+async def _host_game_aiter(map_settings, players, realtime, portconfig=None, save_replay_as=None, step_time_limit=None,
+                           game_time_limit=None, rgb_render_config=None, random_seed=None):
     assert players, "Can't create a game without players"
 
     assert any(isinstance(p, (Human, Bot)) for p in players)
 
-    async with SC2Process() as server:
+    async with SC2Process(render=rgb_render_config is not None) as server:
         while True:
             await server.ping()
 
-            client = await _setup_host_game(server, map_settings, players, realtime)
+            client = await _setup_host_game(server, map_settings, players, realtime, random_seed)
 
             try:
-                result = await _play_game(players[0], client, realtime, portconfig, step_time_limit, game_time_limit)
+                result = await _play_game(players[0], client, realtime, portconfig, step_time_limit, game_time_limit, rgb_render_config)
 
                 if save_replay_as is not None:
                     await client.save_replay(save_replay_as)
@@ -308,3 +309,9 @@ def run_game(map_settings, players, **kwargs):
             _host_game(map_settings, players, **kwargs)
         )
     return result
+
+def run_game_iter(*args, **kwargs):
+    game = _host_game_aiter(*args, **kwargs)
+    new_playerconfig = None
+    while True:
+        new_playerconfig = yield asyncio.get_event_loop().run_until_complete(game.asend(new_playerconfig))
